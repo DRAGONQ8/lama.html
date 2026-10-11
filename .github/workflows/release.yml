@@ -1,0 +1,36 @@
+name: Downloadable HTML release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version tag
+        required: true
+        default: v4.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Publish the standalone file
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Use a version such as v4.0.0"
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" lamma_universe.html \
+            --target "$GITHUB_SHA" \
+            --title "لَمّة ${RELEASE_TAG} — 28 لعبة" \
+            --notes-file docs/release-notes.md
