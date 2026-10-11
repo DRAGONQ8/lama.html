@@ -15,9 +15,20 @@ const scripts = [
   'lab',
   'experience',
   'upgrade',
+  'playflow',
   'boot',
 ];
-const styles = ['styles', 'arcade', 'words', 'party', 'lab', 'experience', 'upgrade'];
+const styles = [
+  'styles',
+  'advanced',
+  'arcade',
+  'words',
+  'party',
+  'lab',
+  'experience',
+  'upgrade',
+  'playflow',
+];
 const read = (path) => readFile(resolve(root, path), 'utf8');
 const normalizeArabic = (text) =>
   text

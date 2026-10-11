@@ -30,15 +30,15 @@ for (const id of labIDs) gameWorld[id] = 'brain';
 Object.assign(gameGuides, {
   nonogram: [
     'الأرقام فوق الأعمدة وعلى يسار الصفوف تصف مجموعات الخانات المعبأة بالترتيب. بين كل مجموعتين خانة فارغة على الأقل.',
-    'ابدأ بالصفوف الطويلة. بدّل بين التعبئة والشطب والمسح، أو استخدم F وX وC. الأخضر يعني اكتمال الأرقام؛ علامة ! تعني تعارضاً مع علاماتك. التلميح يشرح استنتاج خانة ويخصم 8 نقاط عند تطبيقه.',
+    'ابدأ بالصفوف الطويلة. بدّل بين التعبئة والشطب والمسح، أو استخدم F وX وC. عدسة الحركة تقارن ترتيبات الصف والعمود قبل التنفيذ. الأخضر يعني اكتمال الأرقام؛ علامة ! تعني تعارضاً مع علاماتك. التلميح يشرح استنتاج خانة ويخصم 8 نقاط عند تطبيقه.',
   ],
   lights: [
     'اطفئ جميع الأنوار. الضغط يغيّر حالة الخانة والخانات المجاورة لها أعلى وأسفل ويمين ويسار.',
-    'ترتيب الضغطات لا يغيّر النتيجة، والضغط مرتين يلغي نفسه. وضع التخطيط يسمح بتجربة مجموعة ضغطات قبل تنفيذها. إطار الخانات يوضح أثر الضغطة المحددة. التلميح يحدد ضغطة ضمن أقصر حل ويخصم 8 نقاط.',
+    'ترتيب الضغطات لا يغيّر النتيجة، والضغط مرتين يلغي نفسه. وضع التخطيط يسمح بتجربة مجموعة ضغطات قبل تنفيذها؛ اعرض نتيجة الخطة لتراها على اللوحة. عدسة الحركة تفصل الأنوار التي تنطفئ والتي تضيء. التلميح يحدد ضغطة ضمن أقصر حل ويخصم 8 نقاط.',
   ],
   pipes: [
     'دوّر كل قطعة حتى تصل جميع الخانات بالمصدر دون أي فتحة إلى الحافة أو إلى جانب مغلق.',
-    'ابدأ بالزوايا وقطع النهاية. اللمس يدور حسب الوضع المختار؛ الفأرة اليمنى تدور بالعكس. الأطراف الحمراء تكشف الفتحات غير الموصولة. ثبّت القطع التي تأكدت منها بزر التثبيت أو L؛ التلميح يبدأ باستنتاجات الشبكة ويخصم 8 نقاط عند ضبط قطعة.',
+    'ابدأ بالزوايا وقطع النهاية. اللمس يدور حسب الوضع المختار؛ الفأرة اليمنى تدور بالعكس. عدسة الحركة تقارن التسريب والاتصال قبل التدوير. ثبّت القطع التي تأكدت منها بزر التثبيت أو L؛ يمكنك التراجع عن التثبيت. التلميح يبدأ باستنتاجات الشبكة ويخصم 8 نقاط عند ضبط قطعة.',
   ],
 });
 const labPreviousSetup = setup;
@@ -123,6 +123,8 @@ function startLab(id) {
     history: [],
     future: [],
     message: '',
+    lensOpen: false,
+    planPreview: false,
     mode: id === 'nonogram' ? 'fill' : id === 'lights' ? 'play' : 'clockwise',
     rng: dailyRun
       ? makeSeed(dailyRun.date + ':' + id)
@@ -193,7 +195,12 @@ function labCheckWin() {
   return false;
 }
 function labReset() {
-  if (!labReady() || state.board.every((v, i) => v === state.initial[i])) return;
+  if (!labReady()) return;
+  const unchanged = state.board.every((v, i) => v === state.initial[i]);
+  if (unchanged && !state.pipeLocked?.some(Boolean)) {
+    if (state.plan?.some(Boolean)) labClearPlan();
+    return;
+  }
   labRemember();
   state.board = [...state.initial];
   if (state.plan) state.plan.fill(false);
@@ -237,10 +244,123 @@ function labFinish(title, text) {
 function labToolbar() {
   return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labRedo" onclick="labRedo()" ${state.future?.length ? '' : 'disabled'}>↷ إعادة</button><button id="labHint" onclick="labHint()">✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
 }
+// The optional lens compares legal moves using visible board data only.
+// It never reads generated answers, spends hints, or changes the live board.
+function labToggleLens() {
+  if (!labReady()) return;
+  state.lensOpen = !state.lensOpen;
+  renderLab();
+}
+function labMoveLensData(s = state) {
+  const i = s.selected,
+    row = Math.floor(i / s.size),
+    column = i % s.size;
+  if (s.id === 'nonogram') {
+    const value = { fill: 1, cross: 2, clear: 0 }[s.mode],
+      next = s.fixed[i] ? s.board[i] : s.mode === 'clear' ? 0 : s.board[i] === value ? 0 : value,
+      before = [
+        labLineAnalysis(s.board.slice(row * s.size, (row + 1) * s.size), s.rowClues[row]),
+        labLineAnalysis(
+          Array.from({ length: s.size }, (_, r) => s.board[r * s.size + column]),
+          s.colClues[column],
+        ),
+      ],
+      board = [...s.board];
+    board[i] = next;
+    const after = [
+      labLineAnalysis(board.slice(row * s.size, (row + 1) * s.size), s.rowClues[row]),
+      labLineAnalysis(
+        Array.from({ length: s.size }, (_, r) => board[r * s.size + column]),
+        s.colClues[column],
+      ),
+    ];
+    return {
+      kind: 'nonogram',
+      label: s.fixed[i] ? 'خانة معطاة ثابتة' : ['مسح العلامة', 'تعبئة الخانة', 'شطب الخانة'][next],
+      blocked: !!s.fixed[i] || next === s.board[i],
+      before: before.map((line) => line.options.length),
+      after: after.map((line) => line.options.length),
+      clues: [s.rowClues[row], s.colClues[column]],
+      conflict: after.some((line) => line.conflict),
+    };
+  }
+  if (s.id === 'lights') {
+    const before = s.mode === 'plan' ? labLightsProjected(s) : [...s.board],
+      after = [...before],
+      neighbours = labNeighbours(i, s.size);
+    labToggleLights(after, i, s.size);
+    return {
+      kind: 'lights',
+      label: s.mode === 'plan' ? (s.plan[i] ? 'احذف من الخطة' : 'أضف للخطة') : 'اضغط المصباح',
+      before: before.filter(Boolean).length,
+      after: after.filter(Boolean).length,
+      off: neighbours.filter((j) => before[j]).length,
+      on: neighbours.filter((j) => !before[j]).length,
+      blocked: false,
+    };
+  }
+  const direction = s.mode === 'counter' ? -1 : 1,
+    board = [...s.board],
+    before = labPipeAnalysis(board, s.size, s.source);
+  board[i] = labRotatePipe(board[i], direction);
+  const after = labPipeAnalysis(board, s.size, s.source);
+  return {
+    kind: 'pipes',
+    label: direction === 1 ? 'دوّر مع الساعة' : 'دوّر عكس الساعة',
+    blocked: !!s.pipeLocked[i] || board[i] === s.board[i],
+    locked: !!s.pipeLocked[i],
+    before: { leaks: before.leaks, connected: before.connected.size },
+    after: { leaks: after.leaks, connected: after.connected.size },
+    mask: board[i],
+    leaking: after.leaking[i],
+    connected: after.connected.has(i),
+  };
+}
+function labMoveLensHTML() {
+  const s = state;
+  if (!s.lensOpen) return '';
+  const data = labMoveLensData(s),
+    coordinate = `الصف ${Math.floor(s.selected / s.size) + 1} · العمود ${(s.selected % s.size) + 1}`;
+  let details;
+  if (data.kind === 'nonogram') {
+    details = `<div class="lab-lens-comparison">${['الصف', 'العمود'].map((axis, k) => `<div><span>${axis} <b dir="ltr">${data.clues[k].join('، ')}</b></span><strong dir="ltr">${data.before[k]} → ${data.after[k]}</strong><small>ترتيبات تسمح بها العلامات</small></div>`).join('')}</div><p>${data.conflict ? '! هذه الحركة تترك خطاً بلا ترتيب ممكن. تستطيع تنفيذها كمحاولة ثم التراجع.' : 'هذه المقارنة تختبر الخطين فقط؛ وجود ترتيبات ممكنة لا يثبت أن الخانة صحيحة.'}</p>`;
+  } else if (data.kind === 'lights') {
+    details = `<div class="lab-lens-comparison"><div><span>أنوار مضاءة</span><strong dir="ltr">${data.before} → ${data.after}</strong></div><div><span>أثر الضغطة</span><strong>${data.off} تنطفئ · ${data.on} تضيء</strong></div></div><p>${s.mode === 'plan' ? 'المقارنة تبدأ من نتيجة خطتك الحالية؛ الإضافة أو الحذف لا يغيّران اللوحة حتى التنفيذ.' : 'قلة الأنوار لا تعني دائماً قرب الحل. جرّب التخطيط لرؤية أثر أكثر من ضغطة معاً.'}</p>`;
+  } else {
+    details = `<div class="lab-lens-comparison"><div><span>فتحات غير موصولة</span><strong dir="ltr">${data.before.leaks} → ${data.after.leaks}</strong></div><div><span>قطع متصلة بالمصدر</span><strong dir="ltr">${data.before.connected} → ${data.after.connected}</strong></div></div><div class="lab-lens-pipe ${data.connected ? 'lab-connected' : ''} ${s.selected === s.source ? 'lab-source' : ''}" role="img" aria-label="اتجاه القطعة بعد الدوران: ${labPipeDirections
+      .filter(([, , bit]) => data.mask & bit)
+      .map(([, , , , name]) => name)
+      .join(
+        '، ',
+      )}، ${labBitCount(BigInt(data.leaking))} فتحات غير موصولة">${labPipeSVG(data.mask, data.connected, s.selected === s.source, data.leaking)}</div><p>${data.locked ? 'القطعة مثبتة. فك التثبيت لمتابعة تجربة اتجاهها.' : 'المعاينة تخص دوراناً واحداً. قد تحتاج زيادة مؤقتة في التسريب لبناء الشبكة الصحيحة.'}</p>`;
+  }
+  return `<div class="lab-lens-content"><p>اضغط أي خانة لاختيارها للمعاينة، ثم نفّذ الحركة من الزر أدناه. أغلق العدسة للعودة للعب مباشرة.</p><b>${coordinate}</b><span class="lab-lens-action">${data.label}</span>${details}<button id="labLensApply" onclick="labApplyLensMove()" ${data.blocked ? 'disabled' : ''}>${data.kind === 'lights' && s.mode === 'plan' ? data.label : 'نفّذ الحركة المعاينة'}</button><small class="lab-lens-note">المعاينة لا تغيّر اللوحة ولا تستهلك تلميحاً.</small></div>`;
+}
+function labLensHTML() {
+  return `<aside class="lab-lens"><button id="labLensToggle" class="lab-lens-toggle" aria-expanded="${!!state.lensOpen}" aria-controls="labLensContent" onclick="labToggleLens()">⌕ عدسة الحركة <span>${state.lensOpen ? 'إخفاء المعاينة' : 'جرّب قبل القرار'}</span></button><div id="labLensContent" ${state.lensOpen ? '' : 'hidden'}>${labMoveLensHTML()}</div></aside>`;
+}
+function labRefreshLens() {
+  if (state.lensOpen && $('labLensContent')) $('labLensContent').innerHTML = labMoveLensHTML();
+}
+function labApplyLensMove() {
+  if (!labReady() || !state.lensOpen || labMoveLensData().blocked) return;
+  if (state.id === 'nonogram') labNonogramTap(state.selected, null, true);
+  else if (state.id === 'lights') labLightsTap(state.selected, true);
+  else labPipesTap(state.selected, null, true);
+}
+function labPreviewTap(i, mode = null) {
+  if (!state.lensOpen) return false;
+  state.selected = i;
+  if (mode) state.mode = mode;
+  state.message = 'الخانة محددة للمعاينة فقط. نفّذ من عدسة الحركة أو أغلقها للعب مباشرة.';
+  renderLab();
+  return true;
+}
 function renderLab() {
   const s = state;
   if (!s || s.done || !labIDs.has(s.id) || screen !== s.id) return;
   const oldFocus = document.activeElement;
+  const horizontalScroll = $('labBoard')?.closest('.lab-scroll')?.scrollLeft;
   const focusCell = oldFocus?.classList?.contains('lab-cell');
   const focusID =
     oldFocus?.id && oldFocus.closest?.('[data-game="' + s.id + '"]') ? oldFocus.id : null;
@@ -268,9 +388,11 @@ function renderLab() {
     wrap(
       s.id,
       smallStats([progress, ['الحركات', s.moves], ['الوقت', labTime(s), 'labTime']]) +
-        `<section class="panel lab-panel">${body}${labToolbar()}</section>`,
+        `<section class="panel lab-panel">${body}${labLensHTML()}${labToolbar()}</section>`,
     ),
   );
+  const scroll = $('labBoard')?.closest('.lab-scroll');
+  if (scroll && horizontalScroll !== undefined) scroll.scrollLeft = horizontalScroll;
   if (focusCell)
     $('labBoard')?.querySelector(`[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
   else if (focusID) $(focusID)?.focus({ preventScroll: true });
@@ -285,7 +407,18 @@ function labSelect(i, focus = false) {
       cell.tabIndex = selected ? 0 : -1;
       cell.classList.toggle('lab-selected', selected);
     });
-  if (focus) $('labBoard')?.querySelector(`[data-index="${i}"]`)?.focus({ preventScroll: true });
+  if (focus) {
+    const cell = $('labBoard')?.querySelector(`[data-index="${i}"]`);
+    cell?.focus({ preventScroll: true });
+    cell?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
+  }
+  if (state.id === 'nonogram')
+    $('labBoard')
+      ?.querySelectorAll('[data-lab-line]')
+      .forEach((clue) => {
+        const line = clue.dataset.labAxis === 'row' ? Math.floor(i / state.size) : i % state.size;
+        clue.classList.toggle('lab-clue-selected', Number(clue.dataset.labLine) === line);
+      });
   if (state.id === 'lights') labLightsPreview(i);
   if (state.id === 'pipes' && $('labLock')) {
     $('labLock').textContent = state.pipeLocked?.[i]
@@ -293,6 +426,7 @@ function labSelect(i, focus = false) {
       : '🔒 ثبّت القطعة المحددة';
     $('labLock').setAttribute('aria-pressed', String(!!state.pipeLocked?.[i]));
   }
+  labRefreshLens();
 }
 function labMode(mode) {
   if (
@@ -554,14 +688,14 @@ function labNonogramHTML() {
     )}</div><div class="lab-line-tools"><button onclick="labCompleteLine('row')">× شطب بقية الصف</button><button onclick="labCompleteLine('column')">× شطب بقية العمود</button></div><p class="lab-board-status" role="status">${analysis.conflicts ? `! ${analysis.conflicts} خطوط تتعارض مع علاماتك؛ راجع الأرقام الحمراء.` : '✓ الأرقام الخضراء مكتملة · ! الأرقام الحمراء تتعارض مع علاماتك'}</p><div class="lab-scroll"><div id="labBoard" class="lab-nonogram" style="--lab-n:${n}" role="group" aria-label="لوحة المنطق"><div class="lab-clue-corner" aria-hidden="true">▦</div>${s.colClues
     .map(
       (clues, c) =>
-        `<div class="lab-clue lab-col-clue ${analysis.columns[c].conflict ? 'lab-clue-conflict' : ''} ${
+        `<div data-lab-axis="column" data-lab-line="${c}" class="lab-clue lab-col-clue ${s.selected % n === c ? 'lab-clue-selected' : ''} ${analysis.columns[c].conflict ? 'lab-clue-conflict' : ''} ${
           analysis.columns[c].complete ? 'lab-clue-done' : ''
         }" aria-label="عمود ${c + 1}: ${clues.join('، ')}${analysis.columns[c].conflict ? '، متعارض مع العلامات' : analysis.columns[c].complete ? '، مكتمل' : ''}">${analysis.columns[c].conflict ? '<small aria-hidden="true">!</small>' : ''}${clues.map((v) => `<span>${v}</span>`).join('')}</div>`,
     )
     .join('')}${s.rowClues
     .map(
       (clues, r) =>
-        `<div class="lab-clue lab-row-clue ${clues.length >= 4 ? 'lab-clue-tight' : ''} ${analysis.rows[r].conflict ? 'lab-clue-conflict' : ''} ${analysis.rows[r].complete ? 'lab-clue-done' : ''}" aria-label="صف ${r + 1}: ${clues.join('، ')}${analysis.rows[r].conflict ? '، متعارض مع العلامات' : analysis.rows[r].complete ? '، مكتمل' : ''}">${analysis.rows[r].conflict ? '<small aria-hidden="true">! </small>' : ''}${clues.join(' ')}</div>${Array.from(
+        `<div data-lab-axis="row" data-lab-line="${r}" class="lab-clue lab-row-clue ${Math.floor(s.selected / n) === r ? 'lab-clue-selected' : ''} ${clues.length >= 4 ? 'lab-clue-tight' : ''} ${analysis.rows[r].conflict ? 'lab-clue-conflict' : ''} ${analysis.rows[r].complete ? 'lab-clue-done' : ''}" aria-label="صف ${r + 1}: ${clues.join('، ')}${analysis.rows[r].conflict ? '، متعارض مع العلامات' : analysis.rows[r].complete ? '، مكتمل' : ''}">${analysis.rows[r].conflict ? '<small aria-hidden="true">! </small>' : ''}${clues.join(' ')}</div>${Array.from(
           { length: n },
           (_, c) => {
             const i = r * n + c,
@@ -575,7 +709,7 @@ function labNonogramHTML() {
       '',
     )}</div></div><p class="note center">${n}×${n} · ◆ خانة معطاة · الشطب اختياري للفوز<br>F تعبئة · X شطب · C مسح · الفأرة اليمنى للشطب${n === 9 ? '<br>على الهاتف، اسحب اللوحة أفقياً لرؤية جميع الأعمدة.' : ''}</p>`;
 }
-function labNonogramTap(i, override = null) {
+function labNonogramTap(i, override = null, commit = false) {
   if (
     !labReady('nonogram') ||
     !Number.isInteger(i) ||
@@ -584,6 +718,7 @@ function labNonogramTap(i, override = null) {
     state.fixed[i]
   )
     return;
+  if (!commit && labPreviewTap(i, override)) return;
   const s = state,
     mode = override || s.mode,
     value = mode === 'fill' ? 1 : mode === 'cross' ? 2 : 0;
@@ -725,6 +860,11 @@ function labClearPlan() {
   state.message = 'مُسحت الخطة؛ اللوحة الأصلية لم تتغير.';
   renderLab();
 }
+function labTogglePlanPreview() {
+  if (!labReady('lights') || state.mode !== 'plan') return;
+  state.planPreview = !state.planPreview;
+  renderLab();
+}
 function labApplyPlan() {
   if (!labReady('lights')) return;
   const s = state,
@@ -746,7 +886,9 @@ function labLightsHTML() {
     planning = s.mode === 'plan',
     planned = s.plan.filter(Boolean).length,
     affected = labNeighbours(s.selected, s.size),
-    preview = planning ? labLightsProjected(s) : [...s.board];
+    preview = planning ? labLightsProjected(s) : [...s.board],
+    showingPreview = planning && s.planPreview,
+    displayBoard = showingPreview ? preview : s.board;
   const after = [...preview];
   labToggleLights(after, s.selected, s.size);
   return `<div class="lab-mode" aria-label="طريقة اللعب">${[
@@ -759,10 +901,11 @@ function labLightsHTML() {
     )
     .join(
       '',
-    )}</div>${planning ? `<div class="lab-plan-summary"><b>${planned} ضغطات مخططة · بعد الخطة ${preview.filter(Boolean).length} أنوار مضاءة</b><p>اختر الخانات التي تريد ضغطها. تكرار الاختيار يزيلها من الخطة؛ لا تُحسب حركة حتى التنفيذ.</p><div class="actions"><button id="labApplyPlan" class="primary" onclick="labApplyPlan()" ${planned ? '' : 'disabled'}>نفّذ الخطة</button><button id="labClearPlan" onclick="labClearPlan()" ${planned ? '' : 'disabled'}>امسح الخطة</button></div></div>` : ''}<div class="lab-lights-caption"><span>☀ مضاء</span><span>· مطفأ</span><span>✦ ضغطة مقترحة</span>${planning ? '<span>↻ ضغطة في الخطة</span>' : ''}</div><div id="labBoard" class="lab-square lab-lights" style="--lab-n:${s.size}" role="group" aria-label="لوحة الأنوار${planning ? '، وضع التخطيط' : ''}">${s.board.map((value, i) => `<button class="lab-cell lab-light ${value ? 'lab-lit' : ''} ${s.selected === i ? 'lab-selected' : ''} ${affected.includes(i) ? 'lab-affected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''} ${planning && s.plan[i] ? 'lab-planned' : ''}" ${labCellAttributes(i, (value ? 'مصباح مضاء' : 'مصباح مطفأ') + (s.hintCell === i ? '، ضغطة مقترحة' : '') + (planning && s.plan[i] ? '، ضغطة في الخطة' : ''))} aria-pressed="${planning ? s.plan[i] : !!value}" onclick="labLightsTap(${i})" onpointerenter="labLightsPreview(${i})"><span aria-hidden="true">${value ? '☀' : '·'}</span>${planning && s.plan[i] ? '<b class="lab-plan-mark" aria-hidden="true">↻</b>' : s.hintCell === i ? '<small aria-hidden="true">✦</small>' : ''}</button>`).join('')}</div><p id="labPreviewMessage" class="lab-board-status">${planning ? (s.plan[s.selected] ? 'إزالة' : 'إضافة') + ' هذا الاختيار من الخطة' : 'بعد الضغط على الخانة المحددة'}: ${after.filter(Boolean).length} أنوار مضاءة. قلة الأنوار لا تعني دائماً قرب الحل.</p><p class="note center">${s.size}×${s.size} · الضغط يغيّر الخانة وأعلى وأسفل ويمين ويسار<br>الضغط مرتين يلغي نفسه. اطفئ كل مصباح للفوز.</p>`;
+    )}</div>${planning ? `<div class="lab-plan-summary"><b>${planned} ضغطات مخططة · بعد الخطة ${preview.filter(Boolean).length} أنوار مضاءة</b><p>اختر الخانات التي تريد ضغطها. تكرار الاختيار يزيلها من الخطة؛ لا تُحسب حركة حتى التنفيذ.</p><div class="actions"><button id="labApplyPlan" class="primary" onclick="labApplyPlan()" ${planned ? '' : 'disabled'}>نفّذ الخطة</button><button id="labClearPlan" onclick="labClearPlan()" ${planned ? '' : 'disabled'}>امسح الخطة</button><button id="labPlanPreview" onclick="labTogglePlanPreview()" aria-pressed="${!!s.planPreview}" aria-controls="labBoard">${showingPreview ? 'اعرض اللوحة الحالية' : 'اعرض نتيجة الخطة'}</button></div></div>` : ''}<div class="lab-lights-caption"><span>☀ مضاء</span><span>· مطفأ</span><span>✦ ضغطة مقترحة</span>${planning ? '<span>↻ ضغطة في الخطة</span>' : ''}${showingPreview ? '<span>↑ يضيء · ↓ ينطفئ بعد الخطة</span>' : ''}</div>${showingPreview ? '<p class="lab-preview-banner" role="status">معاينة نتيجة الخطة — اللوحة الحالية محفوظة حتى تضغط «نفّذ الخطة».</p>' : ''}<div id="labBoard" class="lab-square lab-lights" style="--lab-n:${s.size}" role="group" aria-label="لوحة الأنوار${showingPreview ? '، معاينة نتيجة الخطة' : planning ? '، وضع التخطيط' : ''}">${displayBoard.map((value, i) => `<button class="lab-cell lab-light ${value ? 'lab-lit' : ''} ${s.selected === i ? 'lab-selected' : ''} ${affected.includes(i) ? 'lab-affected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''} ${planning && s.plan[i] ? 'lab-planned' : ''} ${showingPreview && value !== s.board[i] ? 'lab-projected-change' : ''}" ${labCellAttributes(i, (value ? 'مصباح مضاء' : 'مصباح مطفأ') + (showingPreview ? ' بعد الخطة، حالياً ' + (s.board[i] ? 'مضاء' : 'مطفأ') : '') + (s.hintCell === i ? '، ضغطة مقترحة' : '') + (planning && s.plan[i] ? '، ضغطة في الخطة' : ''))} aria-pressed="${planning ? s.plan[i] : !!value}" onclick="labLightsTap(${i})" onpointerenter="labLightsPreview(${i})"><span aria-hidden="true">${value ? '☀' : '·'}</span>${showingPreview && value !== s.board[i] ? `<b class="lab-projected-mark" aria-hidden="true">${value ? '↑' : '↓'}</b>` : ''}${planning && s.plan[i] ? '<b class="lab-plan-mark" aria-hidden="true">↻</b>' : s.hintCell === i ? '<small aria-hidden="true">✦</small>' : ''}</button>`).join('')}</div><p id="labPreviewMessage" class="lab-board-status">${planning ? (s.plan[s.selected] ? 'إزالة' : 'إضافة') + ' هذا الاختيار من الخطة' : 'بعد الضغط على الخانة المحددة'}: ${after.filter(Boolean).length} أنوار مضاءة. قلة الأنوار لا تعني دائماً قرب الحل.</p><p class="note center">${s.size}×${s.size} · الضغط يغيّر الخانة وأعلى وأسفل ويمين ويسار<br>الضغط مرتين يلغي نفسه. اطفئ كل مصباح للفوز.</p>`;
 }
-function labLightsTap(i) {
+function labLightsTap(i, commit = false) {
   if (!labReady('lights') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
+  if (!commit && labPreviewTap(i)) return;
   const s = state;
   if (s.mode === 'plan') {
     s.plan[i] = !s.plan[i];
@@ -873,6 +1016,7 @@ function labPipeDomains(board, n, locked = []) {
 }
 function labTogglePipeLock(i = state?.selected) {
   if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
+  labRemember();
   state.pipeLocked[i] = !state.pipeLocked[i];
   state.selected = i;
   state.message = state.pipeLocked[i]
@@ -988,8 +1132,10 @@ function labPipesHTML(analysis) {
       '',
     )}</div><p class="note center">أي ترتيب يربط جميع القطع بلا فتحات يعتبر حلاً<br>R للتدوير · Shift+R للعكس · L للتثبيت · الفأرة اليمنى للعكس</p>`;
 }
-function labPipesTap(i, override = null) {
+function labPipesTap(i, override = null, commit = false) {
   if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
+  if (!commit && labPreviewTap(i, override ? (override === -1 ? 'counter' : 'clockwise') : null))
+    return;
   const s = state,
     direction = override || (s.mode === 'counter' ? -1 : 1),
     next = labRotatePipe(s.board[i], direction);

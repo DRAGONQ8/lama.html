@@ -167,6 +167,7 @@ function toast(msg) {
   toastTimer = setTimeout(() => ($('toast').hidden = true), 3800);
 }
 function setHTML(html) {
+  if (!state?.done) $('celebration')?.remove();
   $('app').innerHTML = latin(html);
   captureSoloSession();
 }
@@ -465,6 +466,7 @@ function startNumber(id) {
         attempt: 0,
         history: [],
         hints: 0,
+        soloPad: matchMedia('(pointer: coarse)').matches && innerWidth <= 720,
         mode,
         name,
         done: false,
@@ -586,19 +588,26 @@ function renderSolo(msg = '') {
   const s = state,
     count = s.h - s.l + 1n,
     initial = s.initialH - s.initialL + 1n,
-    progress = Number(100n - (count * 100n) / initial);
+    progress = Number(100n - (count * 100n) / initial),
+    left = Number(((s.l - s.initialL) * 10000n) / initial) / 100,
+    width = Number((count * 10000n) / initial) / 100,
+    last = s.history.at(-1),
+    direction = last?.a === 'higher' ? 'higher' : last ? 'lower' : 'start';
+  s.soloMessage =
+    msg || s.soloMessage || 'اختر رقماً من النطاق. كل إجابة تستبعد جزءاً من الاحتمالات.';
   setHTML(
     wrap(
       'solo',
-      `<div class="stats"><div class="stat"><small>المحاولات الباقية</small><b>${s.max - s.attempt}</b></div><div class="stat"><small>محاولاتك</small><b>${s.attempt}</b></div><div class="stat"><small>احتمالات باقية</small><b style="font-size:16px;overflow-wrap:anywhere">${fmt(count)}</b></div></div><section class="panel"><div class="progressline" aria-label="تضييق النطاق ${progress}%"><span style="width:${progress}%"></span></div><div class="spot"><div style="font-size:42px">🔐</div><h2>رقمي عندي… خمنه!</h2><div class="range">${fmt(s.l)} ≤ ? ≤ ${fmt(s.h)}</div></div><form onsubmit="event.preventDefault();guessSolo()"><label for="guessInput">اكتب تخمينك</label><input id="guessInput" dir="ltr" type="text" inputmode="text" maxlength="90" autocomplete="off" placeholder="؟"><div class="actions"><button class="primary" type="submit">هذا رقمك؟</button><button type="button" onclick="hintSolo()" ${s.hints >= 2 || count <= 2n ? 'disabled' : ''}>ضيّق النطاق −8 (${2 - s.hints})</button><button type="button" onclick="revealSolo()">أستسلم</button></div></form><p class="note" role="status">${msg || 'ابدأ قريباً من منتصف النطاق. التلميح يحذف نصف الاحتمالات ويخصم 8 نقاط، ولا يستهلك محاولة.'}</p>${
+      `<div class="stats solo-stats"><div class="stat"><small>محاولات باقية</small><b>${s.max - s.attempt}</b></div><div class="stat"><small>محاولاتك</small><b>${s.attempt}</b></div><div class="stat"><small>احتمالات باقية</small><b>${fmt(count)}</b></div></div><section class="panel solo-panel"><div class="solo-heading"><span aria-hidden="true">🔐</span><div><h3>قرّب، وضيّق النطاق</h3><p class="tiny">استبعدت ${progress}% من الاحتمالات</p></div></div><div class="number-range" aria-label="النطاق المتبقي من ${fmt(s.l)} إلى ${fmt(s.h)}"><div class="range" dir="ltr"><bdi>${fmt(s.l)}</bdi><span>≤ ? ≤</span><bdi>${fmt(s.h)}</bdi></div><div class="number-track" dir="ltr" aria-hidden="true"><span style="left:${left}%;width:${width}%"></span></div><div class="range-original" dir="ltr"><bdi>${fmt(s.initialL)}</bdi><bdi>${fmt(s.initialH)}</bdi></div></div><div id="soloFeedback" class="guess-feedback ${direction}" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"><span class="feedback-arrow" aria-hidden="true">${direction === 'higher' ? '↑' : direction === 'lower' ? '↓' : '✦'}</span><div><b>${esc(s.soloMessage)}</b><small>النطاق الآن: <bdi dir="ltr">${fmt(s.l)} – ${fmt(s.h)}</bdi>${count === 1n ? ' · بقي رقم واحد!' : ''}</small></div></div><form class="solo-form" onsubmit="event.preventDefault();guessSolo()"><label for="guessInput">تخمينك</label><div class="guess-entry"><input id="guessInput" dir="ltr" type="text" inputmode="${s.soloPad ? 'none' : 'numeric'}" enterkeyhint="go" maxlength="90" autocomplete="off" aria-describedby="soloFeedback" placeholder="اكتب الرقم" ${s.soloPad ? 'readonly' : ''}><button class="primary" type="submit">جرّب الرقم ←</button></div><div class="input-options"><button type="button" class="linkbtn" onclick="toggleSoloPad()" aria-pressed="${!!s.soloPad}">${s.soloPad ? 'استخدم كيبورد الجهاز' : 'لوحة أرقام اللعبة'}</button>${s.l < 0n ? '<button type="button" class="smallbtn quiet" onclick="soloKey(\'sign\')" aria-label="تبديل إشارة الرقم">±</button>' : ''}${s.mode === 'easy' && count > 1n ? '<button type="button" class="linkbtn" onclick="soloMidpoint()">جرّب المنتصف</button>' : ''}</div>${s.soloPad ? soloKeypadHTML() : ''}<div class="solo-assists"><button type="button" onclick="hintSolo()" ${s.hints >= 2 || count <= 2n ? 'disabled' : ''}>✧ تلميح <small>−8 نقاط · باقي ${2 - s.hints}</small></button><button type="button" class="quiet" onclick="revealSolo()">اكشف الرقم</button></div><p class="tiny">التلميح يحذف نصف الاحتمالات دون استهلاك محاولة.</p></form>${
         s.history.length
-          ? `<div class="history"><ol>${s.history
+          ? `<details class="history solo-history"><summary>تتبّع تخميناتك (${s.history.length})</summary><ol>${s.history
               .slice(-12)
+              .reverse()
               .map(
                 (v) =>
-                  `<li><bdi>${fmt(v.n)}</bdi> · ${v.a === 'higher' ? 'رقمي أكبر ⬆' : 'رقمي أصغر ⬇'}</li>`,
+                  `<li><bdi>${fmt(v.n)}</bdi><span>${v.a === 'higher' ? '↑ الرقم أكبر' : '↓ الرقم أصغر'}</span></li>`,
               )
-              .join('')}</ol></div>`
+              .join('')}</ol></details>`
           : ''
       }</section>`,
     ),
@@ -611,6 +620,50 @@ function renderSolo(msg = '') {
     $('guessInput').setAttribute('aria-label', 'اكتب تخمينك؛ التلميح المعروض هو منتصف النطاق');
   }
 }
+function soloKeypadHTML() {
+  return `<div class="solo-keypad" dir="ltr" role="group" aria-label="لوحة أرقام التخمين">${['1', '2', '3', '4', '5', '6', '7', '8', '9', 'clear', '0', 'back'].map((key) => `<button type="button" onclick="soloKey('${key}')" aria-label="${key === 'clear' ? 'مسح الرقم' : key === 'back' ? 'حذف آخر خانة' : key}">${key === 'clear' ? 'مسح' : key === 'back' ? '⌫' : key}</button>`).join('')}</div>`;
+}
+function soloKey(key) {
+  if (screen !== 'solo' || state.done || coreBlocked() || !$('guessInput')) return;
+  const input = $('guessInput');
+  if (key === 'clear') input.value = '';
+  else if (key === 'back') input.value = input.value.slice(0, -1);
+  else if (key === 'sign') {
+    if (state.l < 0n)
+      input.value = input.value.startsWith('-') ? input.value.slice(1) : '-' + input.value;
+  } else if (/^\d$/.test(key) && input.value.length < 61) input.value += key;
+  else return;
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+function toggleSoloPad() {
+  if (screen !== 'solo' || state.done || coreBlocked()) return;
+  const draft = $('guessInput').value;
+  $('guessInput').blur();
+  state.soloPad = !state.soloPad;
+  renderSolo();
+  $('guessInput').value = draft;
+  if (!state.soloPad) $('guessInput').focus({ preventScroll: true });
+}
+function soloMidpoint() {
+  if (screen !== 'solo' || state.done || coreBlocked() || state.mode !== 'easy') return;
+  $('guessInput').value = (state.l + (state.h - state.l) / 2n).toString();
+  $('guessInput').dispatchEvent(new Event('input', { bubbles: true }));
+}
+function soloInputError(message) {
+  const input = $('guessInput'),
+    feedback = $('soloFeedback');
+  input.setAttribute('aria-invalid', 'true');
+  feedback.classList.add('invalid');
+  feedback.querySelector('b').textContent = latin(message);
+  feedback.scrollIntoView({ block: 'nearest' });
+}
+function afterSoloResponse() {
+  if (matchMedia('(pointer: coarse)').matches || state?.soloPad) {
+    requestAnimationFrame(() =>
+      $('soloFeedback')?.scrollIntoView({ block: 'nearest', behavior: 'instant' }),
+    );
+  } else $('guessInput')?.focus({ preventScroll: true });
+}
 function hintSolo() {
   if (screen !== 'solo' || state.done || coreBlocked() || state.hints >= 2) return;
   const s = state;
@@ -619,8 +672,9 @@ function hintSolo() {
   if (s.secret <= mid) s.h = mid;
   else s.l = mid + 1n;
   s.hints++;
+  $('guessInput').blur();
   renderSolo('حذفنا نصف الاحتمالات. باقي النطاق يحتوي الرقم السري.');
-  $('guessInput').focus();
+  afterSoloResponse();
 }
 function guessSolo() {
   if (screen !== 'solo' || state.done || coreBlocked()) return;
@@ -629,11 +683,12 @@ function guessSolo() {
   try {
     n = integer($('guessInput').value);
   } catch (e) {
-    return toast(e.message);
+    return soloInputError(e.message);
   }
-  if (n < s.l || n > s.h)
-    return toast('هذا الرقم خارج النطاق الممكن. جرّب رقماً من النطاق المعروض.');
+  if (n < s.l || n > s.h) return soloInputError('هذا الرقم خارج النطاق الممكن. لم تُخصم محاولة.');
+  $('guessInput').blur();
   s.attempt++;
+  s.finalGuess = n;
   if (n === s.secret) {
     s.done = true;
     const p = Math.max(
@@ -664,7 +719,7 @@ function guessSolo() {
             ? ' ابتعدت عن الرقم ❄'
             : ' نفس المسافة من الرقم.';
   s.lastDistance = distance;
-  s.history.push({ n, a });
+  s.history.push({ n, a, low: s.l, high: s.h });
   if (s.attempt >= s.max) {
     s.done = true;
     result(
@@ -678,7 +733,7 @@ function guessSolo() {
   else s.h = n - 1n;
   tone();
   renderSolo((a === 'higher' ? '⬆ رقمي أكبر من تخمينك.' : '⬇ رقمي أصغر من تخمينك.') + heat);
-  $('guessInput').focus();
+  afterSoloResponse();
 }
 function revealSolo() {
   if (screen !== 'solo' || state.done || coreBlocked()) return;
@@ -1668,6 +1723,7 @@ function startMemory() {
     hintsUsed: 0,
     streak: 0,
     bestStreak: 0,
+    memoryFocus: 0,
     notice: '',
     peek: false,
     locked: false,
@@ -1684,8 +1740,13 @@ function startMemory() {
   goTop();
 }
 function renderMemory() {
-  const s = state,
+  const hadFocus = document.activeElement?.matches('.memcard'),
+    restoreFocus =
+      hadFocus || (state.memoryRestoreFocus && document.activeElement === document.body),
+    s = state,
     columns = s.pairs <= 6 ? 4 : s.pairs <= 16 ? 4 : s.pairs <= 20 ? 5 : 6;
+  if (s.matched.includes(s.memoryFocus))
+    s.memoryFocus = s.deck.findIndex((_, i) => !s.matched.includes(i));
   setHTML(
     wrap(
       'memory',
@@ -1693,13 +1754,20 @@ function renderMemory() {
         .map((v, i) => {
           const m = s.matched.includes(i),
             up = m || s.up.includes(i) || s.peek;
-          return `<button class="memcard ${m ? 'matched' : up ? 'up' : ''}" onclick="flipCard(${i})" ${m || s.locked || s.done ? 'disabled' : ''} aria-label="${up ? esc(v) : 'بطاقة مقلوبة ' + (i + 1)}" aria-pressed="${up}">${up ? v : '✦'}</button>`;
+          return `<button class="memcard ${m ? 'matched' : up ? 'up' : ''}" data-memory-index="${i}" tabindex="${i === s.memoryFocus ? 0 : -1}" onclick="flipCard(${i})" ${m || s.locked || s.done ? 'disabled' : ''} aria-label="بطاقة ${i + 1}، ${m ? 'زوج مكتمل ' : ''}${up ? esc(v) : 'مقلوبة'}" aria-pressed="${up}">${up ? v : '✦'}</button>`;
         })
         .join(
           '',
         )}</div><p class="note center" role="status">${s.peek ? 'تذكر الأماكن! الكشف يختفي بعد ثانيتين.' : s.locked ? 'غير متطابقتين؛ تذكر أماكنهما للمحاولة التالية.' : s.notice || 'اختر بطاقتين وابحث عن الأزواج.'}</p><p class="tiny center">سلسلة الأزواج: ${s.streak} · أفضل سلسلة: ${s.bestStreak} · كفاءة ${s.moves ? Math.round((s.matched.length / 2 / s.moves) * 100) : 0}%</p><div class="actions"><button onclick="memoryHint()" ${s.done || s.locked || s.up.length || s.hintsUsed >= 2 ? 'disabled' : ''}>كشف قصير −12 (${2 - s.hintsUsed})</button><button class="quiet" onclick="setup('memory')">لوحة جديدة</button></div>`,
     ),
   );
+  if (hadFocus && s.locked) s.memoryRestoreFocus = true;
+  if (restoreFocus && !s.done && !s.locked) {
+    document
+      .querySelector(`[data-memory-index="${s.memoryFocus}"]:not(:disabled)`)
+      ?.focus({ preventScroll: true });
+    s.memoryRestoreFocus = false;
+  }
 }
 function hideMemoryCards(s) {
   if (screen !== 'memory' || state !== s || s.done) return;
@@ -1750,6 +1818,7 @@ function flipCard(i) {
     return;
   const s = state;
   if (s.up.includes(i) || s.matched.includes(i)) return;
+  s.memoryFocus = i;
   s.started ??= Date.now();
   s.up.push(i);
   tone();

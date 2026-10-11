@@ -4,7 +4,7 @@ games.push(
     'trivia',
     '🧠',
     'كنز المعلومات',
-    'أسئلة متنوعة، شروحات لكل جواب، وموضوعات ومستويات مختلفة.',
+    'أسئلة متنوعة، شروحات لكل جواب، ومراجعة تفاعلية تثبّت معلوماتك.',
     'بروحك',
     '#b7d3ff',
   ],
@@ -12,7 +12,7 @@ games.push(
     'hangman',
     '🔤',
     'اكشف الكلمة',
-    'اكتشف الحروف العربية مع التلميحات والفئات قبل استهلاك المحاولات.',
+    'اكشف الحروف أو خمن الكلمة كاملة، مع تلميحات وفئات ومستويات مختلفة.',
     'بروحك',
     '#ffd394',
   ],
@@ -28,7 +28,7 @@ games.push(
     'target',
     '🎯',
     'صياد الأهداف',
-    'اختبر سرعتك ودقتك، وسلاسل النجاح تزيد نقاطك.',
+    'سرعة، قنابل خادعة، أو مسارات مرتبة؛ اختبر دقتك وسلسلة نجاحك.',
     'بروحك',
     '#f5b8d6',
   ],
@@ -54,11 +54,11 @@ setup = function (id, internal = false) {
   if (id === 'trivia')
     body = `<p class="muted">اختبر معلوماتك، واقرأ سبب الإجابة بعد كل سؤال. الأسئلة لا تتكرر في الجولة.</p><div class="fields"><div class="field"><label for="triviaCategory">الموضوع</label><select id="triviaCategory" onchange="updateTriviaAvailability()"><option value="all">كل المواضيع</option>${triviaCategories.map((c) => `<option value="${c[0]}">${c[1]}</option>`).join('')}</select></div><div class="field"><label for="triviaLevel">المستوى</label><select id="triviaLevel" onchange="updateTriviaAvailability()"><option value="all">كل المستويات</option><option value="easy">سهل</option><option value="normal">متوسط</option><option value="hard">صعب</option></select></div><div class="field"><label for="triviaCount">عدد الأسئلة</label><select id="triviaCount"><option value="10">10 أسئلة</option><option value="20">20 سؤالاً</option></select></div><div class="field"><label for="triviaTimer">وقت كل سؤال</label><select id="triviaTimer"><option value="30">30 ثانية</option><option value="15">15 ثانية · تحدي سريع</option><option value="0">بدون مؤقت</option></select></div>${playerField('سجّل النتيجة باسم')}</div><p class="note" id="triviaAvailable"></p><div class="hintpanel">المؤقت يتوقف أثناء قراءة الشرح. استخدم الأرقام 1–4 للاختيار، وEnter للسؤال التالي.</div>`;
   if (id === 'hangman')
-    body = `<p class="muted">اكشف الحروف، واستفد من الفئة والوصف. الكلمات لا تتكرر، وكل خطأ أو تلميح يقلل مكافأة الكلمة.</p><div class="fields"><div class="field"><label for="hangCategory">فئة الكلمات</label><select id="hangCategory"><option value="all">كل الفئات</option>${wordsCategories.map((c) => `<option value="${c[0]}">${c[1]}</option>`).join('')}</select></div><div class="field"><label for="hangLevel">المستوى</label><select id="hangLevel"><option value="easy">مريح · 8 أخطاء و3 تلميحات</option><option value="normal" selected>متوسط · 6 أخطاء وتلميحان</option><option value="hard">خبير · 5 أخطاء وتلميح واحد، بلا وصف</option></select></div><div class="field"><label for="hangCount">طول الجولة</label><select id="hangCount"><option value="1">كلمة واحدة</option><option value="5" selected>5 كلمات</option><option value="10">10 كلمات</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">أ، إ، آ تُحسب مثل ا. ة تختلف عن ه، وى تختلف عن ي. كل كلمة مكتملة تمنح حتى 20 نقطة؛ الخطأ −2 والتلميح −3. تقدر تستخدم لوحة المفاتيح العربية.</div>`;
+    body = `<p class="muted">اكشف الحروف، واستفد من الفئة والوصف. الكلمات لا تتكرر، وكل خطأ أو تلميح يقلل مكافأة الكلمة.</p><div class="fields"><div class="field"><label for="hangCategory">فئة الكلمات</label><select id="hangCategory"><option value="all">كل الفئات</option>${wordsCategories.map((c) => `<option value="${c[0]}">${c[1]}</option>`).join('')}</select></div><div class="field"><label for="hangLevel">المستوى</label><select id="hangLevel"><option value="easy">مريح · 8 أخطاء و3 تلميحات</option><option value="normal" selected>متوسط · 6 أخطاء وتلميحان</option><option value="hard">خبير · 5 أخطاء وتلميح واحد، بلا وصف</option></select></div><div class="field"><label for="hangCount">طول الجولة</label><select id="hangCount"><option value="1">كلمة واحدة</option><option value="5" selected>5 كلمات</option><option value="10">10 كلمات</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">أ، إ، آ تُحسب مثل ا. ة تختلف عن ه، وى تختلف عن ي. كل كلمة مكتملة تمنح حتى 20 نقطة؛ الخطأ −2 والتلميح −3. تقدر تستخدم لوحة المفاتيح العربية أو تخمّن الكلمة كاملة؛ التخمين الكامل الخاطئ يستهلك خطأين.</div>`;
   if (id === 'wordguess')
-    body = `<p class="muted">لديك 6 محاولات للوصول إلى كلمة عربية. الأخضر: حرف في مكانه. الأصفر: حرف موجود في مكان آخر. الرمادي: الحرف غير موجود، أو تكراره زائد.</p><div class="fields"><div class="field"><label for="wordguessLength">طول الكلمة</label><select id="wordguessLength"><option value="4">4 حروف · بداية خفيفة</option><option value="5" selected>5 حروف · التحدي الكامل</option></select></div><div class="field"><label for="wordguessMode">طريقة التخمين</label><select id="wordguessMode"><option value="classic">حر · جرّب أي كلمة</option><option value="focus">استنتاج · التزم بالحروف المكتشفة</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">تُقبل الكلمات الموجودة في القاموس المحلي. أ، إ، آ تُحسب مثل ا؛ ة وه حرفان مختلفان. في الاستنتاج حافظ على الأخضر، وانقل الأصفر إلى موضع جديد. التلميح يكشف الفئة ويخصم 10 نقاط.</div>`;
+    body = `<p class="muted">لديك 6 محاولات للوصول إلى كلمة عربية. الأخضر: حرف في مكانه. الأصفر: حرف موجود في مكان آخر. الرمادي: الحرف غير موجود، أو تكراره زائد.</p><div class="fields"><div class="field"><label for="wordguessLength">طول الكلمة</label><select id="wordguessLength"><option value="4">4 حروف · بداية خفيفة</option><option value="5" selected>5 حروف · التحدي الكامل</option></select></div><div class="field"><label for="wordguessMode">طريقة التخمين</label><select id="wordguessMode"><option value="classic">حر · جرّب أي كلمة</option><option value="focus">استنتاج · التزم بالحروف المكتشفة</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">تُقبل الكلمات الموجودة في القاموس المحلي. أ، إ، آ تُحسب مثل ا؛ ة وه حرفان مختلفان. في الاستنتاج حافظ على الأخضر، وانقل الأصفر إلى موضع جديد، واستبعد الرمادي والتكرارات الزائدة. التلميح يكشف الفئة ويخصم 10 نقاط.</div>`;
   if (id === 'target')
-    body = `<p class="muted">اضغط الهدف الملون فور ظهوره، وتجنب الخانات الفارغة. النجاح المتتابع يزيد المكافأة، والسرعة ترتفع أثناء اللعب.</p><div class="fields"><div class="field"><label for="targetLevel">المستوى</label><select id="targetLevel"><option value="easy">سهل · 9 خانات وأهداف أطول</option><option value="normal" selected>متوسط · 9 خانات</option><option value="hard">صعب · 16 خانة</option></select></div><div class="field"><label for="targetMode">التحدي</label><select id="targetMode"><option value="speed">سرعة · أهداف فقط</option><option value="precision">تركيز · هدف مع قنبلة خادعة</option></select></div><div class="field"><label for="targetDuration">وقت الجولة</label><select id="targetDuration"><option value="30">30 ثانية</option><option value="60">60 ثانية</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">الخانة الفارغة −3، والقنبلة −8 في تحدي التركيز؛ كل خطأ يقطع السلسلة. كل هدف يُحسب مرة واحدة. على لوحة المفاتيح: Tab ثم Enter، أو الأرقام 1–9 للشبكة الصغيرة.</div>`;
+    body = `<p class="muted">اضغط الهدف الملون فور ظهوره، وتجنب الخانات الفارغة. النجاح المتتابع يزيد المكافأة، والسرعة ترتفع أثناء اللعب.</p><div class="fields"><div class="field"><label for="targetLevel">المستوى</label><select id="targetLevel"><option value="easy">سهل · 9 خانات وأهداف أطول</option><option value="normal" selected>متوسط · 9 خانات</option><option value="hard">صعب · 16 خانة</option></select></div><div class="field"><label for="targetMode">التحدي</label><select id="targetMode"><option value="speed">سرعة · أهداف فقط</option><option value="precision">تركيز · هدف مع قنبلة خادعة</option><option value="sequence">مسار · الأهداف 1 ثم 2 ثم 3</option></select></div><div class="field"><label for="targetDuration">وقت الجولة</label><select id="targetDuration"><option value="30">30 ثانية</option><option value="60">60 ثانية</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">الخانة الفارغة −3، والقنبلة −8 في تحدي التركيز؛ كل خطأ يقطع السلسلة. كل هدف يُحسب مرة واحدة. على لوحة المفاتيح: Tab ثم Enter، أو الأرقام 1–9 للشبكة الصغيرة، والأسهم للتنقل في كل المستويات. في المسار أصب الهدف 1 ثم 2 ثم 3؛ لا تتخطى الترتيب.</div>`;
   setHTML(
     wrap(
       id,
@@ -155,6 +155,7 @@ function triviaPrepare() {
   state.locked = false;
   state.choice = null;
   state.endAt = state.duration ? Date.now() + state.duration * 1000 : 0;
+  state.questionStarted = Date.now() - state.started;
 }
 function renderTrivia() {
   const s = state,
@@ -188,7 +189,12 @@ function answerTrivia(choice) {
     s.bestStreak = Math.max(s.bestStreak || 0, s.streak);
     tone();
   } else s.streak = 0;
-  s.answers.push({ ...q, correct, selected: choice >= 0 ? q.choices[choice] : null });
+  s.answers.push({
+    ...q,
+    correct,
+    selected: choice >= 0 ? q.choices[choice] : null,
+    milliseconds: Math.max(0, Date.now() - s.started - s.questionStarted),
+  });
   renderTrivia();
 }
 function nextTrivia() {
@@ -213,7 +219,7 @@ function renderTriviaReview(s) {
       .map(([key, label]) => {
         const answers = s.answers.filter((a) => a.cat === key);
         return answers.length
-          ? `<span class="chip">${esc(label)}: ${answers.filter((a) => a.correct).length} / ${answers.length}</span>`
+          ? `<div class="trivia-mastery"><span>${esc(label)}</span><b>${answers.filter((a) => a.correct).length} / ${answers.length}</b><meter min="0" max="${answers.length}" value="${answers.filter((a) => a.correct).length}" aria-label="الإجابات الصحيحة في ${esc(label)}"></meter></div>`
           : '';
       })
       .join('');
@@ -221,8 +227,64 @@ function renderTriviaReview(s) {
     .querySelector('#app .play')
     ?.insertAdjacentHTML(
       'beforeend',
-      `<section class="panel trivia-review"><h3>خريطة معرفتك</h3><div class="chips">${topics}<span class="chip">أفضل سلسلة: ${s.bestStreak || 0}</span></div>${missed.length ? `<p class="note">${missed.length} أسئلة تستحق مراجعة. الإجابة والتفسير محفوظان هنا حتى تبدأ جولة جديدة.</p><details class="history"><summary>راجع الأسئلة التي فاتتك</summary>${missed.map((a) => `<article class="trivia-review-item"><h4>${esc(a.question)}</h4><p>إجابتك: ${a.selected === null ? 'انتهى الوقت' : esc(a.selected)}</p><p class="words-positive">الصحيح: ${esc(a.answer)}</p><p class="note">${esc(a.explanation)}</p></article>`).join('')}</details>` : '<p class="note">أجبت عن كل الأسئلة. جرّب مستوى أصعب في الجولة القادمة.</p>'}</section>`,
+      `<section class="panel trivia-review"><h3>خريطة معرفتك</h3><div class="trivia-topic-grid">${topics}</div><div class="chips"><span class="chip">أفضل سلسلة: ${s.bestStreak || 0}</span><span class="chip">متوسط الإجابة: ${(s.answers.reduce((sum, answer) => sum + (answer.milliseconds || 0), 0) / s.answers.length / 1000).toFixed(1)} ث</span></div>${missed.length ? `<p class="note">${missed.length} أسئلة تستحق مراجعة. الإجابة والتفسير محفوظان هنا حتى تبدأ جولة جديدة.</p><div class="actions"><button class="primary" onclick="startTriviaPractice()">🧠 اختبر ما تعلمته</button></div><section id="triviaPractice" class="trivia-practice" hidden aria-label="مراجعة تفاعلية للأسئلة"></section><details class="history"><summary>راجع الأسئلة التي فاتتك</summary>${missed.map((a) => `<article class="trivia-review-item"><h4>${esc(a.question)}</h4><p>إجابتك: ${a.selected === null ? 'انتهى الوقت' : esc(a.selected)}</p><p class="words-positive">الصحيح: ${esc(a.answer)}</p><p class="note">${esc(a.explanation)}</p></article>`).join('')}</details>` : '<p class="note">أجبت عن كل الأسئلة. جرّب مستوى أصعب في الجولة القادمة.</p>'}</section>`,
     );
+}
+function triviaPracticeBlocked() {
+  return (
+    screen !== 'trivia' ||
+    state?.id !== 'trivia' ||
+    !state.done ||
+    !state.resultShown ||
+    !$('modalback').hidden ||
+    !!$('pausecover')
+  );
+}
+function startTriviaPractice() {
+  if (triviaPracticeBlocked()) return;
+  const questions = state.answers.filter((answer) => !answer.correct);
+  if (!questions.length) return;
+  state.practice = {
+    questions: shuffle(questions).map((question) => ({
+      ...question,
+      choices: shuffle(question.choices),
+    })),
+    index: 0,
+    correct: 0,
+    choice: null,
+  };
+  renderTriviaPractice();
+  $('triviaPracticeTitle')?.focus({ preventScroll: true });
+  wordsRevealFeedback('triviaPracticeTitle');
+}
+function renderTriviaPractice() {
+  const practice = state.practice,
+    container = $('triviaPractice');
+  if (!container || !practice) return;
+  container.hidden = false;
+  if (practice.index >= practice.questions.length) {
+    container.innerHTML = `<h3 id="triviaPracticeTitle" tabindex="-1">✓ اكتملت المراجعة</h3><p role="status">استرجعت ${practice.correct} من ${practice.questions.length} إجابات. ${practice.correct === practice.questions.length ? 'ثبتنا المعلومات!' : 'راجع الشرح، ثم اختبر نفسك مرة ثانية.'}</p><p class="note">هذه مراجعة للتعلم؛ نتيجة الجولة المسجلة تبقى كما هي.</p><button onclick="startTriviaPractice()">↻ راجع مرة ثانية</button>`;
+    return;
+  }
+  const q = practice.questions[practice.index],
+    locked = practice.choice !== null;
+  container.innerHTML = `<div class="words-status"><h3 id="triviaPracticeTitle" tabindex="-1">🧠 اختبر ما تعلمته</h3><span class="pill">${practice.index + 1} / ${practice.questions.length}</span><span class="pill">مراجعة بدون نقاط أو مؤقت</span></div><p class="trivia-question">${esc(q.question)}</p><div class="trivia-choices">${q.choices.map((choice, i) => `<button class="trivia-choice ${locked ? (choice === q.answer ? 'correct' : i === practice.choice ? 'incorrect' : 'faded') : ''}" onclick="answerTriviaPractice(${i})" ${locked ? 'disabled' : ''}><span class="choice-number">${i + 1}</span><span>${esc(choice)}</span></button>`).join('')}</div>${locked ? `<div class="trivia-explanation" role="status"><b>${q.choices[practice.choice] === q.answer ? 'تذكرتها! ✓' : 'الصحيح: ' + esc(q.answer)}</b><p>${esc(q.explanation)}</p></div><div class="actions"><button class="primary" onclick="nextTriviaPractice()">${practice.index + 1 === practice.questions.length ? 'أنهِ المراجعة' : 'التالي'} ←</button></div>` : '<p class="note center">حاول تتذكر الإجابة قبل الرجوع إلى الشرح.</p>'}`;
+}
+function answerTriviaPractice(choice) {
+  if (triviaPracticeBlocked() || !state.practice || !Number.isInteger(choice)) return;
+  const practice = state.practice,
+    q = practice.questions[practice.index];
+  if (!q || practice.choice !== null || choice < 0 || choice >= q.choices.length) return;
+  practice.choice = choice;
+  if (q.choices[choice] === q.answer) practice.correct++;
+  renderTriviaPractice();
+}
+function nextTriviaPractice() {
+  if (triviaPracticeBlocked() || !state.practice || state.practice.choice === null) return;
+  state.practice.index++;
+  state.practice.choice = null;
+  renderTriviaPractice();
+  $('triviaPracticeTitle')?.focus({ preventScroll: true });
 }
 
 function wordsNormalizeKey(value) {
@@ -308,6 +370,8 @@ function prepareHangman() {
     over: false,
     won: false,
     feedback: 'ابدأ بحرف شائع، ثم استفد من الحروف المكتشفة.',
+    wordDraft: '',
+    wordGuesses: [],
   });
 }
 function hangmanSolved(s) {
@@ -336,7 +400,7 @@ function renderHangman() {
   setHTML(
     wrap(
       'hangman',
-      `<section class="panel"><div class="words-status"><span class="pill">الكلمة ${s.index + 1} / ${s.queue.length}</span><span class="pill">${esc(category)}</span><span class="pill">✓ ${s.wins} كلمات</span><span class="pill">💎 ${s.total} نقطة</span><b class="${maxMisses - s.misses <= 2 ? 'danger-text' : ''}">${maxMisses - s.misses} أخطاء متبقية</b></div><div class="hangman-layout">${hangmanDrawing(s.misses, maxMisses)}<div><p class="hangman-clue">${s.level === 'hard' && !s.over ? `تحدي خبير · ${item.key.length} حروف، والفئة دليلك` : esc(item.hint)}</p><div class="hangman-word" aria-label="حروف الكلمة">${Array.from(
+      `<section class="panel hangman-panel"><div class="words-status"><span class="pill">الكلمة ${s.index + 1} / ${s.queue.length}</span><span class="pill">${esc(category)}</span><span class="pill">✓ ${s.wins} كلمات</span><span class="pill">💎 ${s.total} نقطة</span><b class="${maxMisses - s.misses <= 2 ? 'danger-text' : ''}">${maxMisses - s.misses} أخطاء متبقية</b><span class="pill">${Array.from(item.key).filter((l) => s.guessed.includes(l)).length} / ${item.key.length} حروف مكشوفة</span></div><div class="hangman-layout">${hangmanDrawing(s.misses, maxMisses)}<div><p class="hangman-clue">${s.level === 'hard' && !s.over ? `تحدي خبير · ${item.key.length} حروف، والفئة دليلك` : esc(item.hint)}</p><div class="hangman-word" aria-label="حروف الكلمة">${Array.from(
         item.key,
       )
         .map(
@@ -345,7 +409,7 @@ function renderHangman() {
         )
         .join(
           '',
-        )}</div>${s.over ? `<div class="trivia-explanation" role="status"><b>${s.won ? 'أحسنت! الكلمة: ' + esc(item.word) : 'الكلمة هي: ' + esc(item.word)}</b><p>${s.won ? `+${s.wordPoints} نقطة · ${s.misses} أخطاء و${s.hints} تلميحات` : 'الكلمة التالية فرصة جديدة.'}</p>${s.level === 'hard' ? `<p>${esc(item.hint)}</p>` : ''}</div>` : `<p class="note">الحروف المجربة: ${s.guessed.length ? s.guessed.map(esc).join('، ') : 'لم تجرب أي حرف بعد'}</p><p class="hangman-feedback" role="status">${esc(s.feedback || '')}</p>`}</div></div>${!s.over ? wordsKeyboard('guessHangman', s.guessed, statuses) : ''}<div class="actions">${s.over ? `<button class="primary" onclick="nextHangman()">${s.index + 1 === s.queue.length ? 'اعرض النتيجة' : 'الكلمة التالية'} ←</button>` : `<button onclick="hintHangman()" ${s.hints >= maxHints ? 'disabled' : ''}>💡 اكشف حرفاً (${maxHints - s.hints} متبقي) · −3</button>`}</div></section>`,
+        )}</div>${s.over ? `<div class="trivia-explanation" id="hangmanOutcome" role="status"><b>${s.won ? 'أحسنت! الكلمة: ' + esc(item.word) : 'الكلمة هي: ' + esc(item.word)}</b><p>${s.won ? `+${s.wordPoints} نقطة · ${s.misses} أخطاء و${s.hints} تلميحات` : 'الكلمة التالية فرصة جديدة.'}</p>${s.level === 'hard' ? `<p>${esc(item.hint)}</p>` : ''}</div>` : `<p class="note">الحروف المجربة: ${s.guessed.length ? s.guessed.map(esc).join('، ') : 'لم تجرب أي حرف بعد'}</p><p class="hangman-feedback" id="hangmanFeedback" role="status">${esc(s.feedback || '')}</p>`}</div></div>${!s.over ? `<form class="words-native hangman-native" onsubmit="event.preventDefault();submitHangmanWord()"><label for="hangmanInput">عرفت الكلمة؟ اكتبها كاملة</label><div><input id="hangmanInput" maxlength="32" value="${esc(s.wordDraft || '')}" placeholder="${item.key.length} حروف…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="hangmanFeedback" onfocus="this.closest('.hangman-panel').classList.add('hangman-typing')" onblur="this.closest('.hangman-panel').classList.remove('hangman-typing')" oninput="if(!event.isComposing)readHangmanDraft(this.value)" oncompositionend="readHangmanDraft(this.value)"><button class="primary" type="submit">خمن الكلمة ↵</button></div><small class="note">اختياري · التخمين الخاطئ يستهلك خطأين</small></form>${wordsKeyboard('guessHangman', s.guessed, statuses)}` : ''}<div class="actions">${s.over ? `<button class="primary" onclick="nextHangman()">${s.index + 1 === s.queue.length ? 'اعرض النتيجة' : 'الكلمة التالية'} ←</button>` : `<button onclick="hintHangman()" ${s.hints >= maxHints ? 'disabled' : ''}>💡 اكشف حرفاً (${maxHints - s.hints} متبقي) · −3</button>`}</div></section>`,
     ),
   );
 }
@@ -362,6 +426,7 @@ function finishHangmanWord() {
       misses: s.misses,
       hints: s.hints,
       points: s.wordPoints,
+      hint: s.item.hint,
     });
     if (s.won) {
       s.wins++;
@@ -369,6 +434,51 @@ function finishHangmanWord() {
       tone(true);
     }
   }
+}
+function readHangmanDraft(raw) {
+  if (wordsBlocked('hangman') || state.over) return;
+  state.wordDraft = Array.from(wordsNormalizeKey(raw))
+    .filter((letter) => arabicKeyboard.includes(letter))
+    .slice(0, 32)
+    .join('');
+  if ($('hangmanInput')) $('hangmanInput').value = state.wordDraft;
+}
+function submitHangmanWord() {
+  if (wordsBlocked('hangman') || state.over) return;
+  const s = state,
+    guess = s.wordDraft;
+  if (guess.length !== s.item.key.length)
+    return hangmanMessage(`اكتب الكلمة كاملة: ${s.item.key.length} حروف.`);
+  if (s.wordGuesses.includes(guess))
+    return hangmanMessage('جربت هذه الكلمة بالفعل. جرّب تخميناً جديداً.');
+  $('hangmanInput')?.blur();
+  s.wordGuesses.push(guess);
+  s.wordDraft = '';
+  if (guess === s.item.key) {
+    s.guessed = [...new Set([...s.guessed, ...Array.from(s.item.key)])];
+    s.feedback = 'وصلت إلى الكلمة كاملة!';
+  } else {
+    s.misses = Math.min(s.maxMisses, s.misses + 2);
+    s.feedback = `الكلمة مختلفة. التخمين الكامل يستهلك خطأين؛ باقي ${s.maxMisses - s.misses}.`;
+  }
+  finishHangmanWord();
+  renderHangman();
+  wordsRevealFeedback(s.over ? 'hangmanOutcome' : 'hangmanFeedback');
+}
+function hangmanMessage(message) {
+  state.feedback = message;
+  if ($('hangmanFeedback')) $('hangmanFeedback').textContent = message;
+  wordsRevealFeedback('hangmanFeedback');
+}
+function wordsRevealFeedback(id) {
+  const element = $(id);
+  if (!element) return;
+  const rect = element.getBoundingClientRect(),
+    viewport = window.visualViewport,
+    top = viewport?.offsetTop || 0,
+    bottom = top + (viewport?.height || window.innerHeight);
+  if (rect.top < top + 12 || rect.bottom > bottom - 12)
+    element.scrollIntoView({ block: 'center', behavior: 'instant' });
 }
 function guessHangman(raw) {
   if (wordsBlocked('hangman') || state.over) return;
@@ -414,7 +524,7 @@ function nextHangman() {
       .querySelector('#app .play')
       ?.insertAdjacentHTML(
         'beforeend',
-        `<section class="panel words-round-review"><h3>حصيلة الكلمات</h3>${(s.wordResults || []).map((item) => `<div><b>${item.won ? '✓' : '↷'} ${esc(item.word)}</b><span>${item.misses} أخطاء · ${item.hints} تلميحات</span><strong>+${item.points}</strong></div>`).join('')}</section>`,
+        `<section class="panel words-round-review"><h3>حصيلة الكلمات</h3>${(s.wordResults || []).map((item) => `<div><b>${item.won ? '✓' : '↷'} ${esc(item.word)}</b><span>${item.misses} أخطاء · ${item.hints} تلميحات</span><strong>+${item.points}</strong>${item.hint ? `<small class="words-review-clue">${esc(item.hint)}</small>` : ''}</div>`).join('')}</section>`,
       );
     return;
   }
@@ -440,6 +550,7 @@ function startWordguess(name) {
     won: false,
     done: false,
     feedback: '',
+    notesOpen: false,
   };
   screen = 'wordguess';
   renderWordguess();
@@ -475,13 +586,49 @@ function wordguessConstraintViolation(guess, attempts) {
         return `حافظ على الحرف ${letter} في الخانة ${i + 1} من اليمين.`;
       if (mark === 'present' && letters[i] === letter)
         return `الحرف ${letter} أصفر في الخانة ${i + 1}؛ جرّبه في مكان آخر.`;
+      if (mark === 'absent' && letters[i] === letter)
+        return `غيّر الحرف ${letter} في الخانة ${i + 1}؛ هذا الموضع كان رمادياً.`;
       if (mark !== 'absent') required[letter] = (required[letter] || 0) + 1;
     }
     for (const [letter, count] of Object.entries(required))
       if ((counts[letter] || 0) < count)
         return `استخدم الحرف ${letter}${count > 1 ? ` ${count} مرات على الأقل` : ' في تخمينك'}؛ اكتشفته في محاولة سابقة.`;
   }
+  const evidence = wordguessEvidence(attempts, letters.length);
+  for (const [letter, maximum] of Object.entries(evidence.maximum))
+    if ((counts[letter] || 0) > maximum)
+      return maximum === 0
+        ? `الحرف ${letter} رمادي؛ استبعده من تخمينك.`
+        : `الحرف ${letter} موجود ${maximum} ${maximum === 1 ? 'مرة فقط' : 'مرات فقط'}؛ تكراره الآخر كان رمادياً.`;
   return '';
+}
+function wordguessEvidence(attempts, size) {
+  const positions = Array(size).fill(''),
+    minimum = Object.create(null),
+    maximum = Object.create(null);
+  for (const attempt of attempts) {
+    const counts = Object.create(null),
+      absent = new Set();
+    Array.from(attempt.word).forEach((letter, i) => {
+      if (attempt.marks[i] === 'correct') positions[i] = letter;
+      if (attempt.marks[i] === 'absent') absent.add(letter);
+      else counts[letter] = (counts[letter] || 0) + 1;
+    });
+    for (const [letter, count] of Object.entries(counts))
+      minimum[letter] = Math.max(minimum[letter] || 0, count);
+    for (const letter of absent)
+      maximum[letter] = Math.min(maximum[letter] ?? Infinity, counts[letter] || 0);
+  }
+  return { positions, minimum, maximum };
+}
+function wordguessNotebook(s) {
+  if (!s.attempts.length) return '';
+  const evidence = wordguessEvidence(s.attempts, s.size),
+    discovered = Object.entries(evidence.minimum),
+    eliminated = Object.entries(evidence.maximum)
+      .filter(([, count]) => count === 0)
+      .map(([letter]) => letter);
+  return `<details class="wordguess-notebook" ${s.notesOpen ? 'open' : ''} ontoggle="if(state?.id==='wordguess')state.notesOpen=this.open"><summary>🧩 دفتر الأدلة · ${discovered.length} حروف مكتشفة</summary><p class="note">المواضع من اليمين؛ استنتجنا هذه الأدلة من محاولاتك فقط.</p><div class="wordguess-known" aria-label="المواضع المؤكدة من اليمين">${evidence.positions.map((letter, i) => `<span aria-label="الخانة ${i + 1}: ${letter || 'لم تُعرف بعد'}"><small>${i + 1}</small><b>${esc(letter || '؟')}</b></span>`).join('')}</div><div class="chips">${discovered.map(([letter, count]) => `<span class="chip">${letter}: ${evidence.maximum[letter] === count ? `${count} بالضبط` : `${count} على الأقل`}</span>`).join('')}</div>${eliminated.length ? `<p class="note">الحروف المستبعدة: <b>${eliminated.join('، ')}</b></p>` : ''}</details>`;
 }
 function renderWordguess() {
   const s = state,
@@ -490,12 +637,12 @@ function renderWordguess() {
     rows = Array.from({ length: 6 }, (_, row) => {
       const attempt = s.attempts[row],
         letters = Array.from(attempt?.word || (row === s.attempts.length ? s.entry : ''));
-      return `<div class="wordguess-row">${Array.from({ length: s.size }, (_, i) => `<span class="wordguess-cell ${attempt ? attempt.marks[i] : letters[i] ? 'filled' : ''}" aria-label="${letters[i] ? esc(letters[i]) + ' ' + (attempt ? { correct: 'في مكانه', present: 'في مكان آخر', absent: 'غير موجود' }[attempt.marks[i]] : '') : 'خانة فارغة'}">${esc(letters[i] || '')}</span>`).join('')}</div>`;
+      return `<div class="wordguess-row ${row === s.attempts.length && !s.over ? 'current' : ''} ${row === s.attempts.length - 1 ? 'last-attempt' : ''}" ${row === s.attempts.length && !s.over ? 'aria-current="step"' : ''}>${Array.from({ length: s.size }, (_, i) => `<span class="wordguess-cell ${attempt ? attempt.marks[i] : letters[i] ? 'filled' : ''}" aria-label="${letters[i] ? esc(letters[i]) + ' ' + (attempt ? { correct: 'في مكانه', present: 'في مكان آخر', absent: 'غير موجود' }[attempt.marks[i]] : '') : 'خانة فارغة'}">${esc(letters[i] || '')}</span>`).join('')}</div>`;
     }).join('');
   setHTML(
     wrap(
       'wordguess',
-      `<section class="panel"><div class="words-status"><span class="pill">${s.size} حروف</span><span class="pill">${s.attempts.length} / 6 محاولات</span>${s.mode === 'focus' ? '<span class="pill">🧩 وضع الاستنتاج</span>' : ''}${s.hinted ? `<span class="pill">الفئة: ${esc(cat)}</span>` : ''}</div><div class="wordguess-board" role="group" aria-label="محاولات تخمين الكلمة">${rows}</div><div class="wordguess-legend"><span><i class="correct"></i>حرف ومكان صحيح</span><span><i class="present"></i>موجود بمكان آخر</span><span><i class="absent"></i>غير موجود أو زائد</span></div>${s.over ? `<div class="trivia-explanation center" role="status"><b>${s.won ? 'أحسنت! الكلمة هي' : 'الكلمة كانت'}: ${esc(s.item.word)}</b><p>${esc(s.item.hint)}</p></div><div class="actions"><button class="primary" onclick="finishWordguess()">اعرض النتيجة ←</button></div>` : `<form class="wordguess-native" onsubmit="event.preventDefault();submitWordguess()"><label class="sr" for="wordguessInput">اكتب كلمة عربية من ${s.size} حروف</label><input id="wordguessInput" value="${esc(s.entry)}" placeholder="اكتب كلمة من ${s.size} حروف…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="wordguessMessage" oninput="if(!event.isComposing)readWordguessDraft(this.value)" oncompositionend="readWordguessDraft(this.value)"><button class="primary" type="button" onclick="submitWordguess()">تحقق ↵</button></form>${wordsKeyboard('typeWordguess', [], s.keyStates)}<div class="actions wordguess-controls"><button onclick="typeWordguess('backspace')" aria-label="حذف آخر حرف">⌫ حذف</button><button onclick="hintWordguess()" ${s.hinted ? 'disabled' : ''}>💡 الفئة · −10</button></div><p class="note center" id="wordguessMessage" role="status">${esc(s.feedback || `اكتب كلمة من ${s.size} حروف بلوحة الحروف أو لوحة المفاتيح العربية.`)}</p>`}</section>`,
+      `<section class="panel wordguess-panel ${restoreInput ? 'wordguess-typing' : ''}"><div class="words-status"><span class="pill">${s.size} حروف</span><span class="pill">${s.attempts.length} / 6 محاولات</span>${s.mode === 'focus' ? '<span class="pill">🧩 وضع الاستنتاج</span>' : ''}${s.hinted ? `<span class="pill">الفئة: ${esc(cat)}</span>` : ''}</div><div class="wordguess-board" role="group" aria-label="محاولات تخمين الكلمة">${rows}</div>${wordguessNotebook(s)}<div class="wordguess-legend"><span><i class="correct"></i>حرف ومكان صحيح</span><span><i class="present"></i>موجود بمكان آخر</span><span><i class="absent"></i>غير موجود أو زائد</span></div>${s.over ? `<div class="trivia-explanation center" id="wordguessOutcome" role="status"><b>${s.won ? 'أحسنت! الكلمة هي' : 'الكلمة كانت'}: ${esc(s.item.word)}</b><p>${esc(s.item.hint)}</p></div><div class="actions"><button class="primary" onclick="finishWordguess()">اعرض النتيجة ←</button></div>` : `<p class="wordguess-feedback" id="wordguessMessage" role="status">${esc(s.feedback || `اكتب كلمة من ${s.size} حروف؛ تخمينك التالي يبدأ من اليمين.`)}</p><form class="wordguess-native" onsubmit="event.preventDefault();submitWordguess()"><label class="sr" for="wordguessInput">اكتب كلمة عربية من ${s.size} حروف</label><input id="wordguessInput" value="${esc(s.entry)}" placeholder="اكتب كلمة من ${s.size} حروف…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="wordguessMessage" onfocus="this.closest('.wordguess-panel').classList.add('wordguess-typing')" onblur="this.closest('.wordguess-panel').classList.remove('wordguess-typing')" oninput="if(!event.isComposing)readWordguessDraft(this.value)" oncompositionend="readWordguessDraft(this.value)"><button class="primary" type="button" onclick="submitWordguess()">تحقق ↵</button></form>${wordsKeyboard('typeWordguess', [], s.keyStates)}<div class="actions wordguess-controls"><button onclick="typeWordguess('backspace')" aria-label="حذف آخر حرف">⌫ حذف</button><button onclick="hintWordguess()" ${s.hinted ? 'disabled' : ''}>💡 الفئة · −10</button></div>`}</section>`,
     ),
   );
   if (restoreInput && !s.over) {
@@ -536,6 +683,7 @@ function wordguessMessage(text) {
   state.feedback = text;
   if ($('wordguessMessage')) $('wordguessMessage').textContent = text;
   toast(text);
+  wordsRevealFeedback('wordguessMessage');
 }
 function submitWordguess() {
   if (wordsBlocked('wordguess') || state.over) return;
@@ -551,6 +699,7 @@ function submitWordguess() {
     const violation = wordguessConstraintViolation(guess, s.attempts);
     if (violation) return wordguessMessage(violation);
   }
+  $('wordguessInput')?.blur();
   const marks = wordguessFeedback(guess, s.item.key),
     rank = { absent: 1, present: 2, correct: 3 };
   Array.from(guess).forEach((letter, i) => {
@@ -560,7 +709,7 @@ function submitWordguess() {
   s.entry = '';
   const correctCount = marks.filter((mark) => mark === 'correct').length,
     presentCount = marks.filter((mark) => mark === 'present').length;
-  s.feedback = `${correctCount} حروف في مكانها، و${presentCount} حروف بمكان آخر. باقي ${6 - s.attempts.length} محاولات.`;
+  s.feedback = `✓ في مكانها: ${correctCount} · ↔ في مكان آخر: ${presentCount} · باقي ${6 - s.attempts.length} محاولات.`;
   if (guess === s.item.key) {
     s.won = true;
     s.over = true;
@@ -568,6 +717,7 @@ function submitWordguess() {
   } else if (s.attempts.length === 6) s.over = true;
   else tone();
   renderWordguess();
+  wordsRevealFeedback(s.over ? 'wordguessOutcome' : 'wordguessMessage');
 }
 function hintWordguess() {
   if (wordsBlocked('wordguess') || state.over || state.hinted) return;
@@ -598,7 +748,9 @@ function startTarget(name) {
     id: 'target',
     name,
     level,
-    mode: $('targetMode')?.value === 'precision' ? 'precision' : 'speed',
+    mode: ['speed', 'precision', 'sequence'].includes($('targetMode')?.value)
+      ? $('targetMode').value
+      : 'speed',
     duration,
     size: level === 'hard' ? 4 : 3,
     endAt: Date.now() + duration * 1000,
@@ -617,6 +769,9 @@ function startTarget(name) {
     lastInput: 0,
     nextAt: 0,
     decoy: -1,
+    sequence: [],
+    sequenceStep: 0,
+    completedPaths: 0,
     feedback: 'ابحث عن الهدف الملون!',
     done: false,
   };
@@ -640,6 +795,7 @@ function startTarget(name) {
       s.claimed = true;
       s.slot = -1;
       s.decoy = -1;
+      s.sequence = [];
       s.feedback = 'فات الهدف! ركّز على الهدف التالي.';
       s.nextAt = elapsed + 90;
       renderTarget();
@@ -668,25 +824,56 @@ function spawnTarget() {
   );
   s.targetExpires = s.targetBorn + s.targetLifetime;
   s.decoy = -1;
+  s.sequence = [];
+  s.sequenceStep = 0;
   if (s.mode === 'precision') {
     s.decoy = randInt(total - 1);
     if (s.decoy >= slot) s.decoy++;
   }
+  if (s.mode === 'sequence')
+    s.sequence = [
+      slot,
+      ...shuffle(Array.from({ length: total }, (_, i) => i).filter((i) => i !== slot)).slice(0, 2),
+    ];
+}
+function targetStatusHTML(s) {
+  return `<b class="countdown" id="targetClock">${wordsSeconds(s)} ث</b><span class="pill">💎 <b id="targetScore">${s.points}</b> نقطة</span><span class="pill">🔥 سلسلة ${s.combo}</span><span class="pill">✓ ${s.hits}</span>${s.mode === 'sequence' ? `<span class="pill">مسارات كاملة: ${s.completedPaths}</span>` : ''}`;
+}
+function targetArenaHTML(s) {
+  return `${s.mode === 'sequence' ? `<p class="target-order" aria-label="ترتيب أهداف المسار">${[0, 1, 2].map((i) => `<span class="${i < s.sequenceStep ? 'complete' : i === s.sequenceStep && s.slot >= 0 ? 'current' : ''}">${i < s.sequenceStep ? '✓' : i + 1}</span>`).join('<i aria-hidden="true">←</i>')} <b>${s.slot >= 0 ? `اضغط الهدف ${s.sequenceStep + 1}` : 'المسار التالي…'}</b></p>` : ''}<div class="target-grid" style="--target-size:${s.size}" aria-label="خانات صيد الأهداف، مرتبة من اليسار">${Array.from(
+    { length: s.size * s.size },
+    (_, i) => {
+      const active = i === s.slot && !s.claimed,
+        decoy = i === s.decoy && !s.claimed,
+        order = s.sequence.indexOf(i),
+        queued = order > s.sequenceStep;
+      return `<button class="target-cell ${active ? 'active' : decoy ? 'decoy' : queued ? 'queued' : ''}" data-index="${i}" onpointerdown="if(event.isPrimary&&event.button===0){event.preventDefault();hitTarget(${i},${s.token})}" onclick="if(event.detail===0)hitTarget(${i},${s.token})" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${active ? (s.mode === 'sequence' ? `الهدف ${order + 1}، اضغط هنا` : 'هدف، اضغط هنا') : decoy ? 'قنبلة، تجنبها' : queued ? `الهدف ${order + 1}، انتظر دوره` : 'خانة فارغة'}">${active ? '<span aria-hidden="true">🎯</span>' : decoy ? '<span aria-hidden="true">💣</span>' : queued ? `<span aria-hidden="true">${order + 1}</span>` : '<span aria-hidden="true">·</span>'}${active && s.mode === 'sequence' ? `<strong class="target-order-badge" aria-hidden="true">${order + 1}</strong>` : ''}${s.size === 3 ? `<small class="target-key" aria-hidden="true">${i + 1}</small>` : ''}</button>`;
+    },
+  ).join(
+    '',
+  )}</div><div class="target-life-track" aria-hidden="true"><span id="targetLife" style="width:${s.slot >= 0 ? Math.max(0, (100 * (s.targetExpires - targetElapsed(s))) / s.targetLifetime) : 0}%"></span></div><p class="target-feedback" id="targetFeedback" role="status">${esc(s.feedback)}</p><div class="chips center"><span class="chip">أفضل سلسلة: ${s.bestCombo}</span><span class="chip">أهداف فاتت: ${s.misses}</span><span class="chip">ضغطات خاطئة: ${s.wrong}</span>${s.reactions?.length ? `<span class="chip">متوسط الاستجابة: ${Math.round(s.reactions.reduce((a, b) => a + b, 0) / s.reactions.length)} ملّي ثانية</span>` : ''}</div>`;
 }
 function renderTarget() {
   const s = state,
     focusedIndex = document.activeElement?.closest('.target-cell')?.dataset.index;
-  setHTML(
-    wrap(
-      'target',
-      `<section class="panel"><div class="words-status"><b class="countdown" id="targetClock">${wordsSeconds(s)} ث</b><span class="pill">💎 <b id="targetScore">${s.points}</b> نقطة</span><span class="pill">🔥 سلسلة ${s.combo}</span><span class="pill">✓ ${s.hits}</span></div><div class="words-clock-track"><span id="targetTimebar" style="width:${(100 * wordsSeconds(s)) / s.duration}%"></span></div><div class="target-grid" style="--target-size:${s.size}" aria-label="خانات صيد الأهداف، مرتبة من اليسار">${Array.from({ length: s.size * s.size }, (_, i) => `<button class="target-cell ${i === s.slot && !s.claimed ? 'active' : i === s.decoy && !s.claimed ? 'decoy' : ''}" data-index="${i}" onpointerdown="if(event.isPrimary&&event.button===0){event.preventDefault();hitTarget(${i},${s.token})}" onclick="if(event.detail===0)hitTarget(${i},${s.token})" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${i === s.slot && !s.claimed ? 'هدف، اضغط هنا' : i === s.decoy && !s.claimed ? 'قنبلة، تجنبها' : 'خانة فارغة'}">${i === s.slot && !s.claimed ? '<span aria-hidden="true">🎯</span>' : i === s.decoy && !s.claimed ? '<span aria-hidden="true">💣</span>' : '<span aria-hidden="true">·</span>'}${s.size === 3 ? `<small class="target-key">${i + 1}</small>` : ''}</button>`).join('')}</div><div class="target-life-track" aria-hidden="true"><span id="targetLife" style="width:${s.slot >= 0 ? Math.max(0, (100 * (s.targetExpires - targetElapsed(s))) / s.targetLifetime) : 0}%"></span></div><p class="target-feedback" role="status">${esc(s.feedback)}</p><div class="chips center"><span class="chip">أفضل سلسلة: ${s.bestCombo}</span><span class="chip">أهداف فاتت: ${s.misses}</span><span class="chip">ضغطات خاطئة: ${s.wrong}</span>${s.reactions?.length ? `<span class="chip">متوسط الاستجابة: ${Math.round(s.reactions.reduce((a, b) => a + b, 0) / s.reactions.length)} ملّي ثانية</span>` : ''}</div><p class="note center">${s.mode === 'precision' ? '🎯 اصنع سلسلة نجاح، و💣 تجنب القنبلة. ' : ''}النجاح المتتابع يزيد المكافأة حتى +20 للهدف.</p></section>`,
-    ),
-  );
+  // Preserve the surrounding page and its controls while targets change rapidly.
+  if ($('targetArena')) {
+    $('targetStatus').innerHTML = targetStatusHTML(s);
+    $('targetArena').innerHTML = targetArenaHTML(s);
+  } else {
+    setHTML(
+      wrap(
+        'target',
+        `<section class="panel target-panel"><div class="words-status" id="targetStatus">${targetStatusHTML(s)}</div><div class="words-clock-track"><span id="targetTimebar" style="width:${(100 * wordsSeconds(s)) / s.duration}%"></span></div><div id="targetArena">${targetArenaHTML(s)}</div><p class="note center">${s.mode === 'precision' ? '🎯 اصنع سلسلة نجاح، و💣 تجنب القنبلة. ' : s.mode === 'sequence' ? 'اصب 1 ثم 2 ثم 3؛ الضغط خارج الترتيب خطأ. ' : ''}النجاح المتتابع يزيد المكافأة حتى +20 للهدف. الأسهم للتنقل وEnter للإصابة.</p></section>`,
+      ),
+    );
+  }
   if (focusedIndex !== undefined)
     document
       .querySelector(`.target-cell[data-index="${focusedIndex}"]`)
       ?.focus({ preventScroll: true });
 }
+
 function hitTarget(index, token) {
   if (wordsBlocked('target')) return;
   const s = state,
@@ -713,7 +900,9 @@ function hitTarget(index, token) {
     s.points = Math.max(0, s.points - penalty);
     s.feedback = bomb
       ? 'قنبلة: −8. ركّز على الدائرة الملونة!'
-      : 'خانة فارغة: −3. استهدف الدائرة الملونة.';
+      : s.mode === 'sequence' && s.sequence.includes(index)
+        ? `خارج الترتيب: −3. اضغط الهدف ${s.sequenceStep + 1} أولاً.`
+        : 'خانة فارغة: −3. استهدف الدائرة الملونة.';
     renderTarget();
     return;
   }
@@ -728,6 +917,21 @@ function hitTarget(index, token) {
   const gain = 10 + Math.min(10, Math.floor((s.combo - 1) / 3) * 2);
   s.points += gain;
   s.feedback = `+${gain} نقطة · ${Math.round(reaction)} ملّي ثانية${s.combo >= 3 ? ' · سلسلة ممتازة!' : ''}`;
+  if (s.mode === 'sequence') {
+    s.sequenceStep++;
+    if (s.sequenceStep < s.sequence.length) {
+      s.slot = s.sequence[s.sequenceStep];
+      s.lastSlot = s.slot;
+      s.token++;
+      s.claimed = false;
+      s.targetBorn = targetElapsed(s);
+      s.targetExpires = s.targetBorn + s.targetLifetime;
+      s.feedback += ` · الآن الهدف ${s.sequenceStep + 1}`;
+    } else {
+      s.completedPaths++;
+      s.feedback += ' · مسار كامل!';
+    }
+  }
   s.nextAt = targetElapsed(s) + 110;
   tone();
   renderTarget();
@@ -750,6 +954,24 @@ function finishTarget() {
     s.points,
     `${s.hits} هدفاً`,
   );
+  const reactions = [...(s.reactions || [])].sort((a, b) => a - b),
+    midpoint = Math.floor(reactions.length / 2),
+    median = reactions.length
+      ? reactions.length % 2
+        ? reactions[midpoint]
+        : (reactions[midpoint - 1] + reactions[midpoint]) / 2
+      : 0,
+    buckets = [
+      ['أقل من 250', reactions.filter((time) => time < 250).length],
+      ['250–500', reactions.filter((time) => time >= 250 && time < 500).length],
+      ['500 فأكثر', reactions.filter((time) => time >= 500).length],
+    ];
+  document
+    .querySelector('#app .play')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<section class="panel target-review"><h3>🎯 اقرأ أداءك</h3><div class="chips"><span class="chip">الدقة: ${accuracy}%</span>${reactions.length ? `<span class="chip">أسرع إصابة: ${Math.round(reactions[0])} ملّي ثانية</span><span class="chip">الاستجابة الوسطية: ${Math.round(median)} ملّي ثانية</span>` : ''}${s.mode === 'sequence' ? `<span class="chip">مسارات كاملة: ${s.completedPaths}</span>` : ''}</div>${reactions.length ? `<div class="target-reaction-bars" aria-label="توزيع أزمنة الاستجابة بالملّي ثانية">${buckets.map(([label, count]) => `<div><span>${label} ملّي ثانية</span><b>${count} إصابات</b><meter min="0" max="${reactions.length}" value="${count}" aria-label="${count} إصابات في ${label} ملّي ثانية"></meter></div>`).join('')}</div>` : ''}<p class="note">${s.wrong > s.misses ? 'خفف الضغطات العشوائية؛ إصابة مؤكدة أفضل من سلسلة أخطاء.' : s.misses > s.hits ? 'ابدأ بالمستوى المريح حتى تقل الأهداف التي تفوتك، ثم ارفع السرعة.' : 'ركز على استمرار السلسلة؛ السرعة تزيد مع كل خمس إصابات.'}</p></section>`,
+    );
 }
 document.addEventListener('keydown', (event) => {
   if (
@@ -768,6 +990,31 @@ document.addEventListener('keydown', (event) => {
     event.target.closest?.('button,a,summary,[role="button"]')
   )
     return;
+  if (
+    screen === 'target' &&
+    ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)
+  ) {
+    const cell = event.target.closest?.('.target-cell');
+    if (!cell && event.target.closest?.('button,a,summary')) return;
+    event.preventDefault();
+    const index = cell ? Number(cell.dataset.index) : 0,
+      row = Math.floor(index / state.size),
+      column = index % state.size,
+      next =
+        event.key === 'Home'
+          ? row * state.size
+          : event.key === 'End'
+            ? (row + 1) * state.size - 1
+            : event.key === 'ArrowUp'
+              ? Math.max(0, row - 1) * state.size + column
+              : event.key === 'ArrowDown'
+                ? Math.min(state.size - 1, row + 1) * state.size + column
+                : event.key === 'ArrowLeft'
+                  ? row * state.size + Math.max(0, column - 1)
+                  : row * state.size + Math.min(state.size - 1, column + 1);
+    document.querySelector(`.target-cell[data-index="${next}"]`)?.focus({ preventScroll: true });
+    return;
+  }
   if (screen === 'trivia') {
     if (state.locked && event.key === 'Enter') {
       event.preventDefault();

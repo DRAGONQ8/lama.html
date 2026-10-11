@@ -1,0 +1,441 @@
+/* A compact play surface keeps feedback and input together on phones. */
+:root {
+  --play-viewport-height: 100dvh;
+  --play-viewport-top: 0px;
+}
+.skiplink:not(:focus-visible) {
+  top: -100px;
+  opacity: 0;
+  pointer-events: none;
+}
+.play {
+  max-width: 880px;
+  min-width: 0;
+}
+.play .note,
+.play .tiny {
+  overflow-wrap: anywhere;
+}
+.playhead {
+  gap: 12px;
+}
+.playhead > div:not(.playtools) {
+  min-width: 0;
+}
+.playtools {
+  flex-shrink: 0;
+}
+.playtools .focus-toggle[aria-pressed='true'] {
+  background: var(--mint);
+  color: #16382b;
+}
+.solo-panel {
+  padding: 22px;
+}
+.solo-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.solo-heading > span {
+  font-size: 32px;
+}
+.solo-heading h3 {
+  font-size: 20px;
+}
+.number-range {
+  margin: 12px 0;
+}
+.number-range .range {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: clamp(16px, 3vw, 24px);
+  color: var(--ink);
+  font-weight: 700;
+}
+.number-range bdi {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.number-track {
+  height: 9px;
+  border-radius: 20px;
+  background: var(--raised);
+  position: relative;
+  overflow: hidden;
+  margin: 12px 0 5px;
+}
+.number-track > span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, var(--blue), var(--mint));
+  min-width: 2px;
+  border-radius: inherit;
+  transition:
+    left 0.25s,
+    width 0.25s;
+}
+.range-original {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.guess-feedback {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--mint) 35%, var(--line));
+  background: color-mix(in srgb, var(--mint) 7%, var(--bg));
+  border-radius: 16px;
+  margin-block: 15px;
+  scroll-margin-block: 12px;
+}
+.guess-feedback .feedback-arrow {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--raised);
+  color: var(--mint);
+  font-size: 25px;
+}
+.guess-feedback b {
+  display: block;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.guess-feedback small {
+  display: block;
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+.guess-feedback.lower .feedback-arrow {
+  color: var(--blue);
+}
+.guess-feedback.invalid {
+  border-color: var(--red);
+}
+.guess-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+.guess-entry input {
+  min-width: 0;
+  font-size: 25px;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.guess-entry input::placeholder {
+  font-size: 16px;
+  letter-spacing: 0;
+}
+.guess-entry .primary {
+  padding-inline: 22px;
+}
+.input-options {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 5px;
+}
+.input-options .linkbtn {
+  min-height: 44px;
+  padding: 6px 2px;
+}
+.solo-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+.solo-keypad button {
+  min-height: 48px;
+  padding: 5px;
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+}
+.solo-keypad button:nth-child(10) {
+  font-size: 13px;
+}
+.solo-assists {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 6px;
+}
+.solo-assists > button:first-child {
+  flex: 1;
+}
+.solo-assists small {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+}
+.solo-assists .quiet {
+  color: var(--muted);
+}
+.solo-stats .stat {
+  min-width: 0;
+}
+.solo-stats .stat b {
+  overflow-wrap: anywhere;
+  font-size: 22px;
+}
+.solo-history ol {
+  padding: 0;
+  list-style: none;
+}
+.solo-history li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px;
+  border-bottom: 1px solid var(--line);
+}
+.solo-history bdi {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.solo-history li > span {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.round-review {
+  text-align: start;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 15px;
+  margin-top: 20px;
+}
+.round-review summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+}
+.round-review summary::after {
+  content: '+';
+  margin-inline-start: auto;
+  color: var(--mint);
+}
+.round-review[open] summary::after {
+  content: '−';
+}
+.round-review ol {
+  padding: 0;
+  list-style: none;
+}
+.round-review li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.round-review li bdi {
+  overflow-wrap: anywhere;
+}
+.result-path {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  text-align: start;
+}
+.result-path > span {
+  font-size: 13px;
+  color: var(--muted);
+}
+body.focus-play .top,
+body.focus-play .foot,
+body.focus-play .dock {
+  display: none;
+}
+body.focus-play .shell {
+  padding-top: 12px;
+  padding-bottom: 20px;
+}
+body.keyboard-open .top,
+body.keyboard-open .foot,
+body.keyboard-open .dock {
+  display: none;
+}
+body.keyboard-open .shell {
+  padding-top: 8px;
+  padding-bottom: 18px;
+}
+body.keyboard-open .playhead {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+body.keyboard-open .playhead .tileicon,
+body.keyboard-open .playhead p {
+  display: none;
+}
+body.keyboard-open .play .stats {
+  gap: 6px;
+  margin-bottom: 8px;
+}
+body.keyboard-open .play .stat {
+  padding: 5px 8px;
+}
+body.keyboard-open .solo-heading,
+body.keyboard-open .range-original,
+body.keyboard-open .solo-history {
+  display: none;
+}
+body.keyboard-open .solo-panel {
+  padding: 12px;
+  margin-top: 8px;
+}
+body.keyboard-open .number-range {
+  margin-block: 4px;
+}
+body.keyboard-open .guess-feedback {
+  margin-block: 8px;
+  padding: 8px 10px;
+}
+body.keyboard-open .guess-feedback b {
+  font-size: 13px;
+}
+body.keyboard-open .guess-entry input {
+  min-height: 48px;
+  padding: 6px;
+}
+body.keyboard-open .modalback {
+  top: var(--play-viewport-top);
+  bottom: auto;
+  height: var(--play-viewport-height);
+  padding: 8px;
+  align-items: center;
+}
+body.keyboard-open .modal {
+  max-height: calc(var(--play-viewport-height) - 16px);
+}
+body.keyboard-open .toast {
+  top: calc(var(--play-viewport-top) + 8px);
+  bottom: auto;
+}
+@media (max-width: 600px) {
+  body.playing .shell {
+    padding-top: 12px;
+  }
+  body.playing .top {
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+  }
+  body.playing .brandtext,
+  body.playing .foot {
+    display: none;
+  }
+  body.playing .topactions {
+    gap: 3px;
+  }
+  body.playing .topactions .iconbtn {
+    width: 44px;
+    min-height: 44px;
+    padding: 3px;
+  }
+  body.playing .topactions span {
+    display: none;
+  }
+  .play[data-game='finder'] .stat:nth-child(3) b {
+    font-size: clamp(11px, 3.5vw, 14px) !important;
+  }
+  .playhead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 12px;
+  }
+  .playhead > .tileicon {
+    display: none;
+  }
+  .playhead h2 {
+    font-size: 17px;
+  }
+  .playhead p {
+    font-size: 11px;
+  }
+  .playtools {
+    gap: 3px;
+  }
+  .playtools button {
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 5px;
+  }
+  .solo-panel {
+    padding: 15px;
+  }
+  .solo-heading h3 {
+    font-size: 17px;
+  }
+  .solo-stats {
+    gap: 7px;
+    margin-bottom: 10px;
+  }
+  .solo-stats .stat {
+    padding: 6px 4px;
+  }
+  .solo-stats .stat small {
+    font-size: 10px;
+  }
+  .solo-stats .stat b {
+    font-size: 18px;
+  }
+  .guess-entry {
+    gap: 7px;
+  }
+  .guess-entry .primary {
+    padding-inline: 12px;
+    font-size: 13px;
+  }
+  .guess-feedback {
+    padding: 11px;
+    gap: 9px;
+    margin-block: 10px;
+  }
+  .guess-feedback b {
+    font-size: 13px;
+  }
+  .guess-entry input {
+    min-height: 56px;
+    padding-block: 8px;
+  }
+  .solo-keypad {
+    gap: 6px;
+  }
+  .solo-keypad button {
+    min-height: 44px;
+  }
+}
+@media (max-width: 360px) {
+  .playhead {
+    grid-template-columns: 1fr;
+  }
+  .playtools {
+    justify-content: flex-end;
+  }
+}
