@@ -525,6 +525,7 @@ try {
   await check(
     'A three-station route resumes after reload and persists its final result',
     async (page) => {
+      await page.locator('.discover-drawer > summary').click();
       await clickAction(page, "openRoute('explore')");
       await clickAction(page, "startRoute('explore')", '#modal');
       await page.locator('#arcadeMode').selectOption('exit');

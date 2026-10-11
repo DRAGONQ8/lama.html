@@ -21,6 +21,8 @@ const extraDefaults = {
   theme: 'dark',
   motion: true,
   savedSession: null,
+  preferences: {},
+  history: [],
 };
 let rawExtra = {};
 try {
@@ -104,6 +106,8 @@ function normalizeExtra(raw, strict = false) {
         .slice(0, 6)
     : [];
   extra.savedSession = normalizeSavedSession(e.savedSession);
+  extra.preferences = normalizeGamePreferences(e.preferences);
+  extra.history = normalizeGameHistory(e.history);
   if (e.experience && typeof e.experience === 'object' && !Array.isArray(e.experience))
     extra.experience = e.experience;
   return extra;
@@ -655,10 +659,10 @@ function recordRecent(id) {
   save();
 }
 function totalPoints() {
-  return Object.values(store.scores).reduce((a, v) => a + v.points, 0);
+  return Object.values(store.scores).reduce((a, v) => sumCounter(a, v.points), 0);
 }
 function totalRounds() {
-  return Object.values(store.scores).reduce((a, v) => a + v.rounds, 0);
+  return Object.values(store.scores).reduce((a, v) => sumCounter(a, v.rounds), 0);
 }
 function level() {
   return Math.floor(totalPoints() / 250) + 1;
@@ -800,6 +804,13 @@ function pauseClock() {
     screen === 'tour-handoff'
   )
     return;
+  // Remove private roles before any overlay is opened; preserve the custom word.
+  if (screen === 'secret' && state.stage === 'revealed') hideSecret();
+  if (screen === 'spy' && state.stage === 'view') spyHandoff();
+  if (screen === 'mime' && state.stage === 'active' && !state.hiddenWord) {
+    state.hiddenWord = true;
+    renderMime();
+  }
   state.pausedAt = Date.now();
   state.onPause?.();
 }
@@ -852,13 +863,13 @@ let pauseFocus = null;
 document.addEventListener(
   'keydown',
   (e) => {
-    const container = !$('modalback').hidden ? $('modal') : $('pausecover');
+    const container = $('pausecover') || (!$('modalback').hidden ? $('modal') : null);
     if (!container) return;
     if (e.key === 'Escape') {
       e.preventDefault();
       e.stopImmediatePropagation();
-      if (!$('modalback').hidden) closeModal();
-      else resumeGame();
+      if ($('pausecover')) resumeGame();
+      else closeModal();
       return;
     }
     if (e.key === 'Tab') {
@@ -902,17 +913,6 @@ function showPause() {
     renderReaction();
   }
   pauseClock();
-  if (['secret', 'spy'].includes(screen) && ['revealed', 'view'].includes(state.stage)) {
-    state.stage = screen === 'spy' ? 'handoff' : 'hidden';
-    if (screen === 'spy') spyHandoff();
-    else
-      setHTML(
-        wrap(
-          'secret',
-          '<section class="panel center"><h2>انخفت كلمة السر</h2><p class="note">مرّر الجهاز للباقين قبل ما تكملون.</p><button class="primary" onclick="secretReady()">نبدأ الأسئلة</button></section>',
-        ),
-      );
-  }
   if ($('pausecover')) return;
   pauseFocus = document.activeElement;
   const div = document.createElement('div');
@@ -930,7 +930,11 @@ function showPause() {
 function resumeGame() {
   removePause();
   resumeClock();
-  if ($('modalback').hidden && pauseFocus?.isConnected) pauseFocus.focus();
+  if (!$('modalback').hidden)
+    $('modal')
+      .querySelector('button:not(:disabled),input:not([hidden]),select,textarea,[tabindex="0"]')
+      ?.focus();
+  else if (pauseFocus?.isConnected) pauseFocus.focus();
 }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && state && !state.done && screen !== 'setup' && screen !== 'home') {
@@ -1064,14 +1068,16 @@ function openSettings() {
 function applySettings() {
   fullscreenUI();
   document.body.dataset.theme = store.extra.theme;
-  document.body.classList.toggle('reduced-motion', !store.extra.motion);
+  const reduceMotion =
+    !store.extra.motion || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.body.classList.toggle('reduced-motion', reduceMotion);
   let st = $('motionstyle');
   if (!st) {
     st = document.createElement('style');
     st.id = 'motionstyle';
     document.head.append(st);
   }
-  st.textContent = store.extra.motion
+  st.textContent = !reduceMotion
     ? ''
     : '.reduced-motion *, .reduced-motion *:before, .reduced-motion *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}';
 }
@@ -1148,6 +1154,12 @@ function confirmImport() {
 }
 function setup(id, internal = false) {
   if (!games.some((g) => g[0] === id)) return;
+  const required = id === 'spy' ? 3 : ['mime', 'secret', 'taboo'].includes(id) ? 2 : 1;
+  if (store.players.length < required) {
+    toast(`هاللعبة تحتاج ${required} لاعبين على الأقل. أضف الأسماء ونكمل.`);
+    openPeople();
+    return;
+  }
   if (!internal) {
     tourney = null;
     dailyRun = null;
@@ -1158,16 +1170,6 @@ function setup(id, internal = false) {
   removePause();
   closeModal(true);
   syncLearned(true);
-  if (['mime', 'secret', 'taboo'].includes(id) && store.players.length < 2) {
-    toast('هاللعبة تحتاج لاعبين على الأقل. أضف اسم ثاني.');
-    openPeople();
-    return;
-  }
-  if (id === 'spy' && store.players.length < 3) {
-    toast('لعبة الجاسوس تحتاج 3 لاعبين على الأقل.');
-    openPeople();
-    return;
-  }
   if (
     ![
       'ttt',
@@ -1268,6 +1270,7 @@ function finishExtra(title, text, points = 0, detail = '') {
 function confetti() {
   const old = $('celebration');
   old?.remove();
+  if (!store.extra.motion || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const div = document.createElement('div');
   div.id = 'celebration';
   div.style.cssText = 'position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:12';
@@ -1345,6 +1348,7 @@ function gShuffle(a) {
   return b;
 }
 function startDaily(id) {
+  if (!['code', 'math', 'pattern', 'color', 'word'].includes(id)) return;
   closeModal();
   setup(id);
   dailyRun = { id, date: dayKey() };

@@ -30,15 +30,15 @@ for (const id of labIDs) gameWorld[id] = 'brain';
 Object.assign(gameGuides, {
   nonogram: [
     'الأرقام فوق الأعمدة وعلى يسار الصفوف تصف مجموعات الخانات المعبأة بالترتيب. بين كل مجموعتين خانة فارغة على الأقل.',
-    'ابدأ بالصفوف الطويلة. بدّل بين التعبئة والشطب والمسح، أو استخدم F وX وC. الخانات المعلّمة بـ ◆ معطاة لتضمن حلاً واحداً. التلميح يكشف خانة ويخصم 8 نقاط.',
+    'ابدأ بالصفوف الطويلة. بدّل بين التعبئة والشطب والمسح، أو استخدم F وX وC. الأخضر يعني اكتمال الأرقام؛ علامة ! تعني تعارضاً مع علاماتك. التلميح يشرح استنتاج خانة ويخصم 8 نقاط عند تطبيقه.',
   ],
   lights: [
     'اطفئ جميع الأنوار. الضغط يغيّر حالة الخانة والخانات المجاورة لها أعلى وأسفل ويمين ويسار.',
-    'ترتيب الضغطات لا يغيّر النتيجة، والضغط مرتين يلغي نفسه. كل لوحة قابلة للحل. التلميح يحدد ضغطة ضمن أقصر حل من وضعك الحالي ويخصم 8 نقاط.',
+    'ترتيب الضغطات لا يغيّر النتيجة، والضغط مرتين يلغي نفسه. وضع التخطيط يسمح بتجربة مجموعة ضغطات قبل تنفيذها. إطار الخانات يوضح أثر الضغطة المحددة. التلميح يحدد ضغطة ضمن أقصر حل ويخصم 8 نقاط.',
   ],
   pipes: [
     'دوّر كل قطعة حتى تصل جميع الخانات بالمصدر دون أي فتحة إلى الحافة أو إلى جانب مغلق.',
-    'ابدأ بالزوايا وقطع النهاية. اللمس يدور حسب الوضع المختار؛ الفأرة اليمنى تدور بالعكس. الأزرق والنقطة المضيئة يعنيان الاتصال بالمصدر. التلميح يضبط قطعة واحدة ويخصم 8 نقاط.',
+    'ابدأ بالزوايا وقطع النهاية. اللمس يدور حسب الوضع المختار؛ الفأرة اليمنى تدور بالعكس. الأطراف الحمراء تكشف الفتحات غير الموصولة. ثبّت القطع التي تأكدت منها بزر التثبيت أو L؛ التلميح يبدأ باستنتاجات الشبكة ويخصم 8 نقاط عند ضبط قطعة.',
   ],
 });
 const labPreviousSetup = setup;
@@ -71,9 +71,9 @@ setup = function (id, internal = false) {
     nonogram:
       'يفحص المولّد الحلول قبل اللعب، ويضيف خانات معطاة عند الحاجة لضمان حل واحد. تستطيع ترك الخانات الفارغة بلا شطب؛ يكفي أن تتطابق التعبئة مع جميع الأرقام.',
     lights:
-      'تُبنى اللوحة من ضغطات قانونية على لوحة مطفأة، لذلك لها حل دائماً. يمكنك التراجع دون حد عملي؛ التراجع لا يلغي خصم التلميحات.',
+      'تُبنى اللوحة من ضغطات قانونية على لوحة مطفأة، لذلك لها حل دائماً. جرّب الضغطات في وضع التخطيط ثم نفّذها معاً. التراجع والإعادة يحفظان عدد الحركات وخصم التلميحات.',
     pipes:
-      'تُبنى شبكة متصلة أولاً ثم تختلط اتجاهاتها. أي شبكة متصلة بلا فتحات تقبل كحل، حتى لو اختلفت عن ترتيب المولّد.',
+      'تُبنى شبكة متصلة أولاً ثم تختلط اتجاهاتها. تظهر الفتحات غير الموصولة على كل قطعة؛ ويمكنك تثبيت اختياراتك. أي شبكة متصلة بلا فتحات تقبل كحل، حتى لو اختلفت عن ترتيب المولّد.',
   }[id];
   const fixed = dailyRun || tourney?.active;
   setHTML(
@@ -99,8 +99,11 @@ function labShuffle(values, s = state) {
   return copy;
 }
 function labTime(s = state) {
-  const seconds = Math.max(0, Math.floor(((s.pausedAt || Date.now()) - s.started) / 1000));
+  const seconds = labSeconds(s);
   return Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0');
+}
+function labSeconds(s = state) {
+  return Math.max(0, Math.floor(((s.pausedAt || s.finishedAt || Date.now()) - s.started) / 1000));
 }
 function startLab(id) {
   if (screen !== 'setup' || state?.id !== id || !labIDs.has(id) || !$('modalback').hidden) return;
@@ -118,8 +121,9 @@ function startLab(id) {
     hints: 0,
     selected: 0,
     history: [],
+    future: [],
     message: '',
-    mode: id === 'nonogram' ? 'fill' : 'clockwise',
+    mode: id === 'nonogram' ? 'fill' : id === 'lights' ? 'play' : 'clockwise',
     rng: dailyRun
       ? makeSeed(dailyRun.date + ':' + id)
       : tourney?.active
@@ -139,20 +143,61 @@ function startLab(id) {
   goTop();
 }
 function labRemember() {
-  state.history.push([...state.board]);
+  state.history.push(labSnapshot());
   if (state.history.length > 200) state.history.shift();
+  state.future = [];
+}
+function labSnapshot() {
+  const board = [...state.board];
+  if (state.pipeLocked) board.pipeLocked = [...state.pipeLocked];
+  return board;
+}
+function labRestore(snapshot) {
+  state.board = [...snapshot];
+  if (snapshot.pipeLocked) state.pipeLocked = [...snapshot.pipeLocked];
 }
 function labUndo() {
   if (!labReady() || !state.history.length) return;
-  state.board = state.history.pop();
+  state.future ||= [];
+  state.future.push(labSnapshot());
+  labRestore(state.history.pop());
+  if (state.plan) state.plan.fill(false);
   state.hintCell = -1;
   state.message = 'تم التراجع. عدد الحركات وخصم التلميحات يبقيان للمقارنة العادلة.';
   renderLab();
+}
+function labRedo() {
+  if (!labReady() || !state.future?.length) return;
+  state.history.push(labSnapshot());
+  labRestore(state.future.pop());
+  if (state.plan) state.plan.fill(false);
+  state.hintCell = -1;
+  state.message = 'تمت إعادة الحركة بدون احتسابها مرة ثانية.';
+  if (labCheckWin()) return;
+  renderLab();
+}
+function labCheckWin() {
+  const s = state;
+  if (s.id === 'nonogram' && labNonogramWon(s)) {
+    labFinish('اكتملت لوحة المنطق!', 'تطابقت جميع الصفوف والأعمدة.');
+    return true;
+  }
+  if (s.id === 'lights' && !s.board.some(Boolean)) {
+    labFinish('انطفأت جميع الأنوار!', 'فككت شبكة الأضواء بنجاح.');
+    return true;
+  }
+  if (s.id === 'pipes' && labPipeAnalysis(s.board, s.size, s.source).solved) {
+    labFinish('شبكة بلا تسريب!', 'اتصلت كل الأنابيب بالمصدر وأُغلقت جميع الفتحات.');
+    return true;
+  }
+  return false;
 }
 function labReset() {
   if (!labReady() || state.board.every((v, i) => v === state.initial[i])) return;
   labRemember();
   state.board = [...state.initial];
+  if (state.plan) state.plan.fill(false);
+  if (state.pipeLocked) state.pipeLocked.fill(false);
   state.hintCell = -1;
   state.message = 'عادت اللوحة إلى البداية. تستطيع التراجع عن إعادة الضبط.';
   renderLab();
@@ -160,7 +205,7 @@ function labReset() {
 function labFinish(title, text) {
   if (!labReady()) return;
   const s = state,
-    elapsed = Math.max(0, Math.floor((Date.now() - s.started) / 1000));
+    elapsed = labSeconds(s);
   const baseline =
     s.id === 'lights'
       ? s.parMoves
@@ -176,6 +221,7 @@ function labFinish(title, text) {
       Math.floor(elapsed / 45),
   );
   s.done = true;
+  s.finishedAt = Date.now();
   s.points = points;
   clearTimers();
   addScore(s.name, points);
@@ -189,7 +235,7 @@ function labFinish(title, text) {
   );
 }
 function labToolbar() {
-  return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labHint" onclick="labHint()">✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
+  return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labRedo" onclick="labRedo()" ${state.future?.length ? '' : 'disabled'}>↷ إعادة</button><button id="labHint" onclick="labHint()">✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
 }
 function renderLab() {
   const s = state;
@@ -201,8 +247,8 @@ function renderLab() {
   let body = '',
     progress;
   if (s.id === 'nonogram') {
-    const filled = s.board.filter((v) => v === 1).length;
-    progress = ['التعبئة', `<span dir="ltr">${filled} / ${s.answer.filter(Boolean).length}</span>`];
+    const analysis = labNonogramAnalysis(s);
+    progress = ['خطوط مكتملة', `<span dir="ltr">${analysis.complete} / ${s.size * 2}</span>`];
     body = labNonogramHTML();
   } else if (s.id === 'lights') {
     progress = [
@@ -240,13 +286,24 @@ function labSelect(i, focus = false) {
       cell.classList.toggle('lab-selected', selected);
     });
   if (focus) $('labBoard')?.querySelector(`[data-index="${i}"]`)?.focus({ preventScroll: true });
+  if (state.id === 'lights') labLightsPreview(i);
+  if (state.id === 'pipes' && $('labLock')) {
+    $('labLock').textContent = state.pipeLocked?.[i]
+      ? '🔓 فك تثبيت القطعة'
+      : '🔒 ثبّت القطعة المحددة';
+    $('labLock').setAttribute('aria-pressed', String(!!state.pipeLocked?.[i]));
+  }
 }
 function labMode(mode) {
   if (
     !labReady() ||
-    !(state.id === 'nonogram' ? ['fill', 'cross', 'clear'] : ['clockwise', 'counter']).includes(
-      mode,
-    )
+    !(
+      state.id === 'nonogram'
+        ? ['fill', 'cross', 'clear']
+        : state.id === 'lights'
+          ? ['play', 'plan']
+          : ['clockwise', 'counter']
+    ).includes(mode)
   )
     return;
   state.mode = mode;
@@ -413,9 +470,76 @@ function labNewNonogram() {
 function labClueDone(values, clues) {
   return JSON.stringify(labRuns(values.map((v) => Number(v === 1)))) === JSON.stringify(clues);
 }
+function labLineAnalysis(values, clues, patterns = labLinePatterns(values.length, clues)) {
+  const options = patterns.filter((pattern) =>
+    values.every((v, k) => v === 0 || Number(v === 1) === pattern[k]),
+  );
+  return {
+    options,
+    conflict: !options.length,
+    complete: labClueDone(values, clues),
+    forced: options.length
+      ? values.flatMap((v, k) =>
+          v === 0 && options.every((p) => p[k] === options[0][k])
+            ? [{ position: k, value: options[0][k] }]
+            : [],
+        )
+      : [],
+  };
+}
+function labNonogramAnalysis(s = state) {
+  s.linePatterns ||= {
+    rows: s.rowClues.map((clues) => labLinePatterns(s.size, clues)),
+    columns: s.colClues.map((clues) => labLinePatterns(s.size, clues)),
+  };
+  const rows = s.rowClues.map((clues, r) =>
+    labLineAnalysis(s.board.slice(r * s.size, (r + 1) * s.size), clues, s.linePatterns.rows[r]),
+  );
+  const columns = s.colClues.map((clues, c) =>
+    labLineAnalysis(
+      Array.from({ length: s.size }, (_, r) => s.board[r * s.size + c]),
+      clues,
+      s.linePatterns.columns[c],
+    ),
+  );
+  return {
+    rows,
+    columns,
+    complete: [...rows, ...columns].filter((line) => line.complete).length,
+    conflicts: [...rows, ...columns].filter((line) => line.conflict).length,
+  };
+}
+function labCompleteLine(axis) {
+  if (!labReady('nonogram') || !['row', 'column'].includes(axis)) return;
+  const s = state,
+    line = axis === 'row' ? Math.floor(s.selected / s.size) : s.selected % s.size,
+    indices = Array.from({ length: s.size }, (_, k) =>
+      axis === 'row' ? line * s.size + k : k * s.size + line,
+    ),
+    clues = axis === 'row' ? s.rowClues[line] : s.colClues[line];
+  if (
+    !labClueDone(
+      indices.map((i) => s.board[i]),
+      clues,
+    )
+  ) {
+    s.message =
+      'أكمل مجموعات التعبئة في الخط المحدد أولاً؛ هذه الأداة تشطب الباقي فقط ولا تكشف الحل.';
+    return renderLab();
+  }
+  const empty = indices.filter((i) => s.board[i] === 0 && !s.fixed[i]);
+  if (!empty.length) return;
+  labRemember();
+  for (const i of empty) s.board[i] = 2;
+  s.moves++;
+  s.hintCell = -1;
+  s.message = `شُطبت ${empty.length} خانات في ${axis === 'row' ? 'الصف' : 'العمود'} ${line + 1} لأن مجموعات التعبئة اكتملت. تستطيع التراجع بخطوة واحدة.`;
+  renderLab();
+}
 function labNonogramHTML() {
   const s = state,
-    n = s.size;
+    n = s.size,
+    analysis = labNonogramAnalysis(s);
   return `<div class="lab-mode" aria-label="أداة الرسم">${[
     ['fill', '■ تعبئة'],
     ['cross', '× شطب'],
@@ -427,28 +551,23 @@ function labNonogramHTML() {
     )
     .join(
       '',
-    )}</div><div class="lab-scroll"><div id="labBoard" class="lab-nonogram" style="--lab-n:${n}" role="group" aria-label="لوحة المنطق"><div class="lab-clue-corner" aria-hidden="true">▦</div>${s.colClues
+    )}</div><div class="lab-line-tools"><button onclick="labCompleteLine('row')">× شطب بقية الصف</button><button onclick="labCompleteLine('column')">× شطب بقية العمود</button></div><p class="lab-board-status" role="status">${analysis.conflicts ? `! ${analysis.conflicts} خطوط تتعارض مع علاماتك؛ راجع الأرقام الحمراء.` : '✓ الأرقام الخضراء مكتملة · ! الأرقام الحمراء تتعارض مع علاماتك'}</p><div class="lab-scroll"><div id="labBoard" class="lab-nonogram" style="--lab-n:${n}" role="group" aria-label="لوحة المنطق"><div class="lab-clue-corner" aria-hidden="true">▦</div>${s.colClues
     .map(
       (clues, c) =>
-        `<div class="lab-clue lab-col-clue ${
-          labClueDone(
-            Array.from({ length: n }, (_, r) => s.board[r * n + c]),
-            clues,
-          )
-            ? 'lab-clue-done'
-            : ''
-        }" aria-label="عمود ${c + 1}: ${clues.join('، ')}">${clues.map((v) => `<span>${v}</span>`).join('')}</div>`,
+        `<div class="lab-clue lab-col-clue ${analysis.columns[c].conflict ? 'lab-clue-conflict' : ''} ${
+          analysis.columns[c].complete ? 'lab-clue-done' : ''
+        }" aria-label="عمود ${c + 1}: ${clues.join('، ')}${analysis.columns[c].conflict ? '، متعارض مع العلامات' : analysis.columns[c].complete ? '، مكتمل' : ''}">${analysis.columns[c].conflict ? '<small aria-hidden="true">!</small>' : ''}${clues.map((v) => `<span>${v}</span>`).join('')}</div>`,
     )
     .join('')}${s.rowClues
     .map(
       (clues, r) =>
-        `<div class="lab-clue lab-row-clue ${clues.length >= 4 ? 'lab-clue-tight' : ''} ${labClueDone(s.board.slice(r * n, (r + 1) * n), clues) ? 'lab-clue-done' : ''}" aria-label="صف ${r + 1}: ${clues.join('، ')}">${clues.join(' ')}</div>${Array.from(
+        `<div class="lab-clue lab-row-clue ${clues.length >= 4 ? 'lab-clue-tight' : ''} ${analysis.rows[r].conflict ? 'lab-clue-conflict' : ''} ${analysis.rows[r].complete ? 'lab-clue-done' : ''}" aria-label="صف ${r + 1}: ${clues.join('، ')}${analysis.rows[r].conflict ? '، متعارض مع العلامات' : analysis.rows[r].complete ? '، مكتمل' : ''}">${analysis.rows[r].conflict ? '<small aria-hidden="true">! </small>' : ''}${clues.join(' ')}</div>${Array.from(
           { length: n },
           (_, c) => {
             const i = r * n + c,
               v = s.board[i],
               fixed = s.fixed[i];
-            return `<button class="lab-cell lab-pixel ${v === 1 ? 'lab-filled' : v === 2 ? 'lab-crossed' : ''} ${fixed ? 'lab-fixed' : ''} ${s.selected === i ? 'lab-selected' : ''}" ${labCellAttributes(i, (v === 1 ? 'معبأة' : v === 2 ? 'فارغة مؤكدة' : 'غير محددة') + (fixed ? '، معطاة ثابتة' : ''))} ${fixed ? 'aria-disabled="true"' : ''} aria-pressed="${v === 1}" onclick="labNonogramTap(${i})" oncontextmenu="event.preventDefault();labNonogramTap(${i},'cross')"><span aria-hidden="true">${v === 2 ? '×' : ''}</span>${fixed ? '<small aria-hidden="true">◆</small>' : ''}</button>`;
+            return `<button class="lab-cell lab-pixel ${v === 1 ? 'lab-filled' : v === 2 ? 'lab-crossed' : ''} ${fixed ? 'lab-fixed' : ''} ${s.selected === i ? 'lab-selected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''}" ${labCellAttributes(i, (v === 1 ? 'معبأة' : v === 2 ? 'فارغة مؤكدة' : 'غير محددة') + (fixed ? '، معطاة ثابتة' : ''))} ${fixed ? 'aria-disabled="true"' : ''} aria-pressed="${v === 1}" onclick="labNonogramTap(${i})" oncontextmenu="event.preventDefault();labNonogramTap(${i},'cross')"><span aria-hidden="true">${v === 2 ? '×' : ''}</span>${fixed ? '<small aria-hidden="true">◆</small>' : ''}</button>`;
           },
         ).join('')}`,
     )
@@ -474,6 +593,7 @@ function labNonogramTap(i, override = null) {
   s.board[i] = next;
   s.moves++;
   s.selected = i;
+  s.hintCell = -1;
   s.message = '';
   if (labNonogramWon(s)) return labFinish('اكتملت لوحة المنطق!', 'تطابقت جميع الصفوف والأعمدة.');
   renderLab();
@@ -555,27 +675,103 @@ function labLightsSolve(board, n) {
 function labNewLights() {
   const s = state;
   s.size = { easy: 4, normal: 5, hard: 6 }[s.level];
-  s.board = Array(s.size * s.size).fill(0);
-  const candidates = labShuffle(
-    s.board.map((_, i) => i),
-    s,
-  );
-  const scrambleCount = { easy: 7, normal: 13, hard: 19 }[s.level];
-  for (const i of candidates.slice(0, scrambleCount)) labToggleLights(s.board, i, s.size);
-  if (!s.board.some(Boolean)) labToggleLights(s.board, labRand(s.board.length, s), s.size);
+  const count = s.size * s.size,
+    scrambleCount = { easy: 7, normal: 13, hard: 19 }[s.level],
+    minimum = { easy: 4, normal: 8, hard: 12 }[s.level];
+  let bestLength = -1;
+  for (let attempt = 0; attempt < 24; attempt++) {
+    const board = Array(count).fill(0),
+      candidates = labShuffle(
+        Array.from({ length: count }, (_, i) => i),
+        s,
+      );
+    for (const i of candidates.slice(0, scrambleCount)) labToggleLights(board, i, s.size);
+    const length = labLightsSolve(board, s.size).length;
+    if (length > bestLength) {
+      s.board = board;
+      bestLength = length;
+    }
+    if (length >= minimum) break;
+  }
   s.initial = [...s.board];
-  s.parMoves = labLightsSolve(s.board, s.size).length;
+  s.parMoves = bestLength;
+  s.plan = Array(count).fill(false);
   s.hintCell = -1;
-  s.message = 'اطفئ جميع الأنوار. كل ضغطة تؤثر في الخانة وجيرانها الأربعة.';
+  s.message = 'اطفئ جميع الأنوار. الإطار يوضح أثر الضغطة المحددة؛ جرّب وضع التخطيط قبل التنفيذ.';
+}
+function labLightsProjected(s = state) {
+  const board = [...s.board];
+  for (let i = 0; i < board.length; i++) if (s.plan?.[i]) labToggleLights(board, i, s.size);
+  return board;
+}
+function labLightsPreview(i) {
+  if (!labReady('lights') || i < 0 || i >= state.board.length) return;
+  const s = state,
+    affected = labNeighbours(i, s.size),
+    board = s.mode === 'plan' ? labLightsProjected(s) : [...s.board];
+  labToggleLights(board, i, s.size);
+  $('labBoard')
+    ?.querySelectorAll('.lab-cell')
+    .forEach((cell) =>
+      cell.classList.toggle('lab-affected', affected.includes(Number(cell.dataset.index))),
+    );
+  if ($('labPreviewMessage'))
+    $('labPreviewMessage').textContent =
+      `${s.mode === 'plan' ? (s.plan[i] ? 'إزالة' : 'إضافة') + ' هذا الاختيار من الخطة' : 'بعد الضغط على الخانة المحددة'}: ${board.filter(Boolean).length} أنوار مضاءة. قلة الأنوار لا تعني دائماً قرب الحل.`;
+}
+function labClearPlan() {
+  if (!labReady('lights')) return;
+  state.plan.fill(false);
+  state.message = 'مُسحت الخطة؛ اللوحة الأصلية لم تتغير.';
+  renderLab();
+}
+function labApplyPlan() {
+  if (!labReady('lights')) return;
+  const s = state,
+    presses = s.plan.map((value, i) => (value ? i : -1)).filter((i) => i >= 0);
+  if (!presses.length) return;
+  labRemember();
+  for (const i of presses) labToggleLights(s.board, i, s.size);
+  s.moves += presses.length;
+  s.selected = presses[presses.length - 1];
+  s.plan.fill(false);
+  s.mode = 'play';
+  s.hintCell = -1;
+  s.message = `نُفذت ${presses.length} ضغطات من خطتك. التراجع يعيد المجموعة كاملة.`;
+  if (labCheckWin()) return;
+  renderLab();
 }
 function labLightsHTML() {
-  const s = state;
-  return `<div class="lab-lights-caption"><span>☀ مضاء</span><span>· مطفأ</span><span>✦ ضغطة مقترحة</span></div><div id="labBoard" class="lab-square lab-lights" style="--lab-n:${s.size}" role="group" aria-label="لوحة الأنوار">${s.board.map((value, i) => `<button class="lab-cell lab-light ${value ? 'lab-lit' : ''} ${s.selected === i ? 'lab-selected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''}" ${labCellAttributes(i, (value ? 'مصباح مضاء' : 'مصباح مطفأ') + (s.hintCell === i ? '، ضغطة مقترحة' : ''))} aria-pressed="${!!value}" onclick="labLightsTap(${i})"><span aria-hidden="true">${value ? '☀' : '·'}</span>${s.hintCell === i ? '<small aria-hidden="true">✦</small>' : ''}</button>`).join('')}</div><p class="note center">${s.size}×${s.size} · الضغط يغيّر الخانة وأعلى وأسفل ويمين ويسار<br>الضغط مرتين يلغي نفسه. اطفئ كل مصباح للفوز.</p>`;
+  const s = state,
+    planning = s.mode === 'plan',
+    planned = s.plan.filter(Boolean).length,
+    affected = labNeighbours(s.selected, s.size),
+    preview = planning ? labLightsProjected(s) : [...s.board];
+  const after = [...preview];
+  labToggleLights(after, s.selected, s.size);
+  return `<div class="lab-mode" aria-label="طريقة اللعب">${[
+    ['play', '☀ اللعب'],
+    ['plan', '✎ التخطيط'],
+  ]
+    .map(
+      ([mode, label]) =>
+        `<button id="labMode-${mode}" class="${s.mode === mode ? 'primary' : ''}" aria-pressed="${s.mode === mode}" onclick="labMode('${mode}')">${label}</button>`,
+    )
+    .join(
+      '',
+    )}</div>${planning ? `<div class="lab-plan-summary"><b>${planned} ضغطات مخططة · بعد الخطة ${preview.filter(Boolean).length} أنوار مضاءة</b><p>اختر الخانات التي تريد ضغطها. تكرار الاختيار يزيلها من الخطة؛ لا تُحسب حركة حتى التنفيذ.</p><div class="actions"><button id="labApplyPlan" class="primary" onclick="labApplyPlan()" ${planned ? '' : 'disabled'}>نفّذ الخطة</button><button id="labClearPlan" onclick="labClearPlan()" ${planned ? '' : 'disabled'}>امسح الخطة</button></div></div>` : ''}<div class="lab-lights-caption"><span>☀ مضاء</span><span>· مطفأ</span><span>✦ ضغطة مقترحة</span>${planning ? '<span>↻ ضغطة في الخطة</span>' : ''}</div><div id="labBoard" class="lab-square lab-lights" style="--lab-n:${s.size}" role="group" aria-label="لوحة الأنوار${planning ? '، وضع التخطيط' : ''}">${s.board.map((value, i) => `<button class="lab-cell lab-light ${value ? 'lab-lit' : ''} ${s.selected === i ? 'lab-selected' : ''} ${affected.includes(i) ? 'lab-affected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''} ${planning && s.plan[i] ? 'lab-planned' : ''}" ${labCellAttributes(i, (value ? 'مصباح مضاء' : 'مصباح مطفأ') + (s.hintCell === i ? '، ضغطة مقترحة' : '') + (planning && s.plan[i] ? '، ضغطة في الخطة' : ''))} aria-pressed="${planning ? s.plan[i] : !!value}" onclick="labLightsTap(${i})" onpointerenter="labLightsPreview(${i})"><span aria-hidden="true">${value ? '☀' : '·'}</span>${planning && s.plan[i] ? '<b class="lab-plan-mark" aria-hidden="true">↻</b>' : s.hintCell === i ? '<small aria-hidden="true">✦</small>' : ''}</button>`).join('')}</div><p id="labPreviewMessage" class="lab-board-status">${planning ? (s.plan[s.selected] ? 'إزالة' : 'إضافة') + ' هذا الاختيار من الخطة' : 'بعد الضغط على الخانة المحددة'}: ${after.filter(Boolean).length} أنوار مضاءة. قلة الأنوار لا تعني دائماً قرب الحل.</p><p class="note center">${s.size}×${s.size} · الضغط يغيّر الخانة وأعلى وأسفل ويمين ويسار<br>الضغط مرتين يلغي نفسه. اطفئ كل مصباح للفوز.</p>`;
 }
 function labLightsTap(i) {
   if (!labReady('lights') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
   const s = state;
+  if (s.mode === 'plan') {
+    s.plan[i] = !s.plan[i];
+    s.selected = i;
+    s.message = 'هذه خطة تجريبية؛ نفّذها عندما تكون جاهزاً أو عدّل اختياراتك.';
+    return renderLab();
+  }
   labRemember();
+  s.plan.fill(false);
   labToggleLights(s.board, i, s.size);
   s.moves++;
   s.selected = i;
@@ -596,7 +792,8 @@ function labRotatePipe(mask, direction = 1) {
 }
 function labPipeAnalysis(board, n, source) {
   const connected = new Set([source]),
-    queue = [source];
+    queue = [source],
+    leaking = Array(board.length).fill(0);
   let leaks = 0;
   for (let i = 0; i < board.length; i++) {
     const r = Math.floor(i / n),
@@ -605,7 +802,10 @@ function labPipeAnalysis(board, n, source) {
       if (board[i] & bit) {
         const rr = r + dr,
           cc = c + dc;
-        if (rr < 0 || rr >= n || cc < 0 || cc >= n || !(board[rr * n + cc] & opposite)) leaks++;
+        if (rr < 0 || rr >= n || cc < 0 || cc >= n || !(board[rr * n + cc] & opposite)) {
+          leaks++;
+          leaking[i] |= bit;
+        }
       }
   }
   for (let cursor = 0; cursor < queue.length; cursor++) {
@@ -623,7 +823,62 @@ function labPipeAnalysis(board, n, source) {
         }
       }
   }
-  return { connected, leaks, solved: leaks === 0 && connected.size === board.length };
+  return { connected, leaks, leaking, solved: leaks === 0 && connected.size === board.length };
+}
+// Keep only orientations that agree with borders and neighboring orientations.
+// User locks are hypotheses, not extra clues from the generated answer.
+function labPipeDomains(board, n, locked = []) {
+  const domains = board.map((mask, i) => {
+    const orientations = [];
+    for (let turn = 0; turn < 4; turn++) {
+      if (!orientations.includes(mask)) orientations.push(mask);
+      mask = labRotatePipe(mask);
+    }
+    return orientations.filter((value) => {
+      if (locked[i] && value !== board[i]) return false;
+      const r = Math.floor(i / n),
+        c = i % n;
+      return labPipeDirections.every(
+        ([dr, dc, bit]) =>
+          !(value & bit) || (r + dr >= 0 && r + dr < n && c + dc >= 0 && c + dc < n),
+      );
+    });
+  });
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let i = 0; i < board.length; i++) {
+      const r = Math.floor(i / n),
+        c = i % n;
+      const options = domains[i].filter((mask) =>
+        labPipeDirections.every(([dr, dc, bit, opposite]) => {
+          const rr = r + dr,
+            cc = c + dc;
+          return (
+            rr < 0 ||
+            rr >= n ||
+            cc < 0 ||
+            cc >= n ||
+            domains[rr * n + cc].some((neighbor) => !!(mask & bit) === !!(neighbor & opposite))
+          );
+        }),
+      );
+      if (options.length !== domains[i].length) {
+        domains[i] = options;
+        changed = true;
+      }
+    }
+  }
+  return domains;
+}
+function labTogglePipeLock(i = state?.selected) {
+  if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
+  state.pipeLocked[i] = !state.pipeLocked[i];
+  state.selected = i;
+  state.message = state.pipeLocked[i]
+    ? 'ثُبّتت القطعة كاختيار منك، ويمكن فكها بأي وقت. التثبيت لا يؤكد صحة اتجاهها.'
+    : 'فُك تثبيت القطعة؛ تستطيع تدويرها من جديد.';
+  renderLab();
 }
 function labNewPipes() {
   const s = state;
@@ -674,10 +929,11 @@ function labNewPipes() {
     return count + Math.min(rotations, 4 - rotations);
   }, 0);
   s.initial = [...s.board];
+  s.pipeLocked = Array(s.board.length).fill(false);
   s.hintCell = -1;
   s.message = 'المصدر في الخانة المعلّمة بقطرة. وصّل جميع القطع وأغلق كل فتحة.';
 }
-function labPipeSVG(mask, live, source) {
+function labPipeSVG(mask, live, source, leaking = 0) {
   const ends = [
     [1, 50, 0],
     [2, 100, 50],
@@ -692,7 +948,13 @@ function labPipeSVG(mask, live, source) {
     .map(([, x, y]) => `<path d="M50 50 L${x} ${y}"/>`)
     .join(
       '',
-    )}</g><circle cx="50" cy="50" r="${source ? 18 : 10}" class="lab-pipe-hub"/>${source ? '<path class="lab-source-drop" d="M50 36 C46 43 42 48 42 52 A8 8 0 0 0 58 52 C58 48 54 43 50 36Z"/>' : live ? '<circle cx="50" cy="50" r="4" class="lab-live-dot"/>' : ''}</svg>`;
+    )}</g><circle cx="50" cy="50" r="${source ? 18 : 10}" class="lab-pipe-hub"/>${source ? '<path class="lab-source-drop" d="M50 36 C46 43 42 48 42 52 A8 8 0 0 0 58 52 C58 48 54 43 50 36Z"/>' : live ? '<circle cx="50" cy="50" r="4" class="lab-live-dot"/>' : ''}${ends
+    .filter(([bit]) => leaking & bit)
+    .map(
+      ([, x, y]) =>
+        `<circle class="lab-leak-tip" cx="${Math.max(7, Math.min(93, x))}" cy="${Math.max(7, Math.min(93, y))}" r="6"/>`,
+    )
+    .join('')}</svg>`;
 }
 function labPipesHTML(analysis) {
   const s = state;
@@ -706,10 +968,10 @@ function labPipesHTML(analysis) {
     )
     .join(
       '',
-    )}</div><div class="lab-pipe-status"><span>💧 المصدر</span><span>${analysis.leaks} فتحة غير موصولة</span><span>● متصل بالمصدر</span></div><div id="labBoard" class="lab-square lab-pipes" style="--lab-n:${s.size}" role="group" aria-label="شبكة الأنابيب">${s.board
+    )}</div><div class="lab-line-tools"><button id="labLock" onclick="labTogglePipeLock()" aria-pressed="${s.pipeLocked[s.selected]}">${s.pipeLocked[s.selected] ? '🔓 فك تثبيت القطعة' : '🔒 ثبّت القطعة المحددة'}</button></div><div class="lab-pipe-status"><span>💧 المصدر</span><span>! ${analysis.leaks} فتحة غير موصولة</span><span>● متصل بالمصدر</span><span>🔒 ${s.pipeLocked.filter(Boolean).length} قطع مثبتة</span></div><div id="labBoard" class="lab-square lab-pipes" style="--lab-n:${s.size}" role="group" aria-label="شبكة الأنابيب">${s.board
     .map(
       (mask, i) =>
-        `<button class="lab-cell lab-pipe ${analysis.connected.has(i) ? 'lab-connected' : ''} ${i === s.source ? 'lab-source' : ''} ${s.selected === i ? 'lab-selected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''}" ${labCellAttributes(
+        `<button class="lab-cell lab-pipe ${analysis.connected.has(i) ? 'lab-connected' : ''} ${i === s.source ? 'lab-source' : ''} ${s.selected === i ? 'lab-selected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''} ${s.pipeLocked[i] ? 'lab-locked' : ''}" ${labCellAttributes(
           i,
           (i === s.source ? 'المصدر، ' : '') +
             'فتحات: ' +
@@ -717,18 +979,25 @@ function labPipesHTML(analysis) {
               .filter(([, , bit]) => mask & bit)
               .map(([, , , , name]) => name)
               .join('، ') +
-            (analysis.connected.has(i) ? '، متصلة بالمصدر' : '، غير متصلة'),
-        )} onclick="labPipesTap(${i})" oncontextmenu="event.preventDefault();labPipesTap(${i},-1)">${labPipeSVG(mask, analysis.connected.has(i), i === s.source)}${s.hintCell === i ? '<small class="lab-pipe-hint" aria-hidden="true">✦</small>' : ''}</button>`,
+            (analysis.connected.has(i) ? '، متصلة بالمصدر' : '، غير متصلة') +
+            `، ${labBitCount(BigInt(analysis.leaking[i]))} فتحات غير موصولة` +
+            (s.pipeLocked[i] ? '، مثبتة باختيارك' : ''),
+        )} onclick="labPipesTap(${i})" oncontextmenu="event.preventDefault();labPipesTap(${i},-1)">${labPipeSVG(mask, analysis.connected.has(i), i === s.source, analysis.leaking[i])}${s.pipeLocked[i] ? '<small class="lab-lock-mark" aria-hidden="true">🔒</small>' : ''}${s.hintCell === i ? '<small class="lab-pipe-hint" aria-hidden="true">✦</small>' : ''}</button>`,
     )
     .join(
       '',
-    )}</div><p class="note center">أي ترتيب يربط جميع القطع بلا فتحات يعتبر حلاً<br>R للتدوير · Shift+R للعكس · الفأرة اليمنى للعكس</p>`;
+    )}</div><p class="note center">أي ترتيب يربط جميع القطع بلا فتحات يعتبر حلاً<br>R للتدوير · Shift+R للعكس · L للتثبيت · الفأرة اليمنى للعكس</p>`;
 }
 function labPipesTap(i, override = null) {
   if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
   const s = state,
     direction = override || (s.mode === 'counter' ? -1 : 1),
     next = labRotatePipe(s.board[i], direction);
+  if (s.pipeLocked[i]) {
+    s.selected = i;
+    s.message = 'هذه القطعة مثبتة باختيارك. فك التثبيت بالزر أو L حتى تدوّرها.';
+    return renderLab();
+  }
   if (s.board[i] === next) return;
   labRemember();
   s.board[i] = next;
@@ -744,17 +1013,51 @@ function labHint() {
   if (!labReady()) return;
   const s = state;
   if (s.id === 'nonogram') {
-    const candidates = s.board
-      .map((v, i) => i)
-      .filter((i) => !s.fixed[i] && s.board[i] !== (s.answer[i] ? 1 : 2));
-    if (!candidates.length) return;
-    const i = candidates.includes(s.selected) ? s.selected : candidates[0];
+    const analysis = labNonogramAnalysis(s),
+      current = s.board.map((v) => (v === 0 ? -1 : Number(v === 1))),
+      check = labNonogramSolve(s.rowClues, s.colClues, current);
+    if (!check.solutions.length && !check.exhausted) {
+      s.message = analysis.conflicts
+        ? 'علاماتك تتعارض مع الأرقام الحمراء. راجعها أو تراجع عن آخر حركة؛ لم يُخصم تلميح.'
+        : 'الصفوف والأعمدة لا تقبل حلاً مع كل علاماتك الحالية. راجع آخر اختياراتك؛ لم يُخصم تلميح.';
+      return renderLab();
+    }
+    const deductions = [analysis.rows, analysis.columns]
+      .flatMap((lines, axis) =>
+        lines.flatMap((line, index) =>
+          line.forced.map((cell) => ({
+            i: axis ? cell.position * s.size + index : index * s.size + cell.position,
+            value: cell.value,
+            reason: `كل احتمالات ${axis ? 'العمود' : 'الصف'} ${index + 1} (${line.options.length}) تتفق على هذه الخانة`,
+            options: line.options.length,
+          })),
+        ),
+      )
+      .filter((cell) => !s.fixed[cell.i]);
+    deductions.sort((a, b) => a.options - b.options);
+    let deduction = deductions.find((cell) => cell.i === s.selected) || deductions[0];
+    if (!deduction && !check.exhausted && check.solutions.length === 1) {
+      const unknown = current.map((v, i) => (v === -1 ? i : -1)).filter((i) => i >= 0),
+        i = unknown.includes(s.selected) ? s.selected : unknown[0];
+      if (i !== undefined)
+        deduction = {
+          i,
+          value: check.solutions[0][i],
+          reason: 'جمع قيود الصفوف والأعمدة يترك حلاً واحداً لهذه الخانة',
+        };
+    }
+    if (!deduction || check.exhausted) {
+      s.message =
+        'لم يصل الفحص إلى استنتاج مضمون الآن. جرّب الصفوف الطويلة أو راجع الشطب؛ لم يُخصم تلميح.';
+      return renderLab();
+    }
+    const { i, value, reason } = deduction;
     labRemember();
-    s.board[i] = s.answer[i] ? 1 : 2;
+    s.board[i] = value ? 1 : 2;
     s.selected = i;
     s.hints++;
     s.hintCell = i;
-    s.message = `كشف التلميح الصف ${Math.floor(i / s.size) + 1}، العمود ${(i % s.size) + 1}: ${s.answer[i] ? 'تعبئة' : 'خانة فارغة'}. خصم 8 نقاط.`;
+    s.message = `${reason}: الصف ${Math.floor(i / s.size) + 1}، العمود ${(i % s.size) + 1} ${value ? 'معبأ' : 'فارغ'}. طُبق الاستنتاج وخصمت 8 نقاط.`;
     if (labNonogramWon(s)) return labFinish('اكتملت لوحة المنطق!', 'تطابقت جميع الصفوف والأعمدة.');
   } else if (s.id === 'lights') {
     const solution = labLightsSolve(s.board, s.size);
@@ -766,17 +1069,41 @@ function labHint() {
     }
     s.hintCell = solution[0];
     s.selected = solution[0];
+    s.plan.fill(false);
+    s.mode = 'play';
     s.message = `اضغط الخانة المعلّمة ✦: الصف ${Math.floor(solution[0] / s.size) + 1}، العمود ${(solution[0] % s.size) + 1}. أقصر حل الآن ${solution.length} ضغطات. إعادة هذا التلميح قبل تغيير اللوحة لا تخصم مجدداً.`;
   } else {
-    const candidates = s.board.map((v, i) => i).filter((i) => s.board[i] !== s.answer[i]);
-    if (!candidates.length) return;
-    const i = candidates.includes(s.selected) ? s.selected : candidates[0];
+    const domains = labPipeDomains(s.board, s.size, s.pipeLocked);
+    if (domains.some((options) => !options.length)) {
+      s.message =
+        'اتجاهات القطع المثبتة تتعارض مع الحواف أو توصيل الشبكة. فك بعض التثبيتات وراجعها؛ لم يُخصم تلميح.';
+      return renderLab();
+    }
+    const forced = domains
+        .map((options, i) =>
+          options.length === 1 && options[0] !== s.board[i] && !s.pipeLocked[i] ? i : -1,
+        )
+        .filter((i) => i >= 0),
+      candidates = forced.length
+        ? forced
+        : s.board.map((v, i) => i).filter((i) => !s.pipeLocked[i] && s.board[i] !== s.answer[i]);
+    if (!forced.length && s.pipeLocked.some((locked, i) => locked && s.board[i] !== s.answer[i])) {
+      s.message =
+        'التثبيتات تسمح بعدة اتجاهات ولا يوجد استنتاج محلي مضمون الآن. راجع الحواف أو فك تثبيت بعض القطع لمواصلة التلميح؛ لم يُخصم شيء.';
+      return renderLab();
+    }
+    if (!candidates.length) {
+      s.message = 'فك تثبيت قطعة غير موصولة للحصول على مساعدة؛ لم يُخصم تلميح.';
+      return renderLab();
+    }
+    const i = candidates.includes(s.selected) ? s.selected : candidates[0],
+      logical = forced.includes(i);
     labRemember();
-    s.board[i] = s.answer[i];
+    s.board[i] = logical ? domains[i][0] : s.answer[i];
     s.hints++;
     s.selected = i;
     s.hintCell = i;
-    s.message = `ضُبطت قطعة الصف ${Math.floor(i / s.size) + 1}، العمود ${(i % s.size) + 1} حسب الشبكة الأصلية. خصم 8 نقاط.`;
+    s.message = `ضُبطت قطعة الصف ${Math.floor(i / s.size) + 1}، العمود ${(i % s.size) + 1}: ${logical ? 'الحواف واتجاهات الجيران تترك اتجاهاً واحداً' : 'كشف اتجاه من الشبكة الأصلية لأن الاستنتاج المحلي يسمح بعدة اتجاهات'}. خصم 8 نقاط.`;
     if (labPipeAnalysis(s.board, s.size, s.source).solved)
       return labFinish('شبكة بلا تسريب!', 'اتصلت كل الأنابيب بالمصدر وأُغلقت جميع الفتحات.');
   }
@@ -791,10 +1118,20 @@ document.addEventListener('keydown', (event) => {
     return;
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
     event.preventDefault();
-    labUndo();
+    if (event.shiftKey) labRedo();
+    else labUndo();
     return;
   }
-  if (event.ctrlKey || event.metaKey || event.altKey) return;
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') {
+    event.preventDefault();
+    labRedo();
+    return;
+  }
+  if (
+    (event.ctrlKey || event.metaKey || event.altKey) &&
+    !(!event.altKey && ['Home', 'End'].includes(event.key))
+  )
+    return;
   const onBoard = !!event.target?.closest?.('#labBoard');
   if (!onBoard) return;
   const s = state,
@@ -813,6 +1150,19 @@ document.addEventListener('keydown', (event) => {
               ? s.selected + 1
               : s.selected;
     labSelect(next, true);
+  } else if (['Home', 'End'].includes(event.key)) {
+    event.preventDefault();
+    labSelect(
+      event.ctrlKey || event.metaKey
+        ? event.key === 'Home'
+          ? 0
+          : s.board.length - 1
+        : r * s.size + (event.key === 'Home' ? 0 : s.size - 1),
+      true,
+    );
+  } else if (s.id === 'pipes' && event.key.toLowerCase() === 'l') {
+    event.preventDefault();
+    labTogglePipeLock();
   } else if (s.id === 'nonogram' && ['f', 'x', 'c'].includes(event.key.toLowerCase())) {
     event.preventDefault();
     labNonogramTap(s.selected, { f: 'fill', x: 'cross', c: 'clear' }[event.key.toLowerCase()]);

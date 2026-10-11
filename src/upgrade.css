@@ -1,0 +1,418 @@
+/* Lamma 6: a compact lobby with stronger hierarchy and comfortable game screens. */
+:root {
+  --bg: #0d101b;
+  --surface: #181d2d;
+  --raised: #242b40;
+  --line: #363d55;
+  --mint: #b6efcf;
+}
+body {
+  background: radial-gradient(ellipse at 100% 0, #39324d50, transparent 750px), var(--bg);
+}
+.lobby-hero {
+  min-height: 335px;
+  background:
+    radial-gradient(ellipse at 15% 30%, #70659b35, transparent 60%),
+    linear-gradient(115deg, #201f36, #192b36);
+  border-color: #4b4a64;
+}
+.lobby-copy h1 {
+  font-size: clamp(38px, 4vw, 64px);
+}
+.lobby-copy p {
+  margin-top: 14px;
+}
+.lobby-details {
+  align-items: center;
+  flex-wrap: wrap;
+}
+.lobby-details .linkbtn {
+  padding: 0;
+  min-height: 30px;
+  color: inherit;
+  font-size: 12px;
+}
+.lobby-art {
+  height: 270px;
+}
+.ticket-one b {
+  font-size: 22px;
+}
+.quick-launch {
+  display: grid;
+  grid-template-columns: 1.1fr repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+  align-items: stretch;
+}
+.quick-intro {
+  align-self: center;
+}
+.quick-intro h2 {
+  font-size: 21px;
+  margin-top: 3px;
+}
+.quick-intro .linkbtn {
+  padding-inline: 0;
+  font-size: 12px;
+}
+.quick-game {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  padding: 20px 16px;
+  background: var(--surface);
+  min-width: 0;
+  border-radius: 18px;
+  border-color: color-mix(in srgb, var(--tile) 25%, var(--line));
+}
+.quick-game .tileicon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  font-size: 24px;
+  border-radius: 13px;
+}
+.quick-game > div {
+  flex: 1;
+  min-width: 0;
+}
+.quick-game b,
+.quick-game small {
+  display: block;
+}
+.quick-game b {
+  font-size: 14px;
+}
+.quick-game small {
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+.quick-game > span:last-child {
+  color: var(--tile);
+}
+.discover-drawer {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  margin: 24px 0 30px;
+  background: var(--surface);
+}
+.discover-drawer > summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  cursor: pointer;
+  list-style: none;
+}
+.discover-drawer > summary::-webkit-details-marker {
+  display: none;
+}
+.discover-drawer > summary > span {
+  font-weight: 700;
+}
+.discover-drawer > summary small {
+  flex: 1;
+}
+.discover-drawer > summary b {
+  font-size: 12px;
+  color: var(--mint);
+}
+.discovery-content {
+  padding: 0 20px 20px;
+}
+.discovery-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.discovery-actions button {
+  font-size: 13px;
+}
+.discovery-content .routes-section {
+  margin: 24px 0 0;
+}
+.setup-memory {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-top: 22px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.setup-memory .linkbtn {
+  font-size: 12px;
+}
+.mood-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin: 22px 0;
+}
+.mood-tabs button {
+  font-size: 13px;
+}
+.mood-tabs .active {
+  background: var(--mint);
+  color: #182923;
+  border-color: transparent;
+}
+.picker-games {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 22px;
+}
+.picker-games > button {
+  display: flex;
+  text-align: right;
+  align-items: center;
+  gap: 14px;
+  padding: 17px;
+  border-radius: 16px;
+}
+.picker-games .tileicon {
+  width: 48px;
+  height: 48px;
+  font-size: 25px;
+  flex-shrink: 0;
+}
+.picker-games > button > div {
+  flex: 1;
+  min-width: 0;
+}
+.picker-games p {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+  margin: 4px 0;
+}
+.picker-games small {
+  font-size: 11px;
+  font-weight: 400;
+}
+.history-rounds {
+  margin: 18px 0;
+}
+.history-round {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+}
+.history-round .tileicon {
+  width: 40px;
+  height: 40px;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.history-round > div {
+  flex: 1;
+  min-width: 0;
+}
+.history-round b,
+.history-round small {
+  display: block;
+}
+.history-round b {
+  font-size: 14px;
+}
+.history-round small {
+  font-size: 11px;
+}
+.history-round strong {
+  color: var(--mint);
+  font-size: 15px;
+}
+.dock button.active {
+  background: var(--raised);
+  color: var(--mint);
+}
+body.playing .dock {
+  display: none;
+}
+.playhead {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 16px 20px;
+  background: var(--surface);
+}
+.playtools button {
+  border-radius: 12px;
+}
+.play .panel {
+  border-radius: 22px;
+}
+.play .stats {
+  gap: 10px;
+}
+@media (min-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .cardstart {
+    min-height: 265px;
+  }
+}
+@media (max-width: 900px) {
+  .quick-launch {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .quick-intro {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .quick-intro .world-label {
+    display: none;
+  }
+  .quick-intro .linkbtn {
+    margin-inline-start: auto;
+  }
+  .quick-game {
+    padding: 16px 12px;
+    flex-direction: column;
+    align-items: start;
+    gap: 9px;
+    position: relative;
+  }
+  .quick-game > span:last-child {
+    position: absolute;
+    inset-inline-end: 12px;
+    top: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .lobby-hero {
+    min-height: 0;
+    padding: 26px 23px;
+    grid-template-columns: 1fr;
+  }
+  .lobby-copy h1 {
+    font-size: 40px;
+    margin-top: 14px;
+  }
+  .lobby-copy p {
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .lobby-art {
+    display: none;
+  }
+  .lobby-copy .actions {
+    margin-top: 18px;
+  }
+  .lobby-summary {
+    gap: 7px;
+    margin-bottom: 16px;
+  }
+  .lobby-summary > button {
+    border-radius: 13px;
+    padding: 12px 9px;
+  }
+  .quick-launch {
+    gap: 8px;
+  }
+  .quick-game {
+    padding: 13px 10px;
+    border-radius: 14px;
+  }
+  .quick-game .tileicon {
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+  }
+  .quick-game b {
+    font-size: 12px;
+  }
+  .quick-game small {
+    font-size: 10px;
+  }
+  .quick-intro h2 {
+    font-size: 19px;
+  }
+  .discover-drawer {
+    margin: 20px 0;
+  }
+  .discover-drawer > summary {
+    padding: 14px;
+    gap: 10px;
+  }
+  .discover-drawer > summary > span {
+    font-size: 13px;
+    flex: 1;
+  }
+  .discover-drawer > summary small {
+    display: none;
+  }
+  .discovery-content {
+    padding: 0 13px 15px;
+  }
+  .discovery-actions button {
+    font-size: 11px;
+  }
+  .setup-memory {
+    flex-direction: column;
+    align-items: start;
+    gap: 0;
+  }
+  .cardstart {
+    padding: 18px 13px 13px;
+    min-height: 260px;
+  }
+  .cardstart p {
+    font-size: 12px;
+  }
+  .playhead {
+    padding: 13px 11px;
+    gap: 9px;
+    border-radius: 16px;
+  }
+  .playhead h2 {
+    font-size: 19px;
+  }
+  .playhead .tileicon {
+    width: 37px;
+    height: 37px;
+    font-size: 22px;
+  }
+  .playtools {
+    gap: 5px;
+  }
+  .playtools button {
+    min-width: 36px;
+    min-height: 38px;
+    padding: 6px 9px;
+  }
+  .mood-tabs button {
+    font-size: 12px;
+    padding-inline: 10px;
+  }
+  .picker-games > button {
+    padding: 13px;
+  }
+  .history-round {
+    gap: 9px;
+  }
+}
+body[data-theme='light'] .lobby-hero {
+  background:
+    radial-gradient(ellipse at 15% 30%, #d6c9eb80, transparent 60%),
+    linear-gradient(115deg, #f0eaf9, #e0f1eb);
+  border-color: #c3bfd6;
+}
+body[data-theme='light'] .mood-tabs .active {
+  background: #235c4a;
+  color: #fff;
+}
+body[data-theme='light'] .history-round strong,
+body[data-theme='light'] .discover-drawer > summary b {
+  color: #235c4a;
+}

@@ -88,6 +88,46 @@
 .trivia-explanation p {
   margin-top: 8px;
 }
+.trivia-review,
+.words-round-review {
+  margin-top: 18px;
+}
+.trivia-review h3,
+.words-round-review h3 {
+  margin-bottom: 15px;
+}
+.trivia-review-item {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.8;
+}
+.trivia-review-item:last-child {
+  border-bottom: 0;
+}
+.trivia-review-item h4 {
+  font-size: 18px;
+  margin: 0 0 9px;
+}
+.words-positive {
+  color: var(--mint);
+  font-weight: 700;
+}
+.words-round-review > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.words-round-review > div span {
+  color: var(--muted);
+  font-size: 13px;
+  margin-inline-start: auto;
+}
+.words-round-review > div:last-child {
+  border-bottom: 0;
+}
 .arabic-keyboard {
   display: grid;
   grid-template-columns: repeat(11, minmax(0, 1fr));
@@ -106,6 +146,16 @@
 }
 .letter-key:disabled {
   opacity: 0.33;
+}
+.letter-key.correct:disabled {
+  opacity: 0.85;
+}
+.hangman-feedback {
+  text-align: center;
+  color: var(--mint);
+  font-size: 15px;
+  line-height: 1.8;
+  min-height: 28px;
 }
 .letter-key.correct,
 .wordguess-cell.correct,
@@ -234,6 +284,21 @@
 .wordguess-controls button {
   min-width: 110px;
 }
+.wordguess-native {
+  display: flex;
+  gap: 10px;
+  max-width: 480px;
+  margin: 18px auto 0;
+}
+.wordguess-native input {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-size: 18px;
+}
+.wordguess-native button {
+  flex-shrink: 0;
+}
 .target-grid {
   display: grid;
   grid-template-columns: repeat(var(--target-size), 1fr);
@@ -244,6 +309,7 @@
   touch-action: manipulation;
 }
 .target-cell {
+  position: relative;
   aspect-ratio: 1;
   min-height: 65px;
   padding: 0;
@@ -261,6 +327,32 @@
     background 0.08s,
     border 0.08s;
   cursor: crosshair;
+}
+.target-key {
+  position: absolute;
+  inset-inline-end: 10px;
+  top: 8px;
+  font-size: 12px;
+  opacity: 0.65;
+  font-weight: 600;
+}
+.target-cell.decoy {
+  border-color: #dc8d96;
+  background: #5b323d;
+}
+.target-life-track {
+  direction: ltr;
+  overflow: hidden;
+  height: 4px;
+  max-width: 630px;
+  border-radius: 5px;
+  background: var(--line);
+  margin: -8px auto 16px;
+}
+.target-life-track span {
+  display: block;
+  height: 100%;
+  background: var(--orange);
 }
 .target-cell.active {
   background: linear-gradient(135deg, #3e5540, #325053);
@@ -297,6 +389,10 @@ body[data-theme='light'] .trivia-choice.incorrect {
 body[data-theme='light'] .target-cell.active {
   background: #d9efe2;
   color: #164930;
+}
+body[data-theme='light'] .target-cell.decoy {
+  background: #f8e0e5;
+  color: #782c3d;
 }
 @media (min-width: 1400px) {
   .target-grid {
@@ -352,6 +448,17 @@ body[data-theme='light'] .target-cell.active {
   }
   .target-cell {
     border-radius: 12px;
+  }
+  .target-key {
+    inset-inline-end: 7px;
+    top: 5px;
+    font-size: 10px;
+  }
+  .wordguess-native {
+    gap: 7px;
+  }
+  .wordguess-native input {
+    font-size: 16px;
   }
   .wordguess-cell {
     width: 49px;
