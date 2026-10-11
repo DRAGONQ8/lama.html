@@ -1,6 +1,24 @@
 .party-panel > .muted {
   margin-bottom: 20px;
 }
+.party-format {
+  margin: 18px 0;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--mint);
+  border-radius: 14px;
+  background: var(--raised);
+  text-align: start;
+}
+.party-format b {
+  color: var(--mint);
+}
+.party-format p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
 .party-people {
   display: flex;
   align-items: center;
@@ -114,6 +132,9 @@
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
+.party-clockline .party-urgent {
+  color: var(--red);
+}
 .party-time-track {
   height: 6px;
   border-radius: 8px;
@@ -201,6 +222,9 @@
 .party-private h2,
 .party-private .note {
   margin-bottom: 14px;
+}
+.party-private .actions button {
+  min-height: 48px;
 }
 .party-lock,
 .party-trophy {
@@ -297,6 +321,10 @@
   font: inherit;
   line-height: 1.7;
 }
+.party-textarea + .note {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
 .party-textarea:focus-visible {
   outline: 3px solid var(--orange);
   outline-offset: 4px;
@@ -386,5 +414,12 @@
   .party-creative-entry {
     padding: 14px;
     gap: 10px;
+  }
+  .party-format {
+    padding: 12px;
+  }
+  .party-private .actions {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 }

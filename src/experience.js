@@ -287,8 +287,11 @@ function continueRoute() {
 const experienceSetup = setup;
 setup = function (id, internal = false) {
   captureSoloSession();
-  if (!internal) activeRoute = null;
-  return experienceSetup(id, internal);
+  const previousState = state;
+  const outcome = experienceSetup(id, internal);
+  if (!internal && state !== previousState && screen === 'setup' && state?.id === id)
+    activeRoute = null;
+  return outcome;
 };
 const experienceHome = home;
 home = function () {

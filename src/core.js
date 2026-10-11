@@ -444,6 +444,7 @@ function startNumber(id) {
         step: 1n,
         attempt: 1,
         max: free ? null : limit(l, h),
+        initialCount: free ? null : h - l + 1n,
         history: [],
         name,
         done: false,
@@ -495,6 +496,19 @@ function renderFinder(msg = '') {
       }</section>`,
     ),
   );
+  if (count !== null) {
+    const progress = s.initialCount ? Number(100n - (count * 100n) / s.initialCount) : null,
+      panel = $('app').querySelector('.panel'),
+      coaching = `<p class="note center" role="status">${count === 1n ? 'بقي رقم واحد مؤكد داخل النطاق.' : `من هذا النطاق نحتاج إلى ${limit(s.l, s.h)} تخمينات إضافية كحد أقصى، منها التخمين المعروض.`}${progress !== null ? ` استبعدنا ${progress}% من الاحتمالات.` : ''}</p>`;
+    panel?.insertAdjacentHTML(
+      'afterbegin',
+      `${progress !== null ? `<div class="progressline" aria-label="استبعاد الاحتمالات ${progress}%"><span style="width:${progress}%"></span></div>` : ''}${coaching}`,
+    );
+    if (s.guess === s.h)
+      $('app').querySelector('button[onclick="finderAnswer(\'higher\')"]').disabled = true;
+    if (s.guess === s.l)
+      $('app').querySelector('button[onclick="finderAnswer(\'lower\')"]').disabled = true;
+  }
 }
 function finderAnswer(a) {
   if (screen !== 'finder' || state.done || coreBlocked()) return;
@@ -589,6 +603,13 @@ function renderSolo(msg = '') {
       }</section>`,
     ),
   );
+  if (count === 1n) {
+    $('guessInput').value = s.l.toString();
+    $('guessInput').setAttribute('aria-label', 'بقي رقم واحد؛ أكّد هذا التخمين');
+  } else if (s.mode === 'easy') {
+    $('guessInput').placeholder = (s.l + (s.h - s.l) / 2n).toString();
+    $('guessInput').setAttribute('aria-label', 'اكتب تخمينك؛ التلميح المعروض هو منتصف النطاق');
+  }
 }
 function hintSolo() {
   if (screen !== 'solo' || state.done || coreBlocked() || state.hints >= 2) return;
@@ -1313,12 +1334,15 @@ function startMind() {
     candidates: selectedItems(),
     asked: [],
     history: [],
+    evidence: [],
+    initialCount: selectedItems().length,
     answers: 0,
     name: player(),
     done: false,
   };
   screen = 'mind';
   renderMind();
+  renderMindEvidence();
   goTop();
 }
 
@@ -1336,6 +1360,7 @@ function mindAnswer(a) {
     candidates: [...s.candidates],
     asked: [...s.asked],
     answers: s.answers,
+    evidence: [...s.evidence],
   };
   const q = s.q;
   let next = s.candidates;
@@ -1347,13 +1372,29 @@ function mindAnswer(a) {
   s.history.push(snap);
   s.asked.push(q);
   s.candidates = next;
+  s.evidence.push({ q, answer: a, before: snap.candidates.length, after: next.length });
   tone();
   renderMind();
+  renderMindEvidence();
 }
 function undoMind() {
   if (screen !== 'mind' || coreBlocked() || state.done || !state.history.length) return;
   Object.assign(state, state.history.pop());
   renderMind();
+  renderMindEvidence();
+}
+function renderMindEvidence() {
+  if (screen !== 'mind' || state.done) return;
+  const s = state,
+    progress = Math.round((1 - s.candidates.length / Math.max(1, s.initialCount)) * 100),
+    yes =
+      s.q === null ? 0 : s.candidates.filter((i) => items[i].tags.has(questions[s.q][0])).length;
+  $('app')
+    .querySelector('.panel')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<div class="progressline" aria-label="تضييق الخيارات ${progress}%"><span style="width:${progress}%"></span></div><p class="note">${s.candidates.length === 1 ? 'كل الإجابات الواضحة تقود إلى هذا الخيار؛ أكّد الاسم أو تراجع لتصحيح الأدلة.' : s.q === null ? 'الخيارات الباقية تتشابه في الصفات المتاحة؛ اختر الاسم أو أضف صفة تميز الشيء في قاعدة التخمين.' : `اخترنا هذا السؤال لأنه يقسم الخيارات إلى ${yes} جوابها نعم و${s.candidates.length - yes} جوابها لا. «مو متأكد» يحفظ كل الخيارات.`}</p>${s.evidence.length ? `<details class="history"><summary>الأدلة التي ضيّقت الخيارات (${s.evidence.length})</summary><ol>${s.evidence.map((v) => `<li>${esc(questions[v.q][1])} — <b>${v.answer === 'yes' ? 'نعم' : v.answer === 'no' ? 'لا' : 'مو متأكد'}</b><small> · استبعدنا ${v.before - v.after} وبقي ${v.after}</small></li>`).join('')}</ol></details>` : ''}`,
+    );
 }
 function pickMind(i) {
   if (screen !== 'mind' || !state || state.done || coreBlocked()) return;
@@ -1451,7 +1492,14 @@ function guessWho() {
     );
   } else {
     s.wrong.push(raw);
-    renderWho('الإجابة مختلفة. جرّب مرة أخرى أو افتح تلميحاً.');
+    const known = s.pool.find((i) => items[i].aliases.some((a) => norm(a) === n)),
+      feedback =
+        known !== undefined && items[known].cat !== s.item.cat
+          ? `هذا تخمين من فئة مختلفة؛ الجواب من فئة ${categories.find((c) => c[0] === s.item.cat)?.[1] || s.item.cat}.`
+          : s.hints < 3
+            ? 'راجع الصفات في التلميحات قبل التخمين التالي، أو افتح تلميحاً أوضح.'
+            : 'التلميحات الثلاثة تصف شيئاً آخر. طابق كل صفة قبل التخمين.';
+    renderWho(`الإجابة مختلفة. بقيت ${s.max - s.attempt} تخمينات. ${feedback}`);
     $('whoInput').focus();
   }
 }
@@ -1618,6 +1666,9 @@ function startMemory() {
     matched: [],
     moves: 0,
     hintsUsed: 0,
+    streak: 0,
+    bestStreak: 0,
+    notice: '',
     peek: false,
     locked: false,
     started: null,
@@ -1646,7 +1697,7 @@ function renderMemory() {
         })
         .join(
           '',
-        )}</div><p class="note center" role="status">${s.peek ? 'تذكر الأماكن! الكشف يختفي بعد ثانيتين.' : s.locked ? 'تذكر أماكن البطاقات…' : 'اختر بطاقتين وابحث عن الأزواج.'}</p><div class="actions"><button onclick="memoryHint()" ${s.done || s.locked || s.up.length || s.hintsUsed >= 2 ? 'disabled' : ''}>كشف قصير −12 (${2 - s.hintsUsed})</button><button class="quiet" onclick="setup('memory')">لوحة جديدة</button></div>`,
+        )}</div><p class="note center" role="status">${s.peek ? 'تذكر الأماكن! الكشف يختفي بعد ثانيتين.' : s.locked ? 'غير متطابقتين؛ تذكر أماكنهما للمحاولة التالية.' : s.notice || 'اختر بطاقتين وابحث عن الأزواج.'}</p><p class="tiny center">سلسلة الأزواج: ${s.streak} · أفضل سلسلة: ${s.bestStreak} · كفاءة ${s.moves ? Math.round((s.matched.length / 2 / s.moves) * 100) : 0}%</p><div class="actions"><button onclick="memoryHint()" ${s.done || s.locked || s.up.length || s.hintsUsed >= 2 ? 'disabled' : ''}>كشف قصير −12 (${2 - s.hintsUsed})</button><button class="quiet" onclick="setup('memory')">لوحة جديدة</button></div>`,
     ),
   );
 }
@@ -1706,6 +1757,12 @@ function flipCard(i) {
     s.moves++;
     const [a, b] = s.up;
     if (s.deck[a] === s.deck[b]) {
+      s.streak++;
+      s.bestStreak = Math.max(s.bestStreak, s.streak);
+      s.notice =
+        s.streak > 1
+          ? `ممتاز! ${s.streak} أزواج متتالية دون خطأ.`
+          : 'زوج صحيح! ابحث عن الزوج التالي.';
       s.matched.push(a, b);
       s.up = [];
       if (s.matched.length === s.deck.length) {
@@ -1713,9 +1770,15 @@ function flipCard(i) {
         clearTimers();
         const secs = memoryElapsed(s),
           accuracy = Math.round((s.pairs / s.moves) * 100),
+          ceiling = Math.min(100, 60 + s.pairs * 2),
           p = Math.max(
             10,
-            Math.min(100, 50 + s.pairs * 3 - (s.moves - s.pairs) * 2 - s.hintsUsed * 12),
+            Math.min(
+              100,
+              Math.round(ceiling * (0.6 + (0.4 * s.pairs) / s.moves)) +
+                Math.min(10, Math.max(0, s.bestStreak - 1) * 2) -
+                s.hintsUsed * 12,
+            ),
           );
         addScore(s.name, p);
         renderMemory();
@@ -1724,13 +1787,15 @@ function flipCard(i) {
             result(
               'memory',
               'ذاكرتك قوية! 🧩',
-              `${s.moves} حركة خلال ${secs} ثانية · كفاءة ${accuracy}% · ${s.hintsUsed} كشوف مساعدة.`,
+              `${s.moves} حركة خلال ${secs} ثانية · كفاءة ${accuracy}% · أفضل سلسلة ${s.bestStreak} · ${s.hintsUsed} كشوف مساعدة. النقاط تعتمد على حجم اللوحة والكفاءة والسلسلة.`,
               p,
             );
         }, 450);
         return;
       }
     } else {
+      s.streak = 0;
+      s.notice = '';
       s.locked = true;
       s.endAt = Date.now() + 850;
       later(() => hideMemoryCards(s), 850);
@@ -1793,6 +1858,8 @@ function mimeReady() {
   s.score = 0;
   s.correct = 0;
   s.skips = 0;
+  s.streak = 0;
+  s.bestStreak = 0;
   s.log = [];
   s.stage = 'active';
   s.endAt = Date.now() + s.duration * 1000;
@@ -1805,7 +1872,7 @@ function renderMime() {
   setHTML(
     wrap(
       'mime',
-      `<section class="panel"><div class="timerline"><span class="pill">🎭 ${esc(s.players[s.turn % s.players.length])}</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b><span class="pill">${s.score} نقطة</span></div><div class="spot"><small>مثّل بدون كلام</small><div class="huge word" style="color:var(--orange)">${s.hiddenWord ? '🔒 الكلمة مخفية' : esc(s.word)}</div></div><div class="actions"><button class="primary" onclick="mimeAnswer(true)">عرفوها! +10</button><button onclick="mimeAnswer(false)">تجاوز −2</button></div><p class="note">صح: ${s.correct} · تجاوز: ${s.skips}. نقاط الدور ما تنزل عن صفر.</p><div class="actions"><button onclick="toggleMimeWord()">${s.hiddenWord ? 'إظهار الكلمة' : 'إخفاء الكلمة'}</button><button onclick="undoMime()" ${!s.log.length ? 'disabled' : ''}>↶ تراجع عن آخر ضغطة</button><button class="quiet" onclick="endMime()">أنهِ الدور</button></div><p class="tiny center">إخفاء الكلمة يحافظ على السر؛ الوقت يظل شغالاً.</p></section>`,
+      `<section class="panel"><div class="timerline"><span class="pill">🎭 ${esc(s.players[s.turn % s.players.length])}</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b><span class="pill">${s.score} نقطة</span></div><div class="spot"><small>مثّل بدون كلام</small><div class="huge word" style="color:var(--orange)">${s.hiddenWord ? '🔒 الكلمة مخفية' : esc(s.word)}</div></div><div class="actions"><button class="primary" onclick="mimeAnswer(true)">عرفوها! +10</button><button onclick="mimeAnswer(false)">تجاوز −2</button></div><p class="note">صح: ${s.correct} · تجاوز: ${s.skips} · سلسلة ${s.streak}. كل 3 كلمات صحيحة متتالية تمنح +5 إضافية؛ التجاوز يقطع السلسلة.</p><div class="actions"><button onclick="toggleMimeWord()">${s.hiddenWord ? 'إظهار الكلمة' : 'إخفاء الكلمة'}</button><button onclick="undoMime()" ${!s.log.length ? 'disabled' : ''}>↶ تراجع عن آخر ضغطة</button><button class="quiet" onclick="endMime()">أنهِ الدور</button></div><p class="tiny center">إخفاء الكلمة يحافظ على السر؛ الوقت يظل شغالاً. نقاط الدور لا تنزل عن صفر.</p></section>`,
     ),
   );
 }
@@ -1826,6 +1893,8 @@ function undoMime() {
     score: previous.score,
     correct: previous.correct,
     skips: previous.skips,
+    streak: previous.streak,
+    bestStreak: previous.bestStreak,
     hiddenWord: false,
   });
   renderMime();
@@ -1842,14 +1911,19 @@ function mimeAnswer(ok) {
     score: s.score,
     correct: s.correct,
     skips: s.skips,
+    streak: s.streak,
+    bestStreak: s.bestStreak,
   });
   if (ok) {
-    s.score += 10;
+    s.streak++;
+    s.bestStreak = Math.max(s.bestStreak, s.streak);
+    s.score += 10 + (s.streak % 3 === 0 ? 5 : 0);
     s.correct++;
     tone();
   } else {
     s.score = Math.max(0, s.score - 2);
     s.skips++;
+    s.streak = 0;
   }
   nextMimeWord();
   renderMime();
@@ -1866,7 +1940,7 @@ function endMime() {
   setHTML(
     wrap(
       'mime',
-      `<section class="panel center"><div class="resulticon">⏱</div><h2>خلص دور ${esc(name)}</h2><div class="resultnum">${s.score} نقطة</div><p class="note">${s.correct} كلمات صحيحة · ${s.skips} تجاوزات</p>${s.log.length ? `<details class="history"><summary>الكلمات في هذا الدور (${s.log.length})</summary><div class="listchips">${s.log.map((v) => `<span>${v.ok ? '✓' : '↷'} ${esc(v.word)}</span>`).join('')}</div></details>` : ''}<div class="actions"><button class="primary" onclick="advanceMime()">الدور التالي ←</button></div></section>`,
+      `<section class="panel center"><div class="resulticon">⏱</div><h2>خلص دور ${esc(name)}</h2><div class="resultnum">${s.score} نقطة</div><p class="note">${s.correct} كلمات صحيحة · ${s.skips} تجاوزات · أفضل سلسلة ${s.bestStreak}</p>${s.log.length ? `<details class="history"><summary>الكلمات في هذا الدور (${s.log.length})</summary><div class="listchips">${s.log.map((v) => `<span>${v.ok ? '✓' : '↷'} ${esc(v.word)}</span>`).join('')}</div></details>` : ''}<div class="actions"><button class="primary" onclick="advanceMime()">الدور التالي ←</button></div></section>`,
     ),
   );
 }
@@ -1928,6 +2002,8 @@ function secretHandoff() {
   s.stage = 'handoff';
   s.questions = 0;
   s.questionLog = [];
+  s.questionTexts = [];
+  s.questionDraft = '';
   s.word = '';
   const name = s.players[secretTurnIndex()];
   setHTML(
@@ -1978,7 +2054,7 @@ function renderSecret() {
   setHTML(
     wrap(
       'secret',
-      `<section class="panel"><div class="timerline"><span class="pill">${esc(s.players[secretTurnIndex()])} يعرف السر</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b></div><div class="spot"><div style="font-size:40px">🔐</div><h2>${remaining ? 'اسألوا… وخمنوا' : 'آخر تخمين!'}</h2><p class="note">الأسئلة ${s.questions} / ${s.questionLimit} · باقي ${remaining}</p><div class="progressline"><span style="width:${(s.questions / s.questionLimit) * 100}%"></span></div></div><p class="note">بعد كل سؤال سجّلوا إجابة صاحب الكلمة:</p><div class="actions"><button onclick="secretQuestion('yes')" ${!remaining ? 'disabled' : ''}>نعم ✓</button><button onclick="secretQuestion('no')" ${!remaining ? 'disabled' : ''}>لا ✕</button><button onclick="secretQuestion('unknown')" ${!remaining ? 'disabled' : ''}>مو متأكد / غير ذلك</button></div>${s.questionLog.length ? `<div class="listchips" aria-label="سجل إجابات الأسئلة">${s.questionLog.map((v, i) => `<span>${i + 1}: ${v === 'yes' ? 'نعم' : v === 'no' ? 'لا' : 'غير محدد'}</span>`).join('')}</div>` : ''}<div class="actions"><button onclick="undoSecretQuestion()" ${!s.questions ? 'disabled' : ''}>↶ تراجع عن سؤال</button><button class="primary" onclick="secretEnd(true)">عرفناها! ✓</button></div><p class="note">بعد السؤال الأخير يبقى تخمين أخير بالكلام قبل كشف الكلمة. الأسئلة والتخمينات تحصل بينكم، والجهاز يسجل العدد.</p><div class="actions"><button class="quiet" onclick="secretEnd(false)">ما عرفناها، اكشف السر</button></div></section>`,
+      `<section class="panel"><div class="timerline"><span class="pill">${esc(s.players[secretTurnIndex()])} يعرف السر</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b></div><div class="spot"><div style="font-size:40px">🔐</div><h2>${remaining ? 'اسألوا… وخمنوا' : 'آخر تخمين!'}</h2><p class="note">الأسئلة ${s.questions} / ${s.questionLimit} · باقي ${remaining}</p><div class="progressline"><span style="width:${(s.questions / s.questionLimit) * 100}%"></span></div></div><label for="secretQuestionText">دوّن السؤال حتى تراجعوا الأدلة (اختياري)</label><input id="secretQuestionText" maxlength="100" autocomplete="off" value="${esc(s.questionDraft || '')}" ${!remaining ? 'disabled' : ''} oninput="state.questionDraft=this.value" placeholder="مثلاً: هل نستخدمه داخل البيت؟"><p class="note">بعد كل سؤال سجّلوا إجابة صاحب الكلمة:</p><div class="actions"><button onclick="secretQuestion('yes')" ${!remaining ? 'disabled' : ''}>نعم ✓</button><button onclick="secretQuestion('no')" ${!remaining ? 'disabled' : ''}>لا ✕</button><button onclick="secretQuestion('unknown')" ${!remaining ? 'disabled' : ''}>مو متأكد / غير ذلك</button></div>${s.questionLog.length ? `<ol class="history" aria-label="سجل الأسئلة والأدلة">${s.questionLog.map((v, i) => `<li>${esc(s.questionTexts?.[i] || 'سؤال ' + (i + 1))} — <b>${v === 'yes' ? 'نعم ✓' : v === 'no' ? 'لا ✕' : 'غير محدد'}</b></li>`).join('')}</ol>` : ''}<div class="actions"><button onclick="undoSecretQuestion()" ${!s.questions ? 'disabled' : ''}>↶ تراجع عن سؤال</button><button class="primary" onclick="secretEnd(true)">عرفناها! ✓</button></div><p class="note">بعد السؤال الأخير يبقى تخمين أخير بالكلام قبل كشف الكلمة. الأسئلة والتخمينات تحصل بينكم، والجهاز يسجل العدد والأدلة.</p><div class="actions"><button class="quiet" onclick="secretEnd(false)">ما عرفناها، اكشف السر</button></div></section>`,
     ),
   );
 }
@@ -1992,6 +2068,10 @@ function secretQuestion(answer = 'unknown') {
     return;
   if (Date.now() >= state.endAt) return secretEnd(false);
   state.questionLog.push(['yes', 'no'].includes(answer) ? answer : 'unknown');
+  state.questionTexts.push(
+    ($('secretQuestionText')?.value ?? state.questionDraft ?? '').trim().slice(0, 100),
+  );
+  state.questionDraft = '';
   state.questions++;
   renderSecret();
 }
@@ -1999,6 +2079,7 @@ function undoSecretQuestion() {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'active' || !state.questions) return;
   if (Date.now() >= state.endAt) return secretEnd(false);
   state.questionLog.pop();
+  state.questionDraft = state.questionTexts.pop() || '';
   state.questions--;
   renderSecret();
 }
@@ -2072,7 +2153,11 @@ function renderReaction() {
       ready: ['الآن! ⚡', 'اضغط بسرعة'],
       result: [
         `${s.last} ملّي ثانية`,
-        s.falseStart ? 'ضغط مبكر! احتُسبت 1500 ملّي ثانية' : 'وقت استجابتك في هذه المحاولة',
+        s.anticipated
+          ? 'ضغطة متوقعة أسرع من 70 ms! احتُسبت 1500 ms'
+          : s.falseStart
+            ? 'ضغط مبكر! احتُسبت 1500 ملّي ثانية'
+            : 'وقت استجابتك في هذه المحاولة',
       ],
     },
     t = texts[s.stage];
@@ -2089,6 +2174,7 @@ function reactionTap() {
   if (s.stage === 'idle') {
     s.stage = 'waiting';
     s.falseStart = false;
+    s.anticipated = false;
     renderReaction();
     s.waitTimer = later(
       () => {
@@ -2106,8 +2192,12 @@ function reactionTap() {
     s.last = 1500;
     recordReaction();
   } else if (s.stage === 'ready') {
-    s.last = Math.max(1, Math.round(performance.now() - s.readyAt));
-    s.falseStart = false;
+    const elapsed = performance.now() - s.readyAt;
+    // A sub-70 ms response cannot measure a deliberate reaction to a newly
+    // displayed cue reliably; treat it as anticipation, just like an early tap.
+    s.anticipated = elapsed < 70;
+    s.last = s.anticipated ? 1500 : Math.max(1, Math.round(elapsed));
+    s.falseStart = s.anticipated;
     recordReaction();
   }
 }
@@ -2117,6 +2207,7 @@ function recordReaction() {
   state.records[reactionName()].push({
     time: state.last,
     falseStart: state.falseStart,
+    anticipated: !!state.anticipated,
   });
   state.stage = 'result';
   renderReaction();
