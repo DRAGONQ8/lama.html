@@ -5,7 +5,7 @@ on:
       tag:
         description: Version tag
         required: true
-        default: v4.0.0
+        default: v5.0.0
 
 permissions:
   contents: write
@@ -21,16 +21,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
       - name: Publish the standalone file
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Use a version such as v4.0.0"
+            echo "Use a version such as v5.0.0"
             exit 1
           fi
           gh release create "$RELEASE_TAG" lamma_universe.html \
             --target "$GITHUB_SHA" \
-            --title "لَمّة ${RELEASE_TAG} — 28 لعبة" \
+            --title "لَمّة ${RELEASE_TAG} — عالم الألعاب" \
             --notes-file docs/release-notes.md

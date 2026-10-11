@@ -20,66 +20,95 @@ const extraDefaults = {
   recent: [],
   theme: 'dark',
   motion: true,
+  savedSession: null,
 };
 let rawExtra = {};
 try {
   rawExtra = JSON.parse(localStorage.getItem(KEY) || 'null')?.extra || {};
 } catch (e) {}
-store.extra = { ...extraDefaults };
-for (const k of ['played', 'best', 'daily']) {
-  store.extra[k] = Object.create(null);
-  if (rawExtra[k] && typeof rawExtra[k] === 'object' && !Array.isArray(rawExtra[k]))
-    for (const [n, v] of Object.entries(rawExtra[k]))
-      if (n.length < 80 && Number.isFinite(v) && v >= 0) store.extra[k][n] = v;
-}
-for (const k of ['favorites', 'earned'])
-  store.extra[k] = Array.isArray(rawExtra[k])
-    ? rawExtra[k].filter((v) => typeof v === 'string').slice(0, 100)
+function normalizeExtra(raw, strict = false) {
+  const e = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  if (strict && raw !== undefined && e !== raw) throw Error('Invalid extra');
+  const extra = { ...extraDefaults };
+  for (const key of ['played', 'best', 'daily']) {
+    extra[key] = Object.create(null);
+    if (e[key] !== undefined && (!e[key] || typeof e[key] !== 'object' || Array.isArray(e[key]))) {
+      if (strict) throw Error('Invalid counters');
+      continue;
+    }
+    for (const [id, value] of Object.entries(e[key] || {})) {
+      if (!id || id.length >= 80 || !safeCounter(value)) {
+        if (strict) throw Error('Invalid counter');
+        continue;
+      }
+      extra[key][id] = value;
+    }
+  }
+  for (const key of ['favorites', 'earned']) {
+    if (strict && e[key] !== undefined && !Array.isArray(e[key])) throw Error('Invalid list');
+    extra[key] = Array.isArray(e[key])
+      ? [...new Set(e[key].filter((v) => typeof v === 'string' && v.length < 80))].slice(0, 100)
+      : [];
+  }
+  const learned = e.learned ?? [];
+  if (strict && (!Array.isArray(learned) || learned.length > 200)) throw Error('Invalid learned');
+  const seen = new Set();
+  extra.learned = [];
+  for (const value of (Array.isArray(learned) ? learned : []).slice(0, 200)) {
+    const valid =
+      value &&
+      typeof value.name === 'string' &&
+      value.name.trim() &&
+      value.name.length <= 40 &&
+      categories.some((c) => c[0] === value.cat && c[0] !== 'all') &&
+      Array.isArray(value.tags) &&
+      value.tags.length <= 100 &&
+      value.tags.every((t) => questions.some((q) => q[0] === t)) &&
+      Array.isArray(value.hints) &&
+      value.hints.length === 3 &&
+      value.hints.every((h) => typeof h === 'string' && h.trim() && h.length <= 100);
+    if (!valid || seen.has(norm(latin(value.name)))) {
+      if (strict) throw Error('Invalid learned item');
+      continue;
+    }
+    const name = latin(value.name.trim());
+    seen.add(norm(name));
+    extra.learned.push({
+      name,
+      cat: value.cat,
+      tags: [...new Set(value.tags)],
+      hints: value.hints.map((h) => latin(h.trim())),
+      aliases: Array.isArray(value.aliases)
+        ? [
+            ...new Set(
+              value.aliases
+                .filter((v) => typeof v === 'string' && v.trim() && v.length <= 50)
+                .map((v) => latin(v.trim())),
+            ),
+          ].slice(0, 10)
+        : [],
+    });
+  }
+  extra.theme = e.theme === 'light' ? 'light' : 'dark';
+  extra.motion = e.motion !== false;
+  extra.recent = Array.isArray(e.recent)
+    ? e.recent
+        .filter(
+          (v) =>
+            v &&
+            typeof v.id === 'string' &&
+            v.id.length < 80 &&
+            Number.isSafeInteger(v.at) &&
+            v.at > 0,
+        )
+        .slice(0, 6)
     : [];
-store.extra.learned = Array.isArray(rawExtra.learned)
-  ? rawExtra.learned
-      .filter(
-        (v) =>
-          v &&
-          typeof v.name === 'string' &&
-          v.name.length <= 40 &&
-          categories.some((c) => c[0] === v.cat && c[0] !== 'all') &&
-          Array.isArray(v.tags) &&
-          Array.isArray(v.hints) &&
-          v.hints.length === 3 &&
-          v.hints.every((h) => typeof h === 'string' && h.length <= 100),
-      )
-      .slice(0, 200)
-      .map((v) => ({
-        ...v,
-        name: latin(v.name),
-        tags: v.tags.filter((t) => typeof t === 'string').slice(0, 100),
-        hints: v.hints.map(latin),
-        aliases: Array.isArray(v.aliases)
-          ? v.aliases.filter((a) => typeof a === 'string' && a.length <= 50).slice(0, 10)
-          : [],
-      }))
-  : [];
-store.extra.theme = rawExtra.theme === 'light' ? 'light' : 'dark';
-store.extra.motion = rawExtra.motion !== false;
-store.extra.recent = Array.isArray(rawExtra.recent)
-  ? rawExtra.recent
-      .filter((v) => v && typeof v.id === 'string' && Number.isFinite(v.at) && v.at > 0)
-      .slice(0, 6)
-  : [];
-const normalizedScores = Object.create(null);
-for (const [name, value] of Object.entries(store.scores)) {
-  const n = latin(name);
-  const old = normalizedScores[n];
-  normalizedScores[n] = {
-    points: (old?.points || 0) + value.points,
-    rounds: (old?.rounds || 0) + value.rounds,
-  };
+  extra.savedSession = normalizeSavedSession(e.savedSession);
+  if (e.experience && typeof e.experience === 'object' && !Array.isArray(e.experience))
+    extra.experience = e.experience;
+  return extra;
 }
-store.scores = normalizedScores;
-store.players = store.players.map(latin);
-if (new Set(store.players.map(norm)).size !== store.players.length)
-  store.players = store.players.map((n, i) => n + ' ' + (i + 1));
+store.extra = normalizeExtra(rawExtra);
 function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify(store));
@@ -547,6 +576,8 @@ function syncLearned(force = false) {
     return false;
   }
   items.splice(builtInCount);
+  const builtInNames = new Set(items.map((v) => norm(v.name)));
+  store.extra.learned = store.extra.learned.filter((v) => !builtInNames.has(norm(v.name)));
   items.push(
     ...store.extra.learned.map((v) => ({
       name: v.name,
@@ -633,6 +664,7 @@ function level() {
   return Math.floor(totalPoints() / 250) + 1;
 }
 function home() {
+  captureSoloSession();
   clearTimers();
   removePause();
   screen = 'home';
@@ -744,8 +776,11 @@ function openPeople() {
   );
 }
 function savePeople() {
-  const a = Array.from({ length: 12 }, (_, i) => latin($('name' + i).value.trim())).filter(Boolean);
+  const a = Array.from({ length: 12 }, (_, i) => normalizePlayerName($('name' + i).value)).filter(
+    Boolean,
+  );
   if (!$('name0').value.trim()) return toast('اكتب أول اسم.');
+  if (a.some((name) => name.length > 24)) return toast('الاسم يجب أن يكون 24 حرفاً أو أقل.');
   if (new Set(a.map(norm)).size !== a.length) return toast('اختار اسم مختلف لكل لاعب.');
   store.players = a;
   save();
@@ -918,11 +953,13 @@ document.addEventListener('input', (e) => {
   }
 });
 function addScore(name, points) {
-  legacyAddScore(name, points);
+  if (!Number.isFinite(points)) return;
+  points = Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.round(points)));
+  if (!legacyAddScore(name, points)) return;
   const id = state?.id;
   if (id) {
     recordRecent(id);
-    store.extra.played[id] = (store.extra.played[id] || 0) + 1;
+    store.extra.played[id] = sumCounter(store.extra.played[id] || 0, 1);
     store.extra.best[id] = Math.max(store.extra.best[id] || 0, points);
   }
   if (tourney?.active && name === player())
@@ -1065,55 +1102,20 @@ function exportProgress() {
 }
 async function importProgress(file) {
   if (!file) return;
+  pendingImport = null;
   if (file.size > 1500000) return toast('الملف أكبر من الحد المسموح.');
   try {
     const obj = JSON.parse(await file.text());
+    if (obj?.format !== 'lamma-universe' || obj.version !== 3 || !obj.data) throw Error();
+    const base = normalizeProgressBase(obj.data, true),
+      extra = normalizeExtra(obj.data.extra, true);
     if (
-      obj.format !== 'lamma-universe' ||
-      obj.version !== 3 ||
-      !obj.data ||
-      !Array.isArray(obj.data.players) ||
-      obj.data.players.length < 1 ||
-      obj.data.players.length > 12 ||
-      !obj.data.players.every((n) => typeof n === 'string' && n.trim() && n.length <= 24) ||
-      new Set(obj.data.players.map((n) => norm(latin(n)))).size !== obj.data.players.length ||
-      !obj.data.scores ||
-      typeof obj.data.scores !== 'object'
-    )
-      throw Error();
-    const proposed = obj.data;
-    if (Array.isArray(proposed.scores)) throw Error();
-    for (const [n, v] of Object.entries(proposed.scores))
-      if (
-        !n.trim() ||
-        n.length > 24 ||
-        !v ||
-        !Number.isFinite(v.points) ||
-        v.points < 0 ||
-        !Number.isInteger(v.rounds) ||
-        v.rounds < 0
-      )
-        throw Error();
-    const le = proposed.extra?.learned || [];
-    if (
-      !Array.isArray(le) ||
-      le.length > 200 ||
-      !le.every(
-        (v) =>
-          v &&
-          typeof v.name === 'string' &&
-          v.name.trim() &&
-          v.name.length <= 40 &&
-          categories.some((c) => c[0] === v.cat && c[0] !== 'all') &&
-          Array.isArray(v.tags) &&
-          v.tags.every((t) => questions.some((q) => q[0] === t)) &&
-          Array.isArray(v.hints) &&
-          v.hints.length === 3 &&
-          v.hints.every((h) => typeof h === 'string' && h.length <= 100),
+      extra.learned.some((v) =>
+        items.slice(0, builtInCount).some((i) => norm(i.name) === norm(v.name)),
       )
     )
-      throw Error();
-    pendingImport = proposed;
+      throw Error('Duplicate learned item');
+    pendingImport = { ...base, extra };
     openModal(
       '<div class="modalhead"><h2 id="modaltitle">استيراد النسخة</h2><button onclick="closeModal()">✕</button></div><p>النسخة صالحة. الاستيراد يستبدل الأسماء والنقاط والإضافات المحفوظة حالياً.</p><div class="actions"><button onclick="closeModal()">إلغاء</button><button class="primary" onclick="confirmImport()">استيراد</button></div>',
     );
@@ -1124,52 +1126,20 @@ async function importProgress(file) {
 let pendingImport = null;
 function confirmImport() {
   if (!pendingImport) return;
-  const d = pendingImport;
-  store.players = d.players.map(latin);
-  store.scores = Object.create(null);
-  for (const [n, v] of Object.entries(d.scores)) {
-    const key = latin(n),
-      old = store.scores[key];
-    store.scores[key] = {
-      points: (old?.points || 0) + v.points,
-      rounds: (old?.rounds || 0) + v.rounds,
-    };
-  }
-  store.sound = d.sound === true;
-  const e = d.extra || {};
-  store.extra = {
-    ...extraDefaults,
-    favorites: Array.isArray(e.favorites)
-      ? [...new Set(e.favorites.filter((v) => games.some((g) => g[0] === v)))]
-      : [],
-    earned: Array.isArray(e.earned) ? e.earned.filter((v) => badges.some((b) => b[0] === v)) : [],
-    learned: (e.learned || []).map((v) => ({
-      ...v,
-      name: latin(v.name),
-      hints: v.hints.map(latin),
-      aliases: Array.isArray(v.aliases)
-        ? v.aliases
-            .filter((a) => typeof a === 'string' && a.length <= 50)
-            .slice(0, 10)
-            .map(latin)
-        : [],
-    })),
-    recent: Array.isArray(e.recent)
-      ? e.recent
-          .filter((v) => v && games.some((g) => g[0] === v.id) && Number.isFinite(v.at) && v.at > 0)
-          .slice(0, 6)
-      : [],
-    theme: e.theme === 'light' ? 'light' : 'dark',
-    motion: e.motion !== false,
-  };
-  for (const k of ['played', 'best', 'daily']) {
-    store.extra[k] = Object.create(null);
-    if (e[k] && typeof e[k] === 'object')
-      for (const [n, v] of Object.entries(e[k]))
-        if (Number.isFinite(v) && v >= 0 && n.length < 80) store.extra[k][n] = v;
-  }
+  const imported = pendingImport;
   pendingImport = null;
-  syncLearned();
+  clearTimers();
+  removePause();
+  closeModal(true);
+  state = null;
+  screen = 'home';
+  tourney = null;
+  dailyRun = null;
+  store = imported;
+  if (typeof normalizeExperience === 'function')
+    store.extra.experience = normalizeExperience(store.extra.experience);
+  oldScores = null;
+  syncLearned(true);
   save();
   applySettings();
   soundUI();
@@ -1182,6 +1152,7 @@ function setup(id, internal = false) {
     tourney = null;
     dailyRun = null;
   }
+  captureSoloSession();
   recordRecent(id);
   clearTimers();
   removePause();
@@ -1263,13 +1234,15 @@ function opponentChanged() {
   $('botfield').hidden = friend;
 }
 function result(id, title, text, points = 0, detail = '') {
+  if (state?.resultShown) return;
+  if (state) state.resultShown = true;
+  points = Number.isFinite(points)
+    ? Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.round(points)))
+    : 0;
   clearTimers();
   if (state) state.done = true;
   removePause();
-  if (points === 0) {
-    legacyAddScore(state?.name || player(), 0);
-    store.extra.played[id] = (store.extra.played[id] || 0) + 1;
-  }
+  if (points === 0 && !state?.roundRecorded) addScore(state?.name || player(), 0);
   if (dailyRun && dailyRun.id === id) {
     const k = dailyRun.date + ':' + id;
     store.extra.daily[k] = Math.max(store.extra.daily[k] || 0, points);
@@ -1546,7 +1519,7 @@ function renderMind() {
   );
 }
 function confirmMind(ok) {
-  if (screen !== 'mind' || state.done) return;
+  if (screen !== 'mind' || state.done || coreBlocked()) return;
   if (!ok) {
     openModal(
       '<div class="modalhead"><h2 id="modaltitle">نقدر نعلّمها</h2><button onclick="closeModal()">✕</button></div><p class="muted">إذا الشي خارج القائمة، أضفه مع صفاته. وإذا جاوبت بالغلط، ارجع وصحّح الإجابة.</p><div class="actions"><button onclick="closeModal();undoMind()">تراجع عن سؤال</button><button class="primary" onclick="teachItem()">أضف الشي</button></div>',
@@ -1735,3 +1708,286 @@ document.addEventListener('visibilitychange', () => {
   )
     renderHome();
 });
+
+// A compact, versioned checkpoint for the longer solo puzzles. Secret party roles
+// and timed daily/tournament rounds are deliberately never persisted here.
+function validSlideCheckpoint(board, empty, path, size) {
+  if (
+    !Array.isArray(board) ||
+    board.length !== size * size ||
+    new Set(board).size !== board.length ||
+    board.some((n) => !Number.isInteger(n) || n < 0 || n >= board.length) ||
+    board[empty] !== 0 ||
+    !Array.isArray(path) ||
+    path.length > 4000
+  )
+    return false;
+  const test = [...board];
+  let hole = empty;
+  for (let step = path.length - 1; step >= 0; step--) {
+    const index = path[step];
+    if (!Number.isInteger(index) || !slideNeighbors(hole, size).includes(index)) return false;
+    [test[index], test[hole]] = [test[hole], test[index]];
+    hole = index;
+  }
+  return slideSolved(test);
+}
+function normalizeSavedSession(raw) {
+  try {
+    if (
+      !raw ||
+      raw.version !== 1 ||
+      !['code', 'slide', 'sudoku'].includes(raw.id) ||
+      !['easy', 'normal', 'hard'].includes(raw.level) ||
+      !safeCounter(raw.at) ||
+      !safeCounter(raw.elapsed) ||
+      raw.elapsed > 31536000 ||
+      typeof raw.name !== 'string' ||
+      !normalizePlayerName(raw.name) ||
+      raw.name.length > 24 ||
+      !raw.data ||
+      typeof raw.data !== 'object' ||
+      Array.isArray(raw.data)
+    )
+      return null;
+    const d = raw.data,
+      data = {};
+    if (raw.id === 'code') {
+      if (
+        ![3, 4, 5].includes(d.length) ||
+        typeof d.duplicates !== 'boolean' ||
+        !Array.isArray(d.secret) ||
+        d.secret.length !== d.length ||
+        d.secret.some((n) => !Number.isInteger(n) || n < 0 || n > 9) ||
+        (!d.duplicates && new Set(d.secret).size !== d.length) ||
+        ![8, 10, 12].includes(d.max) ||
+        !Array.isArray(d.attempts) ||
+        d.attempts.length >= d.max ||
+        !safeCounter(d.hints) ||
+        d.hints >= d.length ||
+        !d.revealed ||
+        typeof d.revealed !== 'object' ||
+        Array.isArray(d.revealed) ||
+        Object.keys(d.revealed).length !== d.hints ||
+        Object.entries(d.revealed).some(
+          ([key, value]) =>
+            !/^\d$/.test(key) || Number(key) >= d.length || value !== d.secret[Number(key)],
+        ) ||
+        !Array.isArray(d.draft) ||
+        d.draft.length !== d.length ||
+        d.draft.some((n) => !Number.isInteger(n) || n < 0 || n > 9)
+      )
+        return null;
+      for (const attempt of d.attempts) {
+        if (
+          !attempt ||
+          !Array.isArray(attempt.guess) ||
+          attempt.guess.length !== d.length ||
+          attempt.guess.some((n) => !Number.isInteger(n) || n < 0 || n > 9) ||
+          (!d.duplicates && new Set(attempt.guess).size !== d.length)
+        )
+          return null;
+        const feedback = codeFeedback(d.secret, attempt.guess);
+        if (
+          feedback.exact === d.length ||
+          feedback.exact !== attempt.exact ||
+          feedback.misplaced !== attempt.misplaced
+        )
+          return null;
+      }
+      Object.assign(data, {
+        length: d.length,
+        duplicates: d.duplicates,
+        secret: [...d.secret],
+        max: d.max,
+        attempts: d.attempts.map((a) => ({
+          guess: [...a.guess],
+          exact: a.exact,
+          misplaced: a.misplaced,
+        })),
+        hints: d.hints,
+        revealed: { ...d.revealed },
+        draft: [...d.draft],
+        analysis: null,
+      });
+      for (const [key, value] of Object.entries(data.revealed)) data.draft[Number(key)] = value;
+    } else if (raw.id === 'slide') {
+      if (
+        ![3, 4, 5].includes(d.size) ||
+        !safeCounter(d.moves) ||
+        !safeCounter(d.hints) ||
+        typeof d.assisted !== 'boolean' ||
+        !validSlideCheckpoint(d.board, d.empty, d.path, d.size) ||
+        slideSolved(d.board) ||
+        !d.initial ||
+        !validSlideCheckpoint(d.initial.board, d.initial.empty, d.initial.path, d.size)
+      )
+        return null;
+      Object.assign(data, {
+        size: d.size,
+        board: [...d.board],
+        empty: d.empty,
+        path: [...d.path],
+        moves: d.moves,
+        hints: d.hints,
+        assisted: d.assisted,
+        initial: { board: [...d.initial.board], empty: d.initial.empty, path: [...d.initial.path] },
+        history: [],
+      });
+    } else {
+      if (
+        !Array.isArray(d.solution) ||
+        d.solution.length !== 81 ||
+        d.solution.some(
+          (n, i) => !Number.isInteger(n) || n < 1 || n > 9 || sudokuConflicts(d.solution, i),
+        ) ||
+        !Array.isArray(d.board) ||
+        d.board.length !== 81 ||
+        d.board.some((n) => !Number.isInteger(n) || n < 0 || n > 9) ||
+        d.board.every((n, i) => n === d.solution[i]) ||
+        !Array.isArray(d.given) ||
+        d.given.length !== 81 ||
+        d.given.some(
+          (given, i) => typeof given !== 'boolean' || (given && d.board[i] !== d.solution[i]),
+        ) ||
+        !Number.isInteger(d.selected) ||
+        d.selected < 0 ||
+        d.selected > 80 ||
+        !safeCounter(d.hints) ||
+        !safeCounter(d.checks) ||
+        !Array.isArray(d.notes) ||
+        d.notes.length !== 81 ||
+        d.notes.some(
+          (a) =>
+            !Array.isArray(a) ||
+            a.length > 9 ||
+            new Set(a).size !== a.length ||
+            a.some((n) => !Number.isInteger(n) || n < 1 || n > 9),
+        )
+      )
+        return null;
+      Object.assign(data, {
+        solution: [...d.solution],
+        board: [...d.board],
+        given: [...d.given],
+        selected: d.selected,
+        hints: d.hints,
+        checks: d.checks,
+        notes: d.notes.map((a) => [...a]),
+        noteMode: d.noteMode === true,
+        showCandidates: d.showCandidates === true,
+        checked: [],
+        history: [],
+        lastCheckedBoard:
+          typeof d.lastCheckedBoard === 'string' && /^[0-9]{81}$/.test(d.lastCheckedBoard)
+            ? d.lastCheckedBoard
+            : '',
+      });
+    }
+    return {
+      version: 1,
+      id: raw.id,
+      level: raw.level,
+      name: normalizePlayerName(raw.name),
+      at: raw.at,
+      elapsed: raw.elapsed,
+      data,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+function captureSoloSession() {
+  const s = state;
+  if (
+    !s ||
+    screen !== s.id ||
+    s.fixed ||
+    dailyRun ||
+    tourney?.active ||
+    !['code', 'slide', 'sudoku'].includes(s.id)
+  )
+    return;
+  if (s.done) {
+    if (store.extra.savedSession?.id === s.id && store.extra.savedSession.name === s.name) {
+      store.extra.savedSession = null;
+      save();
+    }
+    return;
+  }
+  const keys =
+    s.id === 'code'
+      ? ['length', 'duplicates', 'secret', 'max', 'attempts', 'hints', 'revealed', 'draft']
+      : s.id === 'slide'
+        ? ['size', 'board', 'empty', 'path', 'moves', 'hints', 'assisted', 'initial']
+        : [
+            'solution',
+            'board',
+            'given',
+            'selected',
+            'hints',
+            'checks',
+            'notes',
+            'noteMode',
+            'showCandidates',
+            'lastCheckedBoard',
+          ];
+  const data = Object.fromEntries(keys.map((key) => [key, s[key]]));
+  const snapshot = normalizeSavedSession({
+    version: 1,
+    id: s.id,
+    name: s.name,
+    level: s.level,
+    at: Date.now(),
+    elapsed: s.started ? extraElapsed(s) : 0,
+    data,
+  });
+  if (snapshot) {
+    store.extra.savedSession = snapshot;
+    save();
+  }
+}
+function snapshotHTML() {
+  const snapshot = store.extra.savedSession,
+    game = snapshot && games.find((g) => g[0] === snapshot.id);
+  return game
+    ? `<section class="panel"><div class="sectionhead"><div><span class="world-label">💾 لغز محفوظ</span><h3>كمّل ${esc(game[2])}</h3><p class="note">${esc(snapshot.name)} · اللوحة والمحاولات والمساعدات محفوظة.</p></div><button class="primary" onclick="resumeSavedGame()">نكمل اللعب ←</button></div></section>`
+    : '';
+}
+function resumeSavedGame() {
+  const snapshot = normalizeSavedSession(store.extra.savedSession);
+  if (!snapshot) {
+    store.extra.savedSession = null;
+    save();
+    return toast('اللوحة المحفوظة غير متاحة. ابدأ لغزاً جديداً.');
+  }
+  if (
+    snapshot.id === 'sudoku' &&
+    sudokuCount(snapshot.data.solution.map((n, i) => (snapshot.data.given[i] ? n : 0))) !== 1
+  ) {
+    store.extra.savedSession = null;
+    save();
+    return toast('اللغز المحفوظ غير صالح. ابدأ لوحة جديدة.');
+  }
+  captureSoloSession();
+  clearTimers();
+  removePause();
+  closeModal(true);
+  tourney = null;
+  dailyRun = null;
+  screen = snapshot.id;
+  state = {
+    id: snapshot.id,
+    name: snapshot.name,
+    level: snapshot.level,
+    fixed: false,
+    done: false,
+    ...snapshot.data,
+    started: Date.now() - snapshot.elapsed * 1000,
+  };
+  if (snapshot.id === 'code') renderCode('رجعنا إلى نفس الشفرة؛ محاولاتك ومساعداتك محفوظة.');
+  else if (snapshot.id === 'slide') renderSlide('نكمل اللوحة المحفوظة من آخر حركة.');
+  else renderSudoku('نكمل اللغز؛ الأرقام والملاحظات والمساعدات محفوظة.');
+  goTop();
+}
+window.addEventListener('pagehide', captureSoloSession);

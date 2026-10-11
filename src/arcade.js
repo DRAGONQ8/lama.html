@@ -103,23 +103,24 @@ function arcadeToolbar(id) {
 function arcadeSwipe(el, move) {
   let point = null;
   el.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    point = { x: e.clientX, y: e.clientY };
+    if (point || !e.isPrimary || e.button !== 0) return;
+    point = { x: e.clientX, y: e.clientY, id: e.pointerId };
     el.setPointerCapture?.(e.pointerId);
   });
   el.addEventListener('pointermove', (e) => {
-    if (!point) return;
+    if (!point || e.pointerId !== point.id) return;
     const dx = e.clientX - point.x,
       dy = e.clientY - point.y;
     if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
     move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up');
-    point = { x: e.clientX, y: e.clientY };
+    point = { x: e.clientX, y: e.clientY, id: e.pointerId };
   });
-  const stop = () => {
-    point = null;
+  const stop = (e) => {
+    if (e.pointerId === point?.id) point = null;
   };
   el.addEventListener('pointerup', stop);
   el.addEventListener('pointercancel', stop);
+  el.addEventListener('lostpointercapture', stop);
 }
 function startArcade(id) {
   if (screen !== 'setup' || state?.id !== id || !arcadeIDs.has(id)) return;
@@ -314,7 +315,7 @@ function snakeEnd(title, full = false) {
     points = full ? 100 : Math.min(100, s.fruitCount * ({ 240: 3, 150: 5, 90: 7 }[s.speed] || 5));
   finishExtra(
     title,
-    `جمعت ${s.fruitCount} فاكهة، ووصل طولك إلى ${s.snake.length} خلال ${arcadeTimeText(arcadeSeconds(s))}.`,
+    `جمعت ${s.fruitCount} فاكهة، ووصل طولك إلى ${s.snake.length} خلال ${arcadeTimeText(s.running ? arcadeSeconds(s) : 0)}.`,
     points,
   );
 }
@@ -501,7 +502,11 @@ function minesBoardHTML(s = state, final = false) {
     .join('')}</div></div>`;
 }
 function renderMines() {
-  const s = state;
+  const s = state,
+    previousBoard = document.querySelector('.mines-scroll'),
+    scrollLeft = previousBoard?.scrollLeft || 0,
+    scrollTop = previousBoard?.scrollTop || 0,
+    restoreFocus = !!document.activeElement?.closest('.mine-cell');
   setHTML(
     wrap(
       'mines',
@@ -513,6 +518,13 @@ function renderMines() {
         `<section class="panel arcade-panel"><div class="mine-mode"><button class="${!s.flagMode ? 'primary' : ''}" onclick="mineMode(false)" aria-pressed="${!s.flagMode}">🔍 كشف الخانات</button><button class="${s.flagMode ? 'warm' : ''}" onclick="mineMode(true)" aria-pressed="${s.flagMode}">⚑ وضع الأعلام</button></div>${minesBoardHTML(s)}<p class="note center">${s.flagMode ? 'وضع الأعلام: اضغط خانة مغلقة لوضع علم أو إزالته.' : 'اضغط للكشف. اضغط رقماً مكشوفاً لفتح الجيران بعد وضع أعلامه.'}<br>الفأرة اليمنى أو F للأعلام · الأسهم للتنقل · Enter للكشف.</p>${arcadeToolbar('mines')}</section>`,
     ),
   );
+  const board = document.querySelector('.mines-scroll');
+  board.scrollLeft = scrollLeft;
+  board.scrollTop = scrollTop;
+  if (restoreFocus)
+    document
+      .querySelector(`.mine-cell[data-index="${s.selected}"]`)
+      ?.focus({ preventScroll: true });
 }
 function mineMode(flag) {
   if (!arcadeReady('mines')) return;
@@ -594,7 +606,7 @@ function mineFinish(win) {
     );
 }
 function mineNavigate(dir) {
-  if (!arcadeReady('mines')) return;
+  if (!arcadeReady('mines') || !arcadeDelta[dir]) return;
   const s = state,
     [dx, dy] = arcadeDelta[dir],
     x = (s.selected % s.size) + dx,
@@ -603,7 +615,9 @@ function mineNavigate(dir) {
   s.selected = y * s.size + x;
   for (const el of document.querySelectorAll('.mine-cell[data-index]'))
     el.tabIndex = Number(el.dataset.index) === s.selected ? 0 : -1;
-  document.querySelector(`.mine-cell[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
+  const cell = document.querySelector(`.mine-cell[data-index="${s.selected}"]`);
+  cell?.focus({ preventScroll: true });
+  cell?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
 
 // Maze: iterative depth-first carving gives one connected path system.
@@ -704,7 +718,8 @@ function mazeMove(dir) {
   s.position = i;
   s.moves++;
   s.trail.add(i);
-  s.hintPath = [];
+  // Keep the remaining route visible while following it; leaving the route clears it.
+  s.hintPath = s.hintPath[1] === i ? s.hintPath.slice(1) : [];
   if (s.stars.delete(i)) {
     tone();
     $('mazeStars').textContent = s.starTotal - s.stars.size + ' / ' + s.starTotal;
@@ -820,7 +835,11 @@ document.addEventListener('keydown', (e) => {
   if (
     !arcadeIDs.has(screen) ||
     !arcadeReady(screen) ||
-    e.target.matches('input,select,textarea,[contenteditable="true"]')
+    e.ctrlKey ||
+    e.metaKey ||
+    e.altKey ||
+    e.isComposing ||
+    e.target.closest?.('input,select,textarea,[contenteditable="true"]')
   )
     return;
   const dirs = {
@@ -834,7 +853,7 @@ document.addEventListener('keydown', (e) => {
       d: 'right',
     },
     dir = dirs[e.key] || dirs[e.key.toLowerCase()];
-  if (e.key === ' ' && screen !== 'mines' && !e.target.closest('button')) {
+  if (e.key === ' ' && screen !== 'mines' && !e.repeat && !e.target.closest('button')) {
     e.preventDefault();
     showPause();
     return;
@@ -843,11 +862,12 @@ document.addEventListener('keydown', (e) => {
     if (dir) {
       e.preventDefault();
       mineNavigate(dir);
-    } else if (e.key.toLowerCase() === 'f') {
+    } else if (e.key.toLowerCase() === 'f' && !e.repeat) {
       e.preventDefault();
       mineFlag(state.selected);
     } else if (
       (e.key === 'Enter' || e.key === ' ') &&
+      !e.repeat &&
       (!e.target.closest('button') || e.target.closest('.mine-cell'))
     ) {
       e.preventDefault();
@@ -862,7 +882,7 @@ document.addEventListener('keydown', (e) => {
       if (!e.repeat) mergeMove(dir);
     } else mazeMove(dir);
   }
-  if (screen === 'merge' && e.key.toLowerCase() === 'z') {
+  if (screen === 'merge' && e.key.toLowerCase() === 'z' && !e.repeat) {
     e.preventDefault();
     mergeUndo();
   }

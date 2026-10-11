@@ -1,5 +1,5 @@
 function startExtra(id) {
-  if (screen !== 'setup' || state?.id !== id) return;
+  if (screen !== 'setup' || state?.id !== id || coreBlocked()) return;
   clearTimers();
   seededRandom = dailyRun
     ? makeSeed(dailyRun.date + ':' + id)
@@ -272,11 +272,16 @@ function boardMove(pos, botMove = false) {
     s.winline = w.line;
     clearTimers();
     const p = w.p === 0 ? 10 : !s.bot || w.p === 1 ? 50 : 0;
-    if (p > 0) {
-      s.name = w.p ? s.names[w.p - 1] : s.names[0];
+    // Record participation for both people, including a zero-point loss.
+    if (s.bot) {
+      s.name = s.names[0];
       addScore(s.name, p);
-      if (w.p === 0 && !s.bot) addScore(s.names[1], 10);
+    } else {
+      s.name = w.p ? s.names[w.p - 1] : s.names[0];
+      for (let index = 0; index < s.names.length; index++)
+        addScore(s.names[index], w.p === 0 ? 10 : w.p === index + 1 ? 50 : 0);
     }
+    s.roundRecorded = true;
     s.points = p;
     renderBoard();
     if (p > 10) {
@@ -404,6 +409,7 @@ function codeFeedback(secret, guess) {
 function readCodeDraft() {
   const s = state;
   s.draft = Array.from({ length: s.length }, (_, i) => Number($('digit' + i)?.value ?? s.draft[i]));
+  captureSoloSession();
   return s.draft;
 }
 function renderCode(msg = '') {
@@ -984,7 +990,9 @@ function undoSudoku() {
 function checkSudoku() {
   if (screen !== 'sudoku' || state.done || advancedBlocked()) return;
   const s = state;
-  s.checks++;
+  const signature = s.board.join('');
+  if (signature !== s.lastCheckedBoard) s.checks++;
+  s.lastCheckedBoard = signature;
   s.checked = s.board.map((v, i) => (v && v !== s.solution[i] ? i : -1)).filter((i) => i >= 0);
   renderSudoku(
     s.checked.length

@@ -32,7 +32,7 @@ async function check(name, test) {
 
 try {
   await page.goto(`http://127.0.0.1:${port}`);
-  await check('Standalone library has 28 unique games and expanded vocabulary', async () => {
+  await check('Standalone library has 34 unique games and expanded vocabulary', async () => {
     const info = await page.evaluate(() => ({
       games: games.length,
       ids: games.map((g) => g[0]),
@@ -40,15 +40,15 @@ try {
       names: items.map((i) => norm(i.name)),
       cards: document.querySelectorAll('.gamecard').length,
     }));
-    assert.equal(info.games, 28);
-    assert.equal(new Set(info.ids).size, 28);
-    assert.equal(info.cards, 28);
+    assert.equal(info.games, 34);
+    assert.equal(new Set(info.ids).size, 34);
+    assert.equal(info.cards, 34);
     assert.ok(info.vocabulary >= 218, `Vocabulary: ${info.vocabulary}`);
     assert.equal(new Set(info.names).size, info.names.length, 'Vocabulary contains duplicates');
   });
   await check('Every game opens and starts through its visible start button', async () => {
     await page.evaluate(() => {
-      store.players = ['أحمد', 'ليلى', 'سالم'];
+      store.players = ['أحمد', 'ليلى', 'سالم', 'نورة'];
     });
     const ids = await page.evaluate(() => games.map((g) => g[0]));
     for (const id of ids) {
@@ -383,7 +383,17 @@ try {
       if (width === 1440 || width === 390) {
         await page.screenshot({ path: `test-results/home-${width}.png`, fullPage: true });
       }
-      for (const id of ['sudoku', 'connect', 'mines', 'merge', 'wordguess', 'maze']) {
+      for (const id of [
+        'sudoku',
+        'connect',
+        'mines',
+        'merge',
+        'wordguess',
+        'maze',
+        'nonogram',
+        'lights',
+        'pipes',
+      ]) {
         await page.evaluate((id) => setup(id), id);
         const action = await page
           .locator('#app button[onclick]')
@@ -406,7 +416,7 @@ try {
     assert.ok(!/يديد|يديدة/.test(html));
     assert.deepEqual(errors, []);
   });
-  await check('All 28 games also start with network access disabled', async () => {
+  await check('All 34 games also start with network access disabled', async () => {
     const offline = await browser.newContext();
     await offline.setOffline(true);
     const offlinePage = await offline.newPage();
@@ -414,7 +424,7 @@ try {
     offlinePage.on('pageerror', (error) => offlineErrors.push(error.message));
     await offlinePage.setContent(html);
     await offlinePage.evaluate(() => {
-      store.players = ['أحمد', 'ليلى', 'سالم'];
+      store.players = ['أحمد', 'ليلى', 'سالم', 'نورة'];
     });
     for (const id of await offlinePage.evaluate(() => games.map((g) => g[0]))) {
       await offlinePage.evaluate((id) => setup(id), id);

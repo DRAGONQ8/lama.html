@@ -17,46 +17,92 @@ const norm = (s) =>
     .replace(/\s+/g, ' ')
     .toLowerCase();
 const KEY = 'lamma-universe-v3';
+// Keep display names stable across typed input, backup imports, and reloads.
+function normalizePlayerName(value) {
+  return typeof value === 'string'
+    ? value
+        .replace(/[\u0660-\u0669]/g, (c) => String(c.charCodeAt(0) - 0x660))
+        .replace(/[\u06f0-\u06f9]/g, (c) => String(c.charCodeAt(0) - 0x6f0))
+        .trim()
+        .replace(/\s+/g, ' ')
+    : '';
+}
+function safeCounter(value) {
+  return Number.isSafeInteger(value) && value >= 0;
+}
+function sumCounter(a, b) {
+  return Math.min(Number.MAX_SAFE_INTEGER, a + b);
+}
+function normalizeProgressBase(raw, strict = false) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw Error('Invalid progress');
+  if (!Array.isArray(raw.players) || raw.players.length < 1 || raw.players.length > 12)
+    throw Error('Invalid players');
+  const players = [],
+    used = new Set();
+  for (const value of raw.players) {
+    let name = normalizePlayerName(value);
+    if (!name || name.length > 24) throw Error('Invalid player name');
+    if (used.has(norm(name))) {
+      if (strict) throw Error('Duplicate player');
+      const original = name;
+      let suffix = 2;
+      do {
+        const ending = ' ' + suffix++;
+        name = original.slice(0, 24 - ending.length).trimEnd() + ending;
+      } while (used.has(norm(name)));
+    }
+    used.add(norm(name));
+    players.push(name);
+  }
+  const scores = Object.create(null);
+  if (
+    raw.scores !== undefined &&
+    (!raw.scores || typeof raw.scores !== 'object' || Array.isArray(raw.scores))
+  ) {
+    if (strict) throw Error('Invalid scores');
+  } else {
+    for (const [key, value] of Object.entries(raw.scores || {})) {
+      const name = normalizePlayerName(key);
+      if (
+        !name ||
+        name.length > 24 ||
+        !value ||
+        !safeCounter(value.points) ||
+        !safeCounter(value.rounds)
+      ) {
+        if (strict) throw Error('Invalid score');
+        continue;
+      }
+      const old = scores[name];
+      scores[name] = {
+        points: sumCounter(old?.points || 0, value.points),
+        rounds: sumCounter(old?.rounds || 0, value.rounds),
+      };
+    }
+  }
+  return { players, scores, sound: raw.sound === true };
+}
 let store = {
   players: ['أنا', 'صاحبي'],
   scores: Object.create(null),
   sound: false,
 };
 try {
-  const s = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lamma-v1') || 'null');
-  if (
-    s &&
-    Array.isArray(s.players) &&
-    s.players.length >= 1 &&
-    s.players.length <= 12 &&
-    s.players.every((n) => typeof n === 'string' && n.trim() && n.length <= 24) &&
-    new Set(s.players).size === s.players.length
-  ) {
-    store.players = s.players;
-    store.sound = s.sound === true;
-    if (s.scores && typeof s.scores === 'object') {
-      for (const [n, v] of Object.entries(s.scores)) {
-        if (n.length > 24 || !n.trim()) continue;
-        if (
-          v &&
-          Number.isFinite(v.points) &&
-          v.points >= 0 &&
-          Number.isInteger(v.rounds) &&
-          v.rounds >= 0
-        )
-          store.scores[n] = { points: v.points, rounds: v.rounds };
-      }
-    }
-  }
+  const saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lamma-v1') || 'null');
+  if (saved) store = normalizeProgressBase(saved);
 } catch (e) {}
 
 function legacyAddScore(name, points) {
-  const old = store.scores[name];
+  name = normalizePlayerName(name);
+  if (!name || name.length > 24 || !Number.isFinite(points)) return false;
+  const earned = Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.round(points))),
+    old = store.scores[name];
   store.scores[name] = {
-    points: (old?.points || 0) + Math.max(0, Math.round(points)),
-    rounds: (old?.rounds || 0) + 1,
+    points: sumCounter(old?.points || 0, earned),
+    rounds: sumCounter(old?.rounds || 0, 1),
   };
   save();
+  return true;
 }
 let audioCtx;
 function tone(win = false) {
@@ -93,7 +139,11 @@ let timers = [],
   filter = 'all',
   previousFocus = null;
 const later = (f, ms) => {
-  const id = setTimeout(f, ms);
+  const id = setTimeout(() => {
+    const index = timers.indexOf(id);
+    if (index >= 0) timers.splice(index, 1);
+    f();
+  }, ms);
   timers.push(id);
   return id;
 };
@@ -118,6 +168,7 @@ function toast(msg) {
 }
 function setHTML(html) {
   $('app').innerHTML = latin(html);
+  captureSoloSession();
 }
 function goTop() {
   window.scrollTo?.({ top: 0, behavior: 'instant' });
@@ -195,6 +246,8 @@ const player = () =>
     : store.players[Number($('player')?.value || 0)] || store.players[0];
 
 function boardHTML(names = store.players, results = null) {
+  let previous = null,
+    rank = 0;
   return `<div class="board">${names
     .map((n) => ({
       n,
@@ -202,10 +255,11 @@ function boardHTML(names = store.players, results = null) {
       rounds: store.scores[n]?.rounds || 0,
     }))
     .sort((a, b) => b.points - a.points)
-    .map(
-      (v, i) =>
-        `<div class="boardrow"><span class="rank">${i === 0 ? '🥇' : i + 1}</span><div class="name"><b>${esc(v.n)}</b>${!results ? `<small>${v.rounds} جولة</small>` : ''}</div><span class="score">${v.points}</span></div>`,
-    )
+    .map((v, i) => {
+      if (v.points !== previous) rank = i + 1;
+      previous = v.points;
+      return `<div class="boardrow"><span class="rank">${rank === 1 ? '🥇' : rank}</span><div class="name"><b>${esc(v.n)}</b>${!results ? `<small>${v.rounds} جولة</small>` : ''}</div><span class="score">${v.points}</span></div>`;
+    })
     .join('')}</div>`;
 }
 
@@ -373,6 +427,7 @@ function legacyResult(id, title, text, points = 0, detail = '') {
   );
 }
 function startNumber(id) {
+  if (screen !== 'setup' || state?.id !== id || coreBlocked()) return;
   try {
     const free = id === 'finder' && $('preset').value === 'free';
     const [l, h] = free ? [null, null] : bounds();
@@ -1252,6 +1307,7 @@ function chooseQuestion(candidates, asked) {
   return best;
 }
 function startMind() {
+  if (screen !== 'setup' || state?.id !== 'mind' || coreBlocked()) return;
   state = {
     id: 'mind',
     candidates: selectedItems(),
@@ -1309,6 +1365,7 @@ function pickMind(i) {
 
 const recentWho = [];
 function startWho() {
+  if (screen !== 'setup' || state?.id !== 'who' || coreBlocked()) return;
   const pool = selectedItems();
   if (!pool.length) return toast('لا توجد كلمات في هذه الفئة.');
   const fresh = pool.filter((i) => !recentWho.includes(i)),
@@ -1546,6 +1603,7 @@ function memoryElapsed(s = state) {
   return s.started ? Math.max(0, Math.floor(((s.pausedAt || Date.now()) - s.started) / 1000)) : 0;
 }
 function startMemory() {
+  if (screen !== 'setup' || state?.id !== 'memory' || coreBlocked()) return;
   clearTimers();
   const value = Number($('difficulty').value),
     pairs = [4, 6, 8, 12, 16, 20, 24].includes(value) ? value : 8,
@@ -1681,6 +1739,7 @@ function flipCard(i) {
   renderMemory();
 }
 function startMime() {
+  if (screen !== 'setup' || state?.id !== 'mime' || coreBlocked()) return;
   const queue = shuffle(selectedItems());
   if (!queue.length) return toast('لا توجد كلمات في هذه الفئة.');
   state = {
@@ -1836,6 +1895,7 @@ function tickParty(id) {
   }
 }
 function startSecret() {
+  if (screen !== 'setup' || state?.id !== 'secret' || coreBlocked()) return;
   const pool = shuffle(selectedItems());
   if (!pool.length) return toast('لا توجد كلمات في هذه الفئة.');
   state = {
@@ -1977,6 +2037,7 @@ function advanceSecret() {
   secretHandoff();
 }
 function startReaction() {
+  if (screen !== 'setup' || state?.id !== 'reaction' || coreBlocked()) return;
   const players = $('group').checked ? [...store.players] : [player()],
     value = Number($('trials')?.value || 3),
     trials = [3, 5, 7].includes(value) ? value : 3;

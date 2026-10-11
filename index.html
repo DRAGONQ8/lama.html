@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#0b1020" />
     <meta
       name="description"
-      content="لَمّة: عالم ألعاب عربية للتخمين والذكاء والأركيد، بمفردك أو مع الأصدقاء. تعمل دون إنترنت وتحفظ تقدمك."
+      content="لَمّة 5: 34 لعبة عربية، مسارات ألغاز، فرق وتصويت سري، بمفردك أو مع الأصدقاء على جهاز واحد. تعمل دون إنترنت وتحفظ تقدمك."
     />
-    <title>لَمّة — عالم الألعاب</title>
+    <title>لَمّة 5 — عالم التحدّيات</title>
     <style>
       :root {
   color-scheme: dark;
@@ -4226,6 +4226,1756 @@ body[data-theme='light'] .target-cell.active {
   }
 }
 
+.party-panel > .muted {
+  margin-bottom: 20px;
+}
+.party-people {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  margin: 18px 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--bg);
+}
+.party-people > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.party-people button {
+  flex-shrink: 0;
+}
+.party-teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
+  text-align: start;
+}
+.party-team {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  border-top: 3px solid var(--orange);
+  background: var(--surface);
+  min-width: 0;
+}
+.party-team-1 {
+  border-top-color: var(--pink);
+}
+.party-team-title,
+.party-matchbar,
+.party-clockline,
+.party-status,
+.party-creative-author {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.party-team-title strong {
+  color: var(--orange);
+  font-size: 26px;
+}
+.party-team-1 .party-team-title strong {
+  color: var(--pink);
+}
+.party-team-title > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.party-members {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.party-members span,
+.party-speakers span {
+  background: var(--raised);
+  border: 1px solid var(--line);
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.party-round-card,
+.party-prompt-card {
+  padding-block: 30px;
+}
+.party-kicker {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.party-captain {
+  padding: 12px 20px;
+  margin: 18px auto;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  width: fit-content;
+}
+.party-round-card .note + .note {
+  margin-top: 8px;
+}
+.party-matchbar,
+.party-status {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 12px 18px;
+  margin-bottom: 14px;
+}
+.party-matchbar > strong {
+  color: var(--mint);
+}
+.party-status {
+  font-size: 13px;
+  color: var(--muted);
+}
+.party-clockline .countdown {
+  font-size: 34px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.party-time-track {
+  height: 6px;
+  border-radius: 8px;
+  background: var(--raised);
+  overflow: hidden;
+  margin: 14px 0;
+}
+.party-time-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--orange);
+  transition: width 0.2s linear;
+}
+.party-secret-card {
+  text-align: center;
+  padding: 22px 14px;
+  min-height: 185px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.party-secret-word {
+  font-size: clamp(30px, 6vw, 52px);
+  font-weight: 800;
+  color: var(--orange);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  margin: 18px 0;
+}
+.party-forbidden {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.party-forbidden span {
+  color: var(--red);
+  border: 1px solid var(--red);
+  border-radius: 12px;
+  padding: 8px 14px;
+}
+.party-question {
+  font-size: clamp(20px, 4vw, 26px);
+  margin: 24px 0;
+  line-height: 1.7;
+}
+.party-answers,
+.party-ballots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 20px 0;
+}
+.party-answers button,
+.party-ballots button {
+  min-height: 64px;
+  overflow-wrap: anywhere;
+}
+.party-answers .party-correct {
+  color: var(--mint);
+  border-color: var(--mint);
+  opacity: 1;
+}
+.party-answers .party-wrong {
+  color: var(--red);
+  border-color: var(--red);
+  opacity: 1;
+}
+.party-ballots button.selected,
+.party-creative-entry.selected {
+  color: var(--mint);
+  border-color: var(--mint);
+  box-shadow: inset 0 0 0 1px var(--mint);
+}
+.party-turn-summary {
+  margin: 18px 0;
+}
+.party-private {
+  border-top: 3px solid var(--pink);
+  min-height: 290px;
+}
+.party-private h2,
+.party-private .note {
+  margin-bottom: 14px;
+}
+.party-lock,
+.party-trophy {
+  display: block;
+  font-size: 52px;
+  margin: 18px 0;
+}
+.party-trophy {
+  font-size: 68px;
+}
+.party-speakers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 22px 0;
+}
+.party-speakers .current {
+  border-color: var(--orange);
+  color: var(--orange);
+  font-weight: 700;
+}
+.party-speakers .spoken {
+  opacity: 0.65;
+}
+.party-word-reveal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 22px 0;
+}
+.party-word-reveal > div {
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+}
+.party-word-reveal small,
+.party-word-reveal b {
+  display: block;
+}
+.party-word-reveal b {
+  font-size: 25px;
+  color: var(--orange);
+  margin-top: 6px;
+}
+.party-vote-results {
+  margin: 22px 0;
+}
+.party-vote-results > div,
+.party-timeline > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: start;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.party-vote-results > div > span:first-child,
+.party-timeline p {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.party-vote-results > div > span:nth-child(2) {
+  color: var(--muted);
+  font-size: 13px;
+}
+.party-vote-results b,
+.party-timeline strong {
+  color: var(--mint);
+}
+.party-timeline > div > span {
+  color: var(--muted);
+  width: 22px;
+  flex-shrink: 0;
+}
+.party-timeline small {
+  display: block;
+}
+.party-session {
+  margin-top: 18px;
+}
+.party-textarea {
+  width: 100%;
+  display: block;
+  resize: vertical;
+  min-height: 130px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  font: inherit;
+  line-height: 1.7;
+}
+.party-textarea:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 4px;
+}
+.party-creative-cards {
+  display: grid;
+  gap: 12px;
+  margin: 22px 0;
+}
+.party-creative-entry {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  text-align: start;
+  font-weight: 400;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  min-width: 0;
+}
+.party-creative-entry > p,
+.party-creative-entry > span:nth-child(2) {
+  flex: 1;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.party-creative-entry small {
+  display: block;
+  font-size: 12px;
+  margin-top: 6px;
+}
+.party-entry-number {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--orange);
+  font-weight: 800;
+}
+.party-creative-results {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+  text-align: start;
+}
+.party-creative-results > div {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--raised);
+  padding: 18px;
+  overflow-wrap: anywhere;
+}
+.party-creative-results > div.winning {
+  border-color: var(--orange);
+}
+.party-creative-results p {
+  margin: 10px 0;
+}
+.party-creative-author strong {
+  color: var(--mint);
+}
+.party-champions {
+  color: var(--orange);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 16px 0;
+}
+@media (max-width: 560px) {
+  .party-people {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .party-teams {
+    grid-template-columns: 1fr;
+  }
+  .party-team {
+    padding: 14px;
+  }
+  .party-answers,
+  .party-ballots {
+    grid-template-columns: 1fr;
+  }
+  .party-creative-entry {
+    padding: 14px;
+    gap: 10px;
+  }
+}
+
+/* Logic boards use physical coordinates while surrounding UI stays Arabic RTL. */
+.lab-panel {
+  padding: 20px;
+}
+.lab-mode,
+.lab-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 4px auto 16px;
+}
+.lab-mode button,
+.lab-tools button {
+  min-height: 44px;
+  padding: 10px 15px;
+}
+.lab-tools {
+  margin: 20px auto 8px;
+}
+.lab-tools small {
+  opacity: 0.8;
+  font-size: 12px;
+}
+.lab-message {
+  min-height: 48px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 580px;
+  margin: auto;
+}
+#labTime {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.lab-scroll {
+  direction: ltr;
+  overflow-x: auto;
+  padding: 5px 4px 9px;
+  margin-inline: -4px;
+}
+.lab-nonogram {
+  display: grid;
+  grid-template-columns: 66px repeat(var(--lab-n), minmax(34px, 1fr));
+  grid-template-rows: auto repeat(var(--lab-n), 1fr);
+  direction: ltr;
+  max-width: 545px;
+  min-width: calc(66px + var(--lab-n) * 34px);
+  margin: auto;
+  gap: 3px;
+  user-select: none;
+}
+.lab-clue {
+  color: var(--ink);
+  font:
+    800 16px/1.35 Arial,
+    sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: var(--raised);
+}
+.lab-col-clue {
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 6px 0;
+  min-height: 50px;
+}
+.lab-row-clue {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  white-space: nowrap;
+  letter-spacing: 2px;
+  padding-inline: 3px;
+}
+.lab-clue-corner {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 26px;
+}
+.lab-clue.lab-clue-done {
+  color: var(--mint);
+  background: color-mix(in srgb, var(--mint) 13%, var(--raised));
+}
+.lab-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  aspect-ratio: 1;
+  min-height: 0;
+  min-width: 0;
+  border-radius: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.lab-cell.lab-selected {
+  box-shadow: inset 0 0 0 2px #9e90ef;
+}
+.lab-cell:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+  z-index: 2;
+}
+.lab-pixel {
+  border: 1px solid #53617b;
+  background: #18243b;
+  color: #c6d4e9;
+  border-radius: 4px;
+  font:
+    700 30px/1 Arial,
+    sans-serif;
+}
+.lab-pixel.lab-filled {
+  background: #bbaeff;
+  color: #182037;
+  border-color: #dcd3ff;
+}
+.lab-pixel.lab-crossed {
+  background: #111c30;
+}
+.lab-pixel.lab-fixed {
+  cursor: default;
+}
+.lab-fixed small {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  font-size: 8px;
+  line-height: 1;
+  color: currentColor;
+}
+.lab-square {
+  display: grid;
+  grid-template-columns: repeat(var(--lab-n), minmax(0, 1fr));
+  max-width: 510px;
+  width: 100%;
+  gap: 8px;
+  direction: ltr;
+  margin: 12px auto;
+  user-select: none;
+}
+.lab-lights-caption,
+.lab-pipe-status {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 10px 0;
+}
+.lab-light {
+  background: #162238;
+  border: 1px solid #465879;
+  color: #a5b2cd;
+  font:
+    800 clamp(24px, 7vw, 48px)/1 Arial,
+    sans-serif;
+  border-radius: 15px;
+}
+.lab-light.lab-lit {
+  color: #342314;
+  background: radial-gradient(circle at 35% 30%, #ffedb6, #ffc970);
+  border-color: #ffe2a8;
+  box-shadow: 0 0 15px #ffc97015;
+}
+.lab-light.lab-hinted {
+  outline: 3px dashed #baaeff;
+  outline-offset: -6px;
+}
+.lab-light small {
+  font-size: 15px;
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  color: #6650b2;
+}
+.lab-light:not(.lab-lit) small {
+  color: #c9bdff;
+}
+.lab-pipes {
+  gap: 4px;
+  background: #111b2c;
+  border: 2px solid #475775;
+  padding: 5px;
+  border-radius: 16px;
+}
+.lab-pipe {
+  background: #1a2a40;
+  border: 1px solid #3b4f6b;
+  border-radius: 7px;
+  overflow: hidden;
+}
+.lab-pipe.lab-connected {
+  background: #163b48;
+  border-color: #337d8a;
+}
+.lab-pipe.lab-source {
+  background: #26464b;
+  border-color: #c6dd95;
+}
+.lab-pipe svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.lab-pipe path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.lab-pipe-track {
+  stroke: #7a8da4;
+  stroke-width: 25;
+}
+.lab-pipe-water {
+  stroke: #314962;
+  stroke-width: 12;
+}
+.lab-pipe-water.lab-water-on {
+  stroke: #91e3ed;
+}
+.lab-pipe-hub {
+  fill: #7a8da4;
+}
+.lab-connected .lab-pipe-hub {
+  fill: #91e3ed;
+}
+.lab-source .lab-pipe-hub {
+  fill: #dcf0ad;
+  stroke: #19343c;
+  stroke-width: 3;
+}
+.lab-pipe .lab-source-drop {
+  fill: #164e67;
+  stroke: none;
+}
+.lab-live-dot {
+  fill: #194e61;
+}
+.lab-pipe-hint {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  color: #fff1b5;
+  text-shadow: 0 1px 3px #10182c;
+}
+.lab-pipe.lab-hinted {
+  outline: 3px dashed #e1c890;
+  outline-offset: -5px;
+}
+[data-theme='light'] .lab-pixel {
+  background: #eef2f9;
+  color: #66728c;
+  border-color: #8f9eb4;
+}
+[data-theme='light'] .lab-pixel.lab-filled {
+  background: #7561bc;
+  color: #fff;
+  border-color: #5f4ea0;
+}
+[data-theme='light'] .lab-pixel.lab-crossed {
+  background: #e0e7f2;
+  color: #4c5e7c;
+}
+@media (max-width: 600px) {
+  .lab-panel {
+    padding: 14px 12px;
+  }
+  .lab-square {
+    gap: 5px;
+  }
+  .lab-nonogram {
+    grid-template-columns: 56px repeat(var(--lab-n), minmax(34px, 1fr));
+    min-width: calc(56px + var(--lab-n) * 34px);
+    gap: 2px;
+  }
+  .lab-clue {
+    font-size: 13px;
+  }
+  .lab-row-clue {
+    letter-spacing: 1px;
+  }
+  .lab-cell {
+    border-radius: 6px;
+  }
+  .lab-pixel {
+    border-radius: 3px;
+  }
+  .lab-mode button,
+  .lab-tools button {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+  .lab-message {
+    font-size: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-cell {
+    transition: none;
+  }
+}
+
+.lab-row-clue.lab-clue-tight {
+  font-size: 11px;
+  letter-spacing: 0;
+}
+
+/* A calmer game lobby: clear hierarchy, spacious cards and tactile controls. */
+:root {
+  --bg: #0c101d;
+  --surface: #151c2e;
+  --raised: #202b40;
+  --line: #2c3851;
+  --mint: #9be8cf;
+}
+body {
+  background: radial-gradient(ellipse at 80% 0, #25223b50, transparent 600px), var(--bg);
+}
+.shell {
+  max-width: 1800px;
+  margin-inline: auto;
+  padding-inline: clamp(14px, 3vw, 56px);
+}
+.brandmark {
+  background: linear-gradient(145deg, #bdffe7, #72cabf);
+  color: #0d352e;
+  box-shadow: 0 3px 20px #9be8cf20;
+}
+.top {
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+.brandtext small {
+  letter-spacing: 0;
+}
+.lobby-hero {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: center;
+  min-height: 388px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 20% 30%, #4e386045, transparent 60%),
+    linear-gradient(110deg, #171a2b, #18293b);
+  border: 1px solid #354053;
+  border-radius: 28px;
+  padding: clamp(26px, 4vw, 62px);
+  gap: 25px;
+}
+.lobby-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(#c8d7eb 0.7px, transparent 0.7px);
+  background-size: 28px 28px;
+  opacity: 0.11;
+  pointer-events: none;
+}
+.lobby-copy {
+  position: relative;
+  z-index: 1;
+}
+.release-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #819ca84a;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  color: #d2ddd9;
+  background: #151f2c90;
+}
+.release-chip > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 9px var(--mint);
+}
+.lobby-copy h1 {
+  font-size: clamp(39px, 4.1vw, 68px);
+  margin-top: 19px;
+  line-height: 1.2;
+  letter-spacing: -1.5px;
+}
+.lobby-copy em {
+  font-style: normal;
+  color: #a3ead5;
+}
+.lobby-copy p {
+  color: #bdc9d5;
+  margin-top: 20px;
+  max-width: 490px;
+  font-size: 16px;
+  line-height: 1.9;
+}
+.lobby-copy .actions {
+  margin-top: 26px;
+  justify-content: flex-start;
+}
+.lobby-copy .actions button {
+  padding-inline: 24px;
+  min-height: 50px;
+  font-size: 14px;
+  flex: 0 1 auto;
+}
+.lobby-party {
+  background: #293345;
+  border-color: #647185;
+  color: #f2f4fb;
+}
+.lobby-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  color: #a8bacb;
+  margin-top: 22px;
+  font-size: 12px;
+}
+.lobby-art {
+  height: 300px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  direction: ltr;
+  min-width: 0;
+}
+.art-ring {
+  position: absolute;
+  width: 270px;
+  height: 270px;
+  border: 1px solid #b6e8d324;
+  border-radius: 50%;
+  transform: rotate(-23deg) scaleY(0.65);
+}
+.art-ring.two {
+  width: 360px;
+  height: 360px;
+  transform: rotate(35deg) scaleY(0.7);
+  border-style: dashed;
+  border-color: #cbb0ff27;
+}
+.art-glow {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: #85d8c0;
+  filter: blur(72px);
+  opacity: 0.13;
+}
+.art-dice {
+  position: relative;
+  width: 155px;
+  height: 155px;
+  transform: rotate(-16deg);
+  border: 2px solid #b9fde9;
+  border-radius: 36px;
+  background: linear-gradient(135deg, #b7f7df, #66bba9);
+  box-shadow:
+    12px 15px 0 #24384a,
+    15px 20px 30px #0007,
+    inset -8px -8px 22px #1359522b;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 25px;
+  gap: 10px;
+}
+.art-dice span {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #133d35;
+  align-self: center;
+  justify-self: center;
+  box-shadow: inset 0 2px 3px #0004;
+}
+.art-dice span:nth-child(2) {
+  grid-column: 3;
+}
+.art-dice span:nth-child(3) {
+  grid-row: 2;
+  grid-column: 2;
+}
+.art-dice span:nth-child(4) {
+  grid-row: 3;
+}
+.art-dice span:nth-child(5) {
+  grid-row: 3;
+  grid-column: 3;
+}
+.art-ticket {
+  position: absolute;
+  border: 1px solid #becbe332;
+  background: #293247e8;
+  box-shadow: 0 8px 20px #0003;
+  border-radius: 14px;
+  padding: 13px 18px;
+  direction: rtl;
+  backdrop-filter: blur(10px);
+}
+.ticket-one {
+  top: 26px;
+  right: 6%;
+  transform: rotate(8deg);
+}
+.ticket-one b {
+  color: #ffd5a5;
+  font-size: 28px;
+  display: block;
+  line-height: 1.3;
+  direction: ltr;
+  text-align: right;
+}
+.art-ticket small {
+  font-size: 10px;
+  display: block;
+}
+.ticket-two {
+  bottom: 38px;
+  left: 2%;
+  transform: rotate(-7deg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.ticket-two span {
+  font-size: 26px;
+}
+.art-spark {
+  position: absolute;
+  color: #c6b6ee;
+  font-size: 32px;
+}
+.s-one {
+  left: 10%;
+  top: 26px;
+}
+.s-two {
+  right: 12%;
+  bottom: 30px;
+  color: #e5c59f;
+}
+.art-caption {
+  position: absolute;
+  bottom: -6px;
+  font-size: 8px;
+  letter-spacing: 2.6px;
+  color: #8198a9;
+}
+.lobby-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0 26px;
+}
+.lobby-summary > button {
+  display: flex;
+  align-items: center;
+  text-align: right;
+  gap: 14px;
+  min-width: 0;
+  background: var(--surface);
+  padding: 19px;
+  border-radius: 18px;
+}
+.lobby-summary > button > span:nth-child(2) {
+  flex: 1;
+}
+.lobby-summary > button > span:last-child {
+  color: var(--mint);
+  font-size: 18px;
+}
+.lobby-summary b,
+.lobby-summary small {
+  display: block;
+}
+.lobby-summary b {
+  font-size: 16px;
+  margin-top: 4px;
+}
+.lobby-summary b small {
+  display: inline;
+  font-size: 10px;
+  font-weight: 400;
+}
+.summary-icon {
+  display: grid;
+  place-items: center;
+  background: var(--raised);
+  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  font-size: 22px;
+}
+.mini-progress {
+  display: block;
+  background: var(--line);
+  height: 3px;
+  border-radius: 3px;
+  margin-top: 9px;
+  overflow: hidden;
+}
+.mini-progress::after {
+  content: '';
+  display: block;
+  width: var(--progress);
+  height: 100%;
+  background: var(--mint);
+}
+.spotlight-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.15fr;
+  gap: 16px;
+  margin: 24px 0 38px;
+}
+.spotlight-card {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 24px;
+  min-width: 0;
+}
+.spotlight-card h3 {
+  margin: 8px 0 18px;
+}
+.group-spotlight {
+  background: radial-gradient(ellipse at left bottom, #825da333, transparent 75%), var(--surface);
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  overflow: hidden;
+}
+.group-spotlight > div {
+  flex: 1;
+}
+.group-spotlight h2 {
+  font-size: 27px;
+  margin-top: 6px;
+}
+.group-spotlight h2 br {
+  display: none;
+}
+.group-spotlight p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 10px 0 15px;
+  max-width: 280px;
+}
+.group-spotlight button {
+  min-height: 40px;
+  font-size: 12px;
+  background: #332c45;
+  border-color: #67577e;
+}
+.spotlight-emblem {
+  font-size: 70px;
+  transform: rotate(-12deg);
+  filter: drop-shadow(10px 12px 0 #0002);
+}
+.routes-section {
+  margin-bottom: 38px;
+}
+.routes-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+.route-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.route-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  text-align: right;
+  padding: 22px;
+  border-radius: 20px;
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--route), transparent 94%),
+    var(--surface)
+  );
+  border-color: color-mix(in srgb, var(--route), var(--line) 77%);
+  min-width: 0;
+}
+.route-card > div {
+  min-width: 0;
+  flex: 1;
+}
+.route-card small {
+  color: var(--route);
+  font-size: 11px;
+}
+.route-card h3 {
+  margin-top: 5px;
+  font-size: 20px;
+}
+.route-card p {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 10px;
+  line-height: 1.9;
+}
+.route-icon {
+  font-size: 28px;
+  color: var(--route);
+  border: 1px solid color-mix(in srgb, var(--route), transparent 70%);
+  background: color-mix(in srgb, var(--route), transparent 94%);
+  border-radius: 13px;
+  width: 45px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.route-stops {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+.route-stops span {
+  font-size: 19px;
+}
+.route-stops i {
+  color: var(--muted);
+  font-style: normal;
+}
+.route-stops b {
+  font-size: 10px;
+  color: var(--route);
+  margin-inline-start: auto;
+}
+.grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.gamecard {
+  border-radius: 20px;
+  transition:
+    transform 0.15s,
+    border-color 0.15s;
+}
+.gamecard:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--tile), var(--line) 50%);
+}
+.cardstart {
+  padding: 24px 22px 18px;
+  min-height: 295px;
+}
+.cardstart h3 {
+  font-size: 19px;
+  margin-top: 14px;
+}
+.cardstart p {
+  font-size: 13px;
+  line-height: 1.85;
+  margin-top: 10px;
+}
+.card-topline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-topline .tileicon {
+  margin-bottom: 0;
+  width: 50px;
+  height: 50px;
+}
+.new-chip {
+  color: #b6eed7;
+  background: #214339;
+  border: 1px solid #68b29259;
+  border-radius: 6px;
+  font-size: 10px;
+  padding: 2px 7px;
+  font-style: normal;
+}
+.gamecard .fav {
+  top: 15px;
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+}
+.cardtime {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 12px;
+  font-weight: 400;
+}
+.cardstart .tagline {
+  margin-top: 15px;
+  padding-top: 14px;
+}
+.cardstart .tagline b {
+  font-size: 11px;
+}
+.worldtabs {
+  grid-template-columns: repeat(6, 1fr);
+}
+.worldtab {
+  font-size: 13px;
+}
+.catalog-sort {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.catalog-sort label {
+  margin: 0;
+  font-size: 11px;
+}
+.catalog-sort select {
+  min-height: 36px;
+  border-radius: 10px;
+  width: auto;
+  max-width: 155px;
+  padding: 6px 10px;
+  font-size: 11px;
+}
+.catalog-sort .linkbtn {
+  font-size: 11px;
+}
+.dock {
+  bottom: max(16px, env(safe-area-inset-bottom));
+  padding: 8px;
+  border-color: #71859e52;
+  background: #1a2335f0;
+  box-shadow: 0 12px 35px #0006;
+}
+.dock button {
+  padding-inline: 20px;
+}
+.continue-route,
+.saved-session {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 16px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.continue-route > span {
+  font-size: 26px;
+}
+.continue-route > div {
+  flex: 1;
+}
+.continue-route small {
+  display: block;
+  font-size: 11px;
+  margin-top: 4px;
+}
+.continue-route button {
+  font-size: 12px;
+  min-height: 40px;
+}
+.lounge-games {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+.lounge-games > button {
+  display: flex;
+  align-items: center;
+  text-align: right;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg);
+}
+.lounge-games > button > span:first-child {
+  font-size: 28px;
+}
+.lounge-games > button > div {
+  flex: 1;
+}
+.lounge-games b,
+.lounge-games small,
+.lounge-games em {
+  display: block;
+}
+.lounge-games b .new-chip {
+  display: inline;
+}
+.lounge-games small {
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+.lounge-games em {
+  font-size: 10px;
+  color: var(--mint);
+  font-style: normal;
+  margin-top: 6px;
+}
+.route-map {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0;
+}
+.route-map > div {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 16px;
+  border-radius: 14px;
+}
+.route-map > div > span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  background: var(--raised);
+  color: var(--mint);
+  border-radius: 50%;
+}
+.route-map small {
+  margin-inline-start: auto;
+  font-size: 10px;
+}
+.journey-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #567b6c;
+  background: #203f342b;
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  color: var(--mint);
+  font-size: 13px;
+}
+.journey-banner > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.journey-banner > div span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--muted);
+}
+.journey-banner .current,
+.journey-banner .complete {
+  background: var(--mint);
+  color: #14392d;
+  border-color: var(--mint);
+}
+.journey-banner i {
+  font-style: normal;
+  color: var(--line);
+}
+.route-result {
+  margin-top: 18px;
+  border-color: #557a6a;
+}
+.route-result h2 {
+  margin: 9px 0;
+}
+body[data-theme='light'] .lobby-hero {
+  background: linear-gradient(110deg, #eee8f8, #d7ece5);
+  border-color: #abc9c0;
+}
+body[data-theme='light'] .lobby-copy h1 {
+  color: #173c32;
+}
+body[data-theme='light'] .lobby-copy em {
+  color: #296d5b;
+}
+body[data-theme='light'] .lobby-copy p,
+body[data-theme='light'] .lobby-details {
+  color: #405d57;
+}
+body[data-theme='light'] .release-chip {
+  color: #27564c;
+  background: #f6fffa;
+  border-color: #9dc1b5;
+}
+body[data-theme='light'] .art-ticket {
+  background: #f6f0ff;
+  color: #302b4b;
+  border-color: #b9abc9;
+}
+body[data-theme='light'] .ticket-one b {
+  color: #91632f;
+}
+body[data-theme='light'] .dock {
+  background: #edf4f6f5;
+}
+body[data-theme='light'] .new-chip {
+  color: #205740;
+  background: #d6eddf;
+}
+body[data-theme='light'] .topactions .iconbtn {
+  background: #fff;
+  color: var(--ink);
+}
+body[data-theme='light'] button.primary {
+  color: #fff;
+}
+body[data-theme='light'] .route-card small,
+body[data-theme='light'] .route-stops b,
+body[data-theme='light'] .route-icon {
+  color: #315f58;
+}
+body[data-theme='light'] .route-card {
+  border-color: #b5c6cc;
+}
+body[data-theme='light'] .group-spotlight button {
+  background: #f2e9fb;
+  color: #503567;
+  border-color: #bba6d0;
+}
+@media (min-width: 1600px) {
+  .grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .route-grid {
+    gap: 10px;
+  }
+  .route-card {
+    padding: 16px;
+    gap: 10px;
+  }
+  .route-icon {
+    display: none;
+  }
+  .lobby-hero {
+    grid-template-columns: 1.1fr 0.9fr;
+    padding: 34px;
+  }
+  .art-ring.two {
+    width: 280px;
+    height: 280px;
+  }
+  .ticket-two {
+    font-size: 10px;
+    padding: 10px;
+  }
+  .spotlight-emblem {
+    font-size: 52px;
+  }
+}
+@media (max-width: 760px) {
+  .lobby-hero {
+    grid-template-columns: 1fr;
+    padding: 28px;
+    min-height: 0;
+    gap: 0;
+  }
+  .lobby-art {
+    height: 235px;
+    width: 100%;
+    max-width: 400px;
+    margin-inline: auto;
+  }
+  .lobby-copy h1 {
+    font-size: clamp(38px, 7vw, 55px);
+  }
+  .lobby-copy p {
+    font-size: 14px;
+    max-width: 100%;
+  }
+  .lobby-copy .actions button {
+    padding-inline: 17px;
+  }
+  .art-dice {
+    width: 120px;
+    height: 120px;
+    border-radius: 27px;
+    padding: 17px;
+  }
+  .art-dice span {
+    width: 15px;
+    height: 15px;
+  }
+  .art-ring {
+    width: 240px;
+    height: 240px;
+  }
+  .art-ring.two {
+    width: 280px;
+    height: 280px;
+  }
+  .ticket-one {
+    top: 26px;
+    padding: 9px 13px;
+  }
+  .ticket-one b {
+    font-size: 23px;
+  }
+  .ticket-two {
+    bottom: 28px;
+  }
+  .art-caption {
+    bottom: 0;
+  }
+  .lobby-summary {
+    gap: 8px;
+    margin: 14px 0 20px;
+  }
+  .lobby-summary > button {
+    padding: 14px 10px;
+    gap: 8px;
+    display: block;
+    text-align: center;
+  }
+  .lobby-summary .summary-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    margin: 0 auto 7px;
+    border-radius: 9px;
+  }
+  .lobby-summary > button > span:last-child {
+    display: none;
+  }
+  .lobby-summary b {
+    font-size: 12px;
+  }
+  .lobby-summary small {
+    font-size: 10px;
+  }
+  .lobby-summary b small {
+    display: block;
+    font-size: 9px;
+  }
+  .spotlight-grid {
+    grid-template-columns: 1fr;
+    margin-bottom: 30px;
+  }
+  .spotlight-card {
+    padding: 20px;
+  }
+  .group-spotlight {
+    min-height: 175px;
+  }
+  .group-spotlight h2 {
+    font-size: 25px;
+  }
+  .spotlight-emblem {
+    font-size: 65px;
+  }
+  .route-grid {
+    grid-template-columns: 1fr;
+  }
+  .route-icon {
+    display: grid;
+  }
+  .route-card {
+    padding: 18px;
+    gap: 15px;
+  }
+  .route-card h3 {
+    font-size: 18px;
+  }
+  .route-card p {
+    margin-top: 5px;
+  }
+  .route-stops {
+    margin-top: 10px;
+  }
+  .routes-note {
+    display: none;
+  }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .cardstart {
+    padding: 18px 14px 14px;
+    min-height: 302px;
+  }
+  .cardstart h3 {
+    font-size: 16px;
+  }
+  .cardstart p {
+    font-size: 12px;
+  }
+  .card-topline .tileicon {
+    width: 42px;
+    height: 42px;
+    font-size: 27px;
+  }
+  .card-topline {
+    gap: 6px;
+  }
+  .new-chip {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+  .gamecard .fav {
+    top: 9px;
+    left: 9px;
+    width: 24px;
+    height: 24px;
+    min-height: 24px;
+    font-size: 14px;
+  }
+  .cardstart .tagline b {
+    font-size: 9px;
+  }
+  .cardtime {
+    font-size: 9px;
+  }
+  .worldtabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .worldtab {
+    font-size: 11px;
+  }
+  .catalogsummary {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  .catalog-sort {
+    gap: 8px;
+  }
+  .catalog-sort select {
+    max-width: 136px;
+  }
+  .continue-route {
+    padding: 14px;
+    flex-wrap: wrap;
+  }
+  .continue-route > div {
+    min-width: 120px;
+  }
+  .continue-route b {
+    font-size: 13px;
+  }
+  .continue-route button {
+    margin-inline-start: auto;
+  }
+  .journey-banner {
+    padding: 12px;
+    font-size: 11px;
+    flex-wrap: wrap;
+  }
+  .journey-banner small {
+    font-size: 10px;
+  }
+  .dock {
+    bottom: max(9px, env(safe-area-inset-bottom));
+    padding: 6px;
+    width: calc(100% - 32px);
+    max-width: 400px;
+  }
+  .dock button {
+    padding-inline: 8px;
+  }
+  .route-map > div {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+@media (max-width: 380px) {
+  .lobby-hero {
+    padding: 22px;
+  }
+  .lobby-copy h1 {
+    font-size: 37px;
+  }
+  .lobby-copy .actions {
+    gap: 8px;
+  }
+  .lobby-copy .actions button {
+    padding-inline: 13px;
+    font-size: 12px;
+  }
+  .lobby-details {
+    gap: 12px;
+    font-size: 10px;
+  }
+  .lobby-art {
+    height: 200px;
+  }
+  .art-ring.two {
+    width: 240px;
+    height: 240px;
+  }
+  .ticket-one {
+    right: 0;
+    top: 12px;
+  }
+  .ticket-two {
+    left: -7px;
+    padding: 8px;
+    font-size: 9px;
+  }
+  .cardstart {
+    padding: 18px 11px 12px;
+    min-height: 315px;
+  }
+  .cardstart h3 {
+    font-size: 15px;
+  }
+  .cardstart p {
+    font-size: 11px;
+  }
+  .new-chip {
+    display: none;
+  }
+  .catalog-sort label {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gamecard {
+    transition: none;
+  }
+  .gamecard:hover {
+    transform: none;
+  }
+}
+body.reduced-motion .gamecard {
+  transition: none;
+}
+body.reduced-motion .gamecard:hover {
+  transform: none;
+}
+
     </style>
   </head>
   <body>
@@ -4234,7 +5984,7 @@ body[data-theme='light'] .target-cell.active {
       <header class="top">
         <button class="brand" onclick="home()" aria-label="لمة، الرئيسية">
           <span class="brandmark">✦</span
-          ><span class="brandtext">لَمّة<small>عالم الألعاب</small></span>
+          ><span class="brandtext">لَمّة<small>عالم التحدّيات · 5.0</small></span>
         </button>
         <div class="topactions">
           <button
@@ -4267,7 +6017,7 @@ body[data-theme='light'] .target-cell.active {
       </footer>
       <nav class="dock" aria-label="التنقل">
         <button onclick="home()">◈<span>العالم</span></button
-        ><button onclick="openTournament()">🏆<span>بطولة</span></button
+        ><button onclick="openLounge()">👥<span>اللمّة</span></button
         ><button onclick="openDaily()">✦<span>اليومي</span></button
         ><button onclick="openProfile()">◎<span>إنجازاتي</span></button>
       </nav>
@@ -4307,46 +6057,92 @@ const norm = (s) =>
     .replace(/\s+/g, ' ')
     .toLowerCase();
 const KEY = 'lamma-universe-v3';
+// Keep display names stable across typed input, backup imports, and reloads.
+function normalizePlayerName(value) {
+  return typeof value === 'string'
+    ? value
+        .replace(/[\u0660-\u0669]/g, (c) => String(c.charCodeAt(0) - 0x660))
+        .replace(/[\u06f0-\u06f9]/g, (c) => String(c.charCodeAt(0) - 0x6f0))
+        .trim()
+        .replace(/\s+/g, ' ')
+    : '';
+}
+function safeCounter(value) {
+  return Number.isSafeInteger(value) && value >= 0;
+}
+function sumCounter(a, b) {
+  return Math.min(Number.MAX_SAFE_INTEGER, a + b);
+}
+function normalizeProgressBase(raw, strict = false) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw Error('Invalid progress');
+  if (!Array.isArray(raw.players) || raw.players.length < 1 || raw.players.length > 12)
+    throw Error('Invalid players');
+  const players = [],
+    used = new Set();
+  for (const value of raw.players) {
+    let name = normalizePlayerName(value);
+    if (!name || name.length > 24) throw Error('Invalid player name');
+    if (used.has(norm(name))) {
+      if (strict) throw Error('Duplicate player');
+      const original = name;
+      let suffix = 2;
+      do {
+        const ending = ' ' + suffix++;
+        name = original.slice(0, 24 - ending.length).trimEnd() + ending;
+      } while (used.has(norm(name)));
+    }
+    used.add(norm(name));
+    players.push(name);
+  }
+  const scores = Object.create(null);
+  if (
+    raw.scores !== undefined &&
+    (!raw.scores || typeof raw.scores !== 'object' || Array.isArray(raw.scores))
+  ) {
+    if (strict) throw Error('Invalid scores');
+  } else {
+    for (const [key, value] of Object.entries(raw.scores || {})) {
+      const name = normalizePlayerName(key);
+      if (
+        !name ||
+        name.length > 24 ||
+        !value ||
+        !safeCounter(value.points) ||
+        !safeCounter(value.rounds)
+      ) {
+        if (strict) throw Error('Invalid score');
+        continue;
+      }
+      const old = scores[name];
+      scores[name] = {
+        points: sumCounter(old?.points || 0, value.points),
+        rounds: sumCounter(old?.rounds || 0, value.rounds),
+      };
+    }
+  }
+  return { players, scores, sound: raw.sound === true };
+}
 let store = {
   players: ['أنا', 'صاحبي'],
   scores: Object.create(null),
   sound: false,
 };
 try {
-  const s = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lamma-v1') || 'null');
-  if (
-    s &&
-    Array.isArray(s.players) &&
-    s.players.length >= 1 &&
-    s.players.length <= 12 &&
-    s.players.every((n) => typeof n === 'string' && n.trim() && n.length <= 24) &&
-    new Set(s.players).size === s.players.length
-  ) {
-    store.players = s.players;
-    store.sound = s.sound === true;
-    if (s.scores && typeof s.scores === 'object') {
-      for (const [n, v] of Object.entries(s.scores)) {
-        if (n.length > 24 || !n.trim()) continue;
-        if (
-          v &&
-          Number.isFinite(v.points) &&
-          v.points >= 0 &&
-          Number.isInteger(v.rounds) &&
-          v.rounds >= 0
-        )
-          store.scores[n] = { points: v.points, rounds: v.rounds };
-      }
-    }
-  }
+  const saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('lamma-v1') || 'null');
+  if (saved) store = normalizeProgressBase(saved);
 } catch (e) {}
 
 function legacyAddScore(name, points) {
-  const old = store.scores[name];
+  name = normalizePlayerName(name);
+  if (!name || name.length > 24 || !Number.isFinite(points)) return false;
+  const earned = Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.round(points))),
+    old = store.scores[name];
   store.scores[name] = {
-    points: (old?.points || 0) + Math.max(0, Math.round(points)),
-    rounds: (old?.rounds || 0) + 1,
+    points: sumCounter(old?.points || 0, earned),
+    rounds: sumCounter(old?.rounds || 0, 1),
   };
   save();
+  return true;
 }
 let audioCtx;
 function tone(win = false) {
@@ -4383,7 +6179,11 @@ let timers = [],
   filter = 'all',
   previousFocus = null;
 const later = (f, ms) => {
-  const id = setTimeout(f, ms);
+  const id = setTimeout(() => {
+    const index = timers.indexOf(id);
+    if (index >= 0) timers.splice(index, 1);
+    f();
+  }, ms);
   timers.push(id);
   return id;
 };
@@ -4408,6 +6208,7 @@ function toast(msg) {
 }
 function setHTML(html) {
   $('app').innerHTML = latin(html);
+  captureSoloSession();
 }
 function goTop() {
   window.scrollTo?.({ top: 0, behavior: 'instant' });
@@ -4485,6 +6286,8 @@ const player = () =>
     : store.players[Number($('player')?.value || 0)] || store.players[0];
 
 function boardHTML(names = store.players, results = null) {
+  let previous = null,
+    rank = 0;
   return `<div class="board">${names
     .map((n) => ({
       n,
@@ -4492,10 +6295,11 @@ function boardHTML(names = store.players, results = null) {
       rounds: store.scores[n]?.rounds || 0,
     }))
     .sort((a, b) => b.points - a.points)
-    .map(
-      (v, i) =>
-        `<div class="boardrow"><span class="rank">${i === 0 ? '🥇' : i + 1}</span><div class="name"><b>${esc(v.n)}</b>${!results ? `<small>${v.rounds} جولة</small>` : ''}</div><span class="score">${v.points}</span></div>`,
-    )
+    .map((v, i) => {
+      if (v.points !== previous) rank = i + 1;
+      previous = v.points;
+      return `<div class="boardrow"><span class="rank">${rank === 1 ? '🥇' : rank}</span><div class="name"><b>${esc(v.n)}</b>${!results ? `<small>${v.rounds} جولة</small>` : ''}</div><span class="score">${v.points}</span></div>`;
+    })
     .join('')}</div>`;
 }
 
@@ -4663,6 +6467,7 @@ function legacyResult(id, title, text, points = 0, detail = '') {
   );
 }
 function startNumber(id) {
+  if (screen !== 'setup' || state?.id !== id || coreBlocked()) return;
   try {
     const free = id === 'finder' && $('preset').value === 'free';
     const [l, h] = free ? [null, null] : bounds();
@@ -5542,6 +7347,7 @@ function chooseQuestion(candidates, asked) {
   return best;
 }
 function startMind() {
+  if (screen !== 'setup' || state?.id !== 'mind' || coreBlocked()) return;
   state = {
     id: 'mind',
     candidates: selectedItems(),
@@ -5599,6 +7405,7 @@ function pickMind(i) {
 
 const recentWho = [];
 function startWho() {
+  if (screen !== 'setup' || state?.id !== 'who' || coreBlocked()) return;
   const pool = selectedItems();
   if (!pool.length) return toast('لا توجد كلمات في هذه الفئة.');
   const fresh = pool.filter((i) => !recentWho.includes(i)),
@@ -5836,6 +7643,7 @@ function memoryElapsed(s = state) {
   return s.started ? Math.max(0, Math.floor(((s.pausedAt || Date.now()) - s.started) / 1000)) : 0;
 }
 function startMemory() {
+  if (screen !== 'setup' || state?.id !== 'memory' || coreBlocked()) return;
   clearTimers();
   const value = Number($('difficulty').value),
     pairs = [4, 6, 8, 12, 16, 20, 24].includes(value) ? value : 8,
@@ -5971,6 +7779,7 @@ function flipCard(i) {
   renderMemory();
 }
 function startMime() {
+  if (screen !== 'setup' || state?.id !== 'mime' || coreBlocked()) return;
   const queue = shuffle(selectedItems());
   if (!queue.length) return toast('لا توجد كلمات في هذه الفئة.');
   state = {
@@ -6126,6 +7935,7 @@ function tickParty(id) {
   }
 }
 function startSecret() {
+  if (screen !== 'setup' || state?.id !== 'secret' || coreBlocked()) return;
   const pool = shuffle(selectedItems());
   if (!pool.length) return toast('لا توجد كلمات في هذه الفئة.');
   state = {
@@ -6267,6 +8077,7 @@ function advanceSecret() {
   secretHandoff();
 }
 function startReaction() {
+  if (screen !== 'setup' || state?.id !== 'reaction' || coreBlocked()) return;
   const players = $('group').checked ? [...store.players] : [player()],
     value = Number($('trials')?.value || 3),
     trials = [3, 5, 7].includes(value) ? value : 3;
@@ -7414,66 +9225,95 @@ const extraDefaults = {
   recent: [],
   theme: 'dark',
   motion: true,
+  savedSession: null,
 };
 let rawExtra = {};
 try {
   rawExtra = JSON.parse(localStorage.getItem(KEY) || 'null')?.extra || {};
 } catch (e) {}
-store.extra = { ...extraDefaults };
-for (const k of ['played', 'best', 'daily']) {
-  store.extra[k] = Object.create(null);
-  if (rawExtra[k] && typeof rawExtra[k] === 'object' && !Array.isArray(rawExtra[k]))
-    for (const [n, v] of Object.entries(rawExtra[k]))
-      if (n.length < 80 && Number.isFinite(v) && v >= 0) store.extra[k][n] = v;
-}
-for (const k of ['favorites', 'earned'])
-  store.extra[k] = Array.isArray(rawExtra[k])
-    ? rawExtra[k].filter((v) => typeof v === 'string').slice(0, 100)
+function normalizeExtra(raw, strict = false) {
+  const e = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  if (strict && raw !== undefined && e !== raw) throw Error('Invalid extra');
+  const extra = { ...extraDefaults };
+  for (const key of ['played', 'best', 'daily']) {
+    extra[key] = Object.create(null);
+    if (e[key] !== undefined && (!e[key] || typeof e[key] !== 'object' || Array.isArray(e[key]))) {
+      if (strict) throw Error('Invalid counters');
+      continue;
+    }
+    for (const [id, value] of Object.entries(e[key] || {})) {
+      if (!id || id.length >= 80 || !safeCounter(value)) {
+        if (strict) throw Error('Invalid counter');
+        continue;
+      }
+      extra[key][id] = value;
+    }
+  }
+  for (const key of ['favorites', 'earned']) {
+    if (strict && e[key] !== undefined && !Array.isArray(e[key])) throw Error('Invalid list');
+    extra[key] = Array.isArray(e[key])
+      ? [...new Set(e[key].filter((v) => typeof v === 'string' && v.length < 80))].slice(0, 100)
+      : [];
+  }
+  const learned = e.learned ?? [];
+  if (strict && (!Array.isArray(learned) || learned.length > 200)) throw Error('Invalid learned');
+  const seen = new Set();
+  extra.learned = [];
+  for (const value of (Array.isArray(learned) ? learned : []).slice(0, 200)) {
+    const valid =
+      value &&
+      typeof value.name === 'string' &&
+      value.name.trim() &&
+      value.name.length <= 40 &&
+      categories.some((c) => c[0] === value.cat && c[0] !== 'all') &&
+      Array.isArray(value.tags) &&
+      value.tags.length <= 100 &&
+      value.tags.every((t) => questions.some((q) => q[0] === t)) &&
+      Array.isArray(value.hints) &&
+      value.hints.length === 3 &&
+      value.hints.every((h) => typeof h === 'string' && h.trim() && h.length <= 100);
+    if (!valid || seen.has(norm(latin(value.name)))) {
+      if (strict) throw Error('Invalid learned item');
+      continue;
+    }
+    const name = latin(value.name.trim());
+    seen.add(norm(name));
+    extra.learned.push({
+      name,
+      cat: value.cat,
+      tags: [...new Set(value.tags)],
+      hints: value.hints.map((h) => latin(h.trim())),
+      aliases: Array.isArray(value.aliases)
+        ? [
+            ...new Set(
+              value.aliases
+                .filter((v) => typeof v === 'string' && v.trim() && v.length <= 50)
+                .map((v) => latin(v.trim())),
+            ),
+          ].slice(0, 10)
+        : [],
+    });
+  }
+  extra.theme = e.theme === 'light' ? 'light' : 'dark';
+  extra.motion = e.motion !== false;
+  extra.recent = Array.isArray(e.recent)
+    ? e.recent
+        .filter(
+          (v) =>
+            v &&
+            typeof v.id === 'string' &&
+            v.id.length < 80 &&
+            Number.isSafeInteger(v.at) &&
+            v.at > 0,
+        )
+        .slice(0, 6)
     : [];
-store.extra.learned = Array.isArray(rawExtra.learned)
-  ? rawExtra.learned
-      .filter(
-        (v) =>
-          v &&
-          typeof v.name === 'string' &&
-          v.name.length <= 40 &&
-          categories.some((c) => c[0] === v.cat && c[0] !== 'all') &&
-          Array.isArray(v.tags) &&
-          Array.isArray(v.hints) &&
-          v.hints.length === 3 &&
-          v.hints.every((h) => typeof h === 'string' && h.length <= 100),
-      )
-      .slice(0, 200)
-      .map((v) => ({
-        ...v,
-        name: latin(v.name),
-        tags: v.tags.filter((t) => typeof t === 'string').slice(0, 100),
-        hints: v.hints.map(latin),
-        aliases: Array.isArray(v.aliases)
-          ? v.aliases.filter((a) => typeof a === 'string' && a.length <= 50).slice(0, 10)
-          : [],
-      }))
-  : [];
-store.extra.theme = rawExtra.theme === 'light' ? 'light' : 'dark';
-store.extra.motion = rawExtra.motion !== false;
-store.extra.recent = Array.isArray(rawExtra.recent)
-  ? rawExtra.recent
-      .filter((v) => v && typeof v.id === 'string' && Number.isFinite(v.at) && v.at > 0)
-      .slice(0, 6)
-  : [];
-const normalizedScores = Object.create(null);
-for (const [name, value] of Object.entries(store.scores)) {
-  const n = latin(name);
-  const old = normalizedScores[n];
-  normalizedScores[n] = {
-    points: (old?.points || 0) + value.points,
-    rounds: (old?.rounds || 0) + value.rounds,
-  };
+  extra.savedSession = normalizeSavedSession(e.savedSession);
+  if (e.experience && typeof e.experience === 'object' && !Array.isArray(e.experience))
+    extra.experience = e.experience;
+  return extra;
 }
-store.scores = normalizedScores;
-store.players = store.players.map(latin);
-if (new Set(store.players.map(norm)).size !== store.players.length)
-  store.players = store.players.map((n, i) => n + ' ' + (i + 1));
+store.extra = normalizeExtra(rawExtra);
 function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify(store));
@@ -7941,6 +9781,8 @@ function syncLearned(force = false) {
     return false;
   }
   items.splice(builtInCount);
+  const builtInNames = new Set(items.map((v) => norm(v.name)));
+  store.extra.learned = store.extra.learned.filter((v) => !builtInNames.has(norm(v.name)));
   items.push(
     ...store.extra.learned.map((v) => ({
       name: v.name,
@@ -8027,6 +9869,7 @@ function level() {
   return Math.floor(totalPoints() / 250) + 1;
 }
 function home() {
+  captureSoloSession();
   clearTimers();
   removePause();
   screen = 'home';
@@ -8138,8 +9981,11 @@ function openPeople() {
   );
 }
 function savePeople() {
-  const a = Array.from({ length: 12 }, (_, i) => latin($('name' + i).value.trim())).filter(Boolean);
+  const a = Array.from({ length: 12 }, (_, i) => normalizePlayerName($('name' + i).value)).filter(
+    Boolean,
+  );
   if (!$('name0').value.trim()) return toast('اكتب أول اسم.');
+  if (a.some((name) => name.length > 24)) return toast('الاسم يجب أن يكون 24 حرفاً أو أقل.');
   if (new Set(a.map(norm)).size !== a.length) return toast('اختار اسم مختلف لكل لاعب.');
   store.players = a;
   save();
@@ -8312,11 +10158,13 @@ document.addEventListener('input', (e) => {
   }
 });
 function addScore(name, points) {
-  legacyAddScore(name, points);
+  if (!Number.isFinite(points)) return;
+  points = Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.round(points)));
+  if (!legacyAddScore(name, points)) return;
   const id = state?.id;
   if (id) {
     recordRecent(id);
-    store.extra.played[id] = (store.extra.played[id] || 0) + 1;
+    store.extra.played[id] = sumCounter(store.extra.played[id] || 0, 1);
     store.extra.best[id] = Math.max(store.extra.best[id] || 0, points);
   }
   if (tourney?.active && name === player())
@@ -8459,55 +10307,20 @@ function exportProgress() {
 }
 async function importProgress(file) {
   if (!file) return;
+  pendingImport = null;
   if (file.size > 1500000) return toast('الملف أكبر من الحد المسموح.');
   try {
     const obj = JSON.parse(await file.text());
+    if (obj?.format !== 'lamma-universe' || obj.version !== 3 || !obj.data) throw Error();
+    const base = normalizeProgressBase(obj.data, true),
+      extra = normalizeExtra(obj.data.extra, true);
     if (
-      obj.format !== 'lamma-universe' ||
-      obj.version !== 3 ||
-      !obj.data ||
-      !Array.isArray(obj.data.players) ||
-      obj.data.players.length < 1 ||
-      obj.data.players.length > 12 ||
-      !obj.data.players.every((n) => typeof n === 'string' && n.trim() && n.length <= 24) ||
-      new Set(obj.data.players.map((n) => norm(latin(n)))).size !== obj.data.players.length ||
-      !obj.data.scores ||
-      typeof obj.data.scores !== 'object'
-    )
-      throw Error();
-    const proposed = obj.data;
-    if (Array.isArray(proposed.scores)) throw Error();
-    for (const [n, v] of Object.entries(proposed.scores))
-      if (
-        !n.trim() ||
-        n.length > 24 ||
-        !v ||
-        !Number.isFinite(v.points) ||
-        v.points < 0 ||
-        !Number.isInteger(v.rounds) ||
-        v.rounds < 0
-      )
-        throw Error();
-    const le = proposed.extra?.learned || [];
-    if (
-      !Array.isArray(le) ||
-      le.length > 200 ||
-      !le.every(
-        (v) =>
-          v &&
-          typeof v.name === 'string' &&
-          v.name.trim() &&
-          v.name.length <= 40 &&
-          categories.some((c) => c[0] === v.cat && c[0] !== 'all') &&
-          Array.isArray(v.tags) &&
-          v.tags.every((t) => questions.some((q) => q[0] === t)) &&
-          Array.isArray(v.hints) &&
-          v.hints.length === 3 &&
-          v.hints.every((h) => typeof h === 'string' && h.length <= 100),
+      extra.learned.some((v) =>
+        items.slice(0, builtInCount).some((i) => norm(i.name) === norm(v.name)),
       )
     )
-      throw Error();
-    pendingImport = proposed;
+      throw Error('Duplicate learned item');
+    pendingImport = { ...base, extra };
     openModal(
       '<div class="modalhead"><h2 id="modaltitle">استيراد النسخة</h2><button onclick="closeModal()">✕</button></div><p>النسخة صالحة. الاستيراد يستبدل الأسماء والنقاط والإضافات المحفوظة حالياً.</p><div class="actions"><button onclick="closeModal()">إلغاء</button><button class="primary" onclick="confirmImport()">استيراد</button></div>',
     );
@@ -8518,52 +10331,20 @@ async function importProgress(file) {
 let pendingImport = null;
 function confirmImport() {
   if (!pendingImport) return;
-  const d = pendingImport;
-  store.players = d.players.map(latin);
-  store.scores = Object.create(null);
-  for (const [n, v] of Object.entries(d.scores)) {
-    const key = latin(n),
-      old = store.scores[key];
-    store.scores[key] = {
-      points: (old?.points || 0) + v.points,
-      rounds: (old?.rounds || 0) + v.rounds,
-    };
-  }
-  store.sound = d.sound === true;
-  const e = d.extra || {};
-  store.extra = {
-    ...extraDefaults,
-    favorites: Array.isArray(e.favorites)
-      ? [...new Set(e.favorites.filter((v) => games.some((g) => g[0] === v)))]
-      : [],
-    earned: Array.isArray(e.earned) ? e.earned.filter((v) => badges.some((b) => b[0] === v)) : [],
-    learned: (e.learned || []).map((v) => ({
-      ...v,
-      name: latin(v.name),
-      hints: v.hints.map(latin),
-      aliases: Array.isArray(v.aliases)
-        ? v.aliases
-            .filter((a) => typeof a === 'string' && a.length <= 50)
-            .slice(0, 10)
-            .map(latin)
-        : [],
-    })),
-    recent: Array.isArray(e.recent)
-      ? e.recent
-          .filter((v) => v && games.some((g) => g[0] === v.id) && Number.isFinite(v.at) && v.at > 0)
-          .slice(0, 6)
-      : [],
-    theme: e.theme === 'light' ? 'light' : 'dark',
-    motion: e.motion !== false,
-  };
-  for (const k of ['played', 'best', 'daily']) {
-    store.extra[k] = Object.create(null);
-    if (e[k] && typeof e[k] === 'object')
-      for (const [n, v] of Object.entries(e[k]))
-        if (Number.isFinite(v) && v >= 0 && n.length < 80) store.extra[k][n] = v;
-  }
+  const imported = pendingImport;
   pendingImport = null;
-  syncLearned();
+  clearTimers();
+  removePause();
+  closeModal(true);
+  state = null;
+  screen = 'home';
+  tourney = null;
+  dailyRun = null;
+  store = imported;
+  if (typeof normalizeExperience === 'function')
+    store.extra.experience = normalizeExperience(store.extra.experience);
+  oldScores = null;
+  syncLearned(true);
   save();
   applySettings();
   soundUI();
@@ -8576,6 +10357,7 @@ function setup(id, internal = false) {
     tourney = null;
     dailyRun = null;
   }
+  captureSoloSession();
   recordRecent(id);
   clearTimers();
   removePause();
@@ -8657,13 +10439,15 @@ function opponentChanged() {
   $('botfield').hidden = friend;
 }
 function result(id, title, text, points = 0, detail = '') {
+  if (state?.resultShown) return;
+  if (state) state.resultShown = true;
+  points = Number.isFinite(points)
+    ? Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.round(points)))
+    : 0;
   clearTimers();
   if (state) state.done = true;
   removePause();
-  if (points === 0) {
-    legacyAddScore(state?.name || player(), 0);
-    store.extra.played[id] = (store.extra.played[id] || 0) + 1;
-  }
+  if (points === 0 && !state?.roundRecorded) addScore(state?.name || player(), 0);
   if (dailyRun && dailyRun.id === id) {
     const k = dailyRun.date + ':' + id;
     store.extra.daily[k] = Math.max(store.extra.daily[k] || 0, points);
@@ -8940,7 +10724,7 @@ function renderMind() {
   );
 }
 function confirmMind(ok) {
-  if (screen !== 'mind' || state.done) return;
+  if (screen !== 'mind' || state.done || coreBlocked()) return;
   if (!ok) {
     openModal(
       '<div class="modalhead"><h2 id="modaltitle">نقدر نعلّمها</h2><button onclick="closeModal()">✕</button></div><p class="muted">إذا الشي خارج القائمة، أضفه مع صفاته. وإذا جاوبت بالغلط، ارجع وصحّح الإجابة.</p><div class="actions"><button onclick="closeModal();undoMind()">تراجع عن سؤال</button><button class="primary" onclick="teachItem()">أضف الشي</button></div>',
@@ -9130,9 +10914,292 @@ document.addEventListener('visibilitychange', () => {
     renderHome();
 });
 
+// A compact, versioned checkpoint for the longer solo puzzles. Secret party roles
+// and timed daily/tournament rounds are deliberately never persisted here.
+function validSlideCheckpoint(board, empty, path, size) {
+  if (
+    !Array.isArray(board) ||
+    board.length !== size * size ||
+    new Set(board).size !== board.length ||
+    board.some((n) => !Number.isInteger(n) || n < 0 || n >= board.length) ||
+    board[empty] !== 0 ||
+    !Array.isArray(path) ||
+    path.length > 4000
+  )
+    return false;
+  const test = [...board];
+  let hole = empty;
+  for (let step = path.length - 1; step >= 0; step--) {
+    const index = path[step];
+    if (!Number.isInteger(index) || !slideNeighbors(hole, size).includes(index)) return false;
+    [test[index], test[hole]] = [test[hole], test[index]];
+    hole = index;
+  }
+  return slideSolved(test);
+}
+function normalizeSavedSession(raw) {
+  try {
+    if (
+      !raw ||
+      raw.version !== 1 ||
+      !['code', 'slide', 'sudoku'].includes(raw.id) ||
+      !['easy', 'normal', 'hard'].includes(raw.level) ||
+      !safeCounter(raw.at) ||
+      !safeCounter(raw.elapsed) ||
+      raw.elapsed > 31536000 ||
+      typeof raw.name !== 'string' ||
+      !normalizePlayerName(raw.name) ||
+      raw.name.length > 24 ||
+      !raw.data ||
+      typeof raw.data !== 'object' ||
+      Array.isArray(raw.data)
+    )
+      return null;
+    const d = raw.data,
+      data = {};
+    if (raw.id === 'code') {
+      if (
+        ![3, 4, 5].includes(d.length) ||
+        typeof d.duplicates !== 'boolean' ||
+        !Array.isArray(d.secret) ||
+        d.secret.length !== d.length ||
+        d.secret.some((n) => !Number.isInteger(n) || n < 0 || n > 9) ||
+        (!d.duplicates && new Set(d.secret).size !== d.length) ||
+        ![8, 10, 12].includes(d.max) ||
+        !Array.isArray(d.attempts) ||
+        d.attempts.length >= d.max ||
+        !safeCounter(d.hints) ||
+        d.hints >= d.length ||
+        !d.revealed ||
+        typeof d.revealed !== 'object' ||
+        Array.isArray(d.revealed) ||
+        Object.keys(d.revealed).length !== d.hints ||
+        Object.entries(d.revealed).some(
+          ([key, value]) =>
+            !/^\d$/.test(key) || Number(key) >= d.length || value !== d.secret[Number(key)],
+        ) ||
+        !Array.isArray(d.draft) ||
+        d.draft.length !== d.length ||
+        d.draft.some((n) => !Number.isInteger(n) || n < 0 || n > 9)
+      )
+        return null;
+      for (const attempt of d.attempts) {
+        if (
+          !attempt ||
+          !Array.isArray(attempt.guess) ||
+          attempt.guess.length !== d.length ||
+          attempt.guess.some((n) => !Number.isInteger(n) || n < 0 || n > 9) ||
+          (!d.duplicates && new Set(attempt.guess).size !== d.length)
+        )
+          return null;
+        const feedback = codeFeedback(d.secret, attempt.guess);
+        if (
+          feedback.exact === d.length ||
+          feedback.exact !== attempt.exact ||
+          feedback.misplaced !== attempt.misplaced
+        )
+          return null;
+      }
+      Object.assign(data, {
+        length: d.length,
+        duplicates: d.duplicates,
+        secret: [...d.secret],
+        max: d.max,
+        attempts: d.attempts.map((a) => ({
+          guess: [...a.guess],
+          exact: a.exact,
+          misplaced: a.misplaced,
+        })),
+        hints: d.hints,
+        revealed: { ...d.revealed },
+        draft: [...d.draft],
+        analysis: null,
+      });
+      for (const [key, value] of Object.entries(data.revealed)) data.draft[Number(key)] = value;
+    } else if (raw.id === 'slide') {
+      if (
+        ![3, 4, 5].includes(d.size) ||
+        !safeCounter(d.moves) ||
+        !safeCounter(d.hints) ||
+        typeof d.assisted !== 'boolean' ||
+        !validSlideCheckpoint(d.board, d.empty, d.path, d.size) ||
+        slideSolved(d.board) ||
+        !d.initial ||
+        !validSlideCheckpoint(d.initial.board, d.initial.empty, d.initial.path, d.size)
+      )
+        return null;
+      Object.assign(data, {
+        size: d.size,
+        board: [...d.board],
+        empty: d.empty,
+        path: [...d.path],
+        moves: d.moves,
+        hints: d.hints,
+        assisted: d.assisted,
+        initial: { board: [...d.initial.board], empty: d.initial.empty, path: [...d.initial.path] },
+        history: [],
+      });
+    } else {
+      if (
+        !Array.isArray(d.solution) ||
+        d.solution.length !== 81 ||
+        d.solution.some(
+          (n, i) => !Number.isInteger(n) || n < 1 || n > 9 || sudokuConflicts(d.solution, i),
+        ) ||
+        !Array.isArray(d.board) ||
+        d.board.length !== 81 ||
+        d.board.some((n) => !Number.isInteger(n) || n < 0 || n > 9) ||
+        d.board.every((n, i) => n === d.solution[i]) ||
+        !Array.isArray(d.given) ||
+        d.given.length !== 81 ||
+        d.given.some(
+          (given, i) => typeof given !== 'boolean' || (given && d.board[i] !== d.solution[i]),
+        ) ||
+        !Number.isInteger(d.selected) ||
+        d.selected < 0 ||
+        d.selected > 80 ||
+        !safeCounter(d.hints) ||
+        !safeCounter(d.checks) ||
+        !Array.isArray(d.notes) ||
+        d.notes.length !== 81 ||
+        d.notes.some(
+          (a) =>
+            !Array.isArray(a) ||
+            a.length > 9 ||
+            new Set(a).size !== a.length ||
+            a.some((n) => !Number.isInteger(n) || n < 1 || n > 9),
+        )
+      )
+        return null;
+      Object.assign(data, {
+        solution: [...d.solution],
+        board: [...d.board],
+        given: [...d.given],
+        selected: d.selected,
+        hints: d.hints,
+        checks: d.checks,
+        notes: d.notes.map((a) => [...a]),
+        noteMode: d.noteMode === true,
+        showCandidates: d.showCandidates === true,
+        checked: [],
+        history: [],
+        lastCheckedBoard:
+          typeof d.lastCheckedBoard === 'string' && /^[0-9]{81}$/.test(d.lastCheckedBoard)
+            ? d.lastCheckedBoard
+            : '',
+      });
+    }
+    return {
+      version: 1,
+      id: raw.id,
+      level: raw.level,
+      name: normalizePlayerName(raw.name),
+      at: raw.at,
+      elapsed: raw.elapsed,
+      data,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+function captureSoloSession() {
+  const s = state;
+  if (
+    !s ||
+    screen !== s.id ||
+    s.fixed ||
+    dailyRun ||
+    tourney?.active ||
+    !['code', 'slide', 'sudoku'].includes(s.id)
+  )
+    return;
+  if (s.done) {
+    if (store.extra.savedSession?.id === s.id && store.extra.savedSession.name === s.name) {
+      store.extra.savedSession = null;
+      save();
+    }
+    return;
+  }
+  const keys =
+    s.id === 'code'
+      ? ['length', 'duplicates', 'secret', 'max', 'attempts', 'hints', 'revealed', 'draft']
+      : s.id === 'slide'
+        ? ['size', 'board', 'empty', 'path', 'moves', 'hints', 'assisted', 'initial']
+        : [
+            'solution',
+            'board',
+            'given',
+            'selected',
+            'hints',
+            'checks',
+            'notes',
+            'noteMode',
+            'showCandidates',
+            'lastCheckedBoard',
+          ];
+  const data = Object.fromEntries(keys.map((key) => [key, s[key]]));
+  const snapshot = normalizeSavedSession({
+    version: 1,
+    id: s.id,
+    name: s.name,
+    level: s.level,
+    at: Date.now(),
+    elapsed: s.started ? extraElapsed(s) : 0,
+    data,
+  });
+  if (snapshot) {
+    store.extra.savedSession = snapshot;
+    save();
+  }
+}
+function snapshotHTML() {
+  const snapshot = store.extra.savedSession,
+    game = snapshot && games.find((g) => g[0] === snapshot.id);
+  return game
+    ? `<section class="panel"><div class="sectionhead"><div><span class="world-label">💾 لغز محفوظ</span><h3>كمّل ${esc(game[2])}</h3><p class="note">${esc(snapshot.name)} · اللوحة والمحاولات والمساعدات محفوظة.</p></div><button class="primary" onclick="resumeSavedGame()">نكمل اللعب ←</button></div></section>`
+    : '';
+}
+function resumeSavedGame() {
+  const snapshot = normalizeSavedSession(store.extra.savedSession);
+  if (!snapshot) {
+    store.extra.savedSession = null;
+    save();
+    return toast('اللوحة المحفوظة غير متاحة. ابدأ لغزاً جديداً.');
+  }
+  if (
+    snapshot.id === 'sudoku' &&
+    sudokuCount(snapshot.data.solution.map((n, i) => (snapshot.data.given[i] ? n : 0))) !== 1
+  ) {
+    store.extra.savedSession = null;
+    save();
+    return toast('اللغز المحفوظ غير صالح. ابدأ لوحة جديدة.');
+  }
+  captureSoloSession();
+  clearTimers();
+  removePause();
+  closeModal(true);
+  tourney = null;
+  dailyRun = null;
+  screen = snapshot.id;
+  state = {
+    id: snapshot.id,
+    name: snapshot.name,
+    level: snapshot.level,
+    fixed: false,
+    done: false,
+    ...snapshot.data,
+    started: Date.now() - snapshot.elapsed * 1000,
+  };
+  if (snapshot.id === 'code') renderCode('رجعنا إلى نفس الشفرة؛ محاولاتك ومساعداتك محفوظة.');
+  else if (snapshot.id === 'slide') renderSlide('نكمل اللوحة المحفوظة من آخر حركة.');
+  else renderSudoku('نكمل اللغز؛ الأرقام والملاحظات والمساعدات محفوظة.');
+  goTop();
+}
+window.addEventListener('pagehide', captureSoloSession);
+
 // Source: src/advanced.js
 function startExtra(id) {
-  if (screen !== 'setup' || state?.id !== id) return;
+  if (screen !== 'setup' || state?.id !== id || coreBlocked()) return;
   clearTimers();
   seededRandom = dailyRun
     ? makeSeed(dailyRun.date + ':' + id)
@@ -9405,11 +11472,16 @@ function boardMove(pos, botMove = false) {
     s.winline = w.line;
     clearTimers();
     const p = w.p === 0 ? 10 : !s.bot || w.p === 1 ? 50 : 0;
-    if (p > 0) {
-      s.name = w.p ? s.names[w.p - 1] : s.names[0];
+    // Record participation for both people, including a zero-point loss.
+    if (s.bot) {
+      s.name = s.names[0];
       addScore(s.name, p);
-      if (w.p === 0 && !s.bot) addScore(s.names[1], 10);
+    } else {
+      s.name = w.p ? s.names[w.p - 1] : s.names[0];
+      for (let index = 0; index < s.names.length; index++)
+        addScore(s.names[index], w.p === 0 ? 10 : w.p === index + 1 ? 50 : 0);
     }
+    s.roundRecorded = true;
     s.points = p;
     renderBoard();
     if (p > 10) {
@@ -9537,6 +11609,7 @@ function codeFeedback(secret, guess) {
 function readCodeDraft() {
   const s = state;
   s.draft = Array.from({ length: s.length }, (_, i) => Number($('digit' + i)?.value ?? s.draft[i]));
+  captureSoloSession();
   return s.draft;
 }
 function renderCode(msg = '') {
@@ -10117,7 +12190,9 @@ function undoSudoku() {
 function checkSudoku() {
   if (screen !== 'sudoku' || state.done || advancedBlocked()) return;
   const s = state;
-  s.checks++;
+  const signature = s.board.join('');
+  if (signature !== s.lastCheckedBoard) s.checks++;
+  s.lastCheckedBoard = signature;
   s.checked = s.board.map((v, i) => (v && v !== s.solution[i] ? i : -1)).filter((i) => i >= 0);
   renderSudoku(
     s.checked.length
@@ -11456,23 +13531,24 @@ function arcadeToolbar(id) {
 function arcadeSwipe(el, move) {
   let point = null;
   el.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    point = { x: e.clientX, y: e.clientY };
+    if (point || !e.isPrimary || e.button !== 0) return;
+    point = { x: e.clientX, y: e.clientY, id: e.pointerId };
     el.setPointerCapture?.(e.pointerId);
   });
   el.addEventListener('pointermove', (e) => {
-    if (!point) return;
+    if (!point || e.pointerId !== point.id) return;
     const dx = e.clientX - point.x,
       dy = e.clientY - point.y;
     if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
     move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up');
-    point = { x: e.clientX, y: e.clientY };
+    point = { x: e.clientX, y: e.clientY, id: e.pointerId };
   });
-  const stop = () => {
-    point = null;
+  const stop = (e) => {
+    if (e.pointerId === point?.id) point = null;
   };
   el.addEventListener('pointerup', stop);
   el.addEventListener('pointercancel', stop);
+  el.addEventListener('lostpointercapture', stop);
 }
 function startArcade(id) {
   if (screen !== 'setup' || state?.id !== id || !arcadeIDs.has(id)) return;
@@ -11667,7 +13743,7 @@ function snakeEnd(title, full = false) {
     points = full ? 100 : Math.min(100, s.fruitCount * ({ 240: 3, 150: 5, 90: 7 }[s.speed] || 5));
   finishExtra(
     title,
-    `جمعت ${s.fruitCount} فاكهة، ووصل طولك إلى ${s.snake.length} خلال ${arcadeTimeText(arcadeSeconds(s))}.`,
+    `جمعت ${s.fruitCount} فاكهة، ووصل طولك إلى ${s.snake.length} خلال ${arcadeTimeText(s.running ? arcadeSeconds(s) : 0)}.`,
     points,
   );
 }
@@ -11854,7 +13930,11 @@ function minesBoardHTML(s = state, final = false) {
     .join('')}</div></div>`;
 }
 function renderMines() {
-  const s = state;
+  const s = state,
+    previousBoard = document.querySelector('.mines-scroll'),
+    scrollLeft = previousBoard?.scrollLeft || 0,
+    scrollTop = previousBoard?.scrollTop || 0,
+    restoreFocus = !!document.activeElement?.closest('.mine-cell');
   setHTML(
     wrap(
       'mines',
@@ -11866,6 +13946,13 @@ function renderMines() {
         `<section class="panel arcade-panel"><div class="mine-mode"><button class="${!s.flagMode ? 'primary' : ''}" onclick="mineMode(false)" aria-pressed="${!s.flagMode}">🔍 كشف الخانات</button><button class="${s.flagMode ? 'warm' : ''}" onclick="mineMode(true)" aria-pressed="${s.flagMode}">⚑ وضع الأعلام</button></div>${minesBoardHTML(s)}<p class="note center">${s.flagMode ? 'وضع الأعلام: اضغط خانة مغلقة لوضع علم أو إزالته.' : 'اضغط للكشف. اضغط رقماً مكشوفاً لفتح الجيران بعد وضع أعلامه.'}<br>الفأرة اليمنى أو F للأعلام · الأسهم للتنقل · Enter للكشف.</p>${arcadeToolbar('mines')}</section>`,
     ),
   );
+  const board = document.querySelector('.mines-scroll');
+  board.scrollLeft = scrollLeft;
+  board.scrollTop = scrollTop;
+  if (restoreFocus)
+    document
+      .querySelector(`.mine-cell[data-index="${s.selected}"]`)
+      ?.focus({ preventScroll: true });
 }
 function mineMode(flag) {
   if (!arcadeReady('mines')) return;
@@ -11947,7 +14034,7 @@ function mineFinish(win) {
     );
 }
 function mineNavigate(dir) {
-  if (!arcadeReady('mines')) return;
+  if (!arcadeReady('mines') || !arcadeDelta[dir]) return;
   const s = state,
     [dx, dy] = arcadeDelta[dir],
     x = (s.selected % s.size) + dx,
@@ -11956,7 +14043,9 @@ function mineNavigate(dir) {
   s.selected = y * s.size + x;
   for (const el of document.querySelectorAll('.mine-cell[data-index]'))
     el.tabIndex = Number(el.dataset.index) === s.selected ? 0 : -1;
-  document.querySelector(`.mine-cell[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
+  const cell = document.querySelector(`.mine-cell[data-index="${s.selected}"]`);
+  cell?.focus({ preventScroll: true });
+  cell?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
 
 // Maze: iterative depth-first carving gives one connected path system.
@@ -12057,7 +14146,8 @@ function mazeMove(dir) {
   s.position = i;
   s.moves++;
   s.trail.add(i);
-  s.hintPath = [];
+  // Keep the remaining route visible while following it; leaving the route clears it.
+  s.hintPath = s.hintPath[1] === i ? s.hintPath.slice(1) : [];
   if (s.stars.delete(i)) {
     tone();
     $('mazeStars').textContent = s.starTotal - s.stars.size + ' / ' + s.starTotal;
@@ -12173,7 +14263,11 @@ document.addEventListener('keydown', (e) => {
   if (
     !arcadeIDs.has(screen) ||
     !arcadeReady(screen) ||
-    e.target.matches('input,select,textarea,[contenteditable="true"]')
+    e.ctrlKey ||
+    e.metaKey ||
+    e.altKey ||
+    e.isComposing ||
+    e.target.closest?.('input,select,textarea,[contenteditable="true"]')
   )
     return;
   const dirs = {
@@ -12187,7 +14281,7 @@ document.addEventListener('keydown', (e) => {
       d: 'right',
     },
     dir = dirs[e.key] || dirs[e.key.toLowerCase()];
-  if (e.key === ' ' && screen !== 'mines' && !e.target.closest('button')) {
+  if (e.key === ' ' && screen !== 'mines' && !e.repeat && !e.target.closest('button')) {
     e.preventDefault();
     showPause();
     return;
@@ -12196,11 +14290,12 @@ document.addEventListener('keydown', (e) => {
     if (dir) {
       e.preventDefault();
       mineNavigate(dir);
-    } else if (e.key.toLowerCase() === 'f') {
+    } else if (e.key.toLowerCase() === 'f' && !e.repeat) {
       e.preventDefault();
       mineFlag(state.selected);
     } else if (
       (e.key === 'Enter' || e.key === ' ') &&
+      !e.repeat &&
       (!e.target.closest('button') || e.target.closest('.mine-cell'))
     ) {
       e.preventDefault();
@@ -12215,7 +14310,7 @@ document.addEventListener('keydown', (e) => {
       if (!e.repeat) mergeMove(dir);
     } else mazeMove(dir);
   }
-  if (screen === 'merge' && e.key.toLowerCase() === 'z') {
+  if (screen === 'merge' && e.key.toLowerCase() === 'z' && !e.repeat) {
     e.preventDefault();
     mergeUndo();
   }
@@ -12424,6 +14519,7 @@ function nextTrivia() {
 
 function wordsNormalizeKey(value) {
   return String(value)
+    .normalize('NFC')
     .trim()
     .replace(/[\u064B-\u065F\u0670ـ\s]/g, '')
     .replace(/[أإآ]/g, 'ا');
@@ -12470,6 +14566,7 @@ function startHangman(name) {
   const cat = $('hangCategory').value,
     count = Number($('hangCount').value),
     pool = wordsLexicon.filter((w) => cat === 'all' || w.cat === cat);
+  if (!pool.length) return toast('لا توجد كلمات في هذه الفئة. اختر فئة أخرى.');
   state = {
     id: 'hangman',
     name,
@@ -12579,6 +14676,7 @@ function nextHangman() {
 function startWordguess(name) {
   const size = Number($('wordguessLength').value),
     pool = wordsLexicon.filter((w) => Array.from(w.key).length === size);
+  if (!pool.length) return toast('اختر طول كلمة متاحاً.');
   state = {
     id: 'wordguess',
     name,
@@ -12759,13 +14857,18 @@ function spawnTarget() {
     );
 }
 function renderTarget() {
-  const s = state;
+  const s = state,
+    focusedIndex = document.activeElement?.closest('.target-cell')?.dataset.index;
   setHTML(
     wrap(
       'target',
-      `<section class="panel"><div class="words-status"><b class="countdown" id="targetClock">${wordsSeconds(s)} ث</b><span class="pill">💎 <b id="targetScore">${s.points}</b> نقطة</span><span class="pill">🔥 سلسلة ${s.combo}</span><span class="pill">✓ ${s.hits}</span></div><div class="words-clock-track"><span id="targetTimebar" style="width:${(100 * wordsSeconds(s)) / s.duration}%"></span></div><div class="target-grid" style="--target-size:${s.size}" aria-label="خانات صيد الأهداف">${Array.from({ length: s.size * s.size }, (_, i) => `<button class="target-cell ${i === s.slot && !s.claimed ? 'active' : ''}" onclick="hitTarget(${i},${s.token})" aria-label="${i === s.slot && !s.claimed ? 'هدف، اضغط هنا' : 'خانة فارغة'}">${i === s.slot && !s.claimed ? '<span aria-hidden="true">🎯</span>' : '<span aria-hidden="true">·</span>'}</button>`).join('')}</div><p class="target-feedback" role="status">${esc(s.feedback)}</p><div class="chips center"><span class="chip">أفضل سلسلة: ${s.bestCombo}</span><span class="chip">أهداف فاتت: ${s.misses}</span><span class="chip">ضغطات خاطئة: ${s.wrong}</span></div><p class="note center">هدف واحد، ضغطة واحدة. النجاح المتتابع يزيد المكافأة حتى +20 للهدف.</p></section>`,
+      `<section class="panel"><div class="words-status"><b class="countdown" id="targetClock">${wordsSeconds(s)} ث</b><span class="pill">💎 <b id="targetScore">${s.points}</b> نقطة</span><span class="pill">🔥 سلسلة ${s.combo}</span><span class="pill">✓ ${s.hits}</span></div><div class="words-clock-track"><span id="targetTimebar" style="width:${(100 * wordsSeconds(s)) / s.duration}%"></span></div><div class="target-grid" style="--target-size:${s.size}" aria-label="خانات صيد الأهداف">${Array.from({ length: s.size * s.size }, (_, i) => `<button class="target-cell ${i === s.slot && !s.claimed ? 'active' : ''}" data-index="${i}" onpointerdown="if(event.isPrimary&&event.button===0){event.preventDefault();hitTarget(${i},${s.token})}" onclick="if(event.detail===0)hitTarget(${i},${s.token})" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${i === s.slot && !s.claimed ? 'هدف، اضغط هنا' : 'خانة فارغة'}">${i === s.slot && !s.claimed ? '<span aria-hidden="true">🎯</span>' : '<span aria-hidden="true">·</span>'}</button>`).join('')}</div><p class="target-feedback" role="status">${esc(s.feedback)}</p><div class="chips center"><span class="chip">أفضل سلسلة: ${s.bestCombo}</span><span class="chip">أهداف فاتت: ${s.misses}</span><span class="chip">ضغطات خاطئة: ${s.wrong}</span></div><p class="note center">هدف واحد، ضغطة واحدة. النجاح المتتابع يزيد المكافأة حتى +20 للهدف.</p></section>`,
     ),
   );
+  if (focusedIndex !== undefined)
+    document
+      .querySelector(`.target-cell[data-index="${focusedIndex}"]`)
+      ?.focus({ preventScroll: true });
 }
 function hitTarget(index, token) {
   if (wordsBlocked('target')) return;
@@ -12806,9 +14909,16 @@ function hitTarget(index, token) {
 }
 function finishTarget() {
   if (screen !== 'target' || !state || state.done) return;
-  const s = state,
-    accuracy =
-      s.hits + s.misses + s.wrong ? Math.round((100 * s.hits) / (s.hits + s.misses + s.wrong)) : 0;
+  const s = state;
+  // A delayed final timer tick must still count an already-expired, unclaimed target.
+  if (s.slot >= 0 && !s.claimed && targetElapsed(s) >= s.targetExpires) {
+    s.misses++;
+    s.combo = 0;
+    s.claimed = true;
+    s.slot = -1;
+  }
+  const accuracy =
+    s.hits + s.misses + s.wrong ? Math.round((100 * s.hits) / (s.hits + s.misses + s.wrong)) : 0;
   finishWords(
     'انتهت رحلة الصيد!',
     `${s.hits} هدفاً صحيحاً، ${s.misses} أهداف فاتت، و${s.wrong} ضغطات خاطئة. الدقة ${accuracy}%، وأفضل سلسلة ${s.bestCombo}.`,
@@ -12843,12 +14953,22 @@ document.addEventListener('keydown', (event) => {
     }
     return;
   }
+  if (screen === 'hangman' && state.over && event.key === 'Enter') {
+    event.preventDefault();
+    nextHangman();
+    return;
+  }
   if (screen === 'hangman' && !state.over) {
     const letter = wordsNormalizeKey(event.key);
     if (arabicKeyboard.includes(letter)) {
       event.preventDefault();
       guessHangman(letter);
     }
+    return;
+  }
+  if (screen === 'wordguess' && state.over && event.key === 'Enter') {
+    event.preventDefault();
+    finishWordguess();
     return;
   }
   if (screen === 'wordguess' && !state.over) {
@@ -13025,6 +15145,2202 @@ const wordguessDictionary = new Set(
     [4, 5].includes(Array.from(w).length),
   ),
 );
+
+// Source: src/party.js
+// Three pass-and-play party games. All secrets stay on the current device.
+const partyGameIDs = new Set(['teamcup', 'undercover', 'improv']);
+games.push(
+  [
+    'teamcup',
+    '🏆',
+    'كأس اللمّة',
+    'فريقان، قادة يتبدلون، وتمثيل وكلمات ممنوعة وأسئلة في بطولة واحدة.',
+    'جماعي · 4–12',
+    '#ffd38c',
+  ],
+  [
+    'undercover',
+    '🥸',
+    'الكلمة الدخيلة',
+    'كلمات قريبة لكن مختلفة؛ أعطوا تلميحات، حللوا، وصوّتوا بسرية.',
+    'جماعي · 3–12',
+    '#c8b7ff',
+  ],
+  [
+    'improv',
+    '💡',
+    'مجلس الإبداع',
+    'ابتكروا ردوداً طريفة، اعرضوها بلا أسماء، وصوّتوا للأفضل.',
+    'جماعي · 3–12',
+    '#9fe5d5',
+  ],
+);
+for (const id of partyGameIDs) gameWorld[id] = 'party';
+timedGames.add('teamcup');
+timedGames.add('undercover');
+Object.assign(gameGuides, {
+  teamcup: [
+    'قسّموا اللمّة إلى فريقين. كل جولة تعطي الفريقين الوقت نفسه في التمثيل أو الكلمات الممنوعة أو المعلومات. أعلى مجموع يفوز بالكأس.',
+    'القيادة تتناوب بين أعضاء الفريق. الصحيح +10، التجاوز −2، والكلمة الممنوعة −5. توزيع النقاط العامة متساوٍ داخل كل فريق، ومكافأة الفوز +10 لكل عضو.',
+  ],
+  undercover: [
+    'كل لاعب يشاهد كلمة سرية. معظم اللاعبين لديهم الكلمة نفسها، وواحد أو اثنان لديهم كلمة قريبة مختلفة. لا أحد يعرف دوره حتى الكشف.',
+    'أعطوا تلميحاً واحداً في كل دور دون ذكر الكلمة. بعد النقاش، مرّروا الجهاز للتصويت السري. كشف صاحب كلمة مختلفة يمنح الفريق العادي الفوز؛ التعادل يؤدي إلى إعادة تصويت واحدة.',
+  ],
+  improv: [
+    'أمامكم موقف طريف. كل شخص يكتب رده بسرية، ثم تُعرض الردود بترتيب عشوائي ومن دون أسماء. يختار كل لاعب رداً واحداً غير رده.',
+    'كل صوت يضيف 5 نقاط لصاحب الرد، وأصحاب أعلى عدد من الأصوات يأخذون مكافأة 10. اكتبوا ردوداً قصيرة لطيفة؛ الأسماء لا تظهر إلا بعد إقفال التصويت.',
+  ],
+});
+
+const partyPairs = [
+  ['قهوة', 'شاي'],
+  ['بيتزا', 'فطيرة'],
+  ['قطة', 'كلب'],
+  ['بحر', 'مسبح'],
+  ['قطار', 'مترو'],
+  ['طائرة', 'هليكوبتر'],
+  ['مكتبة', 'متحف'],
+  ['قلم', 'فرشاة'],
+  ['خيمة', 'كوخ'],
+  ['شمس', 'قمر'],
+  ['ثلج', 'مطر'],
+  ['حذاء', 'صندل'],
+  ['تفاح', 'كمثرى'],
+  ['ليمون', 'برتقال'],
+  ['دراجة', 'سكوتر'],
+  ['حاسوب', 'تابلت'],
+  ['مسرح', 'سينما'],
+  ['مطعم', 'مقهى'],
+  ['خبز', 'توست'],
+  ['عسل', 'مربى'],
+  ['ساعة', 'منبه'],
+  ['حديقة', 'غابة'],
+  ['نهر', 'شلال'],
+  ['سلحفاة', 'حلزون'],
+  ['ببغاء', 'عصفور'],
+  ['نحلة', 'فراشة'],
+  ['كرة سلة', 'كرة طائرة'],
+  ['تنس', 'ريشة'],
+  ['شطرنج', 'داما'],
+  ['جيتار', 'عود'],
+  ['طبل', 'دف'],
+  ['حقيبة', 'محفظة'],
+  ['غسالة', 'غسالة صحون'],
+  ['ثلاجة', 'فريزر'],
+  ['مصعد', 'سلم متحرك'],
+  ['شمعة', 'مصباح'],
+  ['شوربة', 'مرق'],
+  ['فشار', 'شيبس'],
+  ['كعكة', 'بسكويت'],
+  ['عصير', 'سموذي'],
+  ['جبل', 'تل'],
+  ['جزيرة', 'شاطئ'],
+  ['مخبز', 'محل حلويات'],
+  ['سوق', 'مول'],
+  ['حافلة', 'سيارة أجرة'],
+  ['سفينة', 'قارب'],
+  ['خريطة', 'بوصلة'],
+  ['مظلة', 'معطف مطر'],
+  ['كرسي', 'كنبة'],
+  ['مرآة', 'نافذة'],
+  ['كرة قدم', 'كرة يد'],
+  ['زرافة', 'غزال'],
+  ['دب', 'باندا'],
+  ['بطريق', 'بطة'],
+  ['أرز', 'معكرونة'],
+  ['عدس', 'حمص'],
+  ['روبوت', 'دمية'],
+  ['نجار', 'حداد'],
+  ['طبيب', 'ممرض'],
+  ['رسالة', 'بطاقة تهنئة'],
+];
+const partyCreativePrompts = [
+  'اختر اسماً لمطعم لا يقدم إلا البطاطس.',
+  'لو تكلمت ثلاجتك، ما أول جملة تقولها؟',
+  'اختر شعاراً لفريق يبحث دائماً عن جهاز التحكم.',
+  'اكتب عذراً لطيفاً لتأخر بطل خارق عن إنقاذ قطة.',
+  'اختر اسماً لكوكب سكانه يعشقون القيلولة.',
+  'اكتب إعلاناً من سطر واحد لمظلة تكره المطر.',
+  'ما الهدية المناسبة لروبوت في يوم ميلاده؟',
+  'سمّ مدرسة تعلم القطط احترام الأثاث.',
+  'ما أول قانون لو أصبحت مديراً لمدينة من الحلوى؟',
+  'اكتب عنوان فيلم عن ملعقة تحلم بأن تصبح طائرة.',
+  'اقترح اختراعاً يحل مشكلة ضياع الجوارب.',
+  'ما اسم بطولة عالمية في ترتيب الوسائد؟',
+  'اكتب رسالة قصيرة من نبتة تطلب إجازة.',
+  'سمّ مقهى يزوره الأبطال الخارقون بعد العمل.',
+  'اختر وظيفة جديدة لو صار للحيوانات مكتب توظيف.',
+  'ما الجملة التي يكتبها القمر في يومياته؟',
+  'اكتب تحذيراً طريفاً على علبة بسكويت سحرية.',
+  'اختر اسم تطبيق لترجمة كلام البطاريق.',
+  'ما نصيحة سحابة لصديقتها التي لا تمطر؟',
+  'اكتب شعاراً لمتجر يبيع الوقت الإضافي.',
+  'لو للمصعد هواية، ما هي؟',
+  'سمّ فرقة موسيقية كل أعضائها أدوات مطبخ.',
+  'ما أول سؤال تسأله لديناصور مهذب؟',
+  'اكتب عنوان خبر عن سلحفاة فازت بسباق فوري.',
+  'اختر كلمة مرور يستطيع السمك تذكرها.',
+  'اقترح جائزة لأفضل شخص يختار مكان الطلعة.',
+  'اكتب اسم فندق خاص بالحيوانات المحشوة.',
+  'ما الشيء الذي يخبئه ساحر في حقيبة الرياضة؟',
+  'سمّ رحلة سياحية إلى داخل شطيرة.',
+  'اكتب أول رسالة من حذاء فقد شريكه.',
+  'ما العنوان المناسب لكتاب مذكرات غسالة؟',
+  'اختر تعويذة تحول الواجب إلى لعبة ممتعة.',
+  'اقترح رياضة تجمع بين الشطرنج والتخييم.',
+  'اكتب اسم مطار تستخدمه الفراشات.',
+  'ماذا يطلب رجل الثلج في المطعم؟',
+  'اختر لقباً لبطل خارق قوته فتح البرطمانات.',
+  'اكتب شعاراً لنادي من ينسون أين وضعوا مفاتيحهم.',
+  'اقترح اسم متحف للأشياء التي وجدناها تحت الكنبة.',
+  'ما أول طلب لو صار جهاز التحكم يتمنى أمنية؟',
+  'اكتب جملة ترحيب لمحل يبيع الأحلام الجميلة.',
+  'لو صنعتم عطر اللمّة، ما اسمه؟',
+  'اقترح نكهة آيس كريم تلائم رائد فضاء.',
+  'ما اسم قارب صغير يخاف من الموج؟',
+  'اكتب خطة من جملة واحدة لفتح مطعم على المريخ.',
+  'اختر شعاراً لفريق يفوز بالضحك قبل النقاط.',
+  'ما التطبيق الذي تتمنى شجرة تنزيله؟',
+  'اكتب اسم دورة تدريبية للتنانين الصغار.',
+  'ما النصيحة التي تقدمها وسادة لمنبه؟',
+  'سمّ تحدياً يستطيع الجميع الفوز فيه معاً.',
+  'اكتب عنوان قصة عن خريطة قررت أن تضيع.',
+  'ما الاسم المناسب لمكتبة تطير بين المدن؟',
+  'اختر شعاراً لسوق تبادل الأفكار المضحكة.',
+  'اكتب سؤالاً تسأله لأول زائر من كوكب الجبن.',
+  'ما المهنة المناسبة لفراشة تحب الحساب؟',
+  'سمّ جائزة لأفضل صديق للنباتات.',
+  'اكتب إعلاناً من جملة واحدة لحذاء يقودك إلى المغامرات.',
+  'اختر اسم مدينة طرقها من المعكرونة.',
+  'ما الشيء الذي يتمنى قلم الرصاص رسمه لنفسه؟',
+  'اكتب قانوناً لطيفاً لجزيرة يعيش عليها الأصدقاء.',
+  'اختر اسم مهرجان لكل من يحبون التجربة الأولى.',
+];
+const partyModes = [
+  { id: 'mime', icon: '🎭', name: 'تمثيل', rule: 'مثّل بلا كلام، بلا أصوات، وبلا كتابة حروف.' },
+  {
+    id: 'taboo',
+    icon: '🚫',
+    name: 'كلمات ممنوعة',
+    rule: 'اشرح بالكلام دون ذكر الكلمة أو جزء منها أو أي كلمة ممنوعة.',
+  },
+  {
+    id: 'trivia',
+    icon: '🧠',
+    name: 'معلومات',
+    rule: 'تشاوروا كفريق ثم اختاروا جواباً واحداً. كل سؤال يُحسب مرة واحدة.',
+  },
+];
+const partyPreviousSetup = setup;
+setup = function (id, internal = false) {
+  if (!partyGameIDs.has(id)) return partyPreviousSetup(id, internal);
+  if (typeof captureSoloSession === 'function') captureSoloSession();
+  clearTimers();
+  removePause();
+  closeModal(true);
+  tourney = null;
+  dailyRun = null;
+  recordRecent(id);
+  screen = 'setup';
+  state = { id, teams: id === 'teamcup' ? partyDraftTeams('balanced') : null };
+  const minimum = id === 'teamcup' ? 4 : 3,
+    enough = store.players.length >= minimum;
+  const people = `<div class="party-people"><div><b>👥 ${store.players.length} لاعبين</b><p class="note">${store.players.map(esc).join(' · ')}</p></div><button onclick="openPeople()">تعديل اللاعبين</button></div>${enough ? '' : `<div class="hintpanel">أضيفوا ${minimum} لاعبين على الأقل لبدء هذه اللعبة.</div>`}`;
+  let body = '';
+  if (id === 'teamcup')
+    body = `<p class="muted">بطولة للربع تجمع 3 أنواع تحديات. الفريقان يحصلان على الوقت نفسه، والقائد يتبدل كل جولة. تنتهي الجلسة بكأس ولوحة نتائج.</p>${people}<div class="fields"><div class="field"><label for="partyCycles">عدد جولات كل فريق</label><select id="partyCycles"><option value="3">3 جولات · جولة من كل نوع</option><option value="6" selected>6 جولات · بطولة كاملة</option><option value="9">9 جولات · سهرة طويلة</option></select></div><div class="field"><label for="partyDuration">وقت كل دور</label><select id="partyDuration"><option value="45">45 ثانية</option><option value="60" selected>60 ثانية</option><option value="90">90 ثانية</option></select></div><div class="field"><label for="partyDraft">توزيع الفرق</label><select id="partyDraft" onchange="partyRemixTeams()"><option value="balanced">متوازن حسب سجل النقاط</option><option value="random">عشوائي</option></select></div><div class="field"><label for="partyTeamA">اسم الفريق الأول</label><input id="partyTeamA" maxlength="18" value="الصقور"></div><div class="field"><label for="partyTeamB">اسم الفريق الثاني</label><input id="partyTeamB" maxlength="18" value="التنانين"></div></div><div id="partyTeamsPreview">${partyTeamsHTML(state.teams)}</div><div class="actions"><button onclick="partyRemixTeams()">🔀 توزيع جديد</button></div><div class="hintpanel">الصحيح +10 · التجاوز −2 · مخالفة الكلمات −5. بعد البطولة تُوزع نقاط الفريق بالتساوي بين أعضائه، ومكافأة الفوز +10. عدد الأعضاء يختلف بواحد فقط إذا كنتم عدداً فردياً.</div>`;
+  if (id === 'undercover')
+    body = `<p class="muted">الجميع يعرف كلمة، لكن بينكم كلمة دخيلة قريبة منها. الكلمات تُعرض سراً، وبعد التلميحات يصوّت كل شخص بعيداً عن أنظار الآخرين.</p>${people}<div class="fields"><div class="field"><label for="partyRounds">عدد الجولات</label><select id="partyRounds"><option value="1">جولة سريعة</option><option value="3" selected>3 جولات</option><option value="5">5 جولات</option></select></div><div class="field"><label for="partyHiddenCount">أصحاب الكلمة الدخيلة</label><select id="partyHiddenCount"><option value="1">لاعب واحد</option><option value="2" ${store.players.length < 7 ? 'disabled' : ''}>لاعبان · يحتاج 7 لاعبين</option></select></div><div class="field"><label for="partyClueRounds">دورات التلميحات</label><select id="partyClueRounds"><option value="1">تلميح من كل لاعب</option><option value="2" selected>تلميحان من كل لاعب</option></select></div><div class="field"><label for="partyDuration">وقت النقاش</label><select id="partyDuration"><option value="90">90 ثانية</option><option value="150" selected>150 ثانية</option><option value="240">240 ثانية</option><option value="0">بدون مؤقت</option></select></div></div><div class="hintpanel">لا تذكروا كلماتكم ولا تعرضوا الشاشة. استبعاد صاحب كلمة دخيلة يمنح العاديين +20، وتصويتهم الصحيح +10. إذا نجا الفريق الدخيل يأخذ كل عضو +30. التعادل يعيد التصويت مرة واحدة، وبعدها النجاة للفريق الدخيل.</div>`;
+  if (id === 'improv')
+    body = `<p class="muted">إجابات قصيرة، أفكار غير متوقعة، وتصويت سري. ردودكم تظهر بلا أسماء حتى تنتهي الأصوات؛ لا أحد يصوّت لرده.</p>${people}<div class="fields"><div class="field full"><label for="partyRounds">طول الجلسة</label><select id="partyRounds"><option value="3">3 مواقف · جلسة سريعة</option><option value="5" selected>5 مواقف</option><option value="8">8 مواقف · تحدي الإبداع</option></select></div></div><div class="hintpanel">60 موقفاً عائلياً في بنك اللعبة. كل صوت +5 لصاحب الرد، وأعلى الردود تحصل على +10 حتى في التعادل. اكتبوا ردوداً لطيفة؛ ما تحتاجون معلومات شخصية. تُحفظ نقاط الجلسة عند إكمالها.</div>`;
+  setHTML(
+    wrap(
+      id,
+      `<section class="panel party-panel">${body}<div class="actions"><button class="primary" onclick="startPartyGame('${id}')" ${enough ? '' : 'disabled'}>ابدأ اللمّة ←</button></div></section>`,
+    ),
+  );
+  goTop();
+};
+
+function partyBlocked(id) {
+  return (
+    screen !== id ||
+    state?.id !== id ||
+    state.done ||
+    state.pausedAt ||
+    !$('modalback').hidden ||
+    !!$('pausecover')
+  );
+}
+function partyStage(id, stage) {
+  return !partyBlocked(id) && state.stage === stage;
+}
+function partyReadOption(id, options, fallback) {
+  const n = Number($(id)?.value);
+  return options.includes(n) ? n : fallback;
+}
+function partyDraftTeams(mode) {
+  const all = shuffle(store.players),
+    teams = [[], []],
+    strength = [0, 0];
+  if (mode === 'balanced') all.sort((a, b) => partyStrength(b) - partyStrength(a));
+  for (const name of all) {
+    const team =
+      teams[0].length !== teams[1].length
+        ? teams[0].length < teams[1].length
+          ? 0
+          : 1
+        : mode === 'balanced' && strength[0] !== strength[1]
+          ? strength[0] < strength[1]
+            ? 0
+            : 1
+          : randInt(2);
+    teams[team].push(name);
+    strength[team] += partyStrength(name);
+  }
+  return teams;
+}
+function partyStrength(name) {
+  const score = store.scores[name];
+  return score?.rounds ? score.points / score.rounds : 0;
+}
+function partyTeamsHTML(teams, names = ['الفريق الأول', 'الفريق الثاني'], scores = null) {
+  return `<div class="party-teams">${teams.map((members, i) => `<div class="party-team party-team-${i}"><div class="party-team-title"><b>${i ? '🐉' : '🦅'} ${esc(names[i])}</b>${scores ? `<strong>${scores[i]}</strong>` : `<span>${members.length} لاعبين</span>`}</div><div class="party-members">${members.map((n) => `<span>${esc(n)}</span>`).join('')}</div></div>`).join('')}</div>`;
+}
+function partyRemixTeams() {
+  if (screen !== 'setup' || state?.id !== 'teamcup') return;
+  state.teams = partyDraftTeams($('partyDraft')?.value || 'balanced');
+  $('partyTeamsPreview').innerHTML = partyTeamsHTML(state.teams, [
+    $('partyTeamA').value.trim() || 'الفريق الأول',
+    $('partyTeamB').value.trim() || 'الفريق الثاني',
+  ]);
+}
+function partySessionScore(s) {
+  return `<details class="history party-session"><summary>🏅 نقاط الجلسة</summary>${boardHTML(s.players, s.results)}</details>`;
+}
+function partyPrivateHandoff(id, name, label, button) {
+  return `<section class="panel party-private center"><span class="party-lock" aria-hidden="true">🔒</span><p class="party-kicker">${label}</p><h2>الجهاز مع ${esc(name)}</h2><p class="note">مرّروا الجهاز، ثم افتحوا الشاشة بعيداً عن الآخرين.</p><div class="actions"><button class="primary" onclick="${button}">أنا ${esc(name)}، جاهز</button></div></section>`;
+}
+function startPartyGame(id) {
+  if (screen !== 'setup' || state?.id !== id || !partyGameIDs.has(id)) return;
+  const minimum = id === 'teamcup' ? 4 : 3;
+  if (store.players.length < minimum) return toast(`أضيفوا ${minimum} لاعبين على الأقل.`);
+  const players = [...store.players];
+  const options = {
+    rounds: partyReadOption('partyRounds', [1, 3, 5, 8], id === 'improv' ? 5 : 3),
+    duration: partyReadOption(
+      'partyDuration',
+      [0, 45, 60, 90, 150, 240],
+      id === 'teamcup' ? 60 : 150,
+    ),
+    cycles: partyReadOption('partyCycles', [3, 6, 9], 6),
+    hiddenCount: players.length >= 7 ? partyReadOption('partyHiddenCount', [1, 2], 1) : 1,
+    clueRounds: partyReadOption('partyClueRounds', [1, 2], 2),
+  };
+  const teams = state.teams,
+    teamNames = [
+      $('partyTeamA')?.value.trim() || 'الصقور',
+      $('partyTeamB')?.value.trim() || 'التنانين',
+    ];
+  if (id === 'teamcup' && norm(teamNames[0]) === norm(teamNames[1]))
+    return toast('اختاروا اسماً مختلفاً لكل فريق.');
+  clearTimers();
+  screen = id;
+  state = {
+    id,
+    players,
+    results: Object.fromEntries(players.map((n) => [n, 0])),
+    done: false,
+    round: 0,
+    ...options,
+  };
+  if (id === 'teamcup') {
+    Object.assign(state, {
+      teams,
+      teamNames,
+      turn: 0,
+      teamScores: [0, 0],
+      history: [],
+      decks: {
+        mime: shuffle(items.map((v) => v.name)),
+        taboo: shuffle(tabooDeck),
+        trivia: shuffle(triviaBank),
+      },
+      deckIndex: { mime: 0, taboo: 0, trivia: 0 },
+      onPause: () => {
+        if (state?.id === 'teamcup' && state.stage === 'active' && state.mode !== 'trivia') {
+          state.hiddenCard = true;
+          renderTeamCup();
+        }
+      },
+    });
+    teamCupHandoff();
+  } else if (id === 'undercover') {
+    Object.assign(state, { pairs: shuffle(partyPairs), onPause: partyUndercoverPause });
+    undercoverRound();
+  } else {
+    Object.assign(state, {
+      prompts: shuffle(partyCreativePrompts).slice(0, options.rounds),
+      onPause: partyCreativePause,
+    });
+    creativeRound();
+  }
+  goTop();
+}
+
+// Team tournament: equal timed turns, rotating captains and one final score write.
+function teamCupInfo() {
+  const s = state,
+    cycle = Math.floor(s.turn / 2),
+    team = ((s.turn % 2) + Math.floor(cycle / 3)) % 2;
+  return {
+    cycle,
+    team,
+    captain: s.teams[team][cycle % s.teams[team].length],
+    mode: partyModes[cycle % partyModes.length],
+  };
+}
+function teamCupHandoff() {
+  const s = state;
+  clearTimers();
+  s.endAt = 0;
+  if (s.turn >= s.cycles * 2) return finishTeamCup();
+  s.stage = 'handoff';
+  const info = teamCupInfo();
+  s.mode = info.mode.id;
+  setHTML(
+    wrap(
+      'teamcup',
+      `${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}<section class="panel center party-round-card"><p class="party-kicker">الجولة ${info.cycle + 1} / ${s.cycles} · ${info.mode.icon} ${info.mode.name}</p><h2>دور فريق ${esc(s.teamNames[info.team])}</h2><div class="party-captain">القائد: <b>${esc(info.captain)}</b></div><p class="note">${info.mode.rule}</p><p class="note">${s.duration} ثانية · ${info.mode.id === 'trivia' ? 'الشاشة يشاهدها الفريق كله، والخصم يراقب.' : 'الشاشة للقائد فقط، زملاؤه يخمنون، والخصم يراقب الوقت.'}</p><div class="actions"><button class="primary" onclick="teamCupBegin()">الفريق جاهز، ابدأ الوقت</button></div></section>`,
+    ),
+  );
+}
+function teamCupBegin() {
+  if (!partyStage('teamcup', 'handoff')) return;
+  Object.assign(state, {
+    stage: 'active',
+    turnScore: 0,
+    correct: 0,
+    skips: 0,
+    violations: 0,
+    turnLog: [],
+    hiddenCard: false,
+    endAt: Date.now() + state.duration * 1000,
+    feedback: null,
+  });
+  teamCupNextCard();
+  renderTeamCup();
+  const s = state;
+  repeat(() => {
+    if (state !== s || s.stage !== 'active' || partyBlocked('teamcup')) return;
+    const seconds = partySeconds(s);
+    if ($('teamCupClock')) $('teamCupClock').textContent = seconds;
+    if ($('teamCupTimebar')) $('teamCupTimebar').style.width = (seconds / s.duration) * 100 + '%';
+    if (!seconds) teamCupEndTurn();
+  }, 100);
+}
+function partySeconds(s = state) {
+  return Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000));
+}
+function teamCupNextCard() {
+  const s = state,
+    mode = s.mode;
+  if (s.deckIndex[mode] >= s.decks[mode].length) {
+    const last = s.card;
+    s.decks[mode] = shuffle(s.decks[mode]);
+    if (s.decks[mode].length > 1 && s.decks[mode][0] === last)
+      [s.decks[mode][0], s.decks[mode][1]] = [s.decks[mode][1], s.decks[mode][0]];
+    s.deckIndex[mode] = 0;
+  }
+  s.card = s.decks[mode][s.deckIndex[mode]++];
+  s.feedback = null;
+  if (mode === 'trivia') s.choices = shuffle(s.card.choices);
+}
+function renderTeamCup() {
+  const s = state,
+    info = teamCupInfo();
+  let card = '';
+  if (s.mode === 'trivia')
+    card = `<h3 class="party-question">${esc(s.card.question)}</h3><div class="party-answers">${s.choices.map((c, i) => `<button class="${s.feedback ? (c === s.card.answer ? 'party-correct' : i === s.feedback.choice ? 'party-wrong' : '') : ''}" onclick="teamCupTrivia(${i})" ${s.feedback ? 'disabled' : ''}>${esc(c)}${s.feedback && c === s.card.answer ? ' ✓' : ''}</button>`).join('')}</div>${s.feedback ? `<div class="hintpanel" role="status"><b>${s.feedback.correct ? 'صح! +10' : 'نحاول في السؤال التالي'}</b><p>${esc(s.card.explanation)}</p></div><div class="actions"><button class="primary" onclick="teamCupTriviaNext()">السؤال التالي ←</button></div>` : '<p class="note center">تشاوروا ثم سجّلوا إجابة واحدة.</p>'}`;
+  else
+    card = s.hiddenCard
+      ? `<div class="party-secret-card"><span class="party-lock">🔒</span><h3>البطاقة مخفية</h3><p class="note">الوقت مستمر؛ أظهرها للقائد فقط.</p><button onclick="teamCupToggleCard()">إظهار البطاقة</button></div>`
+      : `<div class="party-secret-card"><p class="party-kicker">${s.mode === 'mime' ? 'مثّل بدون كلام' : 'اشرح دون الكلمات الممنوعة'}</p><div class="party-secret-word">${esc(s.mode === 'mime' ? s.card : s.card[0])}</div>${
+          s.mode === 'taboo'
+            ? `<div class="party-forbidden">${s.card
+                .slice(1, 5)
+                .map((w) => `<span>${esc(w)}</span>`)
+                .join('')}</div>`
+            : ''
+        }</div><div class="actions"><button class="primary" onclick="teamCupRecord('correct')">عرفوها! +10</button><button onclick="teamCupRecord('skip')">تجاوز −2</button>${s.mode === 'taboo' ? '<button class="softred" onclick="teamCupRecord(\'violation\')">مخالفة −5</button>' : ''}</div>`;
+  setHTML(
+    wrap(
+      'teamcup',
+      `<div class="party-matchbar"><span>${info.mode.icon} ${esc(s.teamNames[info.team])}</span><b>${esc(info.captain)}</b><strong>${s.turnScore} نقطة</strong></div><section class="panel party-panel"><div class="party-clockline"><span>الجولة ${info.cycle + 1} / ${s.cycles}</span><b class="countdown" id="teamCupClock">${partySeconds()}</b><span>${info.mode.name}</span></div><div class="party-time-track"><span id="teamCupTimebar" style="width:${(partySeconds() / s.duration) * 100}%"></span></div>${card}<p class="note center party-turn-summary">✓ ${s.correct} صحيح · ↷ ${s.skips} تجاوز${s.mode === 'taboo' ? ` · ✕ ${s.violations} مخالفة` : ''}</p><div class="actions">${s.mode !== 'trivia' ? `<button onclick="teamCupToggleCard()">${s.hiddenCard ? 'إظهار' : 'إخفاء'} البطاقة</button><button onclick="teamCupUndo()" ${s.turnLog.length ? '' : 'disabled'}>↶ تراجع</button>` : ''}<button class="quiet" onclick="teamCupEndTurn()">أنهِ دور الفريق</button></div></section>`,
+    ),
+  );
+}
+function teamCupToggleCard() {
+  if (!partyStage('teamcup', 'active') || state.mode === 'trivia') return;
+  if (!partySeconds()) return teamCupEndTurn();
+  state.hiddenCard = !state.hiddenCard;
+  renderTeamCup();
+}
+function teamCupRecord(action) {
+  if (
+    !partyStage('teamcup', 'active') ||
+    state.mode === 'trivia' ||
+    !['correct', 'skip', 'violation'].includes(action)
+  )
+    return;
+  if (!partySeconds()) return teamCupEndTurn();
+  if (action === 'violation' && state.mode !== 'taboo') return;
+  const s = state;
+  s.turnLog.push({
+    action,
+    word: s.mode === 'mime' ? s.card : s.card[0],
+    card: s.card,
+    deck: [...s.decks[s.mode]],
+    index: s.deckIndex[s.mode],
+    score: s.turnScore,
+    correct: s.correct,
+    skips: s.skips,
+    violations: s.violations,
+  });
+  if (action === 'correct') {
+    s.correct++;
+    s.turnScore += 10;
+    tone();
+  } else if (action === 'skip') {
+    s.skips++;
+    s.turnScore = Math.max(0, s.turnScore - 2);
+  } else {
+    s.violations++;
+    s.turnScore = Math.max(0, s.turnScore - 5);
+  }
+  s.hiddenCard = false;
+  teamCupNextCard();
+  renderTeamCup();
+}
+function teamCupUndo() {
+  if (!partyStage('teamcup', 'active') || state.mode === 'trivia' || !state.turnLog.length) return;
+  if (!partySeconds()) return teamCupEndTurn();
+  const s = state,
+    h = s.turnLog.pop();
+  Object.assign(s, {
+    card: h.card,
+    turnScore: h.score,
+    correct: h.correct,
+    skips: h.skips,
+    violations: h.violations,
+    hiddenCard: false,
+  });
+  s.decks[s.mode] = h.deck;
+  s.deckIndex[s.mode] = h.index;
+  renderTeamCup();
+}
+function teamCupTrivia(choice) {
+  if (
+    !partyStage('teamcup', 'active') ||
+    state.mode !== 'trivia' ||
+    state.feedback ||
+    !Number.isInteger(choice) ||
+    choice < 0 ||
+    choice >= state.choices.length
+  )
+    return;
+  if (!partySeconds()) return teamCupEndTurn();
+  const s = state,
+    correct = s.choices[choice] === s.card.answer;
+  s.feedback = { choice, correct };
+  s.turnLog.push({ action: correct ? 'correct' : 'wrong', word: s.card.question });
+  if (correct) {
+    s.turnScore += 10;
+    s.correct++;
+    tone();
+  }
+  renderTeamCup();
+}
+function teamCupTriviaNext() {
+  if (!partyStage('teamcup', 'active') || state.mode !== 'trivia' || !state.feedback) return;
+  if (!partySeconds()) return teamCupEndTurn();
+  teamCupNextCard();
+  renderTeamCup();
+}
+function teamCupEndTurn() {
+  if (!partyStage('teamcup', 'active')) return;
+  const s = state,
+    info = teamCupInfo();
+  clearTimers();
+  s.stage = 'turn-result';
+  s.endAt = 0;
+  s.teamScores[info.team] += s.turnScore;
+  s.history.push({
+    team: info.team,
+    captain: info.captain,
+    mode: info.mode.name,
+    score: s.turnScore,
+    correct: s.correct,
+    words: s.turnLog.map((h) => ({ action: h.action, word: h.word })),
+  });
+  tone(true);
+  setHTML(
+    wrap(
+      'teamcup',
+      `${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}<section class="panel center"><p class="party-kicker">${info.mode.icon} انتهى دور ${esc(s.teamNames[info.team])}</p><div class="resultnum">${s.turnScore}</div><p class="note">${s.correct} صحيح · القائد ${esc(info.captain)}</p><details class="history"><summary>سجل دور الفريق</summary><div class="listchips">${s.turnLog.map((h) => `<span>${h.action === 'correct' ? '✓' : h.action === 'skip' ? '↷' : '✕'} ${esc(h.word)}</span>`).join('') || '<span>لم تُسجّل إجابات</span>'}</div></details><div class="actions"><button class="primary" onclick="teamCupAdvance()">${s.turn + 1 === s.cycles * 2 ? 'تتويج الفائز' : 'الدور التالي'} ←</button></div></section>`,
+    ),
+  );
+}
+function teamCupAdvance() {
+  if (!partyStage('teamcup', 'turn-result')) return;
+  state.turn++;
+  teamCupHandoff();
+}
+function finishTeamCup() {
+  const s = state;
+  if (s.done) return;
+  s.done = true;
+  const tied = s.teamScores[0] === s.teamScores[1],
+    winner = s.teamScores[0] > s.teamScores[1] ? 0 : 1;
+  s.teams.forEach((team, i) =>
+    team.forEach((name) => {
+      s.results[name] =
+        Math.floor(s.teamScores[i] / team.length) + (!tied && i === winner ? 10 : 0);
+      addScore(name, s.results[name]);
+    }),
+  );
+  tone(true);
+  setHTML(
+    wrap(
+      'teamcup',
+      `<section class="panel success celebrate center"><span class="party-trophy">${tied ? '🤝' : '🏆'}</span><h2>${tied ? 'تعادل بطعم الفوز' : `الكأس لفريق ${esc(s.teamNames[winner])}`}</h2><p class="note">انتهت ${s.cycles} جولات لكل فريق. انحفظت النقاط العامة لكل لاعب.</p>${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}${boardHTML(s.players, s.results)}<details class="history"><summary>مسار البطولة · ${s.history.length} أدوار</summary><div class="party-timeline">${s.history.map((h, i) => `<div><span>${i + 1}</span><p><b>${esc(s.teamNames[h.team])}</b> · ${esc(h.mode)}<small>${esc(h.captain)} · ${h.correct} صحيح</small></p><strong>${h.score}</strong></div>`).join('')}</div></details><div class="actions"><button class="primary" onclick="setup('teamcup')">بطولة جديدة</button><button onclick="home()">عالم الألعاب</button></div></section>`,
+    ),
+  );
+}
+
+// Undercover: equal-looking secret cards, private ballots and one fair runoff.
+function undercoverRound() {
+  const s = state;
+  clearTimers();
+  const pair = shuffle(s.pairs[s.round % s.pairs.length]),
+    hidden = shuffle(s.players.map((_, i) => i)).slice(0, s.hiddenCount);
+  Object.assign(s, {
+    pair,
+    hidden,
+    revealIndex: 0,
+    clueIndex: 0,
+    clueOrder: shuffle(s.players.map((_, i) => i)),
+    votes: [],
+    voteIndex: 0,
+    voteChoice: null,
+    voteCandidates: s.players.map((_, i) => i),
+    runoff: false,
+    stage: 'reveal-handoff',
+    endAt: 0,
+  });
+  renderUndercoverHandoff();
+}
+function renderUndercoverHandoff() {
+  const s = state,
+    name = s.players[s.revealIndex];
+  setHTML(
+    wrap(
+      'undercover',
+      `<div class="party-status"><span>الجولة ${s.round + 1} / ${s.rounds}</span><span>البطاقة ${s.revealIndex + 1} / ${s.players.length}</span></div>${partyPrivateHandoff('undercover', name, 'كلمتك لا يراها غيرك', 'undercoverReveal()')}`,
+    ),
+  );
+}
+function undercoverReveal() {
+  if (!partyStage('undercover', 'reveal-handoff')) return;
+  state.stage = 'reveal-view';
+  const s = state,
+    word = s.hidden.includes(s.revealIndex) ? s.pair[1] : s.pair[0];
+  setHTML(
+    wrap(
+      'undercover',
+      `<section class="panel party-private center"><p class="party-kicker">الكلمة السرية لـ ${esc(s.players[s.revealIndex])}</p><div class="party-secret-word">${esc(word)}</div><p class="note">احفظها. لا تقولها نفسها، ولا تسأل الآخرين عن كلماتهم.</p><p class="note">الكلمة وحدها لا تكشف لك هل أنت من الفريق الدخيل.</p><div class="actions"><button class="primary" onclick="undercoverHide()">حفظتها، أخفِ الشاشة</button></div></section>`,
+    ),
+  );
+}
+function undercoverHide() {
+  if (!partyStage('undercover', 'reveal-view')) return;
+  const s = state;
+  s.revealIndex++;
+  if (s.revealIndex === s.players.length) {
+    s.stage = 'discussion-ready';
+    setHTML(
+      wrap(
+        'undercover',
+        `<section class="panel center"><span class="party-lock">🗣️</span><h2>الجميع شاف كلمته</h2><p class="note">أعطوا ${s.clueRounds === 2 ? 'تلميحين' : 'تلميحاً'} من كل شخص بالترتيب. لا تقولوا الكلمة نفسها. الهدف اكتشاف صاحب كلمة مختلفة.</p><div class="actions"><button class="primary" onclick="undercoverDiscuss()">ابدأوا التلميحات والنقاش</button></div></section>`,
+      ),
+    );
+  } else {
+    s.stage = 'reveal-handoff';
+    renderUndercoverHandoff();
+  }
+}
+function undercoverDiscuss() {
+  if (!partyStage('undercover', 'discussion-ready')) return;
+  const s = state;
+  s.stage = 'discussion';
+  s.endAt = s.duration ? Date.now() + s.duration * 1000 : 0;
+  renderUndercoverDiscussion();
+  if (s.duration)
+    repeat(() => {
+      if (state !== s || s.stage !== 'discussion' || partyBlocked('undercover')) return;
+      const seconds = partySeconds(s);
+      if ($('undercoverClock')) $('undercoverClock').textContent = seconds + ' ث';
+      if (!seconds) undercoverStartVote();
+    }, 200);
+}
+function renderUndercoverDiscussion() {
+  const s = state,
+    total = s.players.length * s.clueRounds,
+    current = s.clueIndex < total ? s.clueOrder[s.clueIndex % s.players.length] : null;
+  setHTML(
+    wrap(
+      'undercover',
+      `<div class="party-status"><span>الجولة ${s.round + 1} / ${s.rounds}</span><b id="undercoverClock">${s.duration ? partySeconds() + ' ث' : 'بدون مؤقت'}</b><span>${s.hiddenCount} كلمة دخيلة</span></div><section class="panel center"><p class="party-kicker">${current === null ? 'التلميحات اكتملت' : `دورة التلميحات ${Math.floor(s.clueIndex / s.players.length) + 1} / ${s.clueRounds}`}</p><h2>${current === null ? 'ناقشوا من المختلف' : `تلميح من ${esc(s.players[current])}`}</h2><p class="note">قولوا وصفاً قصيراً يرتبط بالكلمة؛ لا تذكروها ولا تشيروا إلى حروفها.</p><div class="party-speakers">${s.clueOrder.map((n, i) => `<span class="${n === current ? 'current' : i < s.clueIndex % s.players.length || current === null ? 'spoken' : ''}">${n === current ? '🎤 ' : ''}${esc(s.players[n])}</span>`).join('')}</div><div class="actions">${current !== null ? '<button class="primary" onclick="undercoverNextClue()">تم التلميح، التالي ←</button>' : ''}<button ${current === null ? 'class="primary"' : ''} onclick="undercoverStartVote()">ابدأوا التصويت السري</button></div><p class="note">التصويت لا يستبعد أحداً حتى يُسجّل الجميع أصواتهم.</p></section>${partySessionScore(s)}`,
+    ),
+  );
+}
+function undercoverNextClue() {
+  if (
+    !partyStage('undercover', 'discussion') ||
+    state.clueIndex >= state.players.length * state.clueRounds
+  )
+    return;
+  if (state.duration && !partySeconds()) return undercoverStartVote();
+  state.clueIndex++;
+  renderUndercoverDiscussion();
+}
+function undercoverStartVote() {
+  if (!partyStage('undercover', 'discussion')) return;
+  clearTimers();
+  Object.assign(state, {
+    endAt: 0,
+    votes: [],
+    voteIndex: 0,
+    voteChoice: null,
+    stage: 'vote-handoff',
+  });
+  renderUndercoverVoteHandoff();
+}
+function renderUndercoverVoteHandoff() {
+  const s = state;
+  setHTML(
+    wrap(
+      'undercover',
+      `<div class="party-status"><span>${s.runoff ? 'إعادة التصويت' : 'التصويت السري'}</span><span>${s.voteIndex + 1} / ${s.players.length}</span></div>${partyPrivateHandoff('undercover', s.players[s.voteIndex], 'صوتك لا يراه الآخرون', 'undercoverOpenVote()')}`,
+    ),
+  );
+}
+function undercoverOpenVote() {
+  if (!partyStage('undercover', 'vote-handoff')) return;
+  state.stage = 'vote-view';
+  state.voteChoice = null;
+  renderUndercoverVote();
+}
+function renderUndercoverVote() {
+  const s = state;
+  setHTML(
+    wrap(
+      'undercover',
+      `<section class="panel party-private"><p class="party-kicker">صوت ${esc(s.players[s.voteIndex])} · ${s.runoff ? 'بين المتعادلين فقط' : 'من صاحب الكلمة الدخيلة؟'}</p><h2>اختر شخصاً غير نفسك</h2><div class="party-ballots">${s.voteCandidates
+        .filter((i) => i !== s.voteIndex)
+        .map(
+          (i) =>
+            `<button class="${s.voteChoice === i ? 'selected' : ''}" aria-pressed="${s.voteChoice === i}" onclick="undercoverChoose(${i})">${esc(s.players[i])}${s.voteChoice === i ? ' ✓' : ''}</button>`,
+        )
+        .join(
+          '',
+        )}<button class="${s.voteChoice === -1 ? 'selected' : ''}" aria-pressed="${s.voteChoice === -1}" onclick="undercoverChoose(-1)">امتنع عن التصويت</button></div><div class="actions"><button class="primary" onclick="undercoverConfirmVote()" ${s.voteChoice === null ? 'disabled' : ''}>ثبّت صوتي وأخفِ الشاشة</button></div><p class="note">الأصوات والنتيجة تُكشف بعد الجميع. الامتناع لا يحسب لأي لاعب.</p></section>`,
+    ),
+  );
+}
+function undercoverChoose(i) {
+  if (
+    !partyStage('undercover', 'vote-view') ||
+    !Number.isInteger(i) ||
+    i === state.voteIndex ||
+    (i !== -1 && !state.voteCandidates.includes(i))
+  )
+    return;
+  state.voteChoice = i;
+  renderUndercoverVote();
+}
+function undercoverConfirmVote() {
+  if (!partyStage('undercover', 'vote-view') || state.voteChoice === null) return;
+  const s = state;
+  s.votes.push(s.voteChoice);
+  s.voteIndex++;
+  s.voteChoice = null;
+  if (s.voteIndex === s.players.length) return undercoverTally();
+  s.stage = 'vote-handoff';
+  renderUndercoverVoteHandoff();
+}
+function undercoverTally() {
+  const s = state,
+    tally = s.players.map(() => 0);
+  s.votes.forEach((i) => {
+    if (i >= 0) tally[i]++;
+  });
+  s.tally = tally;
+  const max = Math.max(...tally),
+    top = max ? tally.map((v, i) => (v === max ? i : -1)).filter((i) => i >= 0) : [];
+  if (top.length > 1 && !s.runoff) {
+    s.stage = 'tie';
+    s.voteCandidates = top;
+    return setHTML(
+      wrap(
+        'undercover',
+        `<section class="panel center"><span class="party-lock">🤝</span><h2>تعادل في التصويت</h2><p class="note">${top.map((i) => esc(s.players[i])).join(' · ')} حصلوا على ${max} أصوات لكل شخص.</p><p class="note">ناقشوا مرة قصيرة، ثم أعيدوا التصويت بين هؤلاء فقط. إذا تكرر التعادل يفوز الفريق الدخيل بالنجاة.</p><div class="actions"><button class="primary" onclick="undercoverRunoff()">ابدأ إعادة التصويت</button></div></section>`,
+      ),
+    );
+  }
+  finishUndercoverRound(top.length === 1 ? top[0] : null);
+}
+function undercoverRunoff() {
+  if (!partyStage('undercover', 'tie')) return;
+  Object.assign(state, {
+    runoff: true,
+    votes: [],
+    voteIndex: 0,
+    voteChoice: null,
+    stage: 'vote-handoff',
+  });
+  renderUndercoverVoteHandoff();
+}
+function finishUndercoverRound(eliminated) {
+  const s = state,
+    normalWin = eliminated !== null && s.hidden.includes(eliminated);
+  s.stage = 'round-result';
+  s.roundPoints = s.players.map((name, i) => {
+    const points = s.hidden.includes(i)
+      ? normalWin
+        ? 0
+        : 30
+      : (normalWin ? 20 : 0) + (s.hidden.includes(s.votes[i]) ? 10 : 0);
+    s.results[name] += points;
+    addScore(name, points);
+    return points;
+  });
+  tone(true);
+  setHTML(
+    wrap(
+      'undercover',
+      `<section class="panel ${normalWin ? 'success' : ''} center"><span class="party-trophy">${normalWin ? '🔍' : '🥸'}</span><h2>${normalWin ? 'كشفتوا الكلمة الدخيلة!' : 'الفريق الدخيل نجا!'}</h2><p class="note">${eliminated === null ? 'لم يُحسم شخص واحد في التصويت.' : `صوّتت اللمّة لاستبعاد ${esc(s.players[eliminated])}.`}</p><div class="party-word-reveal"><div><small>الكلمة الأصلية</small><b>${esc(s.pair[0])}</b></div><div><small>الكلمة الدخيلة</small><b>${esc(s.pair[1])}</b></div></div><p class="note">الفريق الدخيل: ${s.hidden.map((i) => esc(s.players[i])).join(' · ')}</p><div class="party-vote-results">${s.players.map((n, i) => `<div><span>${s.hidden.includes(i) ? '🥸' : '👤'} ${esc(n)}</span><span>${s.tally[i]} أصوات</span><b>+${s.roundPoints[i]}</b></div>`).join('')}</div><details class="history"><summary>الأصوات بعد إقفال الجولة</summary><div class="party-timeline">${s.players.map((n, i) => `<div><p>${esc(n)} ← ${s.votes[i] < 0 ? 'امتناع' : esc(s.players[s.votes[i]])}</p></div>`).join('')}</div></details><div class="actions"><button class="primary" onclick="undercoverAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'جولة بكلمات جديدة'} ←</button></div></section>${partySessionScore(s)}`,
+    ),
+  );
+}
+function undercoverAdvance() {
+  if (!partyStage('undercover', 'round-result')) return;
+  state.round++;
+  if (state.round === state.rounds) return finishPartySession('undercover', 'محققو اللمّة', false);
+  undercoverRound();
+}
+function partyUndercoverPause() {
+  if (state?.id !== 'undercover') return;
+  if (state.stage === 'reveal-view') {
+    state.stage = 'reveal-handoff';
+    renderUndercoverHandoff();
+  } else if (state.stage === 'vote-view') {
+    state.stage = 'vote-handoff';
+    state.voteChoice = null;
+    renderUndercoverVoteHandoff();
+  }
+}
+
+// Creative council: all answers collected first, shuffled and anonymous until tally.
+function creativeRound() {
+  const s = state;
+  clearTimers();
+  Object.assign(s, {
+    stage: 'prompt',
+    answerIndex: 0,
+    answerDraft: '',
+    entries: [],
+    voteIndex: 0,
+    votes: [],
+    voteChoice: null,
+    prompt: s.prompts[s.round],
+    endAt: 0,
+  });
+  setHTML(
+    wrap(
+      'improv',
+      `<section class="panel party-prompt-card center"><p class="party-kicker">الموقف ${s.round + 1} / ${s.rounds}</p><span class="party-lock">💡</span><h2>${esc(s.prompt)}</h2><p class="note">أعطوا الفكرة لحظة، ثم كل شخص يكتب رده الخاص. الردود ستظهر بلا أسماء.</p><div class="actions"><button class="primary" onclick="creativeStartAnswers()">ابدأ كتابة الردود</button></div></section>${partySessionScore(s)}`,
+    ),
+  );
+}
+function creativeStartAnswers() {
+  if (!partyStage('improv', 'prompt')) return;
+  state.stage = 'answer-handoff';
+  renderCreativeHandoff();
+}
+function renderCreativeHandoff() {
+  const s = state;
+  setHTML(
+    wrap(
+      'improv',
+      `<div class="party-status"><span>الرد ${s.answerIndex + 1} / ${s.players.length}</span><span>الموقف ${s.round + 1} / ${s.rounds}</span></div>${partyPrivateHandoff('improv', s.players[s.answerIndex], 'اكتب فكرتك بسرية', 'creativeOpenAnswer()')}`,
+    ),
+  );
+}
+function creativeOpenAnswer() {
+  if (!partyStage('improv', 'answer-handoff')) return;
+  const s = state;
+  s.stage = 'answer-view';
+  setHTML(
+    wrap(
+      'improv',
+      `<section class="panel party-private"><p class="party-kicker">رد ${esc(s.players[s.answerIndex])}</p><h3 class="party-question">${esc(s.prompt)}</h3><label for="creativeAnswer">ردك · 120 حرفاً كحد أقصى</label><textarea id="creativeAnswer" class="party-textarea" maxlength="120" rows="3" placeholder="فكرة خفيفة ومبتكرة…" oninput="creativeDraftUpdate()">${esc(s.answerDraft)}</textarea><p class="note" id="creativeCounter">${s.answerDraft.length} / 120</p><div class="actions"><button class="primary" onclick="creativeSubmit()">احفظ ردي وأخفِ الشاشة</button></div><p class="note">لا تكتب اسمك. الأجمل فكرة لطيفة يفهمها الجميع.</p></section>`,
+    ),
+  );
+  $('creativeAnswer').focus();
+}
+function creativeDraftUpdate() {
+  if (screen !== 'improv' || state?.stage !== 'answer-view') return;
+  state.answerDraft = $('creativeAnswer').value.slice(0, 120);
+  $('creativeCounter').textContent = state.answerDraft.length + ' / 120';
+}
+function creativeSubmit() {
+  if (!partyStage('improv', 'answer-view')) return;
+  const s = state,
+    answer = latin($('creativeAnswer').value).trim().replace(/\s+/g, ' ').slice(0, 120);
+  if (!answer) {
+    toast('اكتب رداً قبل تمرير الجهاز.');
+    return $('creativeAnswer').focus();
+  }
+  s.entries.push({ author: s.answerIndex, text: answer });
+  s.answerDraft = '';
+  s.answerIndex++;
+  if (s.answerIndex === s.players.length) {
+    s.entries = shuffle(s.entries);
+    s.stage = 'gallery';
+    return renderCreativeGallery();
+  }
+  s.stage = 'answer-handoff';
+  renderCreativeHandoff();
+}
+function partyCreativeCards(s, vote = false) {
+  return `<div class="party-creative-cards">${s.entries
+    .map((entry, i) => {
+      const own = vote && entry.author === s.voteIndex;
+      return vote
+        ? `<button class="party-creative-entry ${s.voteChoice === i ? 'selected' : ''}" onclick="creativeChoose(${i})" ${own ? 'disabled' : ''} aria-pressed="${s.voteChoice === i}"><span class="party-entry-number">${i + 1}</span><span>${esc(entry.text)}${own ? '<small>ردك · لا يمكنك التصويت له</small>' : ''}</span>${s.voteChoice === i ? '<b>✓</b>' : ''}</button>`
+        : `<div class="party-creative-entry"><span class="party-entry-number">${i + 1}</span><p>${esc(entry.text)}</p></div>`;
+    })
+    .join('')}</div>`;
+}
+function renderCreativeGallery() {
+  const s = state;
+  setHTML(
+    wrap(
+      'improv',
+      `<section class="panel"><p class="party-kicker">الردود بلا أسماء · الموقف ${s.round + 1}</p><h3 class="party-question">${esc(s.prompt)}</h3>${partyCreativeCards(s)}<p class="note center">اقرؤوا جميع الردود معاً. التصويت سري، ولكل شخص صوت واحد لرد غير رده.</p><div class="actions"><button class="primary" onclick="creativeStartVoting()">ابدأ التصويت</button></div></section>`,
+    ),
+  );
+}
+function creativeStartVoting() {
+  if (!partyStage('improv', 'gallery')) return;
+  state.stage = 'creative-vote-handoff';
+  renderCreativeVoteHandoff();
+}
+function renderCreativeVoteHandoff() {
+  const s = state;
+  setHTML(
+    wrap(
+      'improv',
+      `<div class="party-status"><span>صوت ${s.voteIndex + 1} / ${s.players.length}</span><span>الموقف ${s.round + 1} / ${s.rounds}</span></div>${partyPrivateHandoff('improv', s.players[s.voteIndex], 'اختر الرد الذي أعجبك', 'creativeOpenVote()')}`,
+    ),
+  );
+}
+function creativeOpenVote() {
+  if (!partyStage('improv', 'creative-vote-handoff')) return;
+  state.stage = 'creative-vote-view';
+  state.voteChoice = null;
+  renderCreativeVote();
+}
+function renderCreativeVote() {
+  const s = state;
+  setHTML(
+    wrap(
+      'improv',
+      `<section class="panel party-private"><p class="party-kicker">التصويت السري لـ ${esc(s.players[s.voteIndex])}</p><h3 class="party-question">${esc(s.prompt)}</h3>${partyCreativeCards(s, true)}<div class="actions"><button class="primary" onclick="creativeConfirmVote()" ${s.voteChoice === null ? 'disabled' : ''}>ثبّت صوتي وأخفِ الشاشة</button></div><p class="note center">صوّت للفكرة، لا تحاول تخمين صاحبها.</p></section>`,
+    ),
+  );
+}
+function creativeChoose(i) {
+  if (
+    !partyStage('improv', 'creative-vote-view') ||
+    !Number.isInteger(i) ||
+    !state.entries[i] ||
+    state.entries[i].author === state.voteIndex
+  )
+    return;
+  state.voteChoice = i;
+  renderCreativeVote();
+}
+function creativeConfirmVote() {
+  if (!partyStage('improv', 'creative-vote-view') || state.voteChoice === null) return;
+  const s = state;
+  if (s.entries[s.voteChoice]?.author === s.voteIndex) return;
+  s.votes.push(s.voteChoice);
+  s.voteChoice = null;
+  s.voteIndex++;
+  if (s.voteIndex === s.players.length) return creativeTally();
+  s.stage = 'creative-vote-handoff';
+  renderCreativeVoteHandoff();
+}
+function creativeTally() {
+  const s = state,
+    counts = s.entries.map(() => 0);
+  s.votes.forEach((i) => counts[i]++);
+  const highest = Math.max(...counts);
+  s.stage = 'creative-result';
+  const results = s.entries
+    .map((entry, i) => {
+      const points = counts[i] * 5 + (counts[i] === highest ? 10 : 0);
+      s.results[s.players[entry.author]] += points;
+      return { ...entry, votes: counts[i], points, winning: counts[i] === highest };
+    })
+    .sort((a, b) => b.votes - a.votes);
+  tone(true);
+  setHTML(
+    wrap(
+      'improv',
+      `<section class="panel center"><span class="party-trophy">✨</span><h2>أفكار اللمّة كشفت أصحابها</h2><p class="note">${esc(s.prompt)}</p><div class="party-creative-results">${results.map((entry) => `<div class="${entry.winning ? 'winning' : ''}"><div class="party-creative-author"><b>${entry.winning ? '🏅 ' : ''}${esc(s.players[entry.author])}</b><strong>+${entry.points}</strong></div><p>${esc(entry.text)}</p><small>${entry.votes} أصوات${entry.winning ? ' · مكافأة أفضل رد +10' : ''}</small></div>`).join('')}</div><div class="actions"><button class="primary" onclick="creativeAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'موقف جديد'} ←</button></div></section>${partySessionScore(s)}`,
+    ),
+  );
+}
+function creativeAdvance() {
+  if (!partyStage('improv', 'creative-result')) return;
+  state.round++;
+  if (state.round === state.rounds) return finishPartySession('improv', 'نجوم الإبداع', true);
+  creativeRound();
+}
+function partyCreativePause() {
+  if (state?.id !== 'improv') return;
+  if (state.stage === 'answer-view') {
+    state.answerDraft = $('creativeAnswer')?.value.slice(0, 120) || state.answerDraft;
+    state.stage = 'answer-handoff';
+    renderCreativeHandoff();
+  } else if (state.stage === 'creative-vote-view') {
+    state.stage = 'creative-vote-handoff';
+    state.voteChoice = null;
+    renderCreativeVoteHandoff();
+  }
+}
+function finishPartySession(id, title, saveScores) {
+  const s = state;
+  if (s.done) return;
+  clearTimers();
+  s.done = true;
+  if (saveScores) s.players.forEach((n) => addScore(n, s.results[n]));
+  const best = Math.max(...s.players.map((n) => s.results[n])),
+    winners = s.players.filter((n) => s.results[n] === best);
+  setHTML(
+    wrap(
+      id,
+      `<section class="panel success celebrate center"><span class="party-trophy">🏆</span><h2>${esc(title)}</h2><p class="party-champions">${winners.map(esc).join(' · ')}</p><p class="note">اكتملت ${s.rounds} جولات. نقاط اللمّة انحفظت في اللوحة العامة.</p>${boardHTML(s.players, s.results)}<div class="actions"><button class="primary" onclick="setup('${id}')">جلسة جديدة</button><button onclick="home()">عالم الألعاب</button></div></section>`,
+    ),
+  );
+  tone(true);
+}
+
+// Source: src/lab.js
+// Procedural logic laboratory. Every puzzle is generated locally and checked.
+const labIDs = new Set(['nonogram', 'lights', 'pipes']);
+games.push(
+  [
+    'nonogram',
+    '▦',
+    'لوحة المنطق',
+    'حوّل أرقام الصفوف والأعمدة إلى صورة، في ألغاز جديدة بحل واحد.',
+    'بروحك',
+    '#bcaeff',
+  ],
+  [
+    'lights',
+    '💡',
+    'طفّي الأنوار',
+    'كل ضغطة تغيّر خمسة أضواء. فكّر بخطوتك واطفئ اللوحة كاملة.',
+    'بروحك',
+    '#ffdb8c',
+  ],
+  [
+    'pipes',
+    '🔧',
+    'مهندس الأنابيب',
+    'دوّر القطع، وصّل الشبكة بالمصدر وأغلق جميع الفتحات.',
+    'بروحك',
+    '#97e3ed',
+  ],
+);
+for (const id of labIDs) gameWorld[id] = 'brain';
+Object.assign(gameGuides, {
+  nonogram: [
+    'الأرقام فوق الأعمدة وعلى يسار الصفوف تصف مجموعات الخانات المعبأة بالترتيب. بين كل مجموعتين خانة فارغة على الأقل.',
+    'ابدأ بالصفوف الطويلة. بدّل بين التعبئة والشطب والمسح، أو استخدم F وX وC. الخانات المعلّمة بـ ◆ معطاة لتضمن حلاً واحداً. التلميح يكشف خانة ويخصم 8 نقاط.',
+  ],
+  lights: [
+    'اطفئ جميع الأنوار. الضغط يغيّر حالة الخانة والخانات المجاورة لها أعلى وأسفل ويمين ويسار.',
+    'ترتيب الضغطات لا يغيّر النتيجة، والضغط مرتين يلغي نفسه. كل لوحة قابلة للحل. التلميح يحدد ضغطة ضمن أقصر حل من وضعك الحالي ويخصم 8 نقاط.',
+  ],
+  pipes: [
+    'دوّر كل قطعة حتى تصل جميع الخانات بالمصدر دون أي فتحة إلى الحافة أو إلى جانب مغلق.',
+    'ابدأ بالزوايا وقطع النهاية. اللمس يدور حسب الوضع المختار؛ الفأرة اليمنى تدور بالعكس. الأزرق والنقطة المضيئة يعنيان الاتصال بالمصدر. التلميح يضبط قطعة واحدة ويخصم 8 نقاط.',
+  ],
+});
+const labPreviousSetup = setup;
+setup = function (id, internal = false) {
+  if (!labIDs.has(id)) return labPreviousSetup(id, internal);
+  clearTimers();
+  removePause();
+  closeModal(true);
+  if (!internal) {
+    tourney = null;
+    dailyRun = null;
+  }
+  recordRecent(id);
+  screen = 'setup';
+  state = { id };
+  const introduction = {
+    nonogram:
+      'لغز الصورة المنطقية: كل رقم يمثل طول مجموعة متصلة من الخانات المعبّأة. اكتشف أماكن المجموعات باستخدام الصفوف والأعمدة معاً.',
+    lights:
+      'تحدّي بسيط في شكله وعميق في حلّه: اضغط مصباحاً فيتغيّر هو وجيرانه الأربعة. هدفك أن تصبح جميع الأنوار مطفأة.',
+    pipes:
+      'شبكة كاملة فقدت اتجاهاتها! دوّر الأنابيب حتى تتصل جميع القطع بالمصدر، دون تسريب أو أي فتحة غير موصولة.',
+  }[id];
+  const levels = {
+    nonogram: ['5×5 · بداية', '7×7 · تفكير', '9×9 · خبير'],
+    lights: ['4×4 · بداية', '5×5 · تركيز', '6×6 · خبير'],
+    pipes: ['4×4 · بداية', '5×5 · شبكة كبيرة', '6×6 · مهندس'],
+  }[id];
+  const note = {
+    nonogram:
+      'يفحص المولّد الحلول قبل اللعب، ويضيف خانات معطاة عند الحاجة لضمان حل واحد. تستطيع ترك الخانات الفارغة بلا شطب؛ يكفي أن تتطابق التعبئة مع جميع الأرقام.',
+    lights:
+      'تُبنى اللوحة من ضغطات قانونية على لوحة مطفأة، لذلك لها حل دائماً. يمكنك التراجع دون حد عملي؛ التراجع لا يلغي خصم التلميحات.',
+    pipes:
+      'تُبنى شبكة متصلة أولاً ثم تختلط اتجاهاتها. أي شبكة متصلة بلا فتحات تقبل كحل، حتى لو اختلفت عن ترتيب المولّد.',
+  }[id];
+  const fixed = dailyRun || tourney?.active;
+  setHTML(
+    wrap(
+      id,
+      `<section class="panel"><p class="muted">${introduction}</p><div class="fields"><div class="field full"><label for="labLevel">المستوى وحجم اللوحة</label><select id="labLevel" ${fixed ? 'disabled' : ''}>${['easy', 'normal', 'hard'].map((value, i) => `<option value="${value}" ${i === 1 ? 'selected' : ''}>${levels[i]}</option>`).join('')}</select></div>${playerField()}</div><div class="hintpanel">${note}</div><div class="actions"><button class="primary" onclick="startLab('${id}')">ابدأ لغزاً جديداً ←</button></div><p class="note">الوقت يتوقف أثناء الاستراحة. الأسهم للتنقل وEnter للعب. النقاط تحفظ مرة واحدة عند إكمال اللغز.</p></section>`,
+    ),
+  );
+  goTop();
+};
+function labReady(id = state?.id) {
+  return labIDs.has(id) && screen === id && state?.id === id && !state.done && !advancedBlocked();
+}
+function labRand(n, s = state) {
+  return s.rng ? Math.floor(s.rng() * n) : randInt(n);
+}
+function labShuffle(values, s = state) {
+  const copy = [...values];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = labRand(i + 1, s);
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+function labTime(s = state) {
+  const seconds = Math.max(0, Math.floor(((s.pausedAt || Date.now()) - s.started) / 1000));
+  return Math.floor(seconds / 60) + ':' + String(seconds % 60).padStart(2, '0');
+}
+function startLab(id) {
+  if (screen !== 'setup' || state?.id !== id || !labIDs.has(id) || !$('modalback').hidden) return;
+  const name = player(),
+    fixed = !!(dailyRun || tourney?.active);
+  const requestedLevel = fixed ? 'normal' : $('labLevel')?.value;
+  const level = ['easy', 'normal', 'hard'].includes(requestedLevel) ? requestedLevel : 'normal';
+  clearTimers();
+  state = {
+    id,
+    name,
+    level,
+    done: false,
+    moves: 0,
+    hints: 0,
+    selected: 0,
+    history: [],
+    message: '',
+    mode: id === 'nonogram' ? 'fill' : 'clockwise',
+    rng: dailyRun
+      ? makeSeed(dailyRun.date + ':' + id)
+      : tourney?.active
+        ? makeSeed(tourney.seed + ':' + id)
+        : null,
+  };
+  screen = id;
+  if (id === 'nonogram') labNewNonogram();
+  else if (id === 'lights') labNewLights();
+  else labNewPipes();
+  state.started = Date.now();
+  renderLab();
+  const s = state;
+  repeat(() => {
+    if (state === s && !s.done && $('labTime')) $('labTime').textContent = labTime(s);
+  }, 500);
+  goTop();
+}
+function labRemember() {
+  state.history.push([...state.board]);
+  if (state.history.length > 200) state.history.shift();
+}
+function labUndo() {
+  if (!labReady() || !state.history.length) return;
+  state.board = state.history.pop();
+  state.hintCell = -1;
+  state.message = 'تم التراجع. عدد الحركات وخصم التلميحات يبقيان للمقارنة العادلة.';
+  renderLab();
+}
+function labReset() {
+  if (!labReady() || state.board.every((v, i) => v === state.initial[i])) return;
+  labRemember();
+  state.board = [...state.initial];
+  state.hintCell = -1;
+  state.message = 'عادت اللوحة إلى البداية. تستطيع التراجع عن إعادة الضبط.';
+  renderLab();
+}
+function labFinish(title, text) {
+  if (!labReady()) return;
+  const s = state,
+    elapsed = Math.max(0, Math.floor((Date.now() - s.started) / 1000));
+  const baseline =
+    s.id === 'lights'
+      ? s.parMoves
+      : s.id === 'pipes'
+        ? s.parMoves
+        : s.answer.filter(Boolean).length;
+  const efficiencyPenalty = Math.floor(Math.max(0, s.moves - baseline) / 4);
+  const points = Math.max(
+    20,
+    { easy: 85, normal: 115, hard: 145 }[s.level] -
+      s.hints * 8 -
+      efficiencyPenalty -
+      Math.floor(elapsed / 45),
+  );
+  s.done = true;
+  s.points = points;
+  clearTimers();
+  addScore(s.name, points);
+  result(
+    s.id,
+    title,
+    esc(
+      `${text} ${s.moves} حركة · ${labTime(s)} · ${s.hints} تلميح. ${s.id === 'lights' ? 'أقصر حل البداية: ' + s.parMoves + ' ضغطات.' : ''}`,
+    ),
+    points,
+  );
+}
+function labToolbar() {
+  return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labHint" onclick="labHint()">✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
+}
+function renderLab() {
+  const s = state;
+  if (!s || s.done || !labIDs.has(s.id) || screen !== s.id) return;
+  const oldFocus = document.activeElement;
+  const focusCell = oldFocus?.classList?.contains('lab-cell');
+  const focusID =
+    oldFocus?.id && oldFocus.closest?.('[data-game="' + s.id + '"]') ? oldFocus.id : null;
+  let body = '',
+    progress;
+  if (s.id === 'nonogram') {
+    const filled = s.board.filter((v) => v === 1).length;
+    progress = ['التعبئة', `<span dir="ltr">${filled} / ${s.answer.filter(Boolean).length}</span>`];
+    body = labNonogramHTML();
+  } else if (s.id === 'lights') {
+    progress = [
+      'أنوار مضاءة',
+      `<span dir="ltr">${s.board.filter(Boolean).length} / ${s.board.length}</span>`,
+    ];
+    body = labLightsHTML();
+  } else {
+    const analysis = labPipeAnalysis(s.board, s.size, s.source);
+    progress = [
+      'متصل بالمصدر',
+      `<span dir="ltr">${analysis.connected.size} / ${s.board.length}</span>`,
+    ];
+    body = labPipesHTML(analysis);
+  }
+  setHTML(
+    wrap(
+      s.id,
+      smallStats([progress, ['الحركات', s.moves], ['الوقت', labTime(s), 'labTime']]) +
+        `<section class="panel lab-panel">${body}${labToolbar()}</section>`,
+    ),
+  );
+  if (focusCell)
+    $('labBoard')?.querySelector(`[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
+  else if (focusID) $(focusID)?.focus({ preventScroll: true });
+}
+function labSelect(i, focus = false) {
+  if (!labReady() || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
+  state.selected = i;
+  $('labBoard')
+    ?.querySelectorAll('.lab-cell')
+    .forEach((cell) => {
+      const selected = Number(cell.dataset.index) === i;
+      cell.tabIndex = selected ? 0 : -1;
+      cell.classList.toggle('lab-selected', selected);
+    });
+  if (focus) $('labBoard')?.querySelector(`[data-index="${i}"]`)?.focus({ preventScroll: true });
+}
+function labMode(mode) {
+  if (
+    !labReady() ||
+    !(state.id === 'nonogram' ? ['fill', 'cross', 'clear'] : ['clockwise', 'counter']).includes(
+      mode,
+    )
+  )
+    return;
+  state.mode = mode;
+  renderLab();
+}
+function labCellAttributes(i, description) {
+  const s = state;
+  return `type="button" data-index="${i}" tabindex="${s.selected === i ? '0' : '-1'}" onfocus="labSelect(${i})" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${esc(description)}"`;
+}
+// Nonogram constraint solver: line domains, fixed-point deductions, bounded search.
+function labRuns(values) {
+  const runs = [];
+  let count = 0;
+  for (const value of [...values, 0]) {
+    if (value) count++;
+    else if (count) {
+      runs.push(count);
+      count = 0;
+    }
+  }
+  return runs.length ? runs : [0];
+}
+function labLinePatterns(size, clues) {
+  if (clues.length === 1 && clues[0] === 0) return [Array(size).fill(0)];
+  const out = [];
+  function place(k, start, cells) {
+    if (k === clues.length) {
+      out.push(cells);
+      return;
+    }
+    const required = clues.slice(k).reduce((a, b) => a + b, 0) + clues.length - k - 1;
+    for (let at = start; at <= size - required; at++) {
+      const next = [...cells];
+      for (let j = at; j < at + clues[k]; j++) next[j] = 1;
+      place(k + 1, at + clues[k] + 1, next);
+    }
+  }
+  place(0, 0, Array(size).fill(0));
+  return out;
+}
+function labNonogramSolve(rows, columns, givens, maxNodes = 5000) {
+  const n = rows.length,
+    solutions = [];
+  let nodes = 0,
+    exhausted = false;
+  const rowDomains = rows.map((r) => labLinePatterns(n, r));
+  const colDomains = columns.map((c) => labLinePatterns(n, c));
+  function visit(grid, rDomains, cDomains) {
+    if (solutions.length >= 2 || exhausted) return;
+    if (++nodes > maxNodes) {
+      exhausted = true;
+      return;
+    }
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (let axis = 0; axis < 2; axis++) {
+        const domains = axis ? cDomains : rDomains;
+        for (let line = 0; line < n; line++) {
+          const indices = Array.from({ length: n }, (_, k) => (axis ? k * n + line : line * n + k));
+          const options = domains[line].filter((pattern) =>
+            indices.every((i, k) => grid[i] === -1 || grid[i] === pattern[k]),
+          );
+          if (!options.length) return;
+          domains[line] = options;
+          for (let k = 0; k < n; k++) {
+            const first = options[0][k],
+              i = indices[k];
+            if (grid[i] === -1 && options.every((p) => p[k] === first)) {
+              grid[i] = first;
+              changed = true;
+            }
+          }
+        }
+      }
+    }
+    if (!grid.includes(-1)) {
+      solutions.push(grid);
+      return;
+    }
+    let bestAxis = 0,
+      bestLine = -1,
+      bestSize = Infinity;
+    for (let axis = 0; axis < 2; axis++) {
+      const domains = axis ? cDomains : rDomains;
+      for (let line = 0; line < n; line++)
+        if (domains[line].length > 1 && domains[line].length < bestSize) {
+          bestSize = domains[line].length;
+          bestLine = line;
+          bestAxis = axis;
+        }
+    }
+    if (bestLine < 0) return;
+    for (const pattern of (bestAxis ? cDomains : rDomains)[bestLine]) {
+      const copy = [...grid];
+      for (let k = 0; k < n; k++) copy[bestAxis ? k * n + bestLine : bestLine * n + k] = pattern[k];
+      visit(
+        copy,
+        rDomains.map((d) => [...d]),
+        cDomains.map((d) => [...d]),
+      );
+      if (solutions.length >= 2 || exhausted) return;
+    }
+  }
+  visit([...givens], rowDomains, colDomains);
+  return { solutions, exhausted, nodes };
+}
+function labNewNonogram() {
+  const s = state,
+    n = { easy: 5, normal: 7, hard: 9 }[s.level];
+  s.size = n;
+  // Symmetric motifs with small variations give a different drawing every round.
+  s.answer = Array(n * n).fill(0);
+  const motif = labRand(4, s);
+  for (let r = 0; r < n; r++)
+    for (let c = 0; c < n; c++) {
+      const mid = (n - 1) / 2;
+      const base =
+        motif === 0
+          ? Math.abs(r - mid) + Math.abs(c - mid) <= mid
+          : motif === 1
+            ? Math.abs(c - mid) <= 1 || r === mid
+            : motif === 2
+              ? r === c || r + c === n - 1 || r === 0 || r === n - 1
+              : labRand(100, s) < 52;
+      s.answer[r * n + c] = Number(labRand(100, s) < 18 ? !base : base);
+    }
+  if (!s.answer.includes(1)) s.answer[Math.floor((n * n) / 2)] = 1;
+  s.rowClues = Array.from({ length: n }, (_, r) => labRuns(s.answer.slice(r * n, (r + 1) * n)));
+  s.colClues = Array.from({ length: n }, (_, c) =>
+    labRuns(Array.from({ length: n }, (_, r) => s.answer[r * n + c])),
+  );
+  const givens = Array(n * n).fill(-1);
+  const filledCells = s.answer.map((v, i) => i).filter((i) => s.answer[i]);
+  const reserved = filledCells[labRand(filledCells.length, s)];
+  // If more than one solution exists, reveal a distinguishing square and retry.
+  // A capped search falls back to an additional correct given, never a false claim.
+  for (let attempt = 0; attempt < n * n; attempt++) {
+    const check = labNonogramSolve(s.rowClues, s.colClues, givens);
+    if (!check.exhausted && check.solutions.length === 1) break;
+    const candidates = givens
+      .map((v, i) => i)
+      .filter(
+        (i) =>
+          givens[i] === -1 &&
+          i !== reserved &&
+          (check.solutions.length < 2 || check.solutions[0][i] !== check.solutions[1][i]),
+      );
+    const remaining = candidates.length
+      ? candidates
+      : givens.map((v, i) => i).filter((i) => givens[i] === -1 && i !== reserved);
+    const i = remaining[labRand(remaining.length, s)];
+    givens[i] = s.answer[i];
+  }
+  s.fixed = givens.map((v) => v !== -1);
+  s.board = givens.map((v) => (v === -1 ? 0 : v === 1 ? 1 : 2));
+  s.initial = [...s.board];
+  s.selected = s.fixed.findIndex((v) => !v);
+  if (s.selected < 0) s.selected = 0;
+  s.message = s.fixed.some(Boolean)
+    ? `${s.fixed.filter(Boolean).length} خانات معطاة بعلامة ◆ لضمان حل واحد. الأرقام تُقرأ من اليسار لليمين ومن الأعلى للأسفل.`
+    : 'حل واحد تم التحقق منه. ابدأ بالأرقام الطويلة، واترك خانة بين كل مجموعتين.';
+}
+function labClueDone(values, clues) {
+  return JSON.stringify(labRuns(values.map((v) => Number(v === 1)))) === JSON.stringify(clues);
+}
+function labNonogramHTML() {
+  const s = state,
+    n = s.size;
+  return `<div class="lab-mode" aria-label="أداة الرسم">${[
+    ['fill', '■ تعبئة'],
+    ['cross', '× شطب'],
+    ['clear', '○ مسح'],
+  ]
+    .map(
+      ([mode, label]) =>
+        `<button id="labMode-${mode}" class="${s.mode === mode ? 'primary' : ''}" aria-pressed="${s.mode === mode}" onclick="labMode('${mode}')">${label}</button>`,
+    )
+    .join(
+      '',
+    )}</div><div class="lab-scroll"><div id="labBoard" class="lab-nonogram" style="--lab-n:${n}" role="group" aria-label="لوحة المنطق"><div class="lab-clue-corner" aria-hidden="true">▦</div>${s.colClues
+    .map(
+      (clues, c) =>
+        `<div class="lab-clue lab-col-clue ${
+          labClueDone(
+            Array.from({ length: n }, (_, r) => s.board[r * n + c]),
+            clues,
+          )
+            ? 'lab-clue-done'
+            : ''
+        }" aria-label="عمود ${c + 1}: ${clues.join('، ')}">${clues.map((v) => `<span>${v}</span>`).join('')}</div>`,
+    )
+    .join('')}${s.rowClues
+    .map(
+      (clues, r) =>
+        `<div class="lab-clue lab-row-clue ${clues.length >= 4 ? 'lab-clue-tight' : ''} ${labClueDone(s.board.slice(r * n, (r + 1) * n), clues) ? 'lab-clue-done' : ''}" aria-label="صف ${r + 1}: ${clues.join('، ')}">${clues.join(' ')}</div>${Array.from(
+          { length: n },
+          (_, c) => {
+            const i = r * n + c,
+              v = s.board[i],
+              fixed = s.fixed[i];
+            return `<button class="lab-cell lab-pixel ${v === 1 ? 'lab-filled' : v === 2 ? 'lab-crossed' : ''} ${fixed ? 'lab-fixed' : ''} ${s.selected === i ? 'lab-selected' : ''}" ${labCellAttributes(i, (v === 1 ? 'معبأة' : v === 2 ? 'فارغة مؤكدة' : 'غير محددة') + (fixed ? '، معطاة ثابتة' : ''))} ${fixed ? 'aria-disabled="true"' : ''} aria-pressed="${v === 1}" onclick="labNonogramTap(${i})" oncontextmenu="event.preventDefault();labNonogramTap(${i},'cross')"><span aria-hidden="true">${v === 2 ? '×' : ''}</span>${fixed ? '<small aria-hidden="true">◆</small>' : ''}</button>`;
+          },
+        ).join('')}`,
+    )
+    .join(
+      '',
+    )}</div></div><p class="note center">${n}×${n} · ◆ خانة معطاة · الشطب اختياري للفوز<br>F تعبئة · X شطب · C مسح · الفأرة اليمنى للشطب${n === 9 ? '<br>على الهاتف، اسحب اللوحة أفقياً لرؤية جميع الأعمدة.' : ''}</p>`;
+}
+function labNonogramTap(i, override = null) {
+  if (
+    !labReady('nonogram') ||
+    !Number.isInteger(i) ||
+    i < 0 ||
+    i >= state.board.length ||
+    state.fixed[i]
+  )
+    return;
+  const s = state,
+    mode = override || s.mode,
+    value = mode === 'fill' ? 1 : mode === 'cross' ? 2 : 0;
+  const next = mode === 'clear' ? 0 : s.board[i] === value ? 0 : value;
+  if (s.board[i] === next) return;
+  labRemember();
+  s.board[i] = next;
+  s.moves++;
+  s.selected = i;
+  s.message = '';
+  if (labNonogramWon(s)) return labFinish('اكتملت لوحة المنطق!', 'تطابقت جميع الصفوف والأعمدة.');
+  renderLab();
+}
+function labNonogramWon(s = state) {
+  return (
+    s.rowClues.every((clue, r) => labClueDone(s.board.slice(r * s.size, (r + 1) * s.size), clue)) &&
+    s.colClues.every((clue, c) =>
+      labClueDone(
+        Array.from({ length: s.size }, (_, r) => s.board[r * s.size + c]),
+        clue,
+      ),
+    )
+  );
+}
+// Lights Out is solved over GF(2). Nullspace enumeration finds the minimum presses.
+function labNeighbours(i, n) {
+  const r = Math.floor(i / n),
+    c = i % n,
+    out = [i];
+  if (r > 0) out.push(i - n);
+  if (r < n - 1) out.push(i + n);
+  if (c > 0) out.push(i - 1);
+  if (c < n - 1) out.push(i + 1);
+  return out;
+}
+function labToggleLights(board, i, n) {
+  for (const j of labNeighbours(i, n)) board[j] ^= 1;
+}
+function labBitCount(value) {
+  let count = 0;
+  while (value) {
+    value &= value - 1n;
+    count++;
+  }
+  return count;
+}
+function labLightsSolve(board, n) {
+  const count = n * n,
+    rhs = 1n << BigInt(count);
+  const rows = Array.from({ length: count }, (_, i) =>
+    labNeighbours(i, n).reduce((mask, j) => mask | (1n << BigInt(j)), board[i] ? rhs : 0n),
+  );
+  const pivots = [];
+  let rank = 0;
+  for (let c = 0; c < count; c++) {
+    const bit = 1n << BigInt(c),
+      found = rows.findIndex((row, r) => r >= rank && !!(row & bit));
+    if (found < 0) continue;
+    [rows[rank], rows[found]] = [rows[found], rows[rank]];
+    for (let r = 0; r < count; r++) if (r !== rank && rows[r] & bit) rows[r] ^= rows[rank];
+    pivots.push(c);
+    rank++;
+  }
+  if (rows.slice(rank).some((row) => row === rhs)) return null;
+  let solution = 0n;
+  for (let r = 0; r < rank; r++) if (rows[r] & rhs) solution |= 1n << BigInt(pivots[r]);
+  const free = Array.from({ length: count }, (_, i) => i).filter((i) => !pivots.includes(i));
+  const basis = free.map((c) => {
+    const bit = 1n << BigInt(c);
+    let vector = bit;
+    for (let r = 0; r < rank; r++) if (rows[r] & bit) vector |= 1n << BigInt(pivots[r]);
+    return vector;
+  });
+  let best = solution,
+    bestCount = labBitCount(best);
+  // Supported boards 4×4, 5×5 and 6×6 have at most four free variables.
+  for (let combination = 1; combination < 2 ** basis.length; combination++) {
+    let candidate = solution;
+    for (let k = 0; k < basis.length; k++) if (combination & (2 ** k)) candidate ^= basis[k];
+    const presses = labBitCount(candidate);
+    if (presses < bestCount) {
+      best = candidate;
+      bestCount = presses;
+    }
+  }
+  return Array.from({ length: count }, (_, i) => i).filter((i) => !!(best & (1n << BigInt(i))));
+}
+function labNewLights() {
+  const s = state;
+  s.size = { easy: 4, normal: 5, hard: 6 }[s.level];
+  s.board = Array(s.size * s.size).fill(0);
+  const candidates = labShuffle(
+    s.board.map((_, i) => i),
+    s,
+  );
+  const scrambleCount = { easy: 7, normal: 13, hard: 19 }[s.level];
+  for (const i of candidates.slice(0, scrambleCount)) labToggleLights(s.board, i, s.size);
+  if (!s.board.some(Boolean)) labToggleLights(s.board, labRand(s.board.length, s), s.size);
+  s.initial = [...s.board];
+  s.parMoves = labLightsSolve(s.board, s.size).length;
+  s.hintCell = -1;
+  s.message = 'اطفئ جميع الأنوار. كل ضغطة تؤثر في الخانة وجيرانها الأربعة.';
+}
+function labLightsHTML() {
+  const s = state;
+  return `<div class="lab-lights-caption"><span>☀ مضاء</span><span>· مطفأ</span><span>✦ ضغطة مقترحة</span></div><div id="labBoard" class="lab-square lab-lights" style="--lab-n:${s.size}" role="group" aria-label="لوحة الأنوار">${s.board.map((value, i) => `<button class="lab-cell lab-light ${value ? 'lab-lit' : ''} ${s.selected === i ? 'lab-selected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''}" ${labCellAttributes(i, (value ? 'مصباح مضاء' : 'مصباح مطفأ') + (s.hintCell === i ? '، ضغطة مقترحة' : ''))} aria-pressed="${!!value}" onclick="labLightsTap(${i})"><span aria-hidden="true">${value ? '☀' : '·'}</span>${s.hintCell === i ? '<small aria-hidden="true">✦</small>' : ''}</button>`).join('')}</div><p class="note center">${s.size}×${s.size} · الضغط يغيّر الخانة وأعلى وأسفل ويمين ويسار<br>الضغط مرتين يلغي نفسه. اطفئ كل مصباح للفوز.</p>`;
+}
+function labLightsTap(i) {
+  if (!labReady('lights') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
+  const s = state;
+  labRemember();
+  labToggleLights(s.board, i, s.size);
+  s.moves++;
+  s.selected = i;
+  s.hintCell = -1;
+  s.message = '';
+  if (!s.board.some(Boolean)) return labFinish('انطفأت جميع الأنوار!', 'فككت شبكة الأضواء بنجاح.');
+  renderLab();
+}
+// Pipe ports: north=1, east=2, south=4, west=8. Rotation preserves the tile.
+const labPipeDirections = [
+  [-1, 0, 1, 4, 'أعلى'],
+  [0, 1, 2, 8, 'يمين'],
+  [1, 0, 4, 1, 'أسفل'],
+  [0, -1, 8, 2, 'يسار'],
+];
+function labRotatePipe(mask, direction = 1) {
+  return direction === 1 ? ((mask << 1) & 15) | (mask >> 3) : (mask >> 1) | ((mask & 1) << 3);
+}
+function labPipeAnalysis(board, n, source) {
+  const connected = new Set([source]),
+    queue = [source];
+  let leaks = 0;
+  for (let i = 0; i < board.length; i++) {
+    const r = Math.floor(i / n),
+      c = i % n;
+    for (const [dr, dc, bit, opposite] of labPipeDirections)
+      if (board[i] & bit) {
+        const rr = r + dr,
+          cc = c + dc;
+        if (rr < 0 || rr >= n || cc < 0 || cc >= n || !(board[rr * n + cc] & opposite)) leaks++;
+      }
+  }
+  for (let cursor = 0; cursor < queue.length; cursor++) {
+    const i = queue[cursor],
+      r = Math.floor(i / n),
+      c = i % n;
+    for (const [dr, dc, bit, opposite] of labPipeDirections)
+      if (board[i] & bit) {
+        const rr = r + dr,
+          cc = c + dc,
+          j = rr * n + cc;
+        if (rr >= 0 && rr < n && cc >= 0 && cc < n && board[j] & opposite && !connected.has(j)) {
+          connected.add(j);
+          queue.push(j);
+        }
+      }
+  }
+  return { connected, leaks, solved: leaks === 0 && connected.size === board.length };
+}
+function labNewPipes() {
+  const s = state;
+  s.size = { easy: 4, normal: 5, hard: 6 }[s.level];
+  const n = s.size;
+  s.source = Math.floor(n / 2) * n + Math.floor(n / 2);
+  s.answer = Array(n * n).fill(0);
+  const visited = new Set([s.source]),
+    stack = [s.source];
+  while (stack.length) {
+    const i = stack[stack.length - 1],
+      r = Math.floor(i / n),
+      c = i % n;
+    const possible = labPipeDirections.filter(
+      ([dr, dc]) =>
+        r + dr >= 0 &&
+        r + dr < n &&
+        c + dc >= 0 &&
+        c + dc < n &&
+        !visited.has((r + dr) * n + c + dc),
+    );
+    if (!possible.length) {
+      stack.pop();
+      continue;
+    }
+    const [dr, dc, bit, opposite] = possible[labRand(possible.length, s)],
+      j = (r + dr) * n + c + dc;
+    s.answer[i] |= bit;
+    s.answer[j] |= opposite;
+    visited.add(j);
+    stack.push(j);
+  }
+  s.board = s.answer.map((mask) => {
+    const turns = labRand(4, s);
+    for (let k = 0; k < turns; k++) mask = labRotatePipe(mask);
+    return mask;
+  });
+  if (labPipeAnalysis(s.board, n, s.source).solved) {
+    const i = s.board.findIndex((mask) => mask !== 15);
+    s.board[i] = labRotatePipe(s.board[i]);
+  }
+  s.parMoves = s.board.reduce((count, mask, i) => {
+    let rotations = 0;
+    while (mask !== s.answer[i] && rotations < 4) {
+      mask = labRotatePipe(mask);
+      rotations++;
+    }
+    return count + Math.min(rotations, 4 - rotations);
+  }, 0);
+  s.initial = [...s.board];
+  s.hintCell = -1;
+  s.message = 'المصدر في الخانة المعلّمة بقطرة. وصّل جميع القطع وأغلق كل فتحة.';
+}
+function labPipeSVG(mask, live, source) {
+  const ends = [
+    [1, 50, 0],
+    [2, 100, 50],
+    [4, 50, 100],
+    [8, 0, 50],
+  ];
+  return `<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><g class="lab-pipe-track">${ends
+    .filter(([bit]) => mask & bit)
+    .map(([, x, y]) => `<path d="M50 50 L${x} ${y}"/>`)
+    .join('')}</g><g class="lab-pipe-water ${live ? 'lab-water-on' : ''}">${ends
+    .filter(([bit]) => mask & bit)
+    .map(([, x, y]) => `<path d="M50 50 L${x} ${y}"/>`)
+    .join(
+      '',
+    )}</g><circle cx="50" cy="50" r="${source ? 18 : 10}" class="lab-pipe-hub"/>${source ? '<path class="lab-source-drop" d="M50 36 C46 43 42 48 42 52 A8 8 0 0 0 58 52 C58 48 54 43 50 36Z"/>' : live ? '<circle cx="50" cy="50" r="4" class="lab-live-dot"/>' : ''}</svg>`;
+}
+function labPipesHTML(analysis) {
+  const s = state;
+  return `<div class="lab-mode" aria-label="اتجاه التدوير">${[
+    ['clockwise', '↻ مع الساعة'],
+    ['counter', '↺ عكس الساعة'],
+  ]
+    .map(
+      ([mode, label]) =>
+        `<button id="labMode-${mode}" class="${s.mode === mode ? 'primary' : ''}" onclick="labMode('${mode}')" aria-pressed="${s.mode === mode}">${label}</button>`,
+    )
+    .join(
+      '',
+    )}</div><div class="lab-pipe-status"><span>💧 المصدر</span><span>${analysis.leaks} فتحة غير موصولة</span><span>● متصل بالمصدر</span></div><div id="labBoard" class="lab-square lab-pipes" style="--lab-n:${s.size}" role="group" aria-label="شبكة الأنابيب">${s.board
+    .map(
+      (mask, i) =>
+        `<button class="lab-cell lab-pipe ${analysis.connected.has(i) ? 'lab-connected' : ''} ${i === s.source ? 'lab-source' : ''} ${s.selected === i ? 'lab-selected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''}" ${labCellAttributes(
+          i,
+          (i === s.source ? 'المصدر، ' : '') +
+            'فتحات: ' +
+            labPipeDirections
+              .filter(([, , bit]) => mask & bit)
+              .map(([, , , , name]) => name)
+              .join('، ') +
+            (analysis.connected.has(i) ? '، متصلة بالمصدر' : '، غير متصلة'),
+        )} onclick="labPipesTap(${i})" oncontextmenu="event.preventDefault();labPipesTap(${i},-1)">${labPipeSVG(mask, analysis.connected.has(i), i === s.source)}${s.hintCell === i ? '<small class="lab-pipe-hint" aria-hidden="true">✦</small>' : ''}</button>`,
+    )
+    .join(
+      '',
+    )}</div><p class="note center">أي ترتيب يربط جميع القطع بلا فتحات يعتبر حلاً<br>R للتدوير · Shift+R للعكس · الفأرة اليمنى للعكس</p>`;
+}
+function labPipesTap(i, override = null) {
+  if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
+  const s = state,
+    direction = override || (s.mode === 'counter' ? -1 : 1),
+    next = labRotatePipe(s.board[i], direction);
+  if (s.board[i] === next) return;
+  labRemember();
+  s.board[i] = next;
+  s.moves++;
+  s.selected = i;
+  s.hintCell = -1;
+  s.message = '';
+  if (labPipeAnalysis(s.board, s.size, s.source).solved)
+    return labFinish('شبكة بلا تسريب!', 'اتصلت كل الأنابيب بالمصدر وأُغلقت جميع الفتحات.');
+  renderLab();
+}
+function labHint() {
+  if (!labReady()) return;
+  const s = state;
+  if (s.id === 'nonogram') {
+    const candidates = s.board
+      .map((v, i) => i)
+      .filter((i) => !s.fixed[i] && s.board[i] !== (s.answer[i] ? 1 : 2));
+    if (!candidates.length) return;
+    const i = candidates.includes(s.selected) ? s.selected : candidates[0];
+    labRemember();
+    s.board[i] = s.answer[i] ? 1 : 2;
+    s.selected = i;
+    s.hints++;
+    s.hintCell = i;
+    s.message = `كشف التلميح الصف ${Math.floor(i / s.size) + 1}، العمود ${(i % s.size) + 1}: ${s.answer[i] ? 'تعبئة' : 'خانة فارغة'}. خصم 8 نقاط.`;
+    if (labNonogramWon(s)) return labFinish('اكتملت لوحة المنطق!', 'تطابقت جميع الصفوف والأعمدة.');
+  } else if (s.id === 'lights') {
+    const solution = labLightsSolve(s.board, s.size);
+    if (!solution?.length) return;
+    const signature = s.board.join('');
+    if (s.hintSignature !== signature) {
+      s.hints++;
+      s.hintSignature = signature;
+    }
+    s.hintCell = solution[0];
+    s.selected = solution[0];
+    s.message = `اضغط الخانة المعلّمة ✦: الصف ${Math.floor(solution[0] / s.size) + 1}، العمود ${(solution[0] % s.size) + 1}. أقصر حل الآن ${solution.length} ضغطات. إعادة هذا التلميح قبل تغيير اللوحة لا تخصم مجدداً.`;
+  } else {
+    const candidates = s.board.map((v, i) => i).filter((i) => s.board[i] !== s.answer[i]);
+    if (!candidates.length) return;
+    const i = candidates.includes(s.selected) ? s.selected : candidates[0];
+    labRemember();
+    s.board[i] = s.answer[i];
+    s.hints++;
+    s.selected = i;
+    s.hintCell = i;
+    s.message = `ضُبطت قطعة الصف ${Math.floor(i / s.size) + 1}، العمود ${(i % s.size) + 1} حسب الشبكة الأصلية. خصم 8 نقاط.`;
+    if (labPipeAnalysis(s.board, s.size, s.source).solved)
+      return labFinish('شبكة بلا تسريب!', 'اتصلت كل الأنابيب بالمصدر وأُغلقت جميع الفتحات.');
+  }
+  renderLab();
+}
+document.addEventListener('keydown', (event) => {
+  if (
+    !labReady() ||
+    event.repeat ||
+    event.target?.matches?.('input,textarea,select,[contenteditable="true"]')
+  )
+    return;
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+    event.preventDefault();
+    labUndo();
+    return;
+  }
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+  const onBoard = !!event.target?.closest?.('#labBoard');
+  if (!onBoard) return;
+  const s = state,
+    r = Math.floor(s.selected / s.size),
+    c = s.selected % s.size;
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+    event.preventDefault();
+    const next =
+      event.key === 'ArrowUp' && r > 0
+        ? s.selected - s.size
+        : event.key === 'ArrowDown' && r < s.size - 1
+          ? s.selected + s.size
+          : event.key === 'ArrowLeft' && c > 0
+            ? s.selected - 1
+            : event.key === 'ArrowRight' && c < s.size - 1
+              ? s.selected + 1
+              : s.selected;
+    labSelect(next, true);
+  } else if (s.id === 'nonogram' && ['f', 'x', 'c'].includes(event.key.toLowerCase())) {
+    event.preventDefault();
+    labNonogramTap(s.selected, { f: 'fill', x: 'cross', c: 'clear' }[event.key.toLowerCase()]);
+  } else if (s.id === 'pipes' && event.key.toLowerCase() === 'r') {
+    event.preventDefault();
+    labPipesTap(s.selected, event.shiftKey ? -1 : 1);
+  }
+});
+
+// Source: src/experience.js
+// Lamma 5: discovery, curated solo journeys and a local group lounge.
+const freshGameIds = new Set(['teamcup', 'undercover', 'improv', 'nonogram', 'lights', 'pipes']);
+const experienceRoutes = [
+  {
+    id: 'focus',
+    icon: '✦',
+    name: 'صفاء الذهن',
+    tag: 'ابدأ بخطوة خفيفة',
+    color: '#a9ecd8',
+    games: ['memory', 'word', 'lights'],
+    desc: 'ذاكرة، كلمات، ثم شبكة من الأضواء. ثلاث طرق لتختبر تركيزك.',
+  },
+  {
+    id: 'explore',
+    icon: '◈',
+    name: 'روح المستكشف',
+    tag: 'فكّر خارج الطريق',
+    color: '#d3bdff',
+    games: ['maze', 'pipes', 'hangman'],
+    desc: 'اعثر على الطريق، أوصل الشبكة، واكشف الكلمة الأخيرة.',
+  },
+  {
+    id: 'master',
+    icon: '♜',
+    name: 'تحدّي المحترف',
+    tag: 'خطة قبل كل حركة',
+    color: '#ffcb9f',
+    games: ['code', 'math', 'nonogram'],
+    desc: 'اكسر الشفرة، سابق الأرقام، ثم ارسم بالمنطق.',
+  },
+];
+function normalizeExperience(raw) {
+  const clean = { sort: 'recommended', completed: {}, route: null };
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return clean;
+  if (['recommended', 'name', 'recent', 'popular'].includes(raw.sort)) clean.sort = raw.sort;
+  for (const r of experienceRoutes) {
+    const value = raw.completed?.[r.id];
+    if (Number.isSafeInteger(value) && value >= 0 && value <= 300) clean.completed[r.id] = value;
+  }
+  const r = raw.route;
+  const config = experienceRoutes.find((v) => v.id === r?.id);
+  if (
+    config &&
+    Number.isInteger(r.at) &&
+    r.at >= 0 &&
+    r.at < config.games.length &&
+    Array.isArray(r.results) &&
+    r.results.length === r.at &&
+    r.results.every(
+      (v, i) =>
+        v?.id === config.games[i] &&
+        Number.isSafeInteger(v.points) &&
+        v.points >= 0 &&
+        v.points <= 100,
+    )
+  ) {
+    clean.route = {
+      id: r.id,
+      at: r.at,
+      results: r.results.map((v) => ({ id: v.id, points: v.points })),
+    };
+  }
+  return clean;
+}
+store.extra.experience = normalizeExperience(store.extra.experience || rawExtra.experience);
+let activeRoute = null;
+worlds.push(['arcade', '🕹️', 'الأركيد']);
+for (const id of ['snake', 'merge', 'mines', 'target']) gameWorld[id] = 'arcade';
+for (const id of ['nonogram', 'lights', 'pipes']) soloGameIds.add(id);
+for (const id of ['teamcup', 'undercover', 'improv']) groupGameIds.add(id);
+badges.push(
+  [
+    'architect',
+    '💡',
+    'مهندس الألغاز',
+    'أكمل جولة في الألغاز الجديدة الثلاثة',
+    () => ['lights', 'pipes', 'nonogram'].every((id) => store.extra.played[id] > 0),
+  ],
+  [
+    'host',
+    '🎉',
+    'روح اللمّة',
+    'جرّب ثلاث ألعاب جماعية جديدة',
+    () => ['teamcup', 'undercover', 'improv'].every((id) => store.extra.played[id] > 0),
+  ],
+  [
+    'traveler',
+    '🗺️',
+    'نهاية الطريق',
+    'أكمل مساراً فردياً من ثلاث محطات',
+    () => Object.keys(store.extra.experience?.completed || {}).length > 0,
+  ],
+);
+
+function experience() {
+  store.extra.experience ??= normalizeExperience(null);
+  return store.extra.experience;
+}
+function gameLength(id) {
+  if (['sudoku', 'nonogram', 'mines', 'slide'].includes(id)) return '10–20 دقيقة';
+  if (['teamcup', 'undercover', 'improv', 'spy', 'taboo', 'mime', 'secret'].includes(id))
+    return 'وقت اللمّة';
+  if (['reaction', 'target', 'color', 'solo', 'finder'].includes(id)) return '1–3 دقائق';
+  return '3–8 دقائق';
+}
+function gameMinimum(id) {
+  return ['undercover', 'improv', 'spy'].includes(id) ? 3 : id === 'teamcup' ? 4 : 2;
+}
+const previousFilteredGames = filteredGames;
+filteredGames = function () {
+  const selectedFilter = filter;
+  // The old predicate treats every non-solo value as group.
+  if (selectedFilter === 'new') filter = 'all';
+  let list;
+  try {
+    list = previousFilteredGames();
+  } finally {
+    filter = selectedFilter;
+  }
+  if (selectedFilter === 'new') list = list.filter((g) => freshGameIds.has(g[0]));
+  const sorting = experience().sort;
+  if (sorting === 'name') list.sort((a, b) => a[2].localeCompare(b[2], 'ar'));
+  if (sorting === 'popular')
+    list.sort((a, b) => (store.extra.played[b[0]] || 0) - (store.extra.played[a[0]] || 0));
+  if (sorting === 'recent')
+    list.sort(
+      (a, b) =>
+        (store.extra.recent.find((v) => v.id === b[0])?.at || 0) -
+        (store.extra.recent.find((v) => v.id === a[0])?.at || 0),
+    );
+  if (sorting === 'recommended')
+    list.sort((a, b) => Number(freshGameIds.has(b[0])) - Number(freshGameIds.has(a[0])));
+  return list;
+};
+function setCatalogSort(value) {
+  if (!['recommended', 'name', 'recent', 'popular'].includes(value)) return;
+  experience().sort = value;
+  save();
+  renderCatalog();
+}
+renderCatalog = function () {
+  if (!$('catalog')) return;
+  const focusedFavorite = document.activeElement?.matches('#catalog .fav')
+    ? document.activeElement.dataset.game
+    : null;
+  const list = filteredGames();
+  if ($('favcount')) $('favcount').textContent = store.extra.favorites.length;
+  $('gamecount').textContent =
+    `${list.length} من ${games.length} لعبة${onlyFavorites ? ' · مفضّلتك' : ''}`;
+  $('catalog').innerHTML =
+    list
+      .map((g) => {
+        const favorite = store.extra.favorites.includes(g[0]);
+        return `<article class="gamecard" style="--tile:${g[5]}"><button class="fav ${favorite ? 'on' : ''}" data-game="${g[0]}" onclick="favorite('${g[0]}')" aria-label="${favorite ? 'إزالة' : 'إضافة'} ${esc(g[2])} ${favorite ? 'من' : 'إلى'} المفضّلة" aria-pressed="${favorite}">${favorite ? '★' : '☆'}</button><button class="cardstart" onclick="setup('${g[0]}')"><div class="card-topline"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span>${freshGameIds.has(g[0]) ? '<span class="new-chip">جديد</span>' : ''}</div><h3>${esc(g[2])}</h3><p>${esc(g[3])}</p><div class="cardmeta"><span>${modeLabel(g[0])}</span>${store.extra.best[g[0]] ? `<small>★ ${fmt(store.extra.best[g[0]])}</small>` : ''}</div><div class="cardtime">◷ ${gameLength(g[0])}</div><span class="tagline">${store.extra.played[g[0]] ? store.extra.played[g[0]] + ' جولة' : 'اكتشف تحدّيك'}<b>العب الآن ←</b></span></button></article>`;
+      })
+      .join('') ||
+    '<div class="emptylist"><span>🔎</span><h3>ما لقينا لعبة بهالاختيارات</h3><p>غيّر البحث أو العالم، ويمكن تلقى مفضّلتك الجديدة.</p><button class="primary" onclick="clearFilters()">كل الألعاب</button></div>';
+  if (focusedFavorite) {
+    const focus =
+      $('catalog').querySelector(`.fav[data-game="${focusedFavorite}"]`) ||
+      $('catalog').querySelector('.fav') ||
+      $('search');
+    focus?.focus({ preventScroll: true });
+  }
+};
+
+function routeCardsHTML() {
+  return `<section class="routes-section" aria-labelledby="routes-heading"><div class="sectionhead"><div><span class="world-label">بمفردك · 3 محطات لكل مسار</span><h2 id="routes-heading">تحدّيك ما يوقف عند لعبة.</h2></div><span class="routes-note">نتيجة واحدة، رحلة كاملة</span></div><div class="route-grid">${experienceRoutes.map((r) => `<button class="route-card" style="--route:${r.color}" onclick="openRoute('${r.id}')"><span class="route-icon">${r.icon}</span><div><small>${r.tag}</small><h3>${r.name}</h3><p>${r.desc}</p><div class="route-stops">${r.games.map((id) => `<span title="${esc(games.find((g) => g[0] === id)?.[2] || id)}">${games.find((g) => g[0] === id)?.[1] || '✦'}</span>`).join('<i>·</i>')}<b>${experience().completed[r.id] != null ? 'أفضل نتيجة ' + experience().completed[r.id] + ' / 300' : 'ابدأ الرحلة ←'}</b></div></div></button>`).join('')}</div></section>`;
+}
+function routeResumeHTML() {
+  const saved = experience().route;
+  const r = experienceRoutes.find((v) => v.id === saved?.id);
+  return r
+    ? `<div class="continue-route"><span>🗺️</span><div><b>مسار ${r.name} ينتظرك</b><small>أكملت ${saved.at} من 3 محطات · المحطة ${saved.at ? 'التالية' : 'الأولى'} تبدأ بجولة جديدة</small></div><button class="primary" onclick="continueRoute()">نكمل ←</button></div>`
+    : '';
+}
+renderHome = function () {
+  homeRenderedDate = dayKey();
+  store.extra.favorites = [...new Set(store.extra.favorites)].filter((id) =>
+    games.some((g) => g[0] === id),
+  );
+  const recent = store.extra.recent
+    .map((v) => games.find((g) => g[0] === v.id))
+    .filter(Boolean)
+    .slice(0, 3);
+  setHTML(
+    `<section class="lobby-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 5.0 · ${games.length} لعبة في عالمك</span><h1>هذي لَمّتك.<br><em>خلّ التحدّي يبدأ.</em></h1><p>لحظة تركيز لك، ومنافسة تجمع الربع. ألغاز تتجدد، أسرار تنكشف، وفرق تلعب للنهاية.</p><div class="actions"><button class="primary" onclick="chooseSoloLobby()">✦ ألعب بمفردي</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><span>كمبيوتر وجوال</span></div></div><div class="lobby-art" aria-hidden="true"><div class="art-ring one"></div><div class="art-ring two"></div><div class="art-glow"></div><div class="art-dice"><span></span><span></span><span></span><span></span><span></span></div><div class="art-ticket ticket-one"><b>+100</b><small>كل جولة لها حكاية</small></div><div class="art-ticket ticket-two"><span>🧠</span><b>فكّر. جرّب. افوز.</b></div><div class="art-spark s-one">✦</div><div class="art-spark s-two">✧</div><span class="art-caption">PLAY TOGETHER. GROW TOGETHER.</span></div></section><div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openBoard()"><span class="summary-icon">🏆</span><span><small>نقاط اللمّة</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${typeof snapshotHTML === 'function' ? snapshotHTML() : ''}${routeResumeHTML()}<section class="spotlight-grid"><div class="spotlight-card group-spotlight"><div><span class="world-label">الليلة مع الربع</span><h2>فريقك، سرّك،<br>وأحلى تصويت.</h2><p>ثلاث تجارب جديدة للمجموعة. وزّعوا الفرق ومرّروا الجهاز.</p><button onclick="openLounge()">شوف ألعاب اللمّة ←</button></div><span class="spotlight-emblem" aria-hidden="true">🎭</span></div><div class="spotlight-card"><span class="world-label">${recent.length ? '↺ آخر ألعابك' : '✧ ألغاز جديدة'}</span><h3>${recent.length ? 'مكانك محفوظ، نرجع للتحدّي؟' : 'جرّب طريقة جديدة للتفكير'}</h3><div class="recent-games">${(recent.length ? recent : ['lights', 'pipes', 'nonogram'].map((id) => games.find((g) => g[0] === id)).filter(Boolean)).map((g) => `<button onclick="setup('${g[0]}')"><span style="--tile:${g[5]}">${g[1]}</span><b>${g[2]}</b><small>${store.extra.played[g[0]] || 0} جولة · ${gameLength(g[0])}</small></button>`).join('')}</div></div></section>${routeCardsHTML()}<div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · اختَر جوّك</span><h2>مكتبة التحدّيات</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ طريقة اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
+      ['all', 'الكل'],
+      ['solo', 'بمفردك'],
+      ['group', 'مع الربع'],
+      ['new', 'الجديد ✦'],
+    ]
+      .map(
+        ([id, label]) =>
+          `<button class="${filter === id ? 'active' : ''}" onclick="setFilter('${id}')" aria-pressed="${filter === id}">${label}</button>`,
+      )
+      .join(
+        '',
+      )}<button class="${onlyFavorites ? 'active' : ''}" onclick="toggleFavorites()" aria-pressed="${onlyFavorites}">☆ المفضّلة <span id="favcount">${store.extra.favorites.length}</span></button></nav><div class="searchwrap"><label class="sr" for="search">ابحث عن لعبة</label><input id="search" type="search" placeholder="ابحث عن تحدّيك…" value="${esc(searchQuery)}" oninput="searchGames(this.value)" autocomplete="off"></div></div><div class="catalogsummary"><p class="tiny" id="gamecount" aria-live="polite"></p><div class="catalog-sort"><label for="catalogsort">الترتيب</label><select id="catalogsort" onchange="setCatalogSort(this.value)">${[
+      ['recommended', 'اختيارات لَمّة'],
+      ['name', 'أبجدي'],
+      ['recent', 'آخر ألعابك'],
+      ['popular', 'الأكثر لعباً عندك'],
+    ]
+      .map(
+        ([v, t]) =>
+          `<option value="${v}" ${experience().sort === v ? 'selected' : ''}>${t}</option>`,
+      )
+      .join(
+        '',
+      )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>الألعاب الجماعية بالتناوب على نفس الجهاز. الأدوار والكلمات تختفي قبل انتقال الجهاز للاعب التالي.</p></div><div><span class="guide-icon">💡</span><h3>خطة، تلميح، محاولة جديدة</h3><p>اضبط المستوى، جرّب الألغاز الجديدة، أو اختر مساراً من ثلاث محطات. ما تحتاج حساباً لتبدأ.</p></div><div><span class="guide-icon">💾</span><h3>تقدّم معك</h3><p>النقاط والمفضّلة والمسارات محفوظة محلياً. صدّر نسخة احتياطية من الإعدادات لنقلها لجهاز آخر.</p></div></section>`,
+  );
+  renderCatalog();
+  $('foot').textContent = `لَمّة 5.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
+};
+function chooseSoloLobby() {
+  world = 'all';
+  onlyFavorites = false;
+  searchQuery = '';
+  setFilter('solo');
+  scrollCatalog();
+}
+function scrollCatalog() {
+  $('gamesheading')?.scrollIntoView({
+    behavior: store.extra.motion ? 'smooth' : 'instant',
+    block: 'start',
+  });
+}
+function openLounge() {
+  const ids = [
+    'teamcup',
+    'undercover',
+    'improv',
+    'spy',
+    'taboo',
+    'mime',
+    'secret',
+    'reaction',
+    'ttt',
+    'connect',
+  ];
+  openModal(
+    `<div class="modalhead"><h2 id="modaltitle">👥 صالة اللمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">العبوا على جهاز واحد، بالتناوب. ${store.players.length} لاعب جاهز: ${store.players.map(esc).join('، ')}.</p><div class="actions"><button onclick="openPeople()">إدارة اللاعبين</button><button class="primary" onclick="openTournament()">🏆 بطولة فردية بالتناوب</button></div><div class="lounge-games">${ids
+      .map((id) => {
+        const g = games.find((v) => v[0] === id);
+        return g
+          ? `<button onclick="setup('${id}')"><span>${g[1]}</span><div><b>${esc(g[2])}${freshGameIds.has(id) ? ' <small class="new-chip">جديد</small>' : ''}</b><small>${esc(g[3])}</small><em>${gameMinimum(id)}–12 لاعب${['ttt', 'connect'].includes(id) ? ' · المواجهة للاعبين' : ''}</em></div><span>←</span></button>`
+          : '';
+      })
+      .join('')}</div>`,
+  );
+}
+function openRoute(id) {
+  const r = experienceRoutes.find((v) => v.id === id);
+  if (!r) return;
+  openModal(
+    `<div class="modalhead"><h2 id="modaltitle">${r.icon} ${r.name}</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">${r.desc} أكمل الألعاب الثلاث بالترتيب. نتيجة المسار حتى 300 نقطة، وتُحفظ أفضل نتيجة لك.</p><div class="route-map">${r.games
+      .map((gid, i) => {
+        const g = games.find((v) => v[0] === gid);
+        return `<div><span>${i + 1}</span><b>${g[1]} ${g[2]}</b><small>${gameLength(gid)}</small></div>`;
+      })
+      .join(
+        '',
+      )}</div><div class="hintpanel">يمكنك تعديل إعدادات كل محطة قبل البدء. الرجوع للعالم يحفظ المحطات المكتملة؛ الجولة غير المكتملة تبدأ من جديد عند استكمال المسار.${experience().route ? ' بدء مسار جديد يستبدل المسار الجاري.' : ''}</div><div class="actions"><button class="primary" onclick="startRoute('${id}')">ابدأ المسار ←</button>${experience().route?.id === id ? '<button onclick="continueRoute()">استكمال المسار الجاري</button>' : ''}</div>`,
+  );
+}
+function startRoute(id) {
+  if (!experienceRoutes.some((v) => v.id === id)) return;
+  experience().route = { id, at: 0, results: [] };
+  save();
+  continueRoute();
+}
+function continueRoute() {
+  const saved = experience().route;
+  const config = experienceRoutes.find((v) => v.id === saved?.id);
+  if (!config) return;
+  closeModal(true);
+  activeRoute = { config, id: config.games[saved.at], at: saved.at, finished: false };
+  setup(activeRoute.id, true);
+  // Curated starting settings; players can still choose their own challenge.
+  if ($('difficulty')) $('difficulty').value = '6';
+  if ($('wordcount')) $('wordcount').value = '5';
+  if ($('arcadeSize')) $('arcadeSize').value = '7';
+  if ($('hangCount')) $('hangCount').value = '1';
+  if ($('quizcount')) $('quizcount').value = '5';
+}
+const experienceSetup = setup;
+setup = function (id, internal = false) {
+  captureSoloSession();
+  if (!internal) activeRoute = null;
+  return experienceSetup(id, internal);
+};
+const experienceHome = home;
+home = function () {
+  const outcome = experienceHome();
+  activeRoute = null;
+  return outcome;
+};
+const experienceCapture = captureSoloSession;
+captureSoloSession = function () {
+  if (activeRoute) return;
+  return experienceCapture();
+};
+const experienceResume = resumeSavedGame;
+resumeSavedGame = function () {
+  activeRoute = null;
+  return experienceResume();
+};
+const experienceWrap = wrap;
+wrap = function (id, body) {
+  if (activeRoute?.id === id && !activeRoute.finished) {
+    const { config, at } = activeRoute;
+    body = `<div class="journey-banner"><span>${config.icon} ${config.name}</span><div>${config.games.map((gid, i) => `<span class="${i < at ? 'complete' : i === at ? 'current' : ''}">${i < at ? '✓' : i + 1}</span>`).join('<i>—</i>')}</div><small>المحطة ${at + 1} / 3</small></div>${body}`;
+  }
+  return experienceWrap(id, body);
+};
+const experienceResult = result;
+result = function (id, title, text, points = 0, detail = '') {
+  if (state?.resultShown) return;
+  const route = activeRoute;
+  const linked = route && route.id === id && !route.finished && experience().route?.at === route.at;
+  experienceResult(id, title, text, points, detail);
+  if (!linked) return;
+  route.finished = true;
+  const saved = experience().route;
+  saved.results.push({
+    id,
+    points: Number.isFinite(points) ? Math.max(0, Math.min(100, Math.round(points))) : 0,
+  });
+  saved.at++;
+  const total = saved.results.reduce((n, v) => n + v.points, 0);
+  const complete = saved.at === route.config.games.length;
+  if (complete) {
+    experience().completed[route.config.id] = Math.max(
+      experience().completed[route.config.id] || 0,
+      total,
+    );
+    experience().route = null;
+    updateBadges();
+  }
+  save();
+  $('app')
+    .querySelector('.play')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<section class="route-result panel center"><span class="world-label">${complete ? '✦ وصلت لنهاية الطريق' : '✓ محطة مكتملة'}</span><h2>${complete ? 'أكملت ' + route.config.name : 'تحدّيك التالي ينتظرك'}</h2><p class="muted">${total} نقطة ${complete ? 'من 300 · أفضل نتيجة ' + experience().completed[route.config.id] : 'حتى الآن · باقي ' + (3 - saved.at) + ' محطات'}</p><div class="actions">${complete ? `<button class="primary" onclick="openRoute('${route.config.id}')">جرّب تحسين نتيجتك</button><button onclick="home()">اختر مساراً آخر</button>` : '<button class="primary" onclick="continueRoute()">المحطة التالية ←</button><button onclick="home()">نكمل لاحقاً</button>'}</div></section>`,
+    );
+};
+
+document.addEventListener('keydown', (event) => {
+  if (
+    screen !== 'home' ||
+    !$('modalback').hidden ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.altKey ||
+    event.repeat ||
+    /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)
+  )
+    return;
+  if (event.key === '/') {
+    event.preventDefault();
+    $('search')?.focus();
+  }
+});
 
 // Source: src/boot.js
 applySettings();

@@ -200,6 +200,7 @@ function nextTrivia() {
 
 function wordsNormalizeKey(value) {
   return String(value)
+    .normalize('NFC')
     .trim()
     .replace(/[\u064B-\u065F\u0670ـ\s]/g, '')
     .replace(/[أإآ]/g, 'ا');
@@ -246,6 +247,7 @@ function startHangman(name) {
   const cat = $('hangCategory').value,
     count = Number($('hangCount').value),
     pool = wordsLexicon.filter((w) => cat === 'all' || w.cat === cat);
+  if (!pool.length) return toast('لا توجد كلمات في هذه الفئة. اختر فئة أخرى.');
   state = {
     id: 'hangman',
     name,
@@ -355,6 +357,7 @@ function nextHangman() {
 function startWordguess(name) {
   const size = Number($('wordguessLength').value),
     pool = wordsLexicon.filter((w) => Array.from(w.key).length === size);
+  if (!pool.length) return toast('اختر طول كلمة متاحاً.');
   state = {
     id: 'wordguess',
     name,
@@ -535,13 +538,18 @@ function spawnTarget() {
     );
 }
 function renderTarget() {
-  const s = state;
+  const s = state,
+    focusedIndex = document.activeElement?.closest('.target-cell')?.dataset.index;
   setHTML(
     wrap(
       'target',
-      `<section class="panel"><div class="words-status"><b class="countdown" id="targetClock">${wordsSeconds(s)} ث</b><span class="pill">💎 <b id="targetScore">${s.points}</b> نقطة</span><span class="pill">🔥 سلسلة ${s.combo}</span><span class="pill">✓ ${s.hits}</span></div><div class="words-clock-track"><span id="targetTimebar" style="width:${(100 * wordsSeconds(s)) / s.duration}%"></span></div><div class="target-grid" style="--target-size:${s.size}" aria-label="خانات صيد الأهداف">${Array.from({ length: s.size * s.size }, (_, i) => `<button class="target-cell ${i === s.slot && !s.claimed ? 'active' : ''}" onclick="hitTarget(${i},${s.token})" aria-label="${i === s.slot && !s.claimed ? 'هدف، اضغط هنا' : 'خانة فارغة'}">${i === s.slot && !s.claimed ? '<span aria-hidden="true">🎯</span>' : '<span aria-hidden="true">·</span>'}</button>`).join('')}</div><p class="target-feedback" role="status">${esc(s.feedback)}</p><div class="chips center"><span class="chip">أفضل سلسلة: ${s.bestCombo}</span><span class="chip">أهداف فاتت: ${s.misses}</span><span class="chip">ضغطات خاطئة: ${s.wrong}</span></div><p class="note center">هدف واحد، ضغطة واحدة. النجاح المتتابع يزيد المكافأة حتى +20 للهدف.</p></section>`,
+      `<section class="panel"><div class="words-status"><b class="countdown" id="targetClock">${wordsSeconds(s)} ث</b><span class="pill">💎 <b id="targetScore">${s.points}</b> نقطة</span><span class="pill">🔥 سلسلة ${s.combo}</span><span class="pill">✓ ${s.hits}</span></div><div class="words-clock-track"><span id="targetTimebar" style="width:${(100 * wordsSeconds(s)) / s.duration}%"></span></div><div class="target-grid" style="--target-size:${s.size}" aria-label="خانات صيد الأهداف">${Array.from({ length: s.size * s.size }, (_, i) => `<button class="target-cell ${i === s.slot && !s.claimed ? 'active' : ''}" data-index="${i}" onpointerdown="if(event.isPrimary&&event.button===0){event.preventDefault();hitTarget(${i},${s.token})}" onclick="if(event.detail===0)hitTarget(${i},${s.token})" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${i === s.slot && !s.claimed ? 'هدف، اضغط هنا' : 'خانة فارغة'}">${i === s.slot && !s.claimed ? '<span aria-hidden="true">🎯</span>' : '<span aria-hidden="true">·</span>'}</button>`).join('')}</div><p class="target-feedback" role="status">${esc(s.feedback)}</p><div class="chips center"><span class="chip">أفضل سلسلة: ${s.bestCombo}</span><span class="chip">أهداف فاتت: ${s.misses}</span><span class="chip">ضغطات خاطئة: ${s.wrong}</span></div><p class="note center">هدف واحد، ضغطة واحدة. النجاح المتتابع يزيد المكافأة حتى +20 للهدف.</p></section>`,
     ),
   );
+  if (focusedIndex !== undefined)
+    document
+      .querySelector(`.target-cell[data-index="${focusedIndex}"]`)
+      ?.focus({ preventScroll: true });
 }
 function hitTarget(index, token) {
   if (wordsBlocked('target')) return;
@@ -582,9 +590,16 @@ function hitTarget(index, token) {
 }
 function finishTarget() {
   if (screen !== 'target' || !state || state.done) return;
-  const s = state,
-    accuracy =
-      s.hits + s.misses + s.wrong ? Math.round((100 * s.hits) / (s.hits + s.misses + s.wrong)) : 0;
+  const s = state;
+  // A delayed final timer tick must still count an already-expired, unclaimed target.
+  if (s.slot >= 0 && !s.claimed && targetElapsed(s) >= s.targetExpires) {
+    s.misses++;
+    s.combo = 0;
+    s.claimed = true;
+    s.slot = -1;
+  }
+  const accuracy =
+    s.hits + s.misses + s.wrong ? Math.round((100 * s.hits) / (s.hits + s.misses + s.wrong)) : 0;
   finishWords(
     'انتهت رحلة الصيد!',
     `${s.hits} هدفاً صحيحاً، ${s.misses} أهداف فاتت، و${s.wrong} ضغطات خاطئة. الدقة ${accuracy}%، وأفضل سلسلة ${s.bestCombo}.`,
@@ -619,12 +634,22 @@ document.addEventListener('keydown', (event) => {
     }
     return;
   }
+  if (screen === 'hangman' && state.over && event.key === 'Enter') {
+    event.preventDefault();
+    nextHangman();
+    return;
+  }
   if (screen === 'hangman' && !state.over) {
     const letter = wordsNormalizeKey(event.key);
     if (arabicKeyboard.includes(letter)) {
       event.preventDefault();
       guessHangman(letter);
     }
+    return;
+  }
+  if (screen === 'wordguess' && state.over && event.key === 'Enter') {
+    event.preventDefault();
+    finishWordguess();
     return;
   }
   if (screen === 'wordguess' && !state.over) {

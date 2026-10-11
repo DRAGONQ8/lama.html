@@ -4,8 +4,19 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const scripts = ['core', 'content', 'platform', 'advanced', 'arcade', 'words', 'boot'];
-const styles = ['styles', 'arcade', 'words'];
+const scripts = [
+  'core',
+  'content',
+  'platform',
+  'advanced',
+  'arcade',
+  'words',
+  'party',
+  'lab',
+  'experience',
+  'boot',
+];
+const styles = ['styles', 'arcade', 'words', 'party', 'lab', 'experience'];
 const read = (path) => readFile(resolve(root, path), 'utf8');
 const normalizeArabic = (text) =>
   text
