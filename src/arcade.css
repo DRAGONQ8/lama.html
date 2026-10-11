@@ -1,0 +1,315 @@
+/* Touch-friendly arcade surfaces; visual coordinates always remain left-to-right. */
+#mazeStars,
+#mineProgress,
+#arcadeTime {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.mines-board.mines-medium {
+  min-width: 464px;
+}
+.mines-board.mines-large {
+  min-width: 624px;
+}
+.arcade-panel {
+  padding: 20px;
+}
+.arcade-stage {
+  position: relative;
+  max-width: 560px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 18px;
+}
+#snakeCanvas,
+#mazeCanvas {
+  display: block;
+  max-width: 560px;
+  width: 100%;
+  height: auto;
+  margin: auto;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  touch-action: none;
+  user-select: none;
+  direction: ltr;
+}
+.arcade-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #0b1525dc;
+  z-index: 2;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+  text-align: center;
+  color: #f6f2e8;
+}
+.arcade-overlay > div {
+  max-width: 360px;
+  width: 100%;
+}
+.arcade-overlay h3 {
+  font-size: 24px;
+}
+.arcade-overlay p {
+  font-size: 14px;
+  margin: 10px 0 16px;
+  color: #c3cedb;
+}
+.arcade-big-icon {
+  font-size: 54px;
+  display: block;
+  margin-bottom: 8px;
+}
+.arcade-directions {
+  direction: ltr;
+  display: grid;
+  grid-template-columns: repeat(3, 58px);
+  grid-template-rows: repeat(2, 50px);
+  gap: 7px;
+  justify-content: center;
+  margin: 16px auto;
+  user-select: none;
+}
+.arcade-directions button {
+  font: 800 28px/1 Arial;
+  border-radius: 13px;
+  padding: 0;
+  min-height: 50px;
+  touch-action: manipulation;
+}
+.dir-up {
+  grid-area: 1/2;
+}
+.dir-left {
+  grid-area: 2/1;
+}
+.dir-down {
+  grid-area: 2/2;
+}
+.dir-right {
+  grid-area: 2/3;
+}
+.arcade-status {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mint);
+  margin-top: 12px;
+  min-height: 25px;
+}
+.merge-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 9px;
+  background: #132232;
+  border: 1px solid #415263;
+  padding: 12px;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 1;
+  margin: 12px auto 0;
+  touch-action: none;
+  user-select: none;
+  direction: ltr;
+}
+.merge-cell {
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #223648;
+  color: #1f2430;
+  aspect-ratio: 1;
+  min-width: 0;
+}
+.merge-cell.has-number {
+  background: hsl(calc(47 - var(--tile-level) * 3) 80% calc(93% - var(--tile-level) * 4%));
+}
+.merge-cell b {
+  font: 900 clamp(24px, 6vw, 48px)/1 Arial;
+}
+.merge-cell b.compact {
+  font-size: clamp(18px, 4.8vw, 35px);
+}
+.merge-cell[data-value='1024'],
+.merge-cell[data-value='2048'],
+.merge-cell[data-value='4096'],
+.merge-cell[data-value='8192'] {
+  background: #ebbb57;
+  box-shadow: inset 0 0 20px #ffdc9988;
+}
+.tile-new {
+  animation: arcade-pop 0.15s ease-out;
+}
+.tile-merged {
+  animation: arcade-bump 0.18s ease-out;
+}
+@keyframes arcade-pop {
+  from {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes arcade-bump {
+  50% {
+    transform: scale(1.08);
+  }
+}
+.mine-mode {
+  display: flex;
+  gap: 8px;
+  margin: 0 auto 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.mine-mode button {
+  min-width: 150px;
+}
+.mines-scroll {
+  max-width: 100%;
+  overflow: auto;
+  padding: 4px;
+  overscroll-behavior: contain;
+}
+.mines-board {
+  display: grid;
+  grid-template-columns: repeat(var(--mine-size), minmax(0, 1fr));
+  direction: ltr;
+  gap: 4px;
+  max-width: 560px;
+  margin: 0 auto;
+  min-width: 240px;
+}
+.mine-cell {
+  min-height: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  font: 800 clamp(14px, 2.7vw, 23px)/1 Arial;
+  padding: 0;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  box-shadow: inset 0 -3px 0 #0002;
+  user-select: none;
+  touch-action: manipulation;
+}
+.mine-cell.revealed {
+  background: var(--bg);
+  box-shadow: none;
+  border-color: var(--bg);
+}
+.mine-cell.flagged {
+  color: #ffbe81;
+}
+.mine-cell[data-count='1'].revealed {
+  color: #90c9ff;
+}
+.mine-cell[data-count='2'].revealed {
+  color: #8dddaf;
+}
+.mine-cell[data-count='3'].revealed {
+  color: #ff9e92;
+}
+.mine-cell[data-count='4'].revealed {
+  color: #c4b2ff;
+}
+.mine-cell[data-count='5'].revealed {
+  color: #ffc277;
+}
+.mine-cell[data-count='6'].revealed {
+  color: #92e5ee;
+}
+.mine-cell[data-count='7'].revealed {
+  color: #ffa6dc;
+}
+.mine-cell[data-count='8'].revealed {
+  color: var(--ink);
+}
+.mine-cell.mine-bomb {
+  background: #4a2935;
+  color: #ffbbb7;
+}
+.mine-cell.exploded {
+  background: #da625b;
+  color: white;
+}
+.mine-cell:disabled {
+  opacity: 1;
+}
+.mine-cell:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 0;
+  z-index: 1;
+}
+.mines-large {
+  gap: 3px;
+  min-width: 320px;
+}
+.mines-large .mine-cell {
+  font-size: clamp(13px, 2vw, 18px);
+}
+body[data-theme='light'] .mine-cell[data-count='1'].revealed {
+  color: #1d58ac;
+}
+body[data-theme='light'] .mine-cell[data-count='2'].revealed {
+  color: #176442;
+}
+body[data-theme='light'] .mine-cell[data-count='3'].revealed {
+  color: #a33332;
+}
+body[data-theme='light'] .mine-cell[data-count='4'].revealed {
+  color: #6941a5;
+}
+body[data-theme='light'] .mine-cell[data-count='5'].revealed {
+  color: #995700;
+}
+body[data-theme='light'] .mine-cell.flagged {
+  color: #8a5100;
+}
+@media (max-width: 520px) {
+  .arcade-panel {
+    padding: 13px;
+  }
+  .arcade-panel .actions {
+    gap: 7px;
+  }
+  .arcade-panel .actions button {
+    padding: 9px 8px;
+    font-size: 13px;
+  }
+  .merge-board {
+    padding: 8px;
+    gap: 6px;
+    border-radius: 14px;
+  }
+  .merge-cell {
+    border-radius: 9px;
+  }
+  .arcade-overlay {
+    padding: 12px;
+  }
+  .arcade-overlay h3 {
+    font-size: 21px;
+  }
+  .mines-board {
+    gap: 3px;
+  }
+  .mine-cell {
+    border-radius: 4px;
+  }
+  .arcade-directions {
+    grid-template-columns: repeat(3, 56px);
+    margin: 12px auto;
+  }
+  .arcade-status {
+    font-size: 12px;
+  }
+}
