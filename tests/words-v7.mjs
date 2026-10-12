@@ -94,6 +94,33 @@ try {
   assert.equal(inference.valid, '');
   console.log('✓ Inference mode respects gray positions and exact repeated-letter counts');
 
+  for (let round = 0; round < 6; round++) {
+    await page.evaluate(() => {
+      // Re-rendering an open native details queues a toggle that can outlive the round.
+      if (state?.id === 'wordguess') hintWordguess();
+      setup('wordguess');
+      $('wordguessLength').value = '4';
+      $('wordguessMode').value = 'classic';
+      startWordsGame('wordguess');
+      state.item = { word: 'مكتب', key: 'مكتب', cat: 'home', hint: 'طاولة للكتابة' };
+      state.entry = 'كتاب';
+      submitWordguess();
+    });
+    // Let native DOM toggle tasks from the removed notebook run before checking the new round.
+    await page.evaluate(
+      () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+    );
+    assert.equal(await page.evaluate(() => state.notesOpen), false);
+    assert.equal(await page.locator('.wordguess-notebook').getAttribute('open'), null);
+    await page.locator('.wordguess-notebook summary').click();
+    assert.equal(await page.locator('.wordguess-notebook').getAttribute('open'), '');
+    assert.match(await page.locator('.wordguess-notebook').innerText(), /الحروف المستبعدة.*ا/s);
+    await page.waitForFunction(() => state.notesOpen === true);
+  }
+  console.log(
+    '✓ Removed native notebooks cannot overwrite a new round; its first real click opens the evidence',
+  );
+
   for (const width of [360, 390]) {
     await page.setViewportSize({ width, height: 844 });
     await page.evaluate(() => {

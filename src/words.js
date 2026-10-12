@@ -628,7 +628,17 @@ function wordguessNotebook(s) {
     eliminated = Object.entries(evidence.maximum)
       .filter(([, count]) => count === 0)
       .map(([letter]) => letter);
-  return `<details class="wordguess-notebook" ${s.notesOpen ? 'open' : ''} ontoggle="if(state?.id==='wordguess')state.notesOpen=this.open"><summary>🧩 دفتر الأدلة · ${discovered.length} حروف مكتشفة</summary><p class="note">المواضع من اليمين؛ استنتجنا هذه الأدلة من محاولاتك فقط.</p><div class="wordguess-known" aria-label="المواضع المؤكدة من اليمين">${evidence.positions.map((letter, i) => `<span aria-label="الخانة ${i + 1}: ${letter || 'لم تُعرف بعد'}"><small>${i + 1}</small><b>${esc(letter || '؟')}</b></span>`).join('')}</div><div class="chips">${discovered.map(([letter, count]) => `<span class="chip">${letter}: ${evidence.maximum[letter] === count ? `${count} بالضبط` : `${count} على الأقل`}</span>`).join('')}</div>${eliminated.length ? `<p class="note">الحروف المستبعدة: <b>${eliminated.join('، ')}</b></p>` : ''}</details>`;
+  return `<details class="wordguess-notebook" ${s.notesOpen ? 'open' : ''} ontoggle="rememberWordguessNotebook(this)"><summary>🧩 دفتر الأدلة · ${discovered.length} حروف مكتشفة</summary><p class="note">المواضع من اليمين؛ استنتجنا هذه الأدلة من محاولاتك فقط.</p><div class="wordguess-known" aria-label="المواضع المؤكدة من اليمين">${evidence.positions.map((letter, i) => `<span aria-label="الخانة ${i + 1}: ${letter || 'لم تُعرف بعد'}"><small>${i + 1}</small><b>${esc(letter || '؟')}</b></span>`).join('')}</div><div class="chips">${discovered.map(([letter, count]) => `<span class="chip">${letter}: ${evidence.maximum[letter] === count ? `${count} بالضبط` : `${count} على الأقل`}</span>`).join('')}</div>${eliminated.length ? `<p class="note">الحروف المستبعدة: <b>${eliminated.join('، ')}</b></p>` : ''}</details>`;
+}
+function rememberWordguessNotebook(notebook) {
+  // Native toggle events are queued; a removed notebook belongs to its previous render or round.
+  if (
+    screen === 'wordguess' &&
+    state?.id === 'wordguess' &&
+    notebook.isConnected &&
+    notebook === document.querySelector('.wordguess-notebook')
+  )
+    state.notesOpen = notebook.open;
 }
 function renderWordguess() {
   const s = state,
