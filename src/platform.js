@@ -20,6 +20,7 @@ const extraDefaults = {
   recent: [],
   theme: 'dark',
   motion: true,
+  focus: false,
   savedSession: null,
   preferences: {},
   history: [],
@@ -93,6 +94,7 @@ function normalizeExtra(raw, strict = false) {
   }
   extra.theme = e.theme === 'light' ? 'light' : 'dark';
   extra.motion = e.motion !== false;
+  extra.focus = e.focus === true;
   extra.recent = Array.isArray(e.recent)
     ? e.recent
         .filter(
@@ -829,13 +831,13 @@ function resumeClock() {
   }
 }
 function openModal(html) {
+  if ($('modalback').hidden) previousFocus = document.activeElement;
   if (screen === 'reaction' && state && !state.done && ['waiting', 'ready'].includes(state.stage)) {
     clearTimers();
     state.stage = 'idle';
     renderReaction();
   }
   pauseClock();
-  if ($('modalback').hidden) previousFocus = document.activeElement;
   $('modal').innerHTML = latin(html);
   $('modalback').hidden = false;
   updateOverlayLock();
@@ -850,9 +852,27 @@ function closeModal(discard = false) {
     updateOverlayLock();
     if (!discard) {
       resumeClock();
-      if (!$('pausecover') && previousFocus?.isConnected) previousFocus.focus();
+      if (!$('pausecover')) restorePlayFocus(previousFocus);
     }
   }
+}
+function restorePlayFocus(element) {
+  let target = element;
+  if (!target?.isConnected || target.disabled || !target.getClientRects().length) {
+    const action = element?.getAttribute?.('onclick'),
+      label = element?.getAttribute?.('aria-label');
+    target = element?.id ? $(element.id) : null;
+    target ||= [...document.querySelectorAll('.shell button')].find(
+      (button) =>
+        !button.disabled &&
+        button.getClientRects().length &&
+        (action
+          ? button.getAttribute('onclick') === action
+          : label && button.getAttribute('aria-label') === label),
+    );
+  }
+  if (!target || target.disabled || !target.getClientRects().length) target = $('app');
+  target.focus({ preventScroll: true });
 }
 function updateOverlayLock() {
   const locked = !$('modalback').hidden || !!$('pausecover');
@@ -907,6 +927,7 @@ function removePause() {
 }
 function showPause() {
   if (!state || state.done || screen === 'setup' || screen === 'tour-handoff') return;
+  if (!$('pausecover')) pauseFocus = document.activeElement;
   if (screen === 'reaction' && ['waiting', 'ready'].includes(state.stage)) {
     clearTimers();
     state.stage = 'idle';
@@ -914,7 +935,6 @@ function showPause() {
   }
   pauseClock();
   if ($('pausecover')) return;
-  pauseFocus = document.activeElement;
   const div = document.createElement('div');
   div.id = 'pausecover';
   div.className = 'pausecover';
@@ -934,7 +954,7 @@ function resumeGame() {
     $('modal')
       .querySelector('button:not(:disabled),input:not([hidden]),select,textarea,[tabindex="0"]')
       ?.focus();
-  else if (pauseFocus?.isConnected) pauseFocus.focus();
+  else restorePlayFocus(pauseFocus);
 }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && state && !state.done && screen !== 'setup' && screen !== 'home') {
@@ -1079,7 +1099,7 @@ function applySettings() {
   }
   st.textContent = !reduceMotion
     ? ''
-    : '.reduced-motion *, .reduced-motion *:before, .reduced-motion *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}';
+    : 'html, .reduced-motion *, .reduced-motion *:before, .reduced-motion *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}';
 }
 function toggleTheme() {
   store.extra.theme = store.extra.theme === 'dark' ? 'light' : 'dark';

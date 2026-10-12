@@ -22,7 +22,8 @@
   border-radius: 18px;
 }
 #snakeCanvas,
-#mazeCanvas {
+#mazeCanvas,
+#mazeReplayCanvas {
   display: block;
   max-width: 560px;
   width: 100%;
@@ -106,6 +107,98 @@
 }
 .arcade-directions button:active {
   transform: translateY(2px);
+}
+.arcade-extra-field {
+  margin-top: 18px;
+}
+.arcade-coach {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 13px 16px;
+  margin: 16px auto;
+  max-width: 560px;
+  background: var(--bg);
+}
+.arcade-coach summary {
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 32px;
+  line-height: 1.8;
+}
+.merge-forecast-choices {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  direction: ltr;
+  margin: 12px 0;
+}
+.merge-forecast-choices button {
+  min-height: 44px;
+  padding: 8px 4px;
+  font-size: 13px;
+}
+.merge-forecast-choices button[aria-pressed='true'] {
+  border-color: var(--mint);
+  box-shadow: inset 0 0 0 1px var(--mint);
+}
+#mergePreviewBoard {
+  max-width: 330px;
+  pointer-events: none;
+}
+#mergePreviewBoard b {
+  font-size: clamp(20px, 6vw, 30px);
+}
+.merge-apply {
+  display: block;
+  margin: 14px auto 0;
+}
+.arcade-review h3 {
+  text-align: center;
+  margin-bottom: 14px;
+}
+.arcade-review-facts {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.arcade-review-facts span {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 7px 11px;
+  background: var(--bg);
+  font-size: 13px;
+}
+.arcade-review > p {
+  max-width: 560px;
+  margin: 12px auto 18px;
+  line-height: 1.9;
+}
+.arcade-snapshot {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  border-radius: 18px;
+  margin: 0 auto;
+}
+.arcade-replay-controls {
+  max-width: 560px;
+  margin: 16px auto 0;
+}
+.arcade-replay-controls label {
+  display: block;
+  text-align: center;
+  font-weight: 700;
+}
+.arcade-replay-controls input {
+  display: block;
+  width: 100%;
+  direction: ltr;
+  padding: 0;
+  min-height: 44px;
+  cursor: pointer;
+  accent-color: var(--mint);
 }
 .merge-board {
   display: grid;
@@ -220,6 +313,18 @@
   border-color: var(--orange);
   box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--orange) 45%, transparent);
 }
+.mine-cell.mine-clue {
+  outline: 2px solid var(--lavender, #c4b2ff);
+  outline-offset: -2px;
+}
+.mine-cell.mine-deduction-safe {
+  border: 2px solid var(--mint);
+  color: var(--mint);
+}
+.mine-cell.mine-deduction-mine {
+  border: 2px solid var(--orange);
+  color: var(--orange);
+}
 .mine-cell[data-count='1'].revealed {
   color: #90c9ff;
 }
@@ -285,6 +390,17 @@ body[data-theme='light'] .mine-cell[data-count='5'].revealed {
 body[data-theme='light'] .mine-cell.flagged {
   color: #8a5100;
 }
+body[data-theme='light'] .mine-cell.mine-clue {
+  outline-color: #6941a5;
+}
+body[data-theme='light'] .mine-cell.mine-deduction-safe {
+  border-color: #176442;
+  color: #176442;
+}
+body[data-theme='light'] .mine-cell.mine-deduction-mine {
+  border-color: #8a5100;
+  color: #8a5100;
+}
 @media (max-width: 520px) {
   .arcade-panel {
     padding: 13px;
@@ -323,4 +439,14 @@ body[data-theme='light'] .mine-cell.flagged {
   .arcade-status {
     font-size: 12px;
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile-new,
+  .tile-merged {
+    animation: none;
+  }
+}
+body.reduced-motion .tile-new,
+body.reduced-motion .tile-merged {
+  animation: none;
 }

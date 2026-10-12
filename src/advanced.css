@@ -1,0 +1,90 @@
+/* Interaction cues for the board and deduction games. */
+.ttt .board-shortcut {
+  font:
+    700 0.9rem system-ui,
+    sans-serif;
+  color: var(--muted);
+}
+.connect .drop small {
+  font:
+    700 0.8rem system-ui,
+    sans-serif;
+}
+.connect .disc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #17243c;
+  font-size: clamp(0.75rem, 3vw, 1.4rem);
+}
+.advanced-code .spot {
+  padding-block: 18px;
+}
+.code-response {
+  min-height: 3.2em;
+  margin-bottom: 18px;
+}
+.codequick {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.32em;
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+.advanced-code .codeentry {
+  margin-top: 12px;
+}
+.code-exact {
+  color: var(--mint);
+}
+.code-misplaced {
+  color: var(--orange);
+}
+.quizanswers button {
+  position: relative;
+  padding-block: 20px;
+}
+.quizanswers button:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.quiz-shortcut {
+  position: absolute;
+  inset-inline-start: 9px;
+  top: 5px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+.sudoku-position {
+  margin-block: 10px;
+}
+.sudoku button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--orange);
+  outline-offset: -3px;
+}
+@media (max-width: 560px) {
+  .advanced-code .spot .huge {
+    font-size: 2rem;
+  }
+  .advanced-code .codeentry select {
+    min-height: 44px;
+  }
+  .advanced-code .code-response {
+    margin-block: 12px;
+  }
+  .numberpad {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .numberpad button {
+    min-height: 48px;
+  }
+}
+@media (max-width: 360px) {
+  .numberpad {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

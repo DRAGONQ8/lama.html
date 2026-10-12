@@ -1,6 +1,170 @@
 .party-panel > .muted {
   margin-bottom: 20px;
 }
+.party-flow {
+  display: flex;
+  gap: 6px;
+  padding: 0;
+  margin: 0 0 20px;
+  list-style: none;
+}
+.party-flow li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.party-flow li > span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--raised);
+  font-variant-numeric: tabular-nums;
+}
+.party-flow b {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.party-flow .current {
+  color: var(--ink);
+  border-color: var(--mint);
+}
+.party-flow .current > span,
+.party-flow .complete > span {
+  background: var(--mint);
+  color: var(--bg);
+}
+.party-boost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px dashed var(--orange);
+  border-radius: 16px;
+}
+.party-boost small {
+  color: var(--muted);
+  line-height: 1.8;
+}
+.party-boost.active {
+  color: var(--orange);
+  font-weight: 700;
+}
+.party-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+.party-metrics > div {
+  padding: 16px 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--raised);
+}
+.party-metrics strong,
+.party-metrics span {
+  display: block;
+}
+.party-metrics strong {
+  font-size: 24px;
+  color: var(--mint);
+  font-variant-numeric: tabular-nums;
+}
+.party-metrics span {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.party-mode-results,
+.party-creative-recap {
+  text-align: start;
+}
+.party-mode-results section,
+.party-creative-recap section {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.party-mode-results section > b {
+  color: var(--orange);
+}
+.party-mode-results p {
+  display: flex;
+  align-items: center;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.party-mode-results p > span {
+  flex: 1;
+}
+.party-mode-results small,
+.party-creative-recap small {
+  color: var(--muted);
+}
+.party-clue-input {
+  max-width: 520px;
+  margin: 20px auto;
+  text-align: start;
+}
+.party-clue-input label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.party-clue-input input {
+  width: 100%;
+  scroll-margin-block: 30px;
+}
+.party-clue-trail > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.party-clue-trail p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--raised);
+  text-align: start;
+  min-width: 0;
+}
+.party-clue-trail small {
+  margin-inline-start: auto;
+  color: var(--muted);
+}
+.party-clue-trail p > span {
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+.party-answer-preview {
+  margin: 22px 0;
+  padding: 24px;
+  border: 1px solid var(--mint);
+  border-radius: 16px;
+  background: var(--raised);
+  font-size: 22px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
 .party-format {
   margin: 18px 0;
   padding: 14px 18px;
@@ -397,6 +561,23 @@
   margin: 16px 0;
 }
 @media (max-width: 560px) {
+  .party-flow {
+    gap: 4px;
+  }
+  .party-flow li {
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 10px;
+  }
+  .party-flow li > span {
+    width: 22px;
+    height: 22px;
+  }
+  .party-clue-trail > div {
+    grid-template-columns: 1fr;
+  }
   .party-people {
     flex-direction: column;
     align-items: stretch;
