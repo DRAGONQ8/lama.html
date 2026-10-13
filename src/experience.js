@@ -238,13 +238,14 @@ function openLounge() {
     'reaction',
     'ttt',
     'connect',
+    'memory',
   ];
   openModal(
-    `<div class="modalhead"><h2 id="modaltitle">👥 صالة اللمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">العبوا على جهاز واحد، بالتناوب. ${store.players.length} لاعب جاهز: ${store.players.map(esc).join('، ')}.</p><div class="actions"><button onclick="openPeople()">إدارة اللاعبين</button><button class="primary" onclick="openTournament()">🏆 بطولة فردية بالتناوب</button></div><div class="lounge-games">${ids
+    `<div class="modalhead"><h2 id="modaltitle">👥 صالة اللمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">العبوا على جهاز واحد، بالتناوب. ${store.players.length} لاعب جاهز: ${store.players.map(esc).join('، ')}.</p><div class="actions"><button onclick="openPeople()">إدارة اللاعبين</button><button class="primary" onclick="openTournament()">🏆 بطولة فردية بالتناوب</button></div><div class="lounge-random"><button onclick="closeModal();home();chooseRandomGame('duo')">🎲 اختار لنا لعبة شخصين</button><button onclick="closeModal();home();chooseRandomGame('group')">🎲 اختار لنا لعبة مجموعة</button></div><div class="lounge-games">${ids
       .map((id) => {
         const g = games.find((v) => v[0] === id);
         return g
-          ? `<button onclick="setup('${id}')"><span>${g[1]}</span><div><b>${esc(g[2])}${freshGameIds.has(id) ? ' <small class="new-chip">جديد</small>' : ''}</b><small>${esc(g[3])}</small><em>${gameMinimum(id)}–12 لاعب${['ttt', 'connect'].includes(id) ? ' · المواجهة للاعبين' : ''}</em></div><span>←</span></button>`
+          ? `<button onclick="setup('${id}')"><span>${g[1]}</span><div><b>${esc(g[2])}${freshGameIds.has(id) ? ' <small class="new-chip">جديد</small>' : ''}</b><small>${esc(g[3])}</small><em>${['ttt', 'connect', 'memory'].includes(id) ? 'شخصان · مواجهة على نفس الجهاز' : gameMinimum(id) + '–12 لاعب'}</em></div><span>←</span></button>`
           : '';
       })
       .join('')}</div>`,

@@ -1,0 +1,53 @@
+.random-launches {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.random-launches button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: center;
+  padding: 18px;
+  text-align: start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  min-width: 0;
+}
+.random-launches button > span {
+  grid-row: span 2;
+  font-size: 28px;
+}
+.random-launches b,
+.random-launches small {
+  overflow-wrap: anywhere;
+}
+.random-launches small {
+  color: var(--muted);
+  margin-top: 4px;
+}
+.random-pair {
+  margin-top: 16px;
+}
+.random-pair h3 {
+  margin-bottom: 8px;
+}
+.random-pair .fields {
+  margin-top: 14px;
+}
+.random-pair .linkbtn {
+  margin-top: 8px;
+}
+@media (max-width: 620px) {
+  .random-launches {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .random-launches button {
+    padding: 13px 16px;
+  }
+  .random-pair .fields {
+    grid-template-columns: 1fr;
+  }
+}

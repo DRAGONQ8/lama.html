@@ -1,3 +1,4 @@
+let advancedRunSerial = 0;
 function startExtra(id) {
   if (screen !== 'setup' || state?.id !== id || coreBlocked()) return;
   if (!requirePlayers(id)) return;
@@ -12,6 +13,7 @@ function startExtra(id) {
     difficulty = fixed ? 'normal' : $('level')?.value || 'normal';
   state = {
     id,
+    run: ++advancedRunSerial,
     name,
     level: ['easy', 'normal', 'hard'].includes(difficulty) ? difficulty : 'normal',
     done: false,
@@ -62,6 +64,7 @@ function smallStats(a) {
 }
 function startBoard(id) {
   const s = state;
+  s.rule = !s.fixed && id === 'ttt' && $('tttrule')?.value === 'misere' ? 'misere' : 'classic';
   s.bot = ($('opponent')?.value || 'bot') === 'bot';
   s.names = [
     s.name,
@@ -109,10 +112,13 @@ function tttWinner(b) {
     if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[0]] === b[l[2]]) return { p: b[l[0]], line: l };
   return b.includes(0) ? null : { p: 0, line: [] };
 }
-function tttBest(b, p) {
+function tttBest(b, p, misere = false) {
   function solve(board, turn, depth) {
     const w = tttWinner(board);
-    if (w) return w.p === p ? 10 - depth : w.p === 0 ? 0 : depth - 10;
+    if (w) {
+      const winner = misere && w.p ? 3 - w.p : w.p;
+      return winner === p ? 10 - depth : winner === 0 ? 0 : depth - 10;
+    }
     let value = turn === p ? -100 : 100;
     for (let i = 0; i < 9; i++)
       if (!board[i]) {
@@ -136,6 +142,12 @@ function tttBest(b, p) {
       } else if (v === score) moves.push(i);
     }
   return moves[extraRand(moves.length)];
+}
+function boardOutcome(board, s = state) {
+  const outcome = s.id === 'ttt' ? tttWinner(board) : connectWinner(board);
+  return outcome && s.rule === 'misere' && outcome.p
+    ? { ...outcome, p: 3 - outcome.p, lineOwner: outcome.p }
+    : outcome;
 }
 function boardWinningMove(board, id, p) {
   const legal =
@@ -272,17 +284,17 @@ function renderBoard() {
     w = s.winner,
     display = Number.isInteger(s.replayIndex)
       ? s.history[s.replayIndex]?.board || s.board
-      : s.board;
+      : s.preview?.board || s.board;
   const focused = document.activeElement?.closest?.('[data-board-pos]');
   if (focused) s.boardFocus = Number(focused.dataset.boardPos);
   const body =
     s.id === 'ttt'
-      ? `<div class="ttt" dir="ltr" aria-label="لوحة إكس أو؛ الأرقام من اليسار إلى اليمين">${display.map((v, i) => `<button data-board-pos="${i}" class="${v ? 'p' + v : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" ${s.suggested === i ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${i})" ${v || s.waiting || s.done ? 'disabled' : ''} aria-label="خانة ${i + 1}${v ? ' ' + (v === 1 ? 'X' : 'O') : ''}${s.suggested === i ? ' حركة مقترحة' : ''}">${v ? (v === 1 ? '×' : '○') : `<small class="board-shortcut">${i + 1}</small>`}</button>`).join('')}</div>`
-      : `<div class="connect" dir="ltr" aria-label="لوحة وصل أربعة؛ الأعمدة من اليسار إلى اليمين">${Array.from({ length: 7 }, (_, c) => `<button data-board-pos="${c}" class="drop" ${s.suggested === c ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${c})" ${s.waiting || s.done || landing(s.board, c) < 0 ? 'disabled' : ''} aria-label="إنزال قطعة في العمود ${c + 1}${s.suggested === c ? ' حركة مقترحة' : ''}">↓ <small>${c + 1}</small></button>`).join('')}${display.map((v, i) => `<div class="disc ${v === 1 ? 'red' : v === 2 ? 'yellow' : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" aria-label="صف ${Math.floor(i / 7) + 1} عمود ${(i % 7) + 1}: ${v === 1 ? 'أحمر' : v === 2 ? 'أصفر' : 'فاضي'}">${v === 1 ? '●' : v === 2 ? '◆' : ''}</div>`).join('')}</div>`;
+      ? `<div class="ttt ${s.rule === 'misere' ? 'avoid-line' : ''}" dir="ltr" aria-label="لوحة إكس أو؛ الأرقام من اليسار إلى اليمين">${display.map((v, i) => `<button data-board-pos="${i}" class="${v ? 'p' + v : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" ${s.suggested === i ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${i})" ${v || s.waiting || s.done || s.preview ? 'disabled' : ''} aria-label="خانة ${i + 1}${v ? ' ' + (v === 1 ? 'X' : 'O') : ''}${s.suggested === i ? ' حركة مقترحة' : ''}">${v ? (v === 1 ? '×' : '○') : `<small class="board-shortcut">${i + 1}</small>`}</button>`).join('')}</div>`
+      : `<div class="connect" dir="ltr" aria-label="لوحة وصل أربعة؛ الأعمدة من اليسار إلى اليمين">${Array.from({ length: 7 }, (_, c) => `<button data-board-pos="${c}" class="drop" ${s.suggested === c ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${c})" ${s.waiting || s.done || s.preview || landing(s.board, c) < 0 ? 'disabled' : ''} aria-label="إنزال قطعة في العمود ${c + 1}${s.suggested === c ? ' حركة مقترحة' : ''}">↓ <small>${c + 1}</small></button>`).join('')}${display.map((v, i) => `<div class="disc ${v === 1 ? 'red' : v === 2 ? 'yellow' : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" aria-label="صف ${Math.floor(i / 7) + 1} عمود ${(i % 7) + 1}: ${v === 1 ? 'أحمر' : v === 2 ? 'أصفر' : 'فاضي'}">${v === 1 ? '●' : v === 2 ? '◆' : ''}</div>`).join('')}</div>`;
   setHTML(
     wrap(
       s.id,
-      `<section class="panel"><div class="legend"><span>${s.id === 'ttt' ? '×' : '🔴 ●'} ${esc(s.names[0])}</span><span>${s.id === 'ttt' ? '○' : '🟡 ◆'} ${esc(s.names[1])}</span></div><div class="turnmark" role="status">${s.done ? (w === 0 ? 'تعادل!' : esc(s.names[w - 1]) + ' فاز 🏆') : s.waiting ? 'الخصم يفكّر…' : 'الدور على ' + esc(s.names[s.turn])}</div>${body}<p class="note center">${s.moves} حركة${s.bot ? ' · ' + { easy: 'خصم خفيف', normal: 'خصم متوسط', hard: 'خصم قوي' }[s.level] : ''} · الأرقام 1–${s.id === 'ttt' ? 9 : 7} أو انقر اللوحة.</p>${boardMatchHTML(s)}${s.coachMessage ? `<p class="hintpanel" role="status">${esc(s.coachMessage)}</p>` : ''}<div class="actions">${s.done ? `${boardSeriesOver(s) ? '<button class="primary" onclick="showBoardResult()">شوف النتيجة</button>' : '<button class="primary" onclick="nextBoardRound()">الجولة التالية ←</button>'}` : `<button onclick="undoBoard()" ${!boardUndoAvailable(s) || s.waiting ? 'disabled' : ''}>↶ تراجع${s.bot ? ' عن دورك' : ''}</button><button onclick="hintBoard()" ${s.waiting || s.suggested !== undefined || s.fixed ? 'disabled' : ''}>💡 اقترح حركة −10</button>`}<button class="quiet" onclick="setup('${s.id}')">تحدّي جديد</button></div></section>`,
+      `<section class="panel"><div class="legend"><span>${s.id === 'ttt' ? '×' : '🔴 ●'} ${esc(s.names[0])}</span><span>${s.id === 'ttt' ? '○' : '🟡 ◆'} ${esc(s.names[1])}</span></div>${s.rule === 'misere' ? '<p class="variant-rules">تجنب الخط: من يكوّن 3 علامات من رمزه يخسر؛ اكتمال اللوحة دون خط تعادل.</p>' : ''}<div class="turnmark" role="status">${s.done ? (w === 0 ? 'تعادل!' : esc(s.names[w - 1]) + ' فاز 🏆') : s.waiting ? 'الخصم يفكّر…' : 'الدور على ' + esc(s.names[s.turn])}</div>${body}<p class="note center">${s.moves} حركة${s.bot ? ' · ' + { easy: 'خصم خفيف', normal: 'خصم متوسط', hard: 'خصم قوي' }[s.level] : ''} · الأرقام 1–${s.id === 'ttt' ? 9 : 7} أو انقر اللوحة.</p>${boardMatchHTML(s)}${boardPreviewHTML(s)}${s.coachMessage ? `<p class="hintpanel" role="status">${esc(s.coachMessage)}</p>` : ''}<div class="actions">${s.done ? `${boardSeriesOver(s) ? '<button class="primary" onclick="showBoardResult()">شوف النتيجة</button>' : '<button class="primary" onclick="nextBoardRound()">الجولة التالية ←</button>'}` : `<button onclick="undoBoard()" ${!boardUndoAvailable(s) || s.waiting ? 'disabled' : ''}>↶ تراجع${s.bot ? ' عن دورك' : ''}</button><button onclick="toggleBoardPreview()" ${s.waiting || s.fixed ? 'disabled' : ''} aria-pressed="${!!s.previewMode}">🔎 عاين حركة قبل تنفيذها</button><button onclick="hintBoard()" ${s.waiting || s.suggested !== undefined || s.fixed ? 'disabled' : ''}>💡 اقترح حركة −10</button>`}<button class="quiet" onclick="setup('${s.id}')">تحدّي جديد</button></div></section>`,
     ),
   );
   if (Number.isInteger(s.boardFocus) && !s.waiting) {
@@ -306,15 +318,25 @@ function boardMove(pos, botMove = false) {
     !['ttt', 'connect'].includes(screen) ||
     (botMove && (!s.bot || s.turn !== 1)) ||
     (s.waiting && !botMove) ||
+    (s.preview && !botMove) ||
     (!botMove && s.bot && s.turn === 1)
   )
     return;
+  if (s.previewMode && !botMove) return previewBoardMove(pos);
   let i = s.id === 'ttt' ? pos : landing(s.board, pos);
   if (!Number.isInteger(i) || i < 0 || i >= s.board.length || s.board[i]) return;
   const ownWin = boardWinningMove(s.board, s.id, s.turn + 1),
     danger = boardWinningMove(s.board, s.id, 2 - s.turn);
   const note =
-    ownWin === pos ? 'حركة تكمل خط الفوز.' : danger === pos ? 'صدّ تهديد مباشر للخصم.' : '';
+    s.rule === 'misere'
+      ? ownWin === pos
+        ? 'تكوّن خطك، ولذلك تخسر في وضع تجنب الخط.'
+        : 'محاولة تجنب تكوين خط من رمزك.'
+      : ownWin === pos
+        ? 'حركة تكمل خط الفوز.'
+        : danger === pos
+          ? 'صدّ تهديد مباشر للخصم.'
+          : '';
   s.history.push({ board: [...s.board], turn: s.turn, moves: s.moves, note, pos });
   s.lastMove = i;
   s.board[i] = s.turn + 1;
@@ -323,7 +345,9 @@ function boardMove(pos, botMove = false) {
   s.moves++;
   s.waiting = false;
   tone();
-  const w = s.id === 'ttt' ? tttWinner(s.board) : connectWinner(s.board);
+  const w = boardOutcome(s.board, s);
+  delete s.preview;
+  s.previewMode = false;
   if (w) {
     s.done = true;
     s.winner = w.p;
@@ -375,14 +399,25 @@ function scheduleBot() {
         const legal = s.board.map((v, i) => (v ? null : i)).filter((i) => i !== null);
         const win = boardWinningMove(s.board, 'ttt', 2),
           block = s.level !== 'easy' ? boardWinningMove(s.board, 'ttt', 1) : -1;
-        move =
-          win >= 0
-            ? win
-            : block >= 0
-              ? block
-              : s.level === 'easy' || (s.level === 'normal' && extraRand(100, s) < 30)
-                ? legal[extraRand(legal.length, s)]
-                : tttBest(s.board, 2);
+        if (s.rule === 'misere') {
+          const safe = legal.filter((pos) => {
+            const board = [...s.board];
+            board[pos] = 2;
+            return tttWinner(board)?.p !== 2;
+          });
+          move =
+            (s.level === 'easy' || (s.level === 'normal' && extraRand(100, s) < 25)) && safe.length
+              ? safe[extraRand(safe.length, s)]
+              : tttBest(s.board, 2, true);
+        } else
+          move =
+            win >= 0
+              ? win
+              : block >= 0
+                ? block
+                : s.level === 'easy' || (s.level === 'normal' && extraRand(100, s) < 30)
+                  ? legal[extraRand(legal.length, s)]
+                  : tttBest(s.board, 2);
       } else {
         const legal = [0, 1, 2, 3, 4, 5, 6].filter((c) => landing(s.board, c) >= 0);
         const win = boardWinningMove(s.board, 'connect', 2);
@@ -417,6 +452,8 @@ function undoBoard() {
   delete s.suggested;
   s.coachMessage = '';
   s.lastMove = undefined;
+  delete s.preview;
+  s.previewMode = false;
   renderBoard();
   if (s.bot && s.turn === 1) scheduleBot();
 }
@@ -437,23 +474,27 @@ function hintBoard() {
     win = boardWinningMove(s.board, s.id, p),
     block = boardWinningMove(s.board, s.id, 3 - p);
   s.suggested =
-    win >= 0
-      ? win
-      : block >= 0
-        ? block
-        : s.id === 'ttt'
-          ? tttBest(s.board, p)
-          : connectBest(s.board, 4, p);
+    s.rule === 'misere'
+      ? tttBest(s.board, p, true)
+      : win >= 0
+        ? win
+        : block >= 0
+          ? block
+          : s.id === 'ttt'
+            ? tttBest(s.board, p)
+            : connectBest(s.board, 4, p);
   s.coachHints ??= [0, 0];
   s.coachHints[s.turn]++;
   s.coachMessage =
-    (win >= 0
-      ? 'هذه الحركة تكمل خط الفوز.'
-      : block >= 0
-        ? 'هذه الحركة تمنع فوز الخصم في دوره القادم.'
-        : s.id === 'ttt'
-          ? 'هذه الحركة تحافظ على أفضل نتيجة ممكنة؛ راقب المركز والزوايا.'
-          : 'هذه الحركة تفحص التهديدات المقبلة؛ المركز يمنحك أكثر من اتجاه.') +
+    (s.rule === 'misere'
+      ? 'نفحص المسارات التي تمنع تكوين خط من رمزك؛ إكمال خطك يعني الخسارة.'
+      : win >= 0
+        ? 'هذه الحركة تكمل خط الفوز.'
+        : block >= 0
+          ? 'هذه الحركة تمنع فوز الخصم في دوره القادم.'
+          : s.id === 'ttt'
+            ? 'هذه الحركة تحافظ على أفضل نتيجة ممكنة؛ راقب المركز والزوايا.'
+            : 'هذه الحركة تفحص التهديدات المقبلة؛ المركز يمنحك أكثر من اتجاه.') +
     ' تخصم 10 نقاط من نقاط فوزك.';
   renderBoard();
 }
@@ -489,6 +530,81 @@ function showBoardResult() {
   );
 }
 
+function advancedCurrentRun(run) {
+  return run === undefined || run === state?.run;
+}
+function toggleBoardPreview(run) {
+  const s = state;
+  if (
+    !['ttt', 'connect'].includes(screen) ||
+    s.done ||
+    s.waiting ||
+    s.fixed ||
+    advancedBlocked(s) ||
+    !advancedCurrentRun(run)
+  )
+    return;
+  s.previewMode = !s.previewMode;
+  delete s.preview;
+  renderBoard();
+}
+function boardPreviewHTML(s) {
+  if (!s.previewMode || s.done) return '';
+  const legal =
+    s.id === 'ttt'
+      ? s.board.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0)
+      : [0, 1, 2, 3, 4, 5, 6].filter((c) => landing(s.board, c) >= 0);
+  return `<div class="board-analysis"><p class="note">اختر ${s.id === 'ttt' ? 'خانة' : 'عموداً'} للمعاينة. اللوحة الفعلية والدور والنقاط لا تتغير. التحليل يفحص التهديد المباشر فقط.</p><div class="actions">${legal.map((pos) => `<button onclick="previewBoardMove(${pos},${s.run})">${pos + 1}</button>`).join('')}</div>${s.preview ? `<p role="status" class="hintpanel">${esc(s.preview.message)}</p><div class="actions"><button class="primary" onclick="applyBoardPreview(${s.run})">نفّذ الحركة المعاينة</button><button onclick="toggleBoardPreview(${s.run})">ألغِ المعاينة</button></div>` : ''}</div>`;
+}
+function previewBoardMove(pos, run) {
+  const s = state;
+  if (
+    !['ttt', 'connect'].includes(screen) ||
+    s.done ||
+    s.waiting ||
+    s.fixed ||
+    !s.previewMode ||
+    advancedBlocked(s) ||
+    !advancedCurrentRun(run)
+  )
+    return;
+  const board = [...s.board],
+    i = s.id === 'ttt' ? pos : landing(board, pos);
+  if (!Number.isInteger(i) || i < 0 || i >= board.length || board[i]) return;
+  board[i] = s.turn + 1;
+  const outcome = boardOutcome(board, s),
+    danger = boardWinningMove(board, s.id, 2 - s.turn);
+  const message = outcome
+    ? outcome.p === 0
+      ? 'تغلق هذه الحركة اللوحة بتعادل.'
+      : outcome.p === s.turn + 1
+        ? 'تحسم هذه الحركة الفوز لك.'
+        : 'هذه الحركة تكوّن خطك وتخسرك الجولة.'
+    : s.rule === 'misere'
+      ? 'لا تكوّن هذه الحركة خطاً الآن؛ خطط حتى لا تضطر إليه لاحقاً.'
+      : danger >= 0
+        ? `بعد هذه الحركة يستطيع الخصم الفوز مباشرة في ${s.id === 'ttt' ? 'الخانة' : 'العمود'} ${danger + 1}.`
+        : 'لا يستطيع الخصم الفوز مباشرة في رده التالي؛ هذا لا يضمن النتيجة النهائية.';
+  s.preview = { board, pos, signature: s.board.join(','), message };
+  renderBoard();
+}
+function applyBoardPreview(run) {
+  const s = state;
+  if (
+    !['ttt', 'connect'].includes(screen) ||
+    s.done ||
+    s.waiting ||
+    advancedBlocked(s) ||
+    !advancedCurrentRun(run) ||
+    !s.preview ||
+    s.preview.signature !== s.board.join(',')
+  )
+    return;
+  const pos = s.preview.pos;
+  delete s.preview;
+  s.previewMode = false;
+  boardMove(pos);
+}
 function boardSeriesOver(s = state) {
   return (
     !s.series ||
@@ -540,6 +656,8 @@ function nextBoardRound() {
   delete s.replayIndex;
   delete s.suggested;
   delete s.lastMove;
+  delete s.preview;
+  s.previewMode = false;
   renderBoard();
   if (s.bot && s.turn === 1) scheduleBot();
 }
@@ -590,6 +708,8 @@ function startCode() {
   s.draft = Array.from({ length: s.length }, (_, i) => (s.duplicates ? 0 : i));
   s.analysis = null;
   s.digitNotes = Array(10).fill(0);
+  s.slotExclusions = Array.from({ length: s.length }, () => []);
+  s.codeSlot = 0;
   renderCode();
 }
 function codeFeedback(secret, guess) {
@@ -637,6 +757,8 @@ function enterCodeText(value, explain = false) {
 function renderCode(msg = '') {
   const s = state;
   s.digitNotes ??= Array(10).fill(0);
+  s.slotExclusions ??= Array.from({ length: s.length }, () => []);
+  s.codeSlot ??= 0;
   const last = s.attempts.at(-1);
   setHTML(
     wrap(
@@ -646,7 +768,7 @@ function renderCode(msg = '') {
         ['الخانات', s.length],
         ['المساعدة', s.hints],
       ]) +
-        `<section class="panel advanced-code"><div class="spot"><small>افتح الخزنة · ${s.duplicates ? 'الأرقام قد تتكرر' : 'كل رقم مختلف'}</small><div class="huge" dir="ltr">${s.secret.map((v, i) => (i in s.revealed ? v : '●')).join(' ')}</div></div><p class="hintpanel code-response" role="status">${esc(msg || (last ? `المحاولة ${s.attempts.length}: ${last.exact} رقم في مكانه الصحيح، و${last.misplaced} رقم في مكان آخر. بقيت ${s.max - s.attempts.length} محاولات.` : 'الصفر مسموح في أول خانة. اختر الأرقام أو اكتب الشفرة كاملة.'))}</p><form onsubmit="event.preventDefault();submitCode()"><label for="codequick">كتابة الشفرة مباشرة</label><input id="codequick" class="codequick" dir="ltr" inputmode="numeric" enterkeyhint="go" autocomplete="off" maxlength="${s.length}" value="${s.draft.join('')}" oninput="enterCodeText(this.value)" aria-label="الشفرة من ${s.length} أرقام"><div class="codeentry" dir="ltr">${Array.from({ length: s.length }, (_, i) => `<select id="digit${i}" aria-label="الرقم في الخانة ${i + 1}" onchange="readCodeDraft()" ${i in s.revealed ? 'disabled' : ''}>${Array.from({ length: 10 }, (_, n) => `<option value="${n}" ${s.draft[i] === n ? 'selected' : ''}>${n}</option>`).join('')}</select>`).join('')}</div><div class="actions"><button class="primary" type="submit">جرّب الشفرة</button><button type="button" onclick="codeHint()" ${Object.keys(s.revealed).length >= s.length - 1 ? 'disabled' : ''}>💡 اكشف خانة −15</button><button type="button" onclick="analyzeCode()">🔎 حلّل المحاولات</button><button type="button" onclick="suggestCode()">🧠 اقترح احتمالًا</button><button type="button" onclick="inspectCodeDraft()">✓ اختبر منطق التخمين</button></div></form>${s.analysis !== null ? `<div class="hintpanel">${s.analysis} شفرة تطابق جميع التلميحات المتاحة.${s.analysisData ? `<details><summary>الأرقام الممكنة في كل خانة</summary>${s.analysisData.possible.map((a, i) => `<p>الخانة ${i + 1}: <bdi>${a.join('، ') || 'لا يوجد'}</bdi></p>`).join('')}</details>` : ''}<p class="tiny">التحليل والاقتراح مجانيان ويستنتجان من المحاولات والخانات المكشوفة فقط.</p></div>` : ''}${codeNotebookHTML(s)}<div class="legend"><span>✓ الرقم والمكان صحيحان</span><span>↔ الرقم صحيح في مكان آخر</span></div><div class="codehistory">${s.attempts.map((v, i) => `<div class="codeline"><small>${i + 1}</small><span class="digits" dir="ltr">${v.guess.join('')}</span><span class="feedback" aria-label="${v.exact} في المكان الصحيح و${v.misplaced} في مكان آخر"><span class="code-exact">✓ ${v.exact}</span> &nbsp; <span class="code-misplaced">↔ ${v.misplaced}</span></span></div>`).join('')}</div><p class="tiny">كل رقم يحسب مرة واحدة؛ مجموع العلامتين هو عدد الأرقام المشتركة.</p><div class="actions"><button class="quiet" onclick="giveUpCode()">أنهي الجولة واكشف الشفرة</button></div></section>`,
+        `<section class="panel advanced-code"><div class="spot"><small>افتح الخزنة · ${s.duplicates ? 'الأرقام قد تتكرر' : 'كل رقم مختلف'}</small><div class="huge" dir="ltr">${s.secret.map((v, i) => (i in s.revealed ? v : '●')).join(' ')}</div></div><p class="hintpanel code-response" role="status">${esc(msg || (last ? `المحاولة ${s.attempts.length}: ${last.exact} رقم في مكانه الصحيح، و${last.misplaced} رقم في مكان آخر. بقيت ${s.max - s.attempts.length} محاولات.` : 'الصفر مسموح في أول خانة. اختر الأرقام أو اكتب الشفرة كاملة.'))}</p><form onsubmit="event.preventDefault();submitCode()"><label for="codequick">كتابة الشفرة مباشرة</label><input id="codequick" class="codequick" dir="ltr" inputmode="numeric" enterkeyhint="go" autocomplete="off" maxlength="${s.length}" value="${s.draft.join('')}" oninput="enterCodeText(this.value)" aria-label="الشفرة من ${s.length} أرقام"><div class="codeentry" dir="ltr">${Array.from({ length: s.length }, (_, i) => `<select id="digit${i}" aria-label="الرقم في الخانة ${i + 1}" onchange="readCodeDraft()" ${i in s.revealed ? 'disabled' : ''}>${Array.from({ length: 10 }, (_, n) => `<option value="${n}" ${s.draft[i] === n ? 'selected' : ''}>${n}</option>`).join('')}</select>`).join('')}</div><div class="actions"><button class="primary" type="submit">جرّب الشفرة</button><button type="button" onclick="codeHint()" ${Object.keys(s.revealed).length >= s.length - 1 ? 'disabled' : ''}>💡 اكشف خانة −15</button><button type="button" onclick="analyzeCode()">🔎 حلّل المحاولات</button><button type="button" onclick="suggestCode()">🧠 اقترح احتمالًا</button><button type="button" onclick="inspectCodeDraft()">✓ اختبر منطق التخمين</button></div></form>${s.analysis !== null ? `<div class="hintpanel">${s.analysis} شفرة تطابق جميع التلميحات المتاحة.${s.analysisData ? `<details><summary>الأرقام الممكنة في كل خانة</summary>${s.analysisData.possible.map((a, i) => `<p>الخانة ${i + 1}: <bdi>${a.join('، ') || 'لا يوجد'}</bdi></p>`).join('')}</details>` : ''}<p class="tiny">التحليل والاقتراح مجانيان ويستنتجان من المحاولات والخانات المكشوفة فقط.</p></div>` : ''}${codeNotebookHTML(s)}${codePositionHTML(s)}<div class="legend"><span>✓ الرقم والمكان صحيحان</span><span>↔ الرقم صحيح في مكان آخر</span></div><div class="codehistory">${s.attempts.map((v, i) => `<div class="codeline"><small>${i + 1}</small><span class="digits" dir="ltr">${v.guess.join('')}</span><span class="feedback" aria-label="${v.exact} في المكان الصحيح و${v.misplaced} في مكان آخر"><span class="code-exact">✓ ${v.exact}</span> &nbsp; <span class="code-misplaced">↔ ${v.misplaced}</span></span></div>`).join('')}</div><p class="tiny">كل رقم يحسب مرة واحدة؛ مجموع العلامتين هو عدد الأرقام المشتركة.</p><div class="actions"><button class="quiet" onclick="giveUpCode()">أنهي الجولة واكشف الشفرة</button></div></section>`,
     ),
   );
 }
@@ -680,7 +802,14 @@ function submitCode() {
       s.secret.join(''),
     );
   tone();
-  s.analysisData = codeCandidates(s.length, s.duplicates, s.attempts, s.revealed, 120);
+  s.analysisData = codeCandidates(
+    s.length,
+    s.duplicates,
+    s.attempts,
+    s.revealed,
+    120,
+    s.slotExclusions,
+  );
   s.analysis = s.analysisData.count;
   renderCode();
   $('app').querySelector('.code-response')?.scrollIntoView({ block: 'nearest' });
@@ -690,6 +819,66 @@ function codeNotebookHTML(s) {
     ? 10 ** s.length
     : Array.from({ length: s.length }, (_, i) => 10 - i).reduce((a, b) => a * b, 1);
   return `<details class="history"><summary>دفتر أدلة الأرقام${s.analysis !== null ? ` · استبعدت ${Math.round((1 - s.analysis / total) * 100)}% من الاحتمالات` : ''}</summary><p class="note">اضغط الرقم لتبدّل ملاحظتك: غير معروف ← موجود ← مستبعد. هذا دفتر يدوي؛ لا يكشف الشفرة ولا يغيّر التخمينات.</p><div class="digit-notebook" dir="ltr">${s.digitNotes.map((flag, n) => `<button onclick="markCodeDigit(${n})" class="${flag === 1 ? 'correct' : flag === 2 ? 'wrong' : ''}" aria-label="الرقم ${n}: ${['غير معروف', 'أعتقد أنه موجود', 'أعتقد أنه مستبعد'][flag]}">${n}<small>${['؟', '✓', '✕'][flag]}</small></button>`).join('')}</div></details>`;
+}
+function codePositionHTML(s) {
+  if (s.fixed) return '';
+  return `<details class="history code-position"><summary>استبعاد يدوي حسب الخانة</summary><p class="note">استبعد ترتيباً لا تريده، فيراعيه التحليل والاقتراح. هذه ملاحظاتك وقد تكون خاطئة؛ صفر احتمالات يعني ضرورة مراجعتها.</p><label for="codeslot">الخانة التي تراجعها</label><select id="codeslot" onchange="selectCodeSlot(Number(this.value),${s.run})">${Array.from({ length: s.length }, (_, i) => `<option value="${i}" ${s.codeSlot === i ? 'selected' : ''}>${i + 1}</option>`).join('')}</select><div class="digit-notebook" dir="ltr">${Array.from({ length: 10 }, (_, n) => `<button onclick="excludeCodePosition(${n},${s.run})" ${s.codeSlot in s.revealed ? 'disabled' : ''} aria-pressed="${s.slotExclusions[s.codeSlot].includes(n)}" class="${s.slotExclusions[s.codeSlot].includes(n) ? 'wrong' : ''}">${n}</button>`).join('')}</div><button onclick="clearCodeExclusions(${s.run})">امسح استبعادات الخانات</button></details>`;
+}
+function selectCodeSlot(i, run) {
+  if (
+    screen !== 'code' ||
+    state.done ||
+    state.fixed ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run) ||
+    !Number.isInteger(i) ||
+    i < 0 ||
+    i >= state.length
+  )
+    return;
+  readCodeDraft();
+  state.codeSlot = i;
+  renderCode();
+  $('app').querySelector('.code-position')?.setAttribute('open', '');
+}
+function excludeCodePosition(n, run) {
+  const s = state;
+  if (
+    screen !== 'code' ||
+    s.done ||
+    s.fixed ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run) ||
+    !Number.isInteger(n) ||
+    n < 0 ||
+    n > 9 ||
+    s.codeSlot in s.revealed
+  )
+    return;
+  readCodeDraft();
+  const excluded = s.slotExclusions[s.codeSlot];
+  s.slotExclusions[s.codeSlot] = excluded.includes(n)
+    ? excluded.filter((v) => v !== n)
+    : [...excluded, n].sort((a, b) => a - b);
+  s.analysis = null;
+  s.analysisData = null;
+  renderCode();
+  $('app').querySelector('.code-position')?.setAttribute('open', '');
+}
+function clearCodeExclusions(run) {
+  if (
+    screen !== 'code' ||
+    state.done ||
+    state.fixed ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run)
+  )
+    return;
+  readCodeDraft();
+  state.slotExclusions = Array.from({ length: state.length }, () => []);
+  state.analysis = null;
+  state.analysisData = null;
+  renderCode('مسحنا الاستبعادات اليدوية؛ المحاولات والخانات المكشوفة تبقى كما هي.');
 }
 function markCodeDigit(n) {
   if (
@@ -750,7 +939,14 @@ function analyzeCode() {
   if (screen !== 'code' || state.done || advancedBlocked()) return;
   const s = state;
   readCodeDraft();
-  s.analysisData = codeCandidates(s.length, s.duplicates, s.attempts, s.revealed, 120);
+  s.analysisData = codeCandidates(
+    s.length,
+    s.duplicates,
+    s.attempts,
+    s.revealed,
+    120,
+    s.slotExclusions,
+  );
   s.analysis = s.analysisData.count;
   renderCode();
 }
@@ -758,7 +954,14 @@ function suggestCode() {
   if (screen !== 'code' || state.done || advancedBlocked()) return;
   const s = state;
   readCodeDraft();
-  const data = codeCandidates(s.length, s.duplicates, s.attempts, s.revealed, 120);
+  const data = codeCandidates(
+    s.length,
+    s.duplicates,
+    s.attempts,
+    s.revealed,
+    120,
+    s.slotExclusions,
+  );
   s.analysisData = data;
   s.analysis = data.count;
   const suggestion = codeSuggestion(data.samples, s.attempts);
@@ -790,7 +993,14 @@ function codeSuggestion(samples = [], attempts = []) {
   }
   return best ? [...best] : null;
 }
-function codeCandidates(length, duplicates, attempts, revealed = {}, sampleLimit = 0) {
+function codeCandidates(
+  length,
+  duplicates,
+  attempts,
+  revealed = {},
+  sampleLimit = 0,
+  exclusions = [],
+) {
   const possible = Array.from({ length }, () => new Set()),
     digits = Array(10).fill(0),
     guess = Array(length),
@@ -833,7 +1043,7 @@ function codeCandidates(length, duplicates, attempts, revealed = {}, sampleLimit
     }
     const choices = depth in revealed ? [revealed[depth]] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     for (const digit of choices) {
-      if (!duplicates && digits[digit]) continue;
+      if ((!duplicates && digits[digit]) || exclusions?.[depth]?.includes(digit)) continue;
       guess[depth] = digit;
       digits[digit]++;
       visit(depth + 1);
@@ -858,6 +1068,7 @@ function startSimon() {
   const s = state;
   s.input = 0;
   s.mode = s.fixed ? 'forward' : $('simonmode')?.value === 'reverse' ? 'reverse' : 'forward';
+  s.cue = !s.fixed && $('simoncue')?.value === 'audio' ? 'audio' : 'both';
   s.phase = 'idle';
   s.completed = 0;
   s.speed = { easy: 700, normal: 510, hard: 350 }[s.level] || 510;
@@ -869,7 +1080,7 @@ function startSimon() {
   s.sequenceBank = Array.from({ length: 15 }, () => gameRand(4));
   s.sequence = [s.sequenceBank[0]];
   s.onPause = () => {
-    if (['show', 'between'].includes(s.phase)) {
+    if (['show', 'between', 'recall'].includes(s.phase)) {
       s.playToken++;
       s.phase = 'idle';
       s.input = 0;
@@ -908,7 +1119,19 @@ function renderSimon() {
         ['النجاحات', s.completed],
         ['خطوتك', s.input + ' / ' + s.sequence.length],
       ]) +
-        `<section class="panel"><div class="turnmark" id="seqstatus" role="status">${s.phase === 'input' ? (s.mode === 'reverse' ? 'دورك: كرر الترتيب من الأخير إلى الأول' : 'دورك: كرر نفس الترتيب') : s.phase === 'show' ? 'راقب الأضواء…' : 'جاهز للتسلسل؟'}</div><div class="sequencepad">${padColors.map((c, i) => `<button id="pad${i}" style="--pad:${c}" onclick="simonTap(${i})" ${s.phase !== 'input' ? 'disabled' : ''} aria-label="${['أخضر', 'أصفر', 'أزرق', 'وردي'][i]} رقم ${i + 1}">${['●', '▲', '■', '◆'][i]}<small>${i + 1}</small></button>`).join('')}</div><div id="seqtrace" class="sequence-trace" dir="ltr" aria-label="خطواتك الصحيحة">${
+        `<section class="panel"><div class="turnmark" id="seqstatus" role="status">${
+          s.phase === 'input'
+            ? s.mode === 'reverse'
+              ? 'دورك: كرر الترتيب من الأخير إلى الأول'
+              : 'دورك: كرر نفس الترتيب'
+            : s.phase === 'recall'
+              ? 'استرجع التسلسل في ذهنك…'
+              : s.phase === 'show'
+                ? s.cue === 'audio'
+                  ? 'استمع للنغمات…'
+                  : 'راقب الأضواء…'
+                : 'جاهز للتسلسل؟'
+        }</div><div class="sequencepad">${padColors.map((c, i) => `<button id="pad${i}" style="--pad:${c}" onclick="simonTap(${i})" ${s.phase !== 'input' ? 'disabled' : ''} aria-label="${['أخضر', 'أصفر', 'أزرق', 'وردي'][i]} رقم ${i + 1}">${['●', '▲', '■', '◆'][i]}<small>${i + 1}</small></button>`).join('')}</div><div id="seqtrace" class="sequence-trace" dir="ltr" aria-label="خطواتك الصحيحة">${
           s.input > 0
             ? `${simonExpected(s)
                 .slice(0, Math.min(s.input, s.sequence.length))
@@ -918,9 +1141,17 @@ function renderSimon() {
                 )
                 .join('')}`
             : ''
-        }</div>${s.message ? `<p class="hintpanel" role="status">${esc(s.message)}</p>` : ''}<div class="actions"><button class="primary" onclick="playSimon()" ${['show', 'input'].includes(s.phase) ? 'disabled' : ''}>اعرض التسلسل</button><button onclick="replaySimon()" ${s.phase !== 'input' || s.input !== 0 ? 'disabled' : ''}>↻ إعادة العرض −5</button><button onclick="endSimon()">أنهي التحدي</button></div><p class="note center">${s.mode === 'reverse' ? 'التحدي العكسي: شاهد من البداية، ثم أجب من النهاية. ' : ''}رمز وصوت لكل لون. استخدم الأرقام 1–4؛ لا يوجد حد زمني لإجابتك. إعادة العرض ${s.replays} مرة.${s.level === 'easy' ? ` في التدريب عندك ${s.lives} فرصة؛ الفرصة الثانية تخصم 10 نقاط.` : ''}</p></section>`,
+        }</div>${s.message ? `<p class="hintpanel" role="status">${esc(s.message)}</p>` : ''}<div class="actions"><button class="primary" onclick="playSimon()" ${['show', 'input', 'recall'].includes(s.phase) ? 'disabled' : ''}>اعرض التسلسل</button><button onclick="replaySimon()" ${s.phase !== 'input' || s.input !== 0 ? 'disabled' : ''}>↻ إعادة العرض −5</button>${s.cue === 'audio' ? `<button onclick="enableSimonSound(${s.run})">فعّل الصوت واختبر نغمة</button>` : ''}<button onclick="endSimon()">أنهي التحدي</button></div><p class="note center">${s.mode === 'reverse' ? 'التحدي العكسي: شاهد من البداية، ثم أجب من النهاية. ' : ''}${s.cue === 'audio' ? 'استماع فقط: لا نعرض اللون أو رقمه أثناء المشاهدة. بعد النغمات عندك ثانية للاسترجاع. ' : ''}رمز وصوت لكل لون. استخدم الأرقام 1–4؛ لا يوجد حد زمني لإجابتك. إعادة العرض ${s.replays} مرة.${s.level === 'easy' ? ` في التدريب عندك ${s.lives} فرصة؛ الفرصة الثانية تخصم 10 نقاط.` : ''}</p></section>`,
     ),
   );
+}
+function enableSimonSound(run) {
+  if (screen !== 'simon' || state.done || advancedBlocked() || !advancedCurrentRun(run)) return;
+  store.sound = true;
+  save();
+  soundUI();
+  padTone(0);
+  toast('هذه نغمة تجريبية للزر الأخضر 1. ابدأ عرض التسلسل عندما تكون جاهزاً.');
 }
 function playSimon() {
   if (
@@ -930,24 +1161,43 @@ function playSimon() {
     !['idle', 'between'].includes(state.phase)
   )
     return;
-  const s = state,
-    token = ++s.playToken;
+  const s = state;
+  if (s.cue === 'audio' && !store.sound)
+    return toast('فعّل الصوت واختبر النغمة قبل تحدي الاستماع.');
+  const token = ++s.playToken;
   s.phase = 'show';
   s.input = 0;
   renderSimon();
   function showStep(i) {
     if (s.playToken !== token || s.phase !== 'show') return;
     if (i >= s.sequence.length) {
-      s.phase = 'input';
-      renderSimon();
+      if (s.cue === 'audio') {
+        s.phase = 'recall';
+        renderSimon();
+        advancedLater(
+          s,
+          () => {
+            if (s.playToken === token && s.phase === 'recall') {
+              s.phase = 'input';
+              renderSimon();
+            }
+          },
+          1000,
+        );
+      } else {
+        s.phase = 'input';
+        renderSimon();
+      }
       return;
     }
     const v = s.sequence[i],
       pad = $('pad' + v);
     if ($('seqstatus'))
       $('seqstatus').textContent =
-        `شاهد الخطوة ${i + 1} من ${s.sequence.length}: ${padNames[v]}، الزر ${v + 1}.`;
-    pad?.classList.add('lit');
+        s.cue === 'audio'
+          ? `استمع للنغمة ${i + 1} من ${s.sequence.length}.`
+          : `شاهد الخطوة ${i + 1} من ${s.sequence.length}: ${padNames[v]}، الزر ${v + 1}.`;
+    if (s.cue !== 'audio') pad?.classList.add('lit');
     padTone(v);
     advancedLater(
       s,
@@ -1065,6 +1315,7 @@ function startSlide() {
   s.history = [];
   s.started = Date.now();
   s.assisted = false;
+  s.lockedRows = 0;
   s.hints = 0;
   const count = { easy: 18, normal: 50, hard: 110 }[s.level] || 50;
   let previous = -1;
@@ -1109,7 +1360,7 @@ function slideDistance(b, n) {
     0,
   );
 }
-function solveSlide(board, size = 3, nodeLimit = 35000) {
+function solveSlide(board, size = 3, nodeLimit = 35000, lockedRows = 0) {
   if (
     size !== 3 ||
     board.length !== 9 ||
@@ -1178,7 +1429,7 @@ function solveSlide(board, size = 3, nodeLimit = 35000) {
       return path.reverse();
     }
     for (const i of slideNeighbors(node.empty, size)) {
-      if (node.parent && i === node.parent.empty) continue;
+      if (Math.floor(i / size) < lockedRows || (node.parent && i === node.parent.empty)) continue;
       const next = [...node.board];
       [next[i], next[node.empty]] = [next[node.empty], next[i]];
       const k = next.join(','),
@@ -1192,11 +1443,39 @@ function solveSlide(board, size = 3, nodeLimit = 35000) {
   return null;
 }
 function slideReachable(i, s = state) {
-  if (!s.board?.[i] || !Number.isInteger(i)) return false;
+  if (!s.board?.[i] || !Number.isInteger(i) || Math.floor(i / s.size) < (s.lockedRows || 0))
+    return false;
   return (
     slideNeighbors(s.empty, s.size).includes(i) ||
     (s.lineMode &&
       (Math.floor(i / s.size) === Math.floor(s.empty / s.size) || i % s.size === s.empty % s.size))
+  );
+}
+function slideCompleteRows(s = state) {
+  let rows = 0;
+  while (
+    rows < s.size - 2 &&
+    s.board.slice(rows * s.size, (rows + 1) * s.size).every((v, i) => v === rows * s.size + i + 1)
+  )
+    rows++;
+  return rows;
+}
+function pinSlideRows(run) {
+  const s = state;
+  if (screen !== 'slide' || s.done || s.fixed || advancedBlocked() || !advancedCurrentRun(run))
+    return;
+  if (s.lockedRows) s.lockedRows = 0;
+  else {
+    s.lockedRows = slideCompleteRows(s);
+    if (!s.lockedRows)
+      return renderSlide('أكمل الصف العلوي أولاً حتى تثبته؛ نبقي آخر صفين قابلين للتحريك.');
+  }
+  delete s.plan;
+  delete s.planBoard;
+  renderSlide(
+    s.lockedRows
+      ? `ثبتنا ${s.lockedRows} صفوف مكتملة. لا تتحرك قطعها حتى تفك التثبيت.`
+      : 'ألغينا تثبيت الصفوف.',
   );
 }
 function toggleSlideLine() {
@@ -1221,7 +1500,7 @@ function renderSlide(msg = '') {
         ['في مكانها', correct + ' / ' + (s.board.length - 1)],
         ['مسافة القطع', slideDistance(s.board, s.size)],
       ]) +
-        `<section class="panel"><div class="puzzle" dir="ltr" style="grid-template-columns:repeat(${s.size},1fr)">${s.board.map((v, i) => `<button data-slide-pos="${i}" class="${v === 0 ? 'empty' : v === i + 1 ? 'correct' : ''}" onclick="slideMove(${i})" ${!v || !slideReachable(i, s) ? 'disabled' : ''} aria-label="${v ? 'القطعة ' + v + (slideReachable(i, s) ? ' قابلة للتحريك' : ' بعيدة عن الفراغ') : 'الخانة الفارغة'}">${v || ''}</button>`).join('')}</div><p class="note center" role="status">${esc(msg || 'اضغط قطعة بجانب الفراغ، أو اسحب على اللوحة أو استخدم الأسهم لتحريك الفراغ. الترتيب من اليسار إلى اليمين.')}</p><div class="actions"><button onclick="toggleSlideLine()" aria-pressed="${!!s.lineMode}">${s.lineMode ? 'دفع الصف: مفعّل' : 'فعّل دفع الصف والعمود'}</button><button onclick="undoSlide()" ${s.history.length ? '' : 'disabled'}>↶ تراجع</button><button onclick="slideHint()">💡 خطوة نحو الحل</button><button onclick="restartSlide()">↻ نفس اللوحة</button><button class="quiet" onclick="setup('slide')">لوحة جديدة</button></div><p class="tiny center" style="margin-top:12px">لوحة 3×3 تستخدم أقصر مسار للحل متى اكتمل البحث؛ اللوحات الأكبر تتبع مساراً مضموناً وقد ترجع حركة قمت بها. أقصى نتيجة مع المساعدة 50 نقطة. استخدمت ${s.hints} خطوات مساعدة · ${extraElapsed(s)} ثانية.</p></section>`,
+        `<section class="panel"><div class="puzzle" dir="ltr" style="grid-template-columns:repeat(${s.size},1fr)">${s.board.map((v, i) => `<button data-slide-pos="${i}" class="${v === 0 ? 'empty' : v === i + 1 ? 'correct' : ''} ${Math.floor(i / s.size) < (s.lockedRows || 0) ? 'pinned' : ''}" onclick="slideMove(${i})" ${!v || !slideReachable(i, s) ? 'disabled' : ''} aria-label="${v ? 'القطعة ' + v + (slideReachable(i, s) ? ' قابلة للتحريك' : ' بعيدة عن الفراغ') : 'الخانة الفارغة'}">${v || ''}</button>`).join('')}</div><p class="note center" role="status">${esc(msg || 'اضغط قطعة بجانب الفراغ، أو اسحب على اللوحة أو استخدم الأسهم لتحريك الفراغ. الترتيب من اليسار إلى اليمين.')}</p><div class="actions"><button onclick="pinSlideRows(${s.run})" aria-pressed="${!!s.lockedRows}" ${s.fixed ? 'disabled' : ''}>${s.lockedRows ? 'فك تثبيت الصفوف' : 'ثبّت الصفوف المكتملة'}</button><button onclick="toggleSlideLine()" aria-pressed="${!!s.lineMode}">${s.lineMode ? 'دفع الصف: مفعّل' : 'فعّل دفع الصف والعمود'}</button><button onclick="undoSlide()" ${s.history.length ? '' : 'disabled'}>↶ تراجع</button><button onclick="slideHint()">💡 خطوة نحو الحل</button><button onclick="restartSlide()">↻ نفس اللوحة</button><button class="quiet" onclick="setup('slide')">لوحة جديدة</button></div><p class="tiny center" style="margin-top:12px">لوحة 3×3 تستخدم أقصر مسار للحل متى اكتمل البحث؛ اللوحات الأكبر تتبع مساراً مضموناً وقد ترجع حركة قمت بها. أقصى نتيجة مع المساعدة 50 نقطة. استخدمت ${s.hints} خطوات مساعدة · ${extraElapsed(s)} ثانية.</p></section>`,
     ),
   );
   if (Number.isInteger(s.slideFocus)) {
@@ -1252,7 +1531,8 @@ function slideMove(i, assist = false) {
     s.done ||
     advancedBlocked() ||
     !Number.isInteger(i) ||
-    !slideNeighbors(s.empty, s.size).includes(i)
+    !slideNeighbors(s.empty, s.size).includes(i) ||
+    Math.floor(i / s.size) < (s.lockedRows || 0)
   )
     return;
   s.history.push({ i, empty: s.empty, path: [...s.path] });
@@ -1295,6 +1575,7 @@ function undoSlide() {
       path: h.bulk.path,
       moves: h.bulk.moves,
     });
+    s.lockedRows = Math.min(s.lockedRows || 0, slideCompleteRows(s));
     delete s.plan;
     delete s.planBoard;
     return renderSlide('تراجعت عن دفعة الصف أو العمود بالكامل.');
@@ -1303,6 +1584,7 @@ function undoSlide() {
   s.empty = h.empty;
   s.path = h.path;
   s.moves = Math.max(0, s.moves - 1);
+  s.lockedRows = Math.min(s.lockedRows || 0, slideCompleteRows(s));
   delete s.plan;
   delete s.planBoard;
   renderSlide('تراجعت عن آخر حركة.');
@@ -1315,6 +1597,7 @@ function restartSlide() {
   s.path = [...s.initial.path];
   s.moves = 0;
   s.history = [];
+  s.lockedRows = 0;
   s.started = Date.now();
   delete s.plan;
   delete s.planBoard;
@@ -1323,10 +1606,14 @@ function restartSlide() {
 function slideHint() {
   if (screen !== 'slide' || state.done || advancedBlocked() || !state.path.length) return;
   const s = state;
+  if (s.lockedRows && s.size !== 3)
+    return toast('فك تثبيت الصفوف قبل طلب المسار المضمون في هذه اللوحة الكبيرة.');
   if (s.size === 3 && (s.planBoard !== s.board.join(',') || !s.plan?.length)) {
-    s.plan = solveSlide(s.board, s.size);
+    s.plan = solveSlide(s.board, s.size, 35000, s.lockedRows || 0);
     s.planBoard = s.board.join(',');
   }
+  if (s.lockedRows && !s.plan?.length)
+    return toast('لم نجد خطوة تحافظ على الصفوف المثبتة؛ فك التثبيت للمساعدة.');
   s.assisted = true;
   s.hints++;
   slideMove(s.plan?.[0] ?? s.path.at(-1), true);
@@ -1465,10 +1752,39 @@ function renderSudoku(msg = '') {
           })
           .join(
             '',
-          )}</div><p class="tiny center sudoku-position">الخانة المحددة: صف ${r + 1}، عمود ${c + 1}${selected ? ` · الرقم ${selected}` : ''}</p><div class="numberpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button onclick="putSudoku(${n})" ${s.board.filter((v) => v === n).length >= 9 ? 'class="quiet"' : ''} aria-label="${s.noteMode ? 'ملاحظة' : 'إدخال'} ${n}">${n}</button>`).join('')}</div><div class="actions"><button onclick="toggleSudokuNotes()" class="${s.noteMode ? 'primary note-mode' : ''}" aria-pressed="${s.noteMode}">✎ ملاحظات ${s.noteMode ? 'مفعلة' : 'مقفلة'}</button><button onclick="toggleSudokuCandidates()" aria-pressed="${s.showCandidates}" class="${s.showCandidates ? 'primary' : ''}">الأرقام الممكنة</button><button onclick="fillSudokuNotes()" ${s.given[s.selected] || s.board[s.selected] ? 'disabled' : ''}>✎ ملاحظات الخانة</button><button onclick="fillAllSudokuNotes()">✎ ملاحظات كل الفراغات</button><button onclick="explainSudokuStep()">🧠 شرح خطوة −5</button><button onclick="putSudoku(0)">مسح</button><button onclick="undoSudoku()" ${s.history.length ? '' : 'disabled'}>↶ تراجع</button><button onclick="checkSudoku()">✓ افحص الحل −5</button><button onclick="sudokuHint()">💡 تلميح −10</button></div><p class="note center" role="status">${esc(msg || (s.given[s.selected] ? 'هذه خانة ثابتة. اختر خانة فارغة.' : s.noteMode ? 'وضع الملاحظات: الرقم يضاف كملاحظة صغيرة، واضغطه مرة ثانية لإزالته.' : s.showCandidates ? 'الأرقام الممكنة تعتمد على اللوحة الحالية، وقد تتأثر بأي إدخال خاطئ.' : 'اللون الأحمر يعني تكراراً. استخدم الأسهم والأرقام، وN للملاحظات، وCtrl+Z للتراجع.'))}</p>${s.logical ? `<div class="hintpanel" role="status"><b>صف ${Math.floor(s.logical.i / 9) + 1}، عمود ${(s.logical.i % 9) + 1}</b><p>${esc(s.logical.reason)}</p><button onclick="applySudokuLogic()">طبّق الرقم ${s.logical.n} −10</button><p class="tiny">الشرح استنتاج من اللوحة الحالية؛ تطبيقه يُحسب تلميحاً.</p></div>` : ''}${!s.given[s.selected] && !s.board[s.selected] ? `<p class="tiny center">${s.showCandidates ? 'يمكن إدخال: ' + (candidates.join('، ') || 'لا يوجد رقم ممكن، راجع الخانات المجاورة.') : 'التلميحات تخصم 10 نقاط؛ فحص الإدخالات يخصم 5 نقاط. الملاحظات والأرقام الممكنة مجانية.'}</p>` : ''}</section>`,
+          )}</div><p class="tiny center sudoku-position">الخانة المحددة: صف ${r + 1}، عمود ${c + 1}${selected ? ` · الرقم ${selected}` : ''}</p><div class="numberpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button onclick="putSudoku(${n})" ${s.board.filter((v) => v === n).length >= 9 ? 'class="quiet"' : ''} aria-label="${s.noteMode ? 'ملاحظة' : 'إدخال'} ${n}">${n}</button>`).join('')}</div><div class="actions"><button onclick="toggleSudokuNotes()" class="${s.noteMode ? 'primary note-mode' : ''}" aria-pressed="${s.noteMode}">✎ ملاحظات ${s.noteMode ? 'مفعلة' : 'مقفلة'}</button><button onclick="toggleSudokuCandidates()" aria-pressed="${s.showCandidates}" class="${s.showCandidates ? 'primary' : ''}">الأرقام الممكنة</button><button onclick="fillSudokuNotes()" ${s.given[s.selected] || s.board[s.selected] ? 'disabled' : ''}>✎ ملاحظات الخانة</button><button onclick="inspectSudokuCell(${s.run})">🔎 أدلة الخانة</button><button onclick="fillAllSudokuNotes()">✎ ملاحظات كل الفراغات</button><button onclick="explainSudokuStep()">🧠 شرح خطوة −5</button><button onclick="putSudoku(0)">مسح</button><button onclick="undoSudoku()" ${s.history.length ? '' : 'disabled'}>↶ تراجع</button><button onclick="checkSudoku()">✓ افحص الحل −5</button><button onclick="sudokuHint()">💡 تلميح −10</button></div><p class="note center" role="status">${esc(msg || (s.given[s.selected] ? 'هذه خانة ثابتة. اختر خانة فارغة.' : s.noteMode ? 'وضع الملاحظات: الرقم يضاف كملاحظة صغيرة، واضغطه مرة ثانية لإزالته.' : s.showCandidates ? 'الأرقام الممكنة تعتمد على اللوحة الحالية، وقد تتأثر بأي إدخال خاطئ.' : 'اللون الأحمر يعني تكراراً. استخدم الأسهم والأرقام، وN للملاحظات، وCtrl+Z للتراجع.'))}</p>${s.cellEvidence ? `<div class="hintpanel" role="status">${esc(s.cellEvidence)}</div>` : ''}${s.logical ? `<div class="hintpanel" role="status"><b>صف ${Math.floor(s.logical.i / 9) + 1}، عمود ${(s.logical.i % 9) + 1}</b><p>${esc(s.logical.reason)}</p><button onclick="applySudokuLogic()">طبّق الرقم ${s.logical.n} −10</button><p class="tiny">الشرح استنتاج من اللوحة الحالية؛ تطبيقه يُحسب تلميحاً.</p></div>` : ''}${!s.given[s.selected] && !s.board[s.selected] ? `<p class="tiny center">${s.showCandidates ? 'يمكن إدخال: ' + (candidates.join('، ') || 'لا يوجد رقم ممكن، راجع الخانات المجاورة.') : 'التلميحات تخصم 10 نقاط؛ فحص الإدخالات يخصم 5 نقاط. الملاحظات والأرقام الممكنة مجانية.'}</p>` : ''}</section>`,
     ),
   );
   if (focusedCell) $('sudoku-cell-' + s.selected)?.focus({ preventScroll: true });
+}
+function sudokuCellEvidence(board, i) {
+  const row = Math.floor(i / 9),
+    column = i % 9,
+    n = board[i];
+  const peers = board
+    .map((v, k) => ({ v, k }))
+    .filter(
+      ({ k }) =>
+        k !== i &&
+        (Math.floor(k / 9) === row ||
+          k % 9 === column ||
+          (Math.floor(k / 27) === Math.floor(i / 27) &&
+            Math.floor((k % 9) / 3) === Math.floor(column / 3))),
+    );
+  if (n) {
+    const conflicts = peers.filter((peer) => peer.v === n);
+    return conflicts.length
+      ? `الرقم ${n} يتكرر مع ${conflicts.map(({ k }) => `صف ${Math.floor(k / 9) + 1}، عمود ${(k % 9) + 1}`).join('؛ ')}. حدد إحدى الخانات وصححها؛ هذا فحص للقواعد دون كشف الحل.`
+      : `الرقم ${n} لا يتكرر في الصف أو العمود أو المربع. هذا يثبت توافقه مع القواعد الحالية، وليس أنه الحل الصحيح.`;
+  }
+  const candidates = sudokuCandidates(board, i),
+    used = [...new Set(peers.map((peer) => peer.v).filter(Boolean))].sort();
+  return `الأرقام المستخدمة حول الخانة: ${used.join('، ') || 'لا يوجد'}. المسموح بالقواعد الحالية: ${candidates.join('، ') || 'لا يوجد؛ راجع إدخالات المجموعة'}. لا نقرأ الحل المخفي في هذا الفحص.`;
+}
+function inspectSudokuCell(run) {
+  if (screen !== 'sudoku' || state.done || advancedBlocked() || !advancedCurrentRun(run)) return;
+  state.cellEvidence = sudokuCellEvidence(state.board, state.selected);
+  renderSudoku();
 }
 function selectSudoku(i) {
   if (
@@ -1481,6 +1797,7 @@ function selectSudoku(i) {
   )
     return;
   state.selected = i;
+  delete state.cellEvidence;
   renderSudoku();
 }
 function fillAllSudokuNotes() {
@@ -1550,6 +1867,7 @@ function putSudoku(n, forced = false, message = '') {
   s.history.push(sudokuSnapshot(i));
   s.board[i] = n;
   delete s.logical;
+  delete s.cellEvidence;
   s.notes[i] = [];
   s.checked = [];
   if (n) {
@@ -1607,6 +1925,7 @@ function undoSudoku() {
   if (screen !== 'sudoku' || state.done || advancedBlocked() || !state.history.length) return;
   const h = state.history.pop();
   delete state.logical;
+  delete state.cellEvidence;
   if (h.bulkNotes) {
     state.notes = h.bulkNotes;
     state.selected = h.selected;
@@ -1783,6 +2102,7 @@ function makeMath(level, variant = gameRand(10)) {
   explain = (explain ? explain + ' ' : '') + `${text} = ${answer}`;
   return { text, answer, choices: generateChoices(answer), explain };
 }
+const colorSymbols = ['●', '▲', '■', '◆', '★', '⬟', '✚'];
 const inkColors = [
   ['أحمر', '#ff817e'],
   ['أزرق', '#80b6ff'],
@@ -1909,6 +2229,20 @@ function startQuiz(id) {
         ? makeColor(s.level, i)
         : makePattern(s.level, variants[i % variants.length]),
   );
+  s.mathMode = !s.fixed && $('mathmode')?.value === 'missing' ? 'missing' : 'result';
+  if (id === 'math' && s.mathMode === 'missing')
+    s.questions.forEach((q) => {
+      const first = q.text.match(/\d+/),
+        result = q.answer,
+        original = q.text;
+      if (!first) return;
+      q.answer = Number(first[0]);
+      q.text = original.replace(/\d+/, '□') + ` = ${result}`;
+      q.missingOperand = true;
+      q.choices = generateChoices(q.answer);
+      q.explain =
+        `القيمة المفقودة ${q.answer}؛ بإعادتها تصبح ${original} = ${result}. ` + q.explain;
+    });
   s.patternMode = s.fixed ? 'next' : $('patternmode')?.value === 'missing' ? 'missing' : 'next';
   if (id === 'pattern' && s.patternMode === 'missing')
     s.questions.forEach((q, i) => {
@@ -1930,7 +2264,19 @@ function startQuiz(id) {
           ? 'القاعدة هنا معنى الكلمة: ' + inkColors[q.word][0] + '. لون الحروف مشتّت في هذا السؤال.'
           : q.explain;
     });
+  s.colorRule = !s.fixed && $('colorrule')?.value === 'shape' ? 'shape' : 'standard';
+  if (id === 'color' && s.colorRule === 'shape')
+    s.questions.forEach((q, i) => {
+      if (i % 2 === 0) {
+        q.rule = 'shape';
+        q.shape = (i + 2) % q.choices.length;
+        q.answer = q.shape;
+        q.explain = `الرمز ${colorSymbols[q.shape]} يدل على ${inkColors[q.shape][0]} بحسب مفتاح الرموز؛ الكلمة ولونها مشتتان هنا.`;
+      }
+    });
   Object.assign(s, {
+    reasoningHints: [],
+    reasoningPenalty: 0,
     index: 0,
     correct: 0,
     answers: [],
@@ -1972,10 +2318,10 @@ function renderQuiz() {
   if (!q) return;
   const question =
     s.id === 'color'
-      ? `<p class="quiz-rule ${q.rule === 'word' ? 'rule-word' : ''} center">${q.rule === 'word' ? '📖 اختر معنى الكلمة' : '🎨 اختر لون الحروف'}${s.colorMode === 'mixed' ? ' · انتبه: القاعدة تتبدّل' : ''}</p><div class="inkword" style="color:${inkColors[q.ink][1]}">${q.text}</div>`
+      ? `<p class="quiz-rule ${q.rule === 'word' ? 'rule-word' : ''} center">${q.rule === 'shape' ? '🔷 اتبع رمز السؤال' : q.rule === 'word' ? '📖 اختر معنى الكلمة' : '🎨 اختر لون الحروف'}${s.colorMode === 'mixed' ? ' · انتبه: القاعدة تتبدّل' : ''}</p><div class="inkword" style="color:${inkColors[q.ink][1]}">${q.text}</div>${q.rule === 'shape' ? `<div class="shape-stimulus" aria-label="رمز السؤال ${colorSymbols[q.shape]}">${colorSymbols[q.shape]}</div><div class="shape-legend">${q.choices.map((v) => `<span>${colorSymbols[v]} = ${inkColors[v][0]}</span>`).join('')}</div>` : ''}`
       : s.id === 'pattern'
         ? `<p class="tiny center">${Number.isInteger(q.gap) ? 'ما العدد الناقص داخل السلسلة؟' : 'ما العدد التالي؟'}</p><div class="chain" dir="ltr" style="margin:26px 0">${q.seq.map((n) => `<span class="${n === null ? 'missing' : ''}">${n === null ? '?' : n}</span>`).join('')}${Number.isInteger(q.gap) ? '' : '<span class="missing">?</span>'}</div>`
-        : `<div class="quizquestion" dir="ltr">${q.text} = ?</div>`;
+        : `<div class="quizquestion" dir="ltr">${q.text}${q.missingOperand ? '' : ' = ?'}</div>`;
   setHTML(
     wrap(
       s.id,
@@ -1984,10 +2330,57 @@ function renderQuiz() {
         ['صحيح', s.correct],
         ['الوقت', secondsLeft(s), 'gametime'],
       ]) +
-        `${s.practice ? '<p class="hintpanel">🧠 تدريب على أسئلة الجولة السابقة؛ لا نقاط إضافية.</p>' : ''}<section class="panel"><div class="bar"><span id="clockbar" style="width:${(secondsLeft(s) / s.duration) * 100}%"></span></div>${question}<div class="quizanswers" ${s.id === 'color' ? '' : 'dir="ltr"'}>${q.choices.map((v, i) => `<button onclick="answerQuiz(${i})" ${s.locked ? 'disabled' : ''} class="${s.locked && v === q.answer ? 'correct' : s.locked && i === s.lastChoice ? 'wrong' : ''}" aria-label="الاختيار ${i + 1}: ${s.id === 'color' ? inkColors[v][0] : v}"><small class="quiz-shortcut" aria-hidden="true">${i + 1}</small>${s.id === 'color' ? inkColors[v][0] : v}</button>`).join('')}</div>${s.id === 'math' && !s.locked ? `<form class="math-direct" onsubmit="event.preventDefault();answerMathText()"><label for="mathanswer">أو احسب واكتب الإجابة مباشرة</label><div class="math-input"><input id="mathanswer" dir="ltr" inputmode="text" maxlength="22" autocomplete="off" placeholder="إجابتك" aria-label="الإجابة الحسابية"><button class="primary" type="submit">اعتمد الإجابة</button></div><p class="tiny">الأرقام العربية مسموحة؛ إشارة − للسالب. الكتابة والاختيارات لهما نفس النتيجة.</p></form>` : ''}${s.locked ? `<div class="hintpanel" role="status">${s.lastSkipped ? '↷ تجاوزت السؤال. الجواب الصحيح: ' + (s.id === 'color' ? inkColors[q.answer][0] : q.answer) : s.lastCorrect ? '✓ صحيح!' : '✕ الجواب الصحيح: ' + (s.id === 'color' ? inkColors[q.answer][0] : q.answer)}${Number.isFinite(s.lastTyped) ? `<p>إجابتك المكتوبة: <bdi>${s.lastTyped}</bdi></p>` : ''}<br><bdi>${esc(q.explain)}</bdi><p class="tiny">الوقت متوقف. اقرأ الشرح ثم انتقل عندما تكون جاهزًا.</p></div><div class="actions"><button id="quiznext" class="primary" onclick="nextQuiz()">${s.index === s.questions.length - 1 ? 'شوف نتيجة الجولة' : 'السؤال التالي ←'}</button></div>` : `<p class="note center">${s.id === 'color' ? (q.rule === 'word' ? 'اقرأ معنى الكلمة هذه المرة. ' : 'ركز على لون الكلمة. ') : 'اختر الجواب الصحيح. '}يمكنك استخدام الأرقام 1–${q.choices.length}.</p>`}<p class="tiny center">أفضل سلسلة صحيحة: ${s.bestStreak} · ${Math.round((s.correct / Math.max(1, s.answers.length)) * 100)}% دقة</p><div class="actions">${!s.locked ? '<button onclick="skipQuiz()">تجاوز السؤال</button>' : ''}<button class="quiet" onclick="quizEnd()">أنهي الجولة</button></div></section>`,
+        `${s.practice ? '<p class="hintpanel">🧠 تدريب على أسئلة الجولة السابقة؛ لا نقاط إضافية.</p>' : ''}<section class="panel"><div class="bar"><span id="clockbar" style="width:${(secondsLeft(s) / s.duration) * 100}%"></span></div>${question}${s.id === 'pattern' ? patternWorkpadHTML(s, q) : ''}<div class="quizanswers" ${s.id === 'color' ? '' : 'dir="ltr"'}>${q.choices.map((v, i) => `<button onclick="answerQuiz(${i})" ${s.locked ? 'disabled' : ''} class="${s.locked && v === q.answer ? 'correct' : s.locked && i === s.lastChoice ? 'wrong' : ''}" aria-label="الاختيار ${i + 1}: ${s.id === 'color' ? inkColors[v][0] : v}"><small class="quiz-shortcut" aria-hidden="true">${i + 1}</small>${s.id === 'color' ? inkColors[v][0] : v}</button>`).join('')}</div>${s.id === 'math' && !s.locked ? `<form class="math-direct" onsubmit="event.preventDefault();answerMathText()"><label for="mathanswer">أو احسب واكتب الإجابة مباشرة</label><div class="math-input"><input id="mathanswer" dir="ltr" inputmode="text" maxlength="22" autocomplete="off" placeholder="إجابتك" aria-label="الإجابة الحسابية"><button class="primary" type="submit">اعتمد الإجابة</button></div><p class="tiny">الأرقام العربية مسموحة؛ إشارة − للسالب. الكتابة والاختيارات لهما نفس النتيجة.</p></form>` : ''}${s.locked ? `<div class="hintpanel" role="status">${s.lastSkipped ? '↷ تجاوزت السؤال. الجواب الصحيح: ' + (s.id === 'color' ? inkColors[q.answer][0] : q.answer) : s.lastCorrect ? '✓ صحيح!' : '✕ الجواب الصحيح: ' + (s.id === 'color' ? inkColors[q.answer][0] : q.answer)}${Number.isFinite(s.lastTyped) ? `<p>إجابتك المكتوبة: <bdi>${s.lastTyped}</bdi></p>` : ''}<br><bdi>${esc(q.explain)}</bdi><p class="tiny">الوقت متوقف. اقرأ الشرح ثم انتقل عندما تكون جاهزًا.</p></div><div class="actions"><button id="quiznext" class="primary" onclick="nextQuiz()">${s.index === s.questions.length - 1 ? 'شوف نتيجة الجولة' : 'السؤال التالي ←'}</button></div>` : `<p class="note center">${s.id === 'color' ? (q.rule === 'shape' ? 'اتبع مفتاح الرموز لهذه الإجابة. ' : q.rule === 'word' ? 'اقرأ معنى الكلمة هذه المرة. ' : 'ركز على لون الكلمة. ') : 'اختر الجواب الصحيح. '}يمكنك استخدام الأرقام 1–${q.choices.length}.</p>`}<p class="tiny center">أفضل سلسلة صحيحة: ${s.bestStreak} · ${Math.round((s.correct / Math.max(1, s.answers.length)) * 100)}% دقة</p><div class="actions">${!s.locked ? '<button onclick="skipQuiz()">تجاوز السؤال</button>' : ''}<button class="quiet" onclick="quizEnd()">أنهي الجولة</button></div></section>`,
     ),
   );
   if (keyboardFocus && s.locked) $('quiznext')?.focus({ preventScroll: true });
+}
+function patternDifferences(seq) {
+  const differences = seq
+    .slice(1)
+    .map((n, i) => (Number.isFinite(n) && Number.isFinite(seq[i]) ? n - seq[i] : null));
+  return [
+    differences,
+    differences
+      .slice(1)
+      .map((n, i) =>
+        Number.isFinite(n) && Number.isFinite(differences[i]) ? n - differences[i] : null,
+      ),
+  ];
+}
+function patternWorkpadHTML(s, q) {
+  const open = s.reasoningHints?.includes(s.index);
+  return `<div class="pattern-workpad">${
+    open
+      ? `<p class="tiny">فروق الأعداد الظاهرة فقط؛ الفراغ لا نقرأ قيمته المخفية.</p><div class="difference-rows" dir="ltr">${patternDifferences(
+          q.seq,
+        )
+          .map(
+            (row, i) =>
+              `<p><small>${i === 0 ? 'الفروق' : 'فروق الفروق'}</small>${row.map((n) => `<b>${n === null ? '؟' : n}</b>`).join('')}</p>`,
+          )
+          .join('')}</div>`
+      : `<button onclick="openPatternWorkpad(${s.run},${s.index})" ${s.fixed || s.locked ? 'disabled' : ''}>📝 احسب الفروق الظاهرة −3</button>`
+  }</div>`;
+}
+function openPatternWorkpad(run, index) {
+  const s = state;
+  if (
+    screen !== 'pattern' ||
+    s.done ||
+    s.fixed ||
+    s.locked ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run) ||
+    index !== s.index
+  )
+    return;
+  if (secondsLeft(s) === 0) return quizEnd();
+  s.reasoningHints ??= [];
+  if (s.reasoningHints.includes(s.index)) return;
+  s.reasoningHints.push(s.index);
+  if (!s.practice) s.reasoningPenalty = (s.reasoningPenalty || 0) + 3;
+  renderQuiz();
 }
 function answerMathText() {
   if (screen !== 'math' || state.done || state.locked || advancedBlocked()) return;
@@ -2103,8 +2496,8 @@ function quizEnd() {
   } else
     finishExtra(
       s.correct === total ? 'جولة كاملة! ✨' : 'نتيجة التحدي',
-      `أجبت ${s.correct} إجابات صحيحة من ${total}. الوقت المتبقي ${secondsLeft(s)} ثانية، وأفضل سلسلة صحيحة ${s.bestStreak}.`,
-      base + bonus,
+      `أجبت ${s.correct} إجابات صحيحة من ${total}. الوقت المتبقي ${secondsLeft(s)} ثانية، وأفضل سلسلة صحيحة ${s.bestStreak}.${s.reasoningPenalty ? ` تكلفة حساب الفروق ${s.reasoningPenalty} نقاط.` : ''}`,
+      Math.max(0, base + bonus - (s.reasoningPenalty || 0)),
       `${s.correct} / ${total}`,
     );
   const timed = s.answers.filter((a) => a.correct && Number.isFinite(a.ms)),
@@ -2146,6 +2539,7 @@ function startQuizPractice() {
   clearTimers();
   Object.assign(s, {
     questions: [...s.practiceBank],
+    reasoningHints: [],
     practice: true,
     done: false,
     stage: 'active',
@@ -2225,6 +2619,8 @@ function prepareWord() {
     wordDraft: '',
     usedLetters: [],
     selectedLetter: -1,
+    prefixHints: 0,
+    wordPrefix: '',
     feedbackRemaining: null,
   });
 }
@@ -2246,9 +2642,33 @@ function renderWord() {
                 .map((h, i) => `<div class="hint"><b>التلميح ${i + 1}</b>${esc(h)}</div>`)
                 .join('')
             : ''
-        }${s.roundOver ? `<div class="spot"><small>${esc(s.message)}</small><div class="secret">${esc(s.item.name)}</div></div><p class="tiny">الوقت متوقف أثناء قراءة الحل.</p><div class="actions"><button class="primary" onclick="nextWord()">${s.index === s.queue.length - 1 ? 'نتيجة الجولة' : 'الكلمة التالية ←'}</button></div>` : `<form onsubmit="event.preventDefault();guessWord()"><div id="wordslots">${wordSlotsHTML(s)}</div><label for="wordanswer" style="margin-top:18px">رتّب الحروف بالنقر أو الكتابة</label><input id="wordanswer" maxlength="50" autocomplete="off" placeholder="اكتب الكلمة" value="${esc(s.wordDraft)}" oninput="updateWordDraft(this.value)"><div class="actions"><button class="primary" type="submit">خمنت!</button><button type="button" onclick="eraseWordLetter()">⌫ آخر حرف</button><button type="button" onclick="removeWordSlot()" ${s.selectedLetter < 0 ? 'disabled' : ''}>احذف الحرف المحدد</button><button type="button" onclick="moveWordSlot(-1)" ${s.selectedLetter <= 0 ? 'disabled' : ''}>قدّم الحرف</button><button type="button" onclick="moveWordSlot(1)" ${s.selectedLetter < 0 || s.selectedLetter >= Array.from(s.wordDraft).length - 1 ? 'disabled' : ''}>أخّر الحرف</button><button type="button" onclick="hintWord()" ${s.hints >= 2 ? 'disabled' : ''}>تلميح −4</button><button type="button" onclick="skipWord()">تجاوز</button></div></form><p class="note" role="status">${esc(s.message || `بقيت ${3 - s.tries} تخمينات. الإجابة من أول محاولة دون تلميحات = 14 نقطة للكلمة.`)}</p>`}<div class="actions"><button class="quiet" onclick="wordEnd()">أنهي الجولة</button></div></section>`,
+        }${s.roundOver ? `<div class="spot"><small>${esc(s.message)}</small><div class="secret">${esc(s.item.name)}</div></div><p class="tiny">الوقت متوقف أثناء قراءة الحل.</p><div class="actions"><button class="primary" onclick="nextWord()">${s.index === s.queue.length - 1 ? 'نتيجة الجولة' : 'الكلمة التالية ←'}</button></div>` : `<form onsubmit="event.preventDefault();guessWord()"><div id="wordslots">${wordSlotsHTML(s)}</div><label for="wordanswer" style="margin-top:18px">رتّب الحروف بالنقر أو الكتابة</label><input id="wordanswer" maxlength="50" autocomplete="off" placeholder="اكتب الكلمة" value="${esc(s.wordDraft)}" oninput="updateWordDraft(this.value)"><div class="actions"><button class="primary" type="submit">خمنت!</button><button type="button" onclick="eraseWordLetter()">⌫ آخر حرف</button><button type="button" onclick="removeWordSlot()" ${s.selectedLetter < 0 ? 'disabled' : ''}>احذف الحرف المحدد</button><button type="button" onclick="moveWordSlot(-1)" ${s.selectedLetter <= 0 ? 'disabled' : ''}>قدّم الحرف</button><button type="button" onclick="moveWordSlot(1)" ${s.selectedLetter < 0 || s.selectedLetter >= Array.from(s.wordDraft).length - 1 ? 'disabled' : ''}>أخّر الحرف</button><button type="button" onclick="revealWordPrefix(${s.run})" ${s.fixed || (s.prefixHints || 0) >= Math.min(3, Math.floor(s.scrambled.length / 2)) ? 'disabled' : ''}>ثبّت حرف البداية −3</button><button type="button" onclick="hintWord()" ${s.hints >= 2 ? 'disabled' : ''}>تلميح −4</button><button type="button" onclick="skipWord()">تجاوز</button></div></form><p class="note" role="status">${esc(s.message || `بقيت ${3 - s.tries} تخمينات. الإجابة من أول محاولة دون تلميحات = 14 نقطة للكلمة.`)}</p>${s.wordPrefix ? `<p class="prefix-lock">🔒 البداية المثبتة: ${esc(s.wordPrefix)} · ${s.prefixHints} مساعدات × 3 نقاط</p>` : ''}`}<div class="actions"><button class="quiet" onclick="wordEnd()">أنهي الجولة</button></div></section>`,
     ),
   );
+}
+function revealWordPrefix(run) {
+  const s = state;
+  if (
+    screen !== 'word' ||
+    s.done ||
+    s.roundOver ||
+    s.fixed ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run)
+  )
+    return;
+  if (secondsLeft(s) === 0) return wordEnd();
+  const count = s.prefixHints || 0,
+    cap = Math.min(3, Math.floor(s.scrambled.length / 2));
+  if (count >= cap) return;
+  s.prefixHints = count + 1;
+  s.wordPrefix = wordLetters(s.item.name).slice(0, s.prefixHints).join('');
+  s.wordDraft = s.wordPrefix;
+  s.usedLetters = usedWordLetters(s.wordDraft, s.scrambled);
+  s.selectedLetter = -1;
+  s.message =
+    'ثبتنا بداية الكلمة، وأعدنا مسودة الترتيب إلى هذه البداية. أكمل الحروف المتبقية؛ تكلفة هذه المساعدة 3 نقاط.';
+  renderWord();
 }
 function wordSlotsHTML(s = state) {
   return `<div class="word-slots" aria-label="ترتيب إجابتك">${
@@ -2285,6 +2705,8 @@ function moveWordSlot(delta) {
     i = s.selectedLetter,
     next = i + delta;
   if (i < 0 || next < 0 || next >= chars.length) return;
+  if (i < (s.prefixHints || 0) || next < (s.prefixHints || 0))
+    return toast('حروف البداية مثبتة؛ يمكنك إعادة ترتيب الحروف التي بعدها.');
   [chars[i], chars[next]] = [chars[next], chars[i]];
   s.wordDraft = chars.join('');
   s.usedLetters = usedWordLetters(s.wordDraft, s.scrambled);
@@ -2298,6 +2720,7 @@ function removeWordSlot() {
   const chars = Array.from(s.wordDraft),
     i = s.selectedLetter;
   if (!Number.isInteger(i) || i < 0 || i >= chars.length) return;
+  if (i < (s.prefixHints || 0)) return toast('هذا حرف بداية مثبت بمساعدة؛ احذف حرفاً بعده.');
   chars.splice(i, 1);
   s.wordDraft = chars.join('');
   s.usedLetters = usedWordLetters(s.wordDraft, s.scrambled);
@@ -2318,6 +2741,10 @@ function usedWordLetters(draft, scrambled) {
 function updateWordDraft(value) {
   if (screen !== 'word' || state.done || state.roundOver || advancedBlocked()) return;
   if (secondsLeft() === 0) return wordEnd();
+  if (state.wordPrefix && !norm(value).startsWith(norm(state.wordPrefix))) {
+    $('wordanswer').value = state.wordDraft;
+    return toast('احتفظ بالبداية المثبتة ثم أكمل بقية الحروف.');
+  }
   state.wordDraft = value;
   state.selectedLetter = -1;
   if ($('wordslots')) $('wordslots').innerHTML = wordSlotsHTML(state);
@@ -2355,6 +2782,7 @@ function eraseWordLetter() {
   const s = state;
   if (screen !== 'word' || s.done || s.roundOver || advancedBlocked()) return;
   if (secondsLeft(s) === 0) return wordEnd();
+  if (wordLetters(s.wordDraft).length <= (s.prefixHints || 0)) return;
   s.wordDraft = Array.from($('wordanswer')?.value ?? s.wordDraft)
     .slice(0, -1)
     .join('');
@@ -2368,12 +2796,14 @@ function guessWord() {
   s.wordDraft = $('wordanswer').value;
   const a = norm(s.wordDraft).replace(/\s/g, '');
   if (!a) return toast('اكتب الكلمة.');
+  if (s.wordPrefix && !a.startsWith(norm(s.wordPrefix)))
+    return toast('احتفظ بالبداية المثبتة؛ التخمين لم يُحسب.');
   if (s.attempted.includes(a)) return toast('جرّبت هذه الإجابة.');
   s.attempted.push(a);
   s.tries++;
   if ([s.item.name, ...(s.item.aliases || [])].some((n) => norm(n).replace(/\s/g, '') === a)) {
     s.correct++;
-    s.points += Math.max(2, 14 - s.hints * 4 - (s.tries - 1) * 2);
+    s.points += Math.max(2, 14 - s.hints * 4 - (s.tries - 1) * 2 - (s.prefixHints || 0) * 3);
     s.roundOver = true;
     s.message = '✓ عرفت الكلمة!';
     s.review.push({ name: s.item.name, correct: true, hints: s.hints, tries: s.tries });
@@ -2384,8 +2814,8 @@ function guessWord() {
     s.review.push({ name: s.item.name, correct: false, hints: s.hints, tries: s.tries });
   } else {
     s.message = 'ليست هذه الكلمة. بقيت ' + (3 - s.tries) + ' تخمينات.';
-    s.wordDraft = '';
-    s.usedLetters = [];
+    s.wordDraft = s.wordPrefix || '';
+    s.usedLetters = usedWordLetters(s.wordDraft, s.scrambled);
   }
   if (s.roundOver) freezeWordRead(s);
   renderWord();
@@ -2585,6 +3015,16 @@ function startSpy() {
   });
   s.target = (s.asker + 1) % s.players.length;
   s.questionHistory = [];
+  s.ballotNotes = [];
+  s.onPause = () => {
+    if (s.stage === 'voting') {
+      s.ballotDraft = {
+        reason: $('spyreason')?.value || '',
+        confidence: $('spyconfidence')?.value || 'unsure',
+      };
+      spyVoteHandoff();
+    }
+  };
   spyHandoff();
 }
 function spyHandoff() {
@@ -2700,6 +3140,7 @@ function startSpyVote() {
   state.stage = 'vote-handoff';
   state.voteTurn = 0;
   state.votes = [];
+  state.ballotDraft = null;
   spyVoteHandoff();
 }
 function spyVoteHandoff() {
@@ -2719,15 +3160,28 @@ function spyVoteReveal() {
   setHTML(
     wrap(
       'spy',
-      `<section class="panel"><h2 class="center">من تتوقع أنه الجاسوس؟</h2><div class="actions">${s.players.map((n, i) => (i === s.voteTurn ? '' : `<button onclick="castSpyVote(${i})">${esc(n)}</button>`)).join('')}</div><p class="note center">لا تستطيع التصويت لنفسك. اختيارك يُحفظ ثم يُخفى.</p></section>`,
+      `<section class="panel"><h2 class="center">من تتوقع أنه الجاسوس؟</h2><label for="spyconfidence">مدى ثقتك (لا يغيّر وزن صوتك)</label><select id="spyconfidence">${[
+        ['unsure', 'متردد'],
+        ['likely', 'أرجّح'],
+        ['sure', 'واثق'],
+      ]
+        .map(
+          ([key, label]) =>
+            `<option value="${key}" ${s.ballotDraft?.confidence === key ? 'selected' : ''}>${label}</option>`,
+        )
+        .join(
+          '',
+        )}</select><label for="spyreason">دليل من النقاش، اختياري</label><input id="spyreason" maxlength="120" autocomplete="off" value="${esc(s.ballotDraft?.reason || '')}" placeholder="إجابة أو تناقض لفت انتباهك"><div class="actions">${s.players.map((n, i) => (i === s.voteTurn ? '' : `<button onclick="castSpyVote(${i},${s.voteTurn},${s.run})">${esc(n)}</button>`)).join('')}</div><p class="note center">لا تستطيع التصويت لنفسك. اختيارك يُحفظ ثم يُخفى.</p></section>`,
     ),
   );
 }
-function castSpyVote(i) {
+function castSpyVote(i, turn, run) {
   const s = state;
   if (
     screen !== 'spy' ||
     s.stage !== 'voting' ||
+    !advancedCurrentRun(run) ||
+    (turn !== undefined && turn !== s.voteTurn) ||
     advancedBlocked() ||
     !Number.isInteger(i) ||
     i < 0 ||
@@ -2735,6 +3189,16 @@ function castSpyVote(i) {
     i === s.voteTurn
   )
     return;
+  s.ballotNotes ??= [];
+  s.ballotNotes.push({
+    voter: s.voteTurn,
+    target: i,
+    reason: ($('spyreason')?.value || '').trim().slice(0, 120),
+    confidence: ['unsure', 'likely', 'sure'].includes($('spyconfidence')?.value)
+      ? $('spyconfidence').value
+      : 'unsure',
+  });
+  s.ballotDraft = null;
   s.votes.push(i);
   s.voteTurn++;
   if (s.voteTurn < s.players.length) return spyVoteHandoff();
@@ -2752,6 +3216,10 @@ function castSpyVote(i) {
         : 'الجاسوس أفلت من التصويت.',
   );
 }
+function spyBallotReview(s) {
+  if (!s.ballotNotes?.length) return '';
+  return `<details class="spy-ballot-review"><summary>أدلة التصويت والثقة</summary>${s.ballotNotes.map((note) => `<p><b>${esc(s.players[note.voter])} ← ${esc(s.players[note.target])}</b> · ${{ unsure: 'متردد', likely: 'أرجّح', sure: 'واثق' }[note.confidence]}${note.target === s.spy ? ' ✓' : ' ✕'}${note.reason ? `<br>${esc(note.reason)}` : ''}</p>`).join('')}<p class="tiny">الثقة لا تضاعف الأصوات؛ راجع مدى توافقها مع النتيجة.</p></details>`;
+}
 function spyResult(spyWon, reason) {
   const s = state;
   if (s.done) return;
@@ -2767,7 +3235,7 @@ function spyResult(spyWon, reason) {
   setHTML(
     wrap(
       'spy',
-      `<section class="panel success center"><div class="resulticon">${spyWon ? '🕶️' : '🏆'}</div><h2>${esc(reason)}</h2><p class="note">الجاسوس: <b>${esc(s.players[s.spy])}</b></p><div class="spot"><small>المكان كان</small><div class="secret">${esc(s.location)}</div></div>${s.counts ? `<p class="note">الأصوات: ${s.players.map((n, i) => esc(n) + ' ' + s.counts[i]).join(' · ')}</p>` : ''}<div style="margin-top:20px;text-align:right">${boardHTML(s.players, results)}</div>${spyQuestionLog(s)}<div class="actions"><button class="primary" onclick="setup('spy')">جولة جديدة</button><button onclick="home()">الألعاب</button></div></section>`,
+      `<section class="panel success center"><div class="resulticon">${spyWon ? '🕶️' : '🏆'}</div><h2>${esc(reason)}</h2><p class="note">الجاسوس: <b>${esc(s.players[s.spy])}</b></p><div class="spot"><small>المكان كان</small><div class="secret">${esc(s.location)}</div></div>${s.counts ? `<p class="note">الأصوات: ${s.players.map((n, i) => esc(n) + ' ' + s.counts[i]).join(' · ')}</p>` : ''}<div style="margin-top:20px;text-align:right">${boardHTML(s.players, results)}</div>${spyQuestionLog(s)}${spyBallotReview(s)}<div class="actions"><button class="primary" onclick="setup('spy')">جولة جديدة</button><button onclick="home()">الألعاب</button></div></section>`,
     ),
   );
 }
@@ -2907,16 +3375,18 @@ const tabooDeck = [
 ];
 function startTaboo() {
   const s = state,
+    roster = gameParticipants('taboo'),
     category = $('taboocategory')?.value || 'all',
     pool = tabooDeck.filter((v) => category === 'all' || v[5] === category);
   Object.assign(s, {
-    players: [...store.players],
+    players: [...roster],
     duration: extraOption('duration', 60, 30, 180),
     rounds: extraOption('rounds', 1, 1, 5),
     turn: 0,
+    skipLimit: !s.fixed && $('tabooskips')?.value === '3' ? 3 : Infinity,
     queue: gShuffle(pool.length ? pool : tabooDeck),
     index: 0,
-    results: Object.fromEntries(store.players.map((n) => [n, 0])),
+    results: Object.fromEntries(roster.map((n) => [n, 0])),
     stage: 'handoff',
     turnHistory: [],
     cardHidden: true,
@@ -2931,7 +3401,9 @@ function startTaboo() {
   };
   s.onResume = () => {
     if (s.cardPauseAt) {
-      s.cardAt += Date.now() - s.cardPauseAt;
+      const paused = Date.now() - s.cardPauseAt;
+      s.cardAt += paused;
+      for (const h of s.turnHistory || []) if (Number.isFinite(h.cardAt)) h.cardAt += paused;
       delete s.cardPauseAt;
     }
     if (s.stage === 'active') renderTaboo();
@@ -2949,7 +3421,7 @@ function tabooHandoff() {
   setHTML(
     wrap(
       'taboo',
-      `<section class="panel center"><div class="resulticon">🚫</div><h2>الدور على ${esc(s.players[s.turn % s.players.length])}</h2><p class="note">الجولة ${Math.floor(s.turn / s.players.length) + 1} / ${s.rounds}. الشاشة مع الشخص الذي يشرح؛ البقية يسمعون.</p><p class="note">المراقب: ${esc(s.players[(s.turn + 1) % s.players.length])}؛ يتابع الكلمات الممنوعة ويسجل المخالفات. يتبدل مع كل دور.</p><p class="tiny">${s.queue.length} بطاقة في المجموعة · 4 كلمات ممنوعة لكل بطاقة.</p><div class="actions"><button class="primary" onclick="tabooReady()">أنا جاهز للشرح</button></div></section>`,
+      `<section class="panel center"><div class="resulticon">🚫</div><h2>الدور على ${esc(s.players[s.turn % s.players.length])}</h2><p class="note">الجولة ${Math.floor(s.turn / s.players.length) + 1} / ${s.rounds}. الشاشة مع الشخص الذي يشرح؛ البقية يسمعون.</p><p class="note">المراقب: ${esc(s.players[(s.turn + 1) % s.players.length])}؛ يتابع الكلمات الممنوعة ويسجل المخالفات. يتبدل مع كل دور.</p><p class="tiny">${s.queue.length} بطاقة في المجموعة · 4 كلمات ممنوعة لكل بطاقة.${Number.isFinite(s.skipLimit) ? ` لديك ${s.skipLimit} تجاوزات في الدور؛ التراجع يعيد التجاوز المسجل.` : ''}</p><div class="actions"><button class="primary" onclick="tabooReady()">أنا جاهز للشرح</button></div></section>`,
     ),
   );
 }
@@ -3002,7 +3474,7 @@ function renderTaboo() {
           .map((w) => `<span>${esc(w)}</span>`)
           .join(
             '',
-          )}</div><div class="actions"><button class="primary" onclick="tabooAnswer('correct')" ${s.cardHidden ? 'disabled' : ''}>عرفوها! +10</button><button onclick="tabooAnswer('skip')" ${s.cardHidden ? 'disabled' : ''}>تجاوز −2</button><button class="softred" onclick="tabooAnswer('violation')" ${s.cardHidden ? 'disabled' : ''}>مخالفة −5</button><button onclick="undoTaboo()" ${s.turnHistory.length ? '' : 'disabled'}>↶ تراجع عن التسجيل</button></div><p class="note">الصحيح ${s.correct} · التجاوز ${s.skips} · المخالفات ${s.violations} · سلسلة ${s.streak}. كل 3 كلمات صحيحة متتالية تمنح +5؛ التجاوز والمخالفة يقطعان السلسلة.</p><p class="tiny">البقية يحكمون؛ الشرح بالكلام دون تمثيل أو تهجئة. النقاط لا تنزل تحت الصفر.</p><div class="actions"><button class="quiet" onclick="endTaboo()">أنهي الدور</button></div></section>`,
+          )}</div><div class="actions"><button class="primary" onclick="tabooAnswer('correct')" ${s.cardHidden ? 'disabled' : ''}>عرفوها! +10</button><button onclick="tabooAnswer('skip')" ${s.cardHidden || s.skips >= s.skipLimit ? 'disabled' : ''}>تجاوز −2${Number.isFinite(s.skipLimit) ? ` · ${Math.max(0, s.skipLimit - s.skips)} متبقية` : ''}</button><button class="softred" onclick="tabooAnswer('violation')" ${s.cardHidden ? 'disabled' : ''}>مخالفة −5</button><button onclick="undoTaboo()" ${s.turnHistory.length ? '' : 'disabled'}>↶ تراجع عن التسجيل</button></div><p class="note">الصحيح ${s.correct} · التجاوز ${s.skips} · المخالفات ${s.violations} · سلسلة ${s.streak}. كل 3 كلمات صحيحة متتالية تمنح +5؛ التجاوز والمخالفة يقطعان السلسلة.</p><p class="tiny">البقية يحكمون؛ الشرح بالكلام دون تمثيل أو تهجئة. النقاط لا تنزل تحت الصفر.</p><div class="actions"><button class="quiet" onclick="endTaboo()">أنهي الدور</button></div></section>`,
     ),
   );
 }
@@ -3025,6 +3497,8 @@ function tabooAnswer(answer) {
   )
     return;
   if (secondsLeft(s) === 0) return endTaboo();
+  if (answer === 'skip' && s.skips >= s.skipLimit)
+    return toast('استخدمت كل التجاوزات في هذا الدور؛ حاول شرح الكلمة الحالية.');
   s.turnHistory.push({
     answer,
     ms: Math.max(0, Date.now() - s.cardAt),

@@ -5,7 +5,7 @@ games.push(
     'teamcup',
     '🏆',
     'كأس اللمّة',
-    'فريقان، قادة يتبدلون، وتمثيل وكلمات ممنوعة وأسئلة في بطولة واحدة.',
+    'فريقان، تتابع القادة، ومواقف واقعية وكلمات ممنوعة وأسئلة في بطولة واحدة.',
     'جماعي · 4–12',
     '#ffd38c',
   ],
@@ -13,7 +13,7 @@ games.push(
     'undercover',
     '🥸',
     'الكلمة الدخيلة',
-    'كلمات قريبة لكن مختلفة؛ أعطوا تلميحات، حللوا، وصوّتوا بسرية.',
+    'كلمات قريبة، وأدلة وادعاء ودفاع؛ حللوا وصوّتوا بسرية.',
     'جماعي · 3–12',
     '#c8b7ff',
   ],
@@ -21,7 +21,7 @@ games.push(
     'improv',
     '💡',
     'مجلس الإبداع',
-    'ابتكروا ردوداً طريفة، اعرضوها بلا أسماء، وصوّتوا للأفضل.',
+    'ابتكروا ردوداً أو قصة مشتركة، اكشفوها بلا أسماء، وصوّتوا للأفضل.',
     'جماعي · 3–12',
     '#9fe5d5',
   ],
@@ -32,15 +32,15 @@ timedGames.add('undercover');
 Object.assign(gameGuides, {
   teamcup: [
     'قسّموا اللمّة إلى فريقين. كل جولة تعطي الفريقين الوقت نفسه في التمثيل أو الكلمات الممنوعة أو المعلومات. أعلى مجموع يفوز بالكأس.',
-    'القيادة تتناوب بين أعضاء الفريق وبين أنواع التحديات. الصحيح +10، التجاوز −2، والمخالفة −5. بطاقة المضاعفة مرة في الدور تضاعف مكسب البطاقة أو عقوبتها، وجواب المعلومات الخاطئ معها −10. تكتيك السلسلة اختياري: كل 3 إجابات صحيحة متتالية +5. مثّل الموقف كاملًا ويُقبل وصف واضح للفعل. النقاط العامة توزّع بالتساوي داخل الفريق، ومكافأة الفوز +10 لكل عضو.',
+    'القيادة تتناوب بين أعضاء الفريق وبين أنواع التحديات. الصحيح +10، التجاوز −2، والمخالفة −5. بطاقة المضاعفة مرة في الدور تضاعف مكسب البطاقة أو عقوبتها، وجواب المعلومات الخاطئ معها −10. تكتيك السلسلة اختياري: كل 3 إجابات صحيحة متتالية +5. مثّل الموقف كاملًا ويُقبل وصف واضح للفعل. النقاط العامة توزّع بالتساوي داخل الفريق، ومكافأة الفوز +10 لكل عضو. في تتابع القائدين ينتقل الدور في منتصف الوقت مع إخفاء البطاقة وحفظ الوقت المتبقي أثناء التسليم. تتغيّر البطاقة السرية حتى يستطيع القائد الأول التخمين؛ يبقى السؤال العلني في المعلومات.',
   ],
   undercover: [
     'كل لاعب يشاهد كلمة سرية. معظم اللاعبين لديهم الكلمة نفسها، وواحد أو اثنان لديهم كلمة قريبة مختلفة. لا أحد يعرف دوره حتى الكشف.',
-    'أعطوا تلميحاً واحداً في كل دور وفق الزاوية المقترحة دون ذكر الكلمة. يمكن بعد التلميحات أن يسأل كل لاعب شخصاً آخر وتُدوّن الإجابة كدليل علني. مرّروا الجهاز للتصويت السري مع درجة ثقة لا تؤثر على النقاط. كشف صاحب كلمة مختلفة يمنح الفريق العادي الفوز؛ التعادل يعيد التصويت مرة واحدة، ثم تكشف الأدلة والأصوات.',
+    'أعطوا تلميحاً واحداً في كل دور وفق الزاوية المقترحة دون ذكر الكلمة. يمكن بعد التلميحات أن يسأل كل لاعب شخصاً آخر وتُدوّن الإجابة كدليل علني. مرّروا الجهاز للتصويت السري مع درجة ثقة لا تؤثر على النقاط. كشف صاحب كلمة مختلفة يمنح الفريق العادي الفوز؛ التعادل يعيد التصويت مرة واحدة، ثم تكشف الأدلة والأصوات. خيار الادعاء والدفاع يعطي كل لاعب فرصة ترشيح، وكل مرشح فرصة دفاع قبل القرار السري؛ الترشيحات لا تحسب أصواتاً.',
   ],
   improv: [
     'أمامكم موقف طريف. كل شخص يكتب رده بسرية، ثم تُعرض الردود بترتيب عشوائي ومن دون أسماء. يختار كل لاعب رداً واحداً غير رده.',
-    'كل صوت أول +5، وأصحاب أعلى عدد من الأصوات الأولى يأخذون مكافأة +10. في التحكيم الموسع اختاروا رداً آخر للتقدير +2؛ لا تكرروا الرد ولا تختاروا ردكم. يتبدّل معيار التحكيم بين الطرافة والأصالة والوضوح، وكلمة الإلهام اختيارية. الأسماء لا تظهر إلا بعد إقفال التصويت.',
+    'كل صوت أول +5، وأصحاب أعلى عدد من الأصوات الأولى يأخذون مكافأة +10. في التحكيم الموسع اختاروا رداً آخر للتقدير +2؛ لا تكرروا الرد ولا تختاروا ردكم. يتبدّل معيار التحكيم بين الطرافة والأصالة والوضوح، وكلمة الإلهام اختيارية. الأسماء لا تظهر إلا بعد إقفال التصويت. في القصة المشتركة استخدم كلمة الربط من السطر السابق، وآخر لاعب يكتب النهاية؛ إكمال القصة +5 لكل كاتب.',
   ],
 });
 
@@ -359,6 +359,32 @@ const partySparkWords = [
   'روبوت',
   'وسادة',
 ];
+const partyStoryStarts = [
+  'في صندوق قديم وجدنا مفتاحاً يفتح أبواباً لم نرها من قبل.',
+  'استيقظت مدينة صغيرة فوجدت غيمة تسكن فوق الساحة.',
+  'وصل إلى الحديقة روبوت يحمل رسالة بلا عنوان.',
+  'في رحلة بحرية رسمت بوصلة طريقاً إلى جزيرة لا تظهر على الخريطة.',
+  'فتح صاحب المقهى الباب فوجد طابوراً من الطيور ينتظر الفطور.',
+  'كانت الساعة في محطة القطار تتحرك إلى الوراء كلما ضحك أحد.',
+  'في المكتبة كتاب يغير نهايته كلما أطفأنا المصباح.',
+  'وجدنا تحت الكنبة حقيبة صغيرة فيها تذكرة إلى القمر.',
+  'دخلت فراشة إلى الصف ومعها اقتراح لتغيير الحصة.',
+  'في المخبز صارت الأرغفة تتبادل أسماءها قبل الشروق.',
+  'قررت شجرة الحديقة أن تأخذ إجازة وتمشي معنا إلى البحر.',
+  'وصلت إلى البيت مرآة لا تعكس إلا أحلام صاحبها.',
+  'في الحافلة مقعد يهمس بتعليمات للوصول إلى كنز.',
+  'ارتدينا أحذية جديدة فبدأت تقودنا إلى مغامرة.',
+  'وجد حارس المتحف تمثالاً يطلب تعلّم ركوب الدراجة.',
+  'طار من حبل الغسيل جورب وعاد حاملاً خريطة.',
+  'استأجرنا خيمة فوجدنا بداخلها باباً إلى فصل الربيع.',
+  'بدأ هاتف قديم يستقبل رسائل من أصدقائنا في المستقبل.',
+  'عثرنا على مظلة تغير الطقس كلما فتحناها.',
+  'في مهرجان الحي اختفت كل الملاعق قبل مسابقة الحساء.',
+  'أراد قارب صغير المشاركة في سباق بين الجبال.',
+  'كلما رسمنا نجمة على السبورة انطفأ مصباح في الشارع.',
+  'وصلتنا هدية من الجيران: نبتة تحكي قصة كل مساء.',
+  'في أول يوم بالمخيم اكتشفنا أن الخريطة تخاف من الضياع.',
+];
 function partyChoice(id, label, choices) {
   return `<div class="field"><label for="${id}">${label}</label><select id="${id}">${choices.map(([value, name]) => `<option value="${value}">${name}</option>`).join('')}</select></div>`;
 }
@@ -376,21 +402,25 @@ function partyFlow(s) {
     s.id === 'teamcup'
       ? ['جاهزية الفريق', 'تحدي القائد', 'حصيلة الدور']
       : s.id === 'undercover'
-        ? ['كلمات سرية', 'تلميحات ونقاش', 'تصويت سري', 'كشف النتيجة']
+        ? s.court
+          ? ['كلمات سرية', 'تلميحات', 'ادعاء', 'دفاع', 'تصويت سري', 'النتيجة']
+          : ['كلمات سرية', 'تلميحات ونقاش', 'تصويت سري', 'كشف النتيجة']
         : ['الموقف', 'ردود خاصة', 'معرض الأفكار', 'تصويت سري', 'النتيجة'];
   const stages =
     s.id === 'teamcup'
-      ? { handoff: 0, active: 1, 'turn-result': 2 }
+      ? { handoff: 0, active: 1, 'relay-handoff': 1, 'turn-result': 2 }
       : s.id === 'undercover'
         ? {
             'reveal-handoff': 0,
             'reveal-view': 0,
             'discussion-ready': 1,
             discussion: 1,
-            'vote-handoff': 2,
-            'vote-view': 2,
-            tie: 2,
-            'round-result': 3,
+            accusation: 2,
+            defense: 3,
+            'vote-handoff': s.court ? 4 : 2,
+            'vote-view': s.court ? 4 : 2,
+            tie: s.court ? 4 : 2,
+            'round-result': s.court ? 5 : 3,
           }
         : {
             prompt: 0,
@@ -451,6 +481,11 @@ setup = function (id, internal = false) {
       ['classic', 'النقاط الأساسية'],
       ['streak', 'سلسلة الفريق · كل 3 صح متتالٍ +5'],
     ])}</div><div class="party-explainer"><b>🎬 تحديات أقرب للحياة</b><p>48 موقفاً حركياً جديداً و24 بطاقة كلمات ممنوعة. قائد التمثيل يؤدي المشهد كاملًا؛ يكفي أن يصف الفريق الفعل بوضوح. مراقب من الخصم يسجّل المخالفة، والتراجع يصلح ضغطة غير مقصودة.</p></div>`;
+  if (id === 'teamcup')
+    body += `<div class="fields">${partyChoice('partyTeamFormat', 'من يقود الدور؟', [
+      ['captain', 'قائد واحد'],
+      ['relay', 'تتابع قائدين · تسليم في منتصف الوقت'],
+    ])}</div><div class="party-explainer"><b>🤝 تتابع الفريق</b><p>قائدان يتقاسمان ميزانية الوقت نفسها. في المنتصف تُخفى البطاقة ويتوقف العداد حتى يستلم القائد الثاني. يأخذ بطاقة سرية جديدة ليعود القائد الأول للتخمين دون معرفة الجواب. النقاط والمضاعفة محفوظة، وسؤال المعلومات العلني يستمر؛ لا تُضاف ثوانٍ مجانية.</p></div>`;
   if (id === 'undercover')
     body += `<div class="fields party-extra-options">${partyChoice(
       'partyInquiry',
@@ -460,6 +495,11 @@ setup = function (id, internal = false) {
         ['off', 'نقاش وتصويت مباشرة'],
       ],
     )}</div><div class="party-explainer"><b>🔍 ابنوا شكّكم على دليل</b><p>تتغير زاوية التلميح بين الدورات. بعد التلميحات يمكن لكل لاعب سؤال شخص آخر؛ الإجابات تظهر في دفتر الأدلة. أثناء التصويت اختاروا درجة الثقة، ثم راجعوا مدى دقة توقعاتكم بعد الكشف.</p></div>`;
+  if (id === 'undercover')
+    body += `<div class="fields">${partyChoice('partyUndercoverCourt', 'طريقة الحسم', [
+      ['off', 'تصويت سري مباشر'],
+      ['on', 'ادعاء علني ثم دفاع ثم تصويت سري'],
+    ])}</div><div class="party-explainer"><b>⚖️ اسمعوا الجميع قبل الحسم</b><p>كل لاعب يرشّح شخصاً مع دليل أو يمتنع. كل مرشّح يأخذ فرصة دفاع واحدة قبل التصويت السري. الترشيحات والدفاع لا تمنح نقاطاً ولا تستبعد أحداً؛ مؤقت النقاش ينتهي عند بدء هذه المرحلة.</p></div>`;
   if (id === 'improv')
     body += `<div class="fields party-extra-options">${partyChoice(
       'partyCreativeBallot',
@@ -475,6 +515,11 @@ setup = function (id, internal = false) {
       ['off', 'حرية كاملة'],
       ['on', 'كلمة مختلفة يجب تضمينها في كل موقف'],
     ])}</div><div class="party-explainer"><b>🎤 مجلس أكثر تفاعلاً</b><p>يمكن عرض الأفكار واحدة واحدة قبل التحكيم. الاختياران في التحكيم الموسع يجب أن يكونا لردين مختلفين، ولا يصوّت أحد لرده. كلمة الإلهام تضيف تحدياً مشتركاً للجميع.</p></div>`;
+  if (id === 'improv')
+    body += `<div class="fields">${partyChoice('partyCreativeMode', 'فكرة المجلس', [
+      ['council', 'ردود مستقلة على موقف'],
+      ['chain', 'قصة مشتركة · كل لاعب يكمل السطر السابق'],
+    ])}</div><div class="party-explainer"><b>📖 قصة نصنعها معاً</b><p>في القصة المشتركة يرى كل لاعب السطر السابق فقط بلا اسم كاتبه، ويكمله مستخدماً كلمة الربط المقترحة. آخر لاعب يكتب النهاية. نكشف القصة بترتيبها قبل التصويت، وإكمالها يمنح كل لاعب +5 بجانب أصواته. 24 بداية قصصية جديدة.</p></div>`;
   setHTML(
     partyWrap(
       id,
@@ -562,11 +607,14 @@ function partyRematch(token = partyStageToken()) {
     partyWordCategory: previous.wordCategory,
     partyMimeDeck: previous.mimeDeck,
     partyTeamTactic: previous.teamTactic,
+    partyTeamFormat: previous.teamFormat,
     partyInquiry: previous.inquiry ? 'on' : 'off',
+    partyUndercoverCourt: previous.court ? 'on' : 'off',
     partyCreativeFormat: previous.creativeFormat,
     partyCreativeBallot: previous.creativeBallot,
     partyCreativeCriterion: previous.creativeCriterion,
     partyCreativeSpark: previous.creativeSpark ? 'on' : 'off',
+    partyCreativeMode: previous.creativeMode,
   };
   for (const [key, value] of Object.entries(values)) {
     const input = $(key);
@@ -696,10 +744,13 @@ function startPartyGame(id) {
   const teams = state.teams,
     mimeDeck = partySetting('partyMimeDeck', ['mixed', 'scenes', 'objects'], 'mixed'),
     teamTactic = partySetting('partyTeamTactic', ['classic', 'streak'], 'classic'),
+    teamFormat = partySetting('partyTeamFormat', ['captain', 'relay'], 'captain'),
     inquiry = partySetting('partyInquiry', ['on', 'off'], 'on') === 'on',
+    court = partySetting('partyUndercoverCourt', ['on', 'off'], 'off') === 'on',
     creativeBallot = partySetting('partyCreativeBallot', ['single', 'ranked'], 'single'),
     creativeCriterion = partySetting('partyCreativeCriterion', ['rotate', 'funny'], 'rotate'),
     creativeSpark = partySetting('partyCreativeSpark', ['on', 'off'], 'off') === 'on',
+    creativeMode = partySetting('partyCreativeMode', ['council', 'chain'], 'council'),
     wordCategory = Object.hasOwn(partyPairCategories, $('partyWordCategory')?.value)
       ? $('partyWordCategory').value
       : 'all',
@@ -731,6 +782,7 @@ function startPartyGame(id) {
       history: [],
       mimeDeck,
       teamTactic,
+      teamFormat,
       decks: {
         mime: shuffle(
           mimeDeck === 'scenes'
@@ -760,6 +812,7 @@ function startPartyGame(id) {
       ),
       wordCategory,
       inquiry,
+      court,
       history: [],
       roleCounts: players.map(() => 0),
       startingPlayer: randInt(players.length),
@@ -768,7 +821,11 @@ function startPartyGame(id) {
     undercoverRound();
   } else {
     Object.assign(state, {
-      prompts: shuffle(partyCreativePrompts).slice(0, options.rounds),
+      prompts: shuffle(creativeMode === 'chain' ? partyStoryStarts : partyCreativePrompts).slice(
+        0,
+        options.rounds,
+      ),
+      creativeMode,
       creativeFormat,
       creativeBallot,
       creativeCriterion,
@@ -786,12 +843,13 @@ function startPartyGame(id) {
 function teamCupInfo() {
   const s = state,
     cycle = Math.floor(s.turn / 2),
-    team = ((s.turn % 2) + cycle) % 2;
+    team = ((s.turn % 2) + cycle) % 2,
+    captainIndex = (cycle + Math.floor(cycle / s.teams[team].length)) % s.teams[team].length;
   return {
     cycle,
     team,
-    captain:
-      s.teams[team][(cycle + Math.floor(cycle / s.teams[team].length)) % s.teams[team].length],
+    captain: s.teams[team][captainIndex],
+    coCaptain: s.teams[team][(captainIndex + 1) % s.teams[team].length],
     mode: partyModes[cycle % partyModes.length],
   };
 }
@@ -807,7 +865,7 @@ function teamCupHandoff() {
   setHTML(
     partyWrap(
       'teamcup',
-      `${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}<section class="panel center party-round-card"><p class="party-kicker">الجولة ${info.cycle + 1} / ${s.cycles} · ${info.mode.icon} ${info.mode.name}</p><h2>دور فريق ${esc(s.teamNames[info.team])}</h2><div class="party-captain">القائد: <b>${esc(info.captain)}</b></div><p class="note">${info.mode.rule}</p><p class="note">${s.duration} ثانية · ${info.mode.id === 'trivia' ? 'الشاشة يشاهدها الفريق كله، والخصم يراقب.' : 'الشاشة للقائد فقط، زملاؤه يخمنون، والخصم يراقب الوقت.'}</p><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="teamCupBegin()">الفريق جاهز، ابدأ الوقت</button></div></section>`,
+      `${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}<section class="panel center party-round-card"><p class="party-kicker">الجولة ${info.cycle + 1} / ${s.cycles} · ${info.mode.icon} ${info.mode.name}</p><h2>دور فريق ${esc(s.teamNames[info.team])}</h2><div class="party-captain">القائد: <b>${esc(info.captain)}</b></div>${teamCupRelayHTML(s, true)}<p class="note">${info.mode.rule}</p><p class="note">${s.duration} ثانية · ${info.mode.id === 'trivia' ? 'الشاشة يشاهدها الفريق كله، والخصم يراقب.' : 'الشاشة للقائد فقط، زملاؤه يخمنون، والخصم يراقب الوقت.'}</p><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="teamCupBegin()">الفريق جاهز، ابدأ الوقت</button></div></section>`,
     ),
   );
 }
@@ -826,12 +884,19 @@ function teamCupBegin(token = partyStageToken()) {
     streak: 0,
     bestStreak: 0,
     comboPoints: 0,
+    relayUsed: false,
+    relayRemaining: 0,
+    relayUndoFloor: 0,
+    relayRetiredCard: '',
     stageToken: ++partyActionSerial,
     endAt: Date.now() + state.duration * 1000,
     feedback: null,
   });
   teamCupNextCard();
   renderTeamCup();
+  teamCupStartClock();
+}
+function teamCupStartClock() {
   const s = state;
   repeat(() => {
     if (state !== s || s.stage !== 'active' || partyBlocked('teamcup')) return;
@@ -841,8 +906,56 @@ function teamCupBegin(token = partyStageToken()) {
       $('teamCupClock').classList.toggle('party-urgent', seconds <= 10);
     }
     if ($('teamCupTimebar')) $('teamCupTimebar').style.width = (seconds / s.duration) * 100 + '%';
+    if ($('teamCupRelayClock'))
+      $('teamCupRelayClock').textContent = Math.max(0, Math.ceil(seconds - s.duration / 2));
     if (!seconds) teamCupEndTurn();
+    else if (s.teamFormat === 'relay' && !s.relayUsed && s.endAt - Date.now() <= s.duration * 500)
+      teamCupRelay();
   }, 100);
+}
+function teamCupRelay() {
+  if (!partyStage('teamcup', 'active') || state.teamFormat !== 'relay' || state.relayUsed) return;
+  const s = state,
+    remaining = Math.max(0, s.endAt - Date.now());
+  if (!remaining) return teamCupEndTurn();
+  if (remaining > s.duration * 500) return;
+  clearTimers();
+  s.relayUsed = true;
+  s.relayRemaining = remaining;
+  s.relayRetiredCard = s.mode === 'trivia' ? '' : s.mode === 'mime' ? s.card : s.card[0];
+  s.relayUndoFloor = s.turnLog.length;
+  s.hiddenCard = true;
+  s.stage = 'relay-handoff';
+  s.stageToken = ++partyActionSerial;
+  s.endAt = 0;
+  const info = teamCupInfo();
+  setHTML(
+    partyWrap(
+      'teamcup',
+      `<div class="party-relay-budget"><b>⏸ ${Math.ceil(remaining / 1000)} ثانية محفوظة للقائد الثاني</b><p>الوقت متوقف أثناء التسليم. النقاط ${s.turnScore} والمضاعفة محفوظة. ${s.mode === 'trivia' ? 'سؤالكم العلني يستمر دون إعادة تسجيل الجواب.' : 'البطاقة السرية التالية جديدة، وتغيير بطاقة التسليم بلا عقوبة.'}</p></div>${partyPrivateHandoff('teamcup', info.coCaptain, `${esc(info.captain)} أنهى المرحلة الأولى · أكملوا التعاون`, 'teamCupRelayResume()')}`,
+    ),
+  );
+}
+function teamCupRelayResume(token = partyPassToken()) {
+  if (!partyStage('teamcup', 'relay-handoff') || !partyAcceptPass(token)) return;
+  const s = state;
+  s.stage = 'active';
+  s.stageToken = ++partyActionSerial;
+  if (s.mode !== 'trivia') {
+    const boosted = s.boostActive;
+    teamCupNextCard();
+    s.boostActive = boosted;
+  } else s.cardToken = ++partyActionSerial;
+  s.hiddenCard = false;
+  s.endAt = Date.now() + s.relayRemaining;
+  renderTeamCup();
+  teamCupStartClock();
+}
+function teamCupRelayHTML(s, ready = false) {
+  if (s.teamFormat !== 'relay') return '';
+  const info = teamCupInfo(),
+    second = !ready && s.relayUsed;
+  return `<div class="party-relay-roles"><div class="${second ? 'complete' : 'current'}"><small>المرحلة الأولى · ${s.mode === 'trivia' ? 'حلّل السؤال' : 'ابدأ الشرح'}</small><b>${esc(info.captain)}</b></div><span aria-hidden="true">←</span><div class="${second ? 'current' : ''}"><small>المرحلة الثانية · ${s.mode === 'trivia' ? 'راجع الاختيار' : 'أكمل التمثيل أو الشرح'}</small><b>${esc(info.coCaptain)}</b></div><p>ميزانية مشتركة ${s.duration} ثانية · ${ready ? 'التسليم تلقائي في المنتصف' : second ? 'القائد الثاني يكمل الوقت المتبقي' : `باقي <span id="teamCupRelayClock">${Math.max(0, Math.ceil(partySeconds(s) - s.duration / 2))}</span> ث للتسليم`}</p></div>`;
 }
 function partySeconds(s = state) {
   return Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000));
@@ -868,10 +981,10 @@ function renderTeamCup() {
     info = teamCupInfo();
   let card = '';
   if (s.mode === 'trivia')
-    card = `<h3 class="party-question">${esc(s.card.question)}</h3><div class="party-answers">${s.choices.map((c, i) => `<button class="${s.feedback ? (c === s.card.answer ? 'party-correct' : i === s.feedback.choice ? 'party-wrong' : '') : ''}" data-party-card="${s.cardToken}" onclick="teamCupTrivia(${i})" ${s.feedback ? 'disabled' : ''}>${esc(c)}${s.feedback && c === s.card.answer ? ' ✓' : ''}</button>`).join('')}</div>${s.feedback ? `<div class="hintpanel" role="status"><b>${s.feedback.correct ? `صح! +${s.feedback.points}` : s.feedback.points < 0 ? 'مخاطرة المضاعفة −10' : 'نحاول في السؤال التالي'}</b><p>${esc(s.card.explanation)}</p></div><div class="actions"><button class="primary" onclick="teamCupTriviaNext()">السؤال التالي ←</button></div>` : '<p class="note center">تشاوروا ثم سجّلوا إجابة واحدة.</p>'}`;
+    card = `<h3 class="party-question">${esc(s.card.question)}</h3><div class="party-answers">${s.choices.map((c, i) => `<button class="${s.feedback ? (c === s.card.answer ? 'party-correct' : i === s.feedback.choice ? 'party-wrong' : '') : ''}" data-party-card="${s.cardToken}" onclick="teamCupTrivia(${i})" ${s.feedback ? 'disabled' : ''}>${esc(c)}${s.feedback && c === s.card.answer ? ' ✓' : ''}</button>`).join('')}</div>${s.feedback ? `<div class="hintpanel" role="status"><b>${s.feedback.correct ? `صح! +${s.feedback.points}` : s.feedback.points < 0 ? 'مخاطرة المضاعفة −10' : 'نحاول في السؤال التالي'}</b><p>${esc(s.card.explanation)}</p></div><div class="actions"><button class="primary" data-party-card="${s.cardToken}" onclick="teamCupTriviaNext()">السؤال التالي ←</button></div>` : '<p class="note center">تشاوروا ثم سجّلوا إجابة واحدة.</p>'}`;
   else
     card = s.hiddenCard
-      ? `<div class="party-secret-card"><span class="party-lock">🔒</span><h3>البطاقة مخفية</h3><p class="note">الوقت مستمر؛ أظهرها للقائد فقط.</p><button onclick="teamCupToggleCard()">إظهار البطاقة</button></div>`
+      ? `<div class="party-secret-card"><span class="party-lock">🔒</span><h3>البطاقة مخفية</h3><p class="note">الوقت مستمر؛ أظهرها للقائد فقط.</p><button data-party-stage="${s.stageToken}" onclick="teamCupToggleCard()">إظهار البطاقة</button></div>`
       : `<div class="party-secret-card"><p class="party-kicker">${s.mode === 'mime' ? 'مثّل بدون كلام' : 'اشرح دون الكلمات الممنوعة'}</p><div class="party-secret-word ${s.mode === 'mime' && partyMimeScenes.includes(s.card) ? 'party-scene' : ''}">${esc(s.mode === 'mime' ? s.card : s.card[0])}</div>${s.mode === 'mime' && partyMimeScenes.includes(s.card) ? '<p class="note">مثّل الفعل كاملاً. يُقبل وصف واضح للموقف حتى لو اختلفت الصياغة.</p>' : ''}${
           s.mode === 'taboo'
             ? `<div class="party-forbidden">${s.card
@@ -883,12 +996,13 @@ function renderTeamCup() {
   setHTML(
     partyWrap(
       'teamcup',
-      `<div class="party-matchbar"><span>${info.mode.icon} ${esc(s.teamNames[info.team])}</span><b>${esc(info.captain)}</b><strong>${s.turnScore} نقطة</strong></div><section class="panel party-panel"><div class="party-clockline"><span>الجولة ${info.cycle + 1} / ${s.cycles}</span><b class="countdown" id="teamCupClock">${partySeconds()}</b><span>${info.mode.name}</span></div><div class="party-time-track"><span id="teamCupTimebar" style="width:${(partySeconds() / s.duration) * 100}%"></span></div>${card}${partyTeamTacticHTML(s)}${s.boostActive ? '<p class="party-boost active" role="status">⚡ هذه البطاقة مضاعفة: الصحيح +20 · الخسارة مضاعفة</p>' : !s.boostUsed && !s.feedback && !s.hiddenCard ? `<div class="party-boost"><button data-party-card="${s.cardToken}" onclick="teamCupBoost()">⚡ ضاعف هذه البطاقة</button><small>مرة في الدور · الصحيح +20 · ${s.mode === 'trivia' ? 'الخاطئ −10' : 'التجاوز −4 والمخالفة −10'}</small></div>` : '<p class="note center">⚡ بطاقة المضاعفة استُخدمت أو غير متاحة الآن.</p>'}<p class="note center party-turn-summary">✓ ${s.correct} صحيح · ↷ ${s.skips} تجاوز${s.mode !== 'trivia' ? ` · ✕ ${s.violations} مخالفة` : ''}</p><div class="actions">${s.mode !== 'trivia' ? `<button onclick="teamCupToggleCard()">${s.hiddenCard ? 'إظهار' : 'إخفاء'} البطاقة</button><button onclick="teamCupUndo()" ${s.turnLog.length && !s.hiddenCard ? '' : 'disabled'}>↶ تراجع</button>` : ''}<button class="quiet" data-party-stage="${s.stageToken}" onclick="teamCupEndTurn()">أنهِ دور الفريق</button></div></section>`,
+      `<div class="party-matchbar"><span>${info.mode.icon} ${esc(s.teamNames[info.team])}</span><b>${esc(s.teamFormat === 'relay' && s.relayUsed ? info.coCaptain : info.captain)}</b><strong>${s.turnScore} نقطة</strong></div><section class="panel party-panel"><div class="party-clockline"><span>الجولة ${info.cycle + 1} / ${s.cycles}</span><b class="countdown" id="teamCupClock">${partySeconds()}</b><span>${info.mode.name}</span></div><div class="party-time-track"><span id="teamCupTimebar" style="width:${(partySeconds() / s.duration) * 100}%"></span></div>${teamCupRelayHTML(s)}${card}${partyTeamTacticHTML(s)}${s.boostActive ? '<p class="party-boost active" role="status">⚡ هذه البطاقة مضاعفة: الصحيح +20 · الخسارة مضاعفة</p>' : !s.boostUsed && !s.feedback && !s.hiddenCard ? `<div class="party-boost"><button data-party-card="${s.cardToken}" onclick="teamCupBoost()">⚡ ضاعف هذه البطاقة</button><small>مرة في الدور · الصحيح +20 · ${s.mode === 'trivia' ? 'الخاطئ −10' : 'التجاوز −4 والمخالفة −10'}</small></div>` : '<p class="note center">⚡ بطاقة المضاعفة استُخدمت أو غير متاحة الآن.</p>'}<p class="note center party-turn-summary">✓ ${s.correct} صحيح · ↷ ${s.skips} تجاوز${s.mode !== 'trivia' ? ` · ✕ ${s.violations} مخالفة` : ''}</p><div class="actions">${s.mode !== 'trivia' ? `<button data-party-stage="${s.stageToken}" onclick="teamCupToggleCard()">${s.hiddenCard ? 'إظهار' : 'إخفاء'} البطاقة</button><button data-party-stage="${s.stageToken}" onclick="teamCupUndo()" ${s.turnLog.length > (s.relayUndoFloor || 0) && !s.hiddenCard ? '' : 'disabled'}>↶ تراجع</button>` : ''}<button class="quiet" data-party-stage="${s.stageToken}" onclick="teamCupEndTurn()">أنهِ دور الفريق</button></div></section>`,
     ),
   );
 }
-function teamCupToggleCard() {
-  if (!partyStage('teamcup', 'active') || state.mode === 'trivia') return;
+function teamCupToggleCard(token = partyStageToken()) {
+  if (!partyStage('teamcup', 'active') || state.mode === 'trivia' || !partyAcceptStage(token))
+    return;
   if (!partySeconds()) return teamCupEndTurn();
   state.hiddenCard = !state.hiddenCard;
   renderTeamCup();
@@ -966,7 +1080,7 @@ function teamCupRecord(action, token = partyCardToken()) {
   teamCupNextCard();
   renderTeamCup();
 }
-function teamCupUndo() {
+function teamCupUndo(token = partyStageToken()) {
   if (
     !partyStage('teamcup', 'active') ||
     state.mode === 'trivia' ||
@@ -974,6 +1088,8 @@ function teamCupUndo() {
     !state.turnLog.length
   )
     return;
+  if (!partyAcceptStage(token)) return;
+  if (state.turnLog.length <= (state.relayUndoFloor || 0)) return;
   if (!partySeconds()) return teamCupEndTurn();
   const s = state,
     h = s.turnLog.pop();
@@ -1026,8 +1142,9 @@ function teamCupTrivia(choice, token = partyCardToken()) {
   }
   renderTeamCup();
 }
-function teamCupTriviaNext() {
+function teamCupTriviaNext(token = partyCardToken()) {
   if (!partyStage('teamcup', 'active') || state.mode !== 'trivia' || !state.feedback) return;
+  if (token !== undefined && String(token) !== String(state.cardToken)) return;
   if (!partySeconds()) return teamCupEndTurn();
   teamCupNextCard();
   renderTeamCup();
@@ -1053,13 +1170,19 @@ function teamCupEndTurn(token = partyStageToken()) {
     elapsed,
     bestStreak: s.bestStreak,
     comboPoints: s.comboPoints,
+    captains:
+      s.teamFormat === 'relay'
+        ? [info.captain, ...(s.relayUsed ? [info.coCaptain] : [])]
+        : [info.captain],
+    relay: s.relayUsed,
+    relayRetiredCard: s.relayRetiredCard,
     words: s.turnLog.map((h) => ({ action: h.action, word: h.word, boosted: h.boosted })),
   });
   tone(true);
   setHTML(
     partyWrap(
       'teamcup',
-      `${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}<section class="panel center"><p class="party-kicker">${info.mode.icon} انتهى دور ${esc(s.teamNames[info.team])}</p><div class="resultnum">${s.turnScore}</div><p class="note">${s.correct} صحيح · القائد ${esc(info.captain)}</p>${partyMetrics(
+      `${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}<section class="panel center"><p class="party-kicker">${info.mode.icon} انتهى دور ${esc(s.teamNames[info.team])}</p><div class="resultnum">${s.turnScore}</div><p class="note">${s.correct} صحيح · ${s.teamFormat === 'relay' && s.relayUsed ? 'القائدان' : 'القائد'} ${esc(info.captain)}${s.teamFormat === 'relay' && s.relayUsed ? ` + ${esc(info.coCaptain)}` : ''}</p>${partyMetrics(
         [
           [s.turnLog.length, 'بطاقات لعبتموها'],
           [
@@ -1094,7 +1217,7 @@ function finishTeamCup() {
   setHTML(
     partyWrap(
       'teamcup',
-      `<section class="panel success celebrate center"><span class="party-trophy">${tied ? '🤝' : '🏆'}</span><h2>${tied ? 'تعادل بطعم الفوز' : `الكأس لفريق ${esc(s.teamNames[winner])}`}</h2><p class="note">انتهت ${s.cycles} جولات لكل فريق. انحفظت النقاط العامة لكل لاعب.</p>${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}${boardHTML(s.players, s.results)}${partyTeamInsights(s)}${partyTeamDebrief(s)}<details class="history"><summary>مسار البطولة · ${s.history.length} أدوار</summary><div class="party-timeline">${s.history.map((h, i) => `<div><span>${i + 1}</span><p><b>${esc(s.teamNames[h.team])}</b> · ${esc(h.mode)}<small>${esc(h.captain)} · ${h.correct} صحيح</small></p><strong>${h.score}</strong></div>`).join('')}</div></details><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="partyRematch()">🔁 إعادة البطولة بنفس القواعد</button><button onclick="setup('teamcup')">بطولة بإعدادات جديدة</button><button onclick="home()">عالم الألعاب</button></div></section>`,
+      `<section class="panel success celebrate center"><span class="party-trophy">${tied ? '🤝' : '🏆'}</span><h2>${tied ? 'تعادل بطعم الفوز' : `الكأس لفريق ${esc(s.teamNames[winner])}`}</h2><p class="note">انتهت ${s.cycles} جولات لكل فريق. انحفظت النقاط العامة لكل لاعب.</p>${partyTeamsHTML(s.teams, s.teamNames, s.teamScores)}${boardHTML(s.players, s.results)}${partyTeamInsights(s)}${partyTeamDebrief(s)}<details class="history"><summary>مسار البطولة · ${s.history.length} أدوار</summary><div class="party-timeline">${s.history.map((h, i) => `<div><span>${i + 1}</span><p><b>${esc(s.teamNames[h.team])}</b> · ${esc(h.mode)}<small>${(h.captains || [h.captain]).map(esc).join(' + ')} · ${h.correct} صحيح</small></p><strong>${h.score}</strong></div>`).join('')}</div></details><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="partyRematch()">🔁 إعادة البطولة بنفس القواعد</button><button onclick="setup('teamcup')">بطولة بإعدادات جديدة</button><button onclick="home()">عالم الألعاب</button></div></section>`,
     ),
   );
 }
@@ -1145,6 +1268,15 @@ function undercoverRound() {
     confidence: 2,
     voteReason: '',
     firstBallots: null,
+    courtCompleted: false,
+    accusationIndex: 0,
+    accusations: [],
+    accusationTarget: -1,
+    accusationReason: '',
+    defenseCandidates: [],
+    defenseIndex: 0,
+    defenses: [],
+    defenseDraft: '',
     voteIndex: 0,
     voteCount: 0,
     voteOrder: s.players.map((_, i) => (s.round + i) % s.players.length),
@@ -1339,6 +1471,7 @@ function undercoverNextClue(token = partyCardToken()) {
 function undercoverStartVote(token = partyCardToken()) {
   if (!partyStage('undercover', 'discussion')) return;
   if (token !== undefined && String(token) !== String(state.clueToken)) return;
+  if (state.court && !state.courtCompleted) return undercoverStartCourt();
   clearTimers();
   Object.assign(state, {
     endAt: 0,
@@ -1353,6 +1486,108 @@ function undercoverStartVote(token = partyCardToken()) {
     stage: 'vote-handoff',
   });
   renderUndercoverVoteHandoff();
+}
+function undercoverStartCourt() {
+  if (!partyStage('undercover', 'discussion') || !state.court || state.courtCompleted) return;
+  clearTimers();
+  state.endAt = 0;
+  state.stage = 'accusation';
+  renderUndercoverCourt();
+}
+function renderUndercoverCourt() {
+  const s = state;
+  s.courtToken = ++partyActionSerial;
+  const accusation = s.stage === 'accusation',
+    player = accusation ? s.clueOrder[s.accusationIndex] : s.defenseCandidates[s.defenseIndex];
+  const form = accusation
+    ? `<h2>رأي ${esc(s.players[player])}</h2><div class="fields"><div class="field"><label for="courtTarget">من تريد أن تسمع دفاعه؟</label><select id="courtTarget" onchange="undercoverCourtDraft()"><option value="-1">لا أتهم أحداً الآن</option>${s.players.map((name, i) => (i === player ? '' : `<option value="${i}" ${s.accusationTarget === i ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select></div><div class="field"><label for="courtReason">دليلك العلني · 80 حرفاً</label><input id="courtReason" maxlength="80" value="${esc(s.accusationReason)}" autocomplete="off" oninput="undercoverCourtDraft()" placeholder="أي تلميح أو جواب أثار شكّك؟"></div></div><div class="actions"><button class="primary" data-party-card="${s.courtToken}" onclick="undercoverAccuse()">اعتمد رأيي وانتقل للتالي ←</button></div>`
+    : `<h2>فرصة دفاع ${esc(s.players[player])}</h2><div class="party-court-evidence">${s.accusations
+        .filter((item) => item.target === player)
+        .map((item) => `<p><b>${esc(s.players[item.player])}</b>: ${esc(item.reason)}</p>`)
+        .join(
+          '',
+        )}</div><label for="courtDefense">وضح تلميحك دون أن تقول الكلمة · 120 حرفاً</label><textarea id="courtDefense" class="party-textarea" maxlength="120" rows="3" oninput="undercoverCourtDraft()">${esc(s.defenseDraft)}</textarea><div class="actions"><button class="primary" data-party-card="${s.courtToken}" onclick="undercoverDefend()">سجّل دفاعي ←</button><button data-party-card="${s.courtToken}" onclick="undercoverDefend(true)">أفضل عدم التعليق</button></div>`;
+  setHTML(
+    partyWrap(
+      'undercover',
+      `<section class="panel party-court"><p class="party-kicker">⚖️ ${accusation ? `الادعاء ${s.accusationIndex + 1} / ${s.players.length}` : `الدفاع ${s.defenseIndex + 1} / ${s.defenseCandidates.length}`}</p>${form}<p class="note">كل شخص له فرصة. لا تكشفوا الكلمات. الترشيح علني ولا يحسب صوتاً؛ القرار النهائي سري.</p></section>${undercoverCourtTrail(s)}${undercoverClueTrail(s)}`,
+    ),
+  );
+}
+function undercoverCourtDraft() {
+  if (partyBlocked('undercover')) return;
+  if (state.stage === 'accusation') {
+    const target = Number($('courtTarget')?.value);
+    if (Number.isInteger(target)) state.accusationTarget = target;
+    state.accusationReason = $('courtReason')?.value.slice(0, 80) || '';
+  } else if (state.stage === 'defense')
+    state.defenseDraft = $('courtDefense')?.value.slice(0, 120) || '';
+}
+function undercoverAccuse(token = partyCardToken()) {
+  if (
+    !partyStage('undercover', 'accusation') ||
+    (token !== undefined && String(token) !== String(state.courtToken))
+  )
+    return;
+  undercoverCourtDraft();
+  const s = state,
+    player = s.clueOrder[s.accusationIndex],
+    target = s.accusationTarget,
+    reason = s.accusationReason.trim().replace(/\s+/gu, ' ');
+  if (!Number.isInteger(target) || target < -1 || target >= s.players.length || target === player)
+    return toast('اختاروا شخصاً آخر أو امتنعوا.');
+  if (target >= 0 && !reason) return toast('دوّن دليلك قبل ترشيح شخص للدفاع.');
+  if (reason && s.pair.some((word) => norm(reason).includes(norm(word))))
+    return toast('اشرح الدليل دون ذكر أي كلمة سرية.');
+  s.accusations.push({ player, target, reason: target >= 0 ? reason : '' });
+  s.accusationIndex++;
+  s.accusationTarget = -1;
+  s.accusationReason = '';
+  if (s.accusationIndex === s.players.length) {
+    const counts = s.players.map(
+      (_, player) => s.accusations.filter((item) => item.target === player).length,
+    );
+    s.defenseCandidates = [...s.clueOrder]
+      .filter((player) => counts[player])
+      .sort((a, b) => counts[b] - counts[a]);
+    if (!s.defenseCandidates.length) return undercoverFinishCourt();
+    s.stage = 'defense';
+  }
+  renderUndercoverCourt();
+}
+function undercoverDefend(skip = false, token = partyCardToken()) {
+  if (
+    !partyStage('undercover', 'defense') ||
+    (token !== undefined && String(token) !== String(state.courtToken))
+  )
+    return;
+  undercoverCourtDraft();
+  const s = state,
+    player = s.defenseCandidates[s.defenseIndex],
+    text = s.defenseDraft.trim().replace(/\s+/gu, ' ');
+  if (!skip && !text) return toast('اكتب دفاعاً قصيراً أو اختر عدم التعليق.');
+  if (!skip && s.pair.some((word) => norm(text).includes(norm(word))))
+    return toast('وضّح تلميحك دون قول الكلمة السرية.');
+  s.defenses.push({ player, text: skip ? '' : text });
+  s.defenseIndex++;
+  s.defenseDraft = '';
+  if (s.defenseIndex === s.defenseCandidates.length) return undercoverFinishCourt();
+  renderUndercoverCourt();
+}
+function undercoverFinishCourt() {
+  if (partyBlocked('undercover') || !['accusation', 'defense'].includes(state.stage)) return;
+  if (
+    state.accusationIndex !== state.players.length ||
+    state.defenseIndex !== state.defenseCandidates.length
+  )
+    return;
+  state.courtCompleted = true;
+  state.stage = 'discussion';
+  undercoverStartVote(state.clueToken);
+}
+function undercoverCourtTrail(s) {
+  if (!s.accusations?.length) return '';
+  return `<details class="history party-court-trail"><summary>⚖️ الادعاءات والدفاع · لا تحسب أصواتاً</summary>${s.accusations.map((item) => `<p><b>${esc(s.players[item.player])}</b> ${item.target < 0 ? 'امتنع عن الترشيح' : `رشّح ${esc(s.players[item.target])}: ${esc(item.reason)}`}</p>`).join('')}${s.defenses.map((item) => `<p><b>دفاع ${esc(s.players[item.player])}</b>: ${item.text ? esc(item.text) : 'فضّل عدم التعليق'}</p>`).join('')}</details>`;
 }
 function renderUndercoverVoteHandoff() {
   const s = state;
@@ -1501,6 +1736,8 @@ function finishUndercoverRound(eliminated) {
     confidence: [...s.voteConfidence],
     reasons: [...s.voteReasons],
     firstBallots: s.firstBallots,
+    accusations: s.accusations.map((item) => ({ ...item })),
+    defenses: s.defenses.map((item) => ({ ...item })),
     points: [...s.roundPoints],
   });
   tone(true);
@@ -1513,7 +1750,7 @@ function finishUndercoverRound(eliminated) {
           [s.votes.filter((vote) => vote >= 0).length, 'أصوات مسجّلة'],
           [s.votes.filter((vote) => s.hidden.includes(vote)).length, 'أصوات كشفت الدخيل'],
         ],
-      )}<div class="party-word-reveal"><div><small>الكلمة الأصلية</small><b>${esc(s.pair[0])}</b></div><div><small>الكلمة الدخيلة</small><b>${esc(s.pair[1])}</b></div></div><p class="note">الفريق الدخيل: ${s.hidden.map((i) => esc(s.players[i])).join(' · ')}</p><div class="party-vote-results">${s.players.map((n, i) => `<div><span>${s.hidden.includes(i) ? '🥸' : '👤'} ${esc(n)}</span><span>${s.tally[i]} أصوات</span><b>+${s.roundPoints[i]}</b></div>`).join('')}</div><details class="history"><summary>الأصوات بعد إقفال الجولة</summary><div class="party-timeline">${s.players.map((n, i) => `<div><p>${esc(n)} ← ${s.votes[i] < 0 ? 'امتناع' : esc(s.players[s.votes[i]])}</p></div>`).join('')}</div></details>${undercoverClueTrail(s)}${undercoverRoundReview(s)}<div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="undercoverAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'جولة بكلمات جديدة'} ←</button></div></section>${partySessionScore(s)}`,
+      )}<div class="party-word-reveal"><div><small>الكلمة الأصلية</small><b>${esc(s.pair[0])}</b></div><div><small>الكلمة الدخيلة</small><b>${esc(s.pair[1])}</b></div></div><p class="note">الفريق الدخيل: ${s.hidden.map((i) => esc(s.players[i])).join(' · ')}</p><div class="party-vote-results">${s.players.map((n, i) => `<div><span>${s.hidden.includes(i) ? '🥸' : '👤'} ${esc(n)}</span><span>${s.tally[i]} أصوات</span><b>+${s.roundPoints[i]}</b></div>`).join('')}</div><details class="history"><summary>الأصوات بعد إقفال الجولة</summary><div class="party-timeline">${s.players.map((n, i) => `<div><p>${esc(n)} ← ${s.votes[i] < 0 ? 'امتناع' : esc(s.players[s.votes[i]])}</p></div>`).join('')}</div></details>${undercoverClueTrail(s)}${undercoverCourtTrail(s)}${undercoverRoundReview(s)}<div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="undercoverAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'جولة بكلمات جديدة'} ←</button></div></section>${partySessionScore(s)}`,
     ),
   );
 }
@@ -1530,7 +1767,7 @@ function undercoverSessionReview(s) {
     [found, 'جولات كشفت الدخيل'],
     [s.history.reduce((sum, round) => sum + round.questions.length, 0), 'أسئلة متبادلة'],
     [s.history.reduce((sum, round) => sum + round.clues.length, 0), 'تلميحات مسجّلة'],
-  ])}<div class="party-timeline">${s.history.map((round, i) => `<div><span>${i + 1}</span><p><b>${esc(round.pair[0])} / ${esc(round.pair[1])}</b><small>${round.normalWin ? 'كُشف الدخيل' : 'نجا الدخيل'} · ${round.questions.length} أسئلة</small></p><strong>${round.normalWin ? '🔍' : '🥸'}</strong></div>`).join('')}</div></div>`;
+  ])}<div class="party-timeline">${s.history.map((round, i) => `<div><span>${i + 1}</span><p><b>${esc(round.pair[0])} / ${esc(round.pair[1])}</b><small>${round.normalWin ? 'كُشف الدخيل' : 'نجا الدخيل'} · ${round.questions.length} أسئلة${s.court ? ` · ${round.defenses?.length || 0} دفوع` : ''}</small></p><strong>${round.normalWin ? '🔍' : '🥸'}</strong></div>`).join('')}</div>${s.court ? s.history.map((round, i) => `<div class="party-court-archive"><p class="party-kicker">ملف الجولة ${i + 1}</p>${undercoverCourtTrail({ ...round, players: s.players })}</div>`).join('') : ''}</div>`;
 }
 function undercoverAdvance(token = partyStageToken()) {
   if (!partyStage('undercover', 'round-result') || !partyAcceptStage(token)) return;
@@ -1574,13 +1811,14 @@ function creativeRound() {
         s.creativeCriterion === 'funny' ? 0 : s.round % partyCreativeCriteria.length
       ],
     sparkWord: s.creativeSpark ? s.sparkWords[s.round % s.sparkWords.length] : '',
+    chainBridge: '',
     prompt: s.prompts[s.round],
     endAt: 0,
   });
   setHTML(
     partyWrap(
       'improv',
-      `<section class="panel party-prompt-card center"><p class="party-kicker">الموقف ${s.round + 1} / ${s.rounds}</p><span class="party-lock">💡</span><h2>${esc(s.prompt)}</h2><div class="party-format"><b>${creativeRules().name}</b><p>${creativeRules().rule}</p></div>${creativeBrief(s)}<p class="note">أعطوا الفكرة لحظة، ثم كل شخص يكتب رده الخاص. الردود ستظهر بلا أسماء.</p><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="creativeStartAnswers()">ابدأ كتابة الردود</button><button data-party-stage="${s.stageToken}" onclick="creativeRefreshPrompt()">🔀 موقف مختلف</button></div></section>${partySessionScore(s)}`,
+      `<section class="panel party-prompt-card center"><p class="party-kicker">الموقف ${s.round + 1} / ${s.rounds}</p><span class="party-lock">💡</span><h2>${esc(s.prompt)}</h2><div class="party-format"><b>${creativeRules().name}</b><p>${creativeRules().rule}</p></div>${creativeBrief(s)}${creativeChainBrief(s)}<p class="note">أعطوا الفكرة لحظة، ثم كل شخص يكتب رده الخاص. الردود ستظهر بلا أسماء.</p><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="creativeStartAnswers()">ابدأ كتابة الردود</button><button data-party-stage="${s.stageToken}" onclick="creativeRefreshPrompt()">🔀 موقف مختلف</button></div></section>${partySessionScore(s)}`,
     ),
   );
 }
@@ -1591,7 +1829,9 @@ function creativeRefreshPrompt(token = partyStageToken()) {
   if (!partyStage('improv', 'prompt') || !partyAcceptStage(token)) return;
   const s = state;
   s.usedPrompts ||= [...s.prompts];
-  const fresh = partyCreativePrompts.filter((prompt) => !s.usedPrompts.includes(prompt));
+  const fresh = (s.creativeMode === 'chain' ? partyStoryStarts : partyCreativePrompts).filter(
+    (prompt) => !s.usedPrompts.includes(prompt),
+  );
   if (!fresh.length) return toast('جرّبتوا كل المواقف المتاحة؛ نكمل بهذا الموقف.');
   const prompt = fresh[randInt(fresh.length)];
   s.usedPrompts.push(prompt);
@@ -1618,10 +1858,11 @@ function creativeOpenAnswer(token = partyPassToken()) {
     format = creativeRules();
   s.stage = 'answer-view';
   s.answerToken = ++partyActionSerial;
+  s.chainBridge = creativeChainBridge(s);
   setHTML(
     partyWrap(
       'improv',
-      `<section class="panel party-private"><p class="party-kicker">رد ${esc(s.players[s.answerIndex])}</p><h3 class="party-question">${esc(s.prompt)}</h3><div class="party-format"><b>${format.name}</b><p>${format.rule}</p></div>${creativeBrief(s)}<label for="creativeAnswer">ردك · ${format.limit} حرفاً كحد أقصى</label><textarea id="creativeAnswer" class="party-textarea" maxlength="${format.limit}" rows="3" placeholder="فكرة خفيفة ومبتكرة…" oninput="creativeDraftUpdate()" aria-describedby="creativeCounter">${esc(s.answerDraft)}</textarea><p class="note" id="creativeCounter">${s.answerDraft.length} / ${format.limit}</p><div class="actions"><button class="primary" data-party-card="${s.answerToken}" onclick="creativePreview()">👀 راجع ردي قبل تسليمه</button><button data-party-card="${s.answerToken}" onclick="creativeSubmit()">احفظ ردي وأخفِ الشاشة</button><button onclick="partyHidePrivate()">🔒 إخفاء مؤقت</button></div><p class="note">لا تكتب اسمك. الأجمل فكرة لطيفة يفهمها الجميع. زر Escape يخفي ردك ويحفظ المسودة.</p></section>`,
+      `<section class="panel party-private"><p class="party-kicker">رد ${esc(s.players[s.answerIndex])}</p><h3 class="party-question">${esc(s.prompt)}</h3><div class="party-format"><b>${format.name}</b><p>${format.rule}</p></div>${creativeBrief(s)}${creativeChainBrief(s, true)}<label for="creativeAnswer">ردك · ${format.limit} حرفاً كحد أقصى</label><textarea id="creativeAnswer" class="party-textarea" maxlength="${format.limit}" rows="3" placeholder="فكرة خفيفة ومبتكرة…" oninput="creativeDraftUpdate()" aria-describedby="creativeCounter">${esc(s.answerDraft)}</textarea><p class="note" id="creativeCounter">${s.answerDraft.length} / ${format.limit}</p><div class="actions"><button class="primary" data-party-card="${s.answerToken}" onclick="creativePreview()">👀 راجع ردي قبل تسليمه</button><button data-party-card="${s.answerToken}" onclick="creativeSubmit()">احفظ ردي وأخفِ الشاشة</button><button onclick="partyHidePrivate()">🔒 إخفاء مؤقت</button></div><p class="note">لا تكتب اسمك. الأجمل فكرة لطيفة يفهمها الجميع. زر Escape يخفي ردك ويحفظ المسودة.</p></section>`,
     ),
   );
   $('creativeAnswer').focus();
@@ -1664,10 +1905,107 @@ function creativeValidAnswer(answer) {
     $('creativeAnswer')?.focus();
     return false;
   }
+  if (
+    state.creativeMode === 'chain' &&
+    state.chainBridge &&
+    !norm(answer).includes(norm(state.chainBridge))
+  ) {
+    toast(`اربط السطر بما قبله باستعمال كلمة «${state.chainBridge}».`);
+    $('creativeAnswer')?.focus();
+    return false;
+  }
   return true;
 }
 function creativeBrief(s) {
   return `<div class="party-creative-brief"><b>🗳️ معيار الجولة: ${esc(s.criterion.name)}</b><p>${esc(s.criterion.rule)}</p>${s.sparkWord ? `<p class="party-spark">✨ ضمّنوا كلمة الإلهام: <strong>${esc(s.sparkWord)}</strong></p>` : ''}</div>`;
+}
+function creativeChainBridge(s) {
+  if (s.creativeMode !== 'chain') return '';
+  const previous = s.entries.at(-1)?.text || s.prompt;
+  const stop = new Set([
+    'من',
+    'في',
+    'على',
+    'الى',
+    'الي',
+    'كان',
+    'كانت',
+    'صار',
+    'صارت',
+    'هذا',
+    'هذه',
+    'ذلك',
+    'تلك',
+    'كل',
+    'ثم',
+    'لكن',
+    'عند',
+    'مع',
+    'وهو',
+    'وهي',
+    'حتى',
+    'احد',
+    'احدى',
+    'جدا',
+    'بين',
+    'قبل',
+    'بعد',
+    'التي',
+    'الذي',
+    'لان',
+    'اننا',
+    'نحن',
+  ]);
+  const words = previous.match(/[\p{L}\p{N}]+/gu) || [];
+  const meaningful = words.filter(
+    (word) =>
+      word.length >= 3 && word.length <= 18 && !stop.has(norm(word)) && !/^\d+$/u.test(word),
+  );
+  const anchors = [
+    'مفتاح',
+    'غيمة',
+    'روبوت',
+    'بوصلة',
+    'جزيرة',
+    'قمر',
+    'قهوة',
+    'كتاب',
+    'حقيبة',
+    'فراشة',
+    'شجرة',
+    'مرآة',
+    'حافلة',
+    'كنز',
+    'حذاء',
+    'تمثال',
+    'جورب',
+    'خريطة',
+    'خيمة',
+    'هاتف',
+    'مظلة',
+    'قارب',
+    'نبتة',
+    'نجمة',
+    'مصباح',
+  ];
+  return (
+    [...meaningful]
+      .reverse()
+      .find((word) => anchors.some((anchor) => norm(word).includes(norm(anchor)))) ||
+    meaningful.at(-1) ||
+    words.at(-1) ||
+    ''
+  );
+}
+function creativeChainBrief(s, privateView = false) {
+  if (s.creativeMode !== 'chain') return '';
+  const last = s.entries.at(-1),
+    final = s.answerCount === s.players.length - 1;
+  return `<div class="party-chain-brief"><b>📖 ${final ? 'اكتب نهاية تربط المغامرة' : s.answerCount === 0 ? 'افتح باب المغامرة' : s.answerCount === 1 ? 'أضف مشكلة أو هدفاً' : 'غيّر اتجاه الحكاية'}</b><p>كل شخص يكتب سطراً يكمل ما قبله. ${final ? 'حلّ المشكلة أو اترك نهاية لطيفة.' : 'أضف فعلاً يحدث لشخصيات القصة.'}</p>${privateView ? `<blockquote>${esc(last?.text || s.prompt)}</blockquote><p>السطر السابق فقط · بلا اسم الكاتب</p><p class="party-chain-link">كلمة الربط المطلوبة: <strong>${esc(s.chainBridge)}</strong></p>` : '<p>سترى السطر السابق وحده عند استلام الجهاز. إكمال القصة +5 لكل لاعب.</p>'}</div>`;
+}
+function creativeStoryHTML(s, reveal = false) {
+  if (s.creativeMode !== 'chain') return '';
+  return `<article class="party-shared-story"><p class="party-kicker">📖 حكاية اللمّة · ${s.players.length} كتّاب</p><p class="party-story-opening">${esc(s.prompt)}</p>${s.entries.map((entry, i) => `<p><span class="party-entry-number">${i + 1}</span><span>${esc(entry.text)}${reveal ? `<small>${esc(s.players[entry.author])}</small>` : ''}</span></p>`).join('')}<p class="note">وصلتم للنهاية معاً · +5 لكل كاتب بعد إقفال الأصوات.</p></article>`;
 }
 function creativePreview(token = partyCardToken()) {
   if (!partyStage('improv', 'answer-view')) return;
@@ -1680,7 +2018,7 @@ function creativePreview(token = partyCardToken()) {
   setHTML(
     partyWrap(
       'improv',
-      `<section class="panel party-private"><p class="party-kicker">مراجعة خاصة لـ ${esc(s.players[s.answerIndex])}</p><h2>هذا ما سيظهر بلا اسمك</h2><p class="note">${esc(s.prompt)}</p><blockquote class="party-answer-preview">${esc(answer)}</blockquote><p class="note">${answer.length} حرفاً · ${answer.split(/\s+/u).length} كلمات</p><div class="actions"><button class="primary" data-party-card="${s.answerToken}" onclick="creativeSubmit()">اعتمد ردي ومرّر الجهاز</button><button onclick="creativeEditAnswer()">↶ عدّل الرد</button><button onclick="partyHidePrivate()">🔒 إخفاء مؤقت</button></div></section>`,
+      `<section class="panel party-private"><p class="party-kicker">مراجعة خاصة لـ ${esc(s.players[s.answerIndex])}</p><h2>هذا ما سيظهر بلا اسمك</h2><p class="note">${esc(s.prompt)}</p>${creativeChainBrief(s, true)}<blockquote class="party-answer-preview">${esc(answer)}</blockquote><p class="note">${answer.length} حرفاً · ${answer.split(/\s+/u).length} كلمات</p><div class="actions"><button class="primary" data-party-card="${s.answerToken}" onclick="creativeSubmit()">اعتمد ردي ومرّر الجهاز</button><button onclick="creativeEditAnswer()">↶ عدّل الرد</button><button onclick="partyHidePrivate()">🔒 إخفاء مؤقت</button></div></section>`,
     ),
   );
 }
@@ -1699,7 +2037,7 @@ function creativeSubmit(token = partyCardToken()) {
   s.answerDraft = '';
   s.answerCount++;
   if (s.answerCount === s.players.length) {
-    s.entries = shuffle(s.entries);
+    if (s.creativeMode !== 'chain') s.entries = shuffle(s.entries);
     s.stage = 'gallery';
     return renderCreativeGallery();
   }
@@ -1727,7 +2065,8 @@ function renderCreativeGallery() {
   );
 }
 function creativeGalleryHTML(s) {
-  if (!s.galleryFocus) return partyCreativeCards(s);
+  if (!s.galleryFocus)
+    return s.creativeMode === 'chain' ? creativeStoryHTML(s) : partyCreativeCards(s);
   const entry = s.entries[s.galleryIndex];
   return `<div class="party-focus-card" aria-live="polite"><span class="party-entry-number">${s.galleryIndex + 1}</span><p>${esc(entry.text)}</p><small>الفكرة ${s.galleryIndex + 1} / ${s.entries.length} · بلا أسماء</small></div><div class="actions"><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(-1)" ${s.galleryIndex === 0 ? 'disabled' : ''}>الفكرة السابقة</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(1)" ${s.galleryIndex === s.entries.length - 1 ? 'disabled' : ''}>الفكرة التالية</button></div>`;
 }
@@ -1849,12 +2188,15 @@ function creativeTally() {
   s.stage = 'creative-result';
   const results = s.entries
     .map((entry, i) => {
-      const points = counts[i] * 5 + appreciations[i] * 2 + (counts[i] === highest ? 10 : 0);
+      const storyBonus = s.creativeMode === 'chain' ? 5 : 0;
+      const points =
+        counts[i] * 5 + appreciations[i] * 2 + (counts[i] === highest ? 10 : 0) + storyBonus;
       s.results[s.players[entry.author]] += points;
       return {
         ...entry,
         votes: counts[i],
         appreciation: appreciations[i],
+        storyBonus,
         points,
         winning: counts[i] === highest,
       };
@@ -1864,6 +2206,7 @@ function creativeTally() {
     prompt: s.prompt,
     criterion: s.criterion.name,
     sparkWord: s.sparkWord,
+    story: s.creativeMode === 'chain' ? s.entries.map((entry) => ({ ...entry })) : null,
     entries: results,
   });
   s.stageToken = ++partyActionSerial;
@@ -1871,9 +2214,13 @@ function creativeTally() {
   setHTML(
     partyWrap(
       'improv',
-      `<section class="panel center"><span class="party-trophy">✨</span><h2>أفكار اللمّة كشفت أصحابها</h2><p class="note">${esc(s.prompt)}</p>${creativeBrief(s)}<div class="party-creative-results">${results.map((entry) => `<div class="${entry.winning ? 'winning' : ''}"><div class="party-creative-author"><b>${entry.winning ? '🏅 ' : ''}${esc(s.players[entry.author])}</b><strong>+${entry.points}</strong></div><p>${esc(entry.text)}</p><small>${entry.votes} أصوات${s.creativeBallot === 'ranked' ? ` · ${entry.appreciation} تقديرات` : ''}${entry.winning ? ' · مكافأة أفضل رد +10' : ''}</small></div>`).join('')}</div><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="creativeAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'موقف جديد'} ←</button></div></section>${partySessionScore(s)}`,
+      `<section class="panel center"><span class="party-trophy">✨</span><h2>أفكار اللمّة كشفت أصحابها</h2><p class="note">${esc(s.prompt)}</p>${creativeBrief(s)}${creativeStoryHTML(s, true)}<div class="party-creative-results">${results.map((entry) => `<div class="${entry.winning ? 'winning' : ''}"><div class="party-creative-author"><b>${entry.winning ? '🏅 ' : ''}${esc(s.players[entry.author])}</b><strong>+${entry.points}</strong></div><p>${esc(entry.text)}</p><small>${entry.votes} أصوات${s.creativeBallot === 'ranked' ? ` · ${entry.appreciation} تقديرات` : ''}${entry.winning ? ' · مكافأة أفضل رد +10' : ''}${entry.storyBonus ? ' · إكمال القصة +5' : ''}</small></div>`).join('')}</div><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="creativeAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'موقف جديد'} ←</button></div></section>${partySessionScore(s)}`,
     ),
   );
+}
+function creativeStoryBook(s) {
+  if (s.creativeMode !== 'chain') return '';
+  return `<details class="history party-story-book"><summary>📚 كتاب اللمّة · ${s.history.length} قصص كاملة</summary>${s.history.map((round, index) => `<article class="party-shared-story"><b>القصة ${index + 1}</b><p class="party-story-opening">${esc(round.prompt)}</p>${(round.story || []).map((entry) => `<p><span>${esc(entry.text)}<small>${esc(s.players[entry.author])}</small></span></p>`).join('')}</article>`).join('')}</details>`;
 }
 function creativeAdvance(token = partyStageToken()) {
   if (!partyStage('improv', 'creative-result') || !partyAcceptStage(token)) return;
@@ -1923,7 +2270,7 @@ function finishPartySession(id, title, saveScores) {
   setHTML(
     partyWrap(
       id,
-      `<section class="panel success celebrate center"><span class="party-trophy">🏆</span><h2>${esc(title)}</h2><p class="party-champions">${winners.map(esc).join(' · ')}</p><p class="note">اكتملت ${s.rounds} جولات. نقاط اللمّة انحفظت في اللوحة العامة.</p>${boardHTML(s.players, s.results)}${review}<div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="partyRematch()">🔁 جولة جديدة بنفس القواعد</button><button onclick="setup('${id}')">غيّر إعدادات الجلسة</button><button onclick="home()">عالم الألعاب</button></div></section>`,
+      `<section class="panel success celebrate center"><span class="party-trophy">🏆</span><h2>${esc(title)}</h2><p class="party-champions">${winners.map(esc).join(' · ')}</p><p class="note">اكتملت ${s.rounds} جولات. نقاط اللمّة انحفظت في اللوحة العامة.</p>${boardHTML(s.players, s.results)}${review}${id === 'improv' ? creativeStoryBook(s) : ''}<div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="partyRematch()">🔁 جولة جديدة بنفس القواعد</button><button onclick="setup('${id}')">غيّر إعدادات الجلسة</button><button onclick="home()">عالم الألعاب</button></div></section>`,
     ),
   );
   tone(true);

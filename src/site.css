@@ -1,0 +1,272 @@
+/* Lamma 9: a clearer lobby and consistent tools on every screen. */
+.lobby-hero {
+  border-color: color-mix(in srgb, var(--mint) 20%, var(--line));
+  background:
+    radial-gradient(
+      ellipse at 15% 20%,
+      color-mix(in srgb, var(--pink) 12%, transparent),
+      transparent 65%
+    ),
+    linear-gradient(125deg, var(--surface), var(--raised));
+}
+.lobby-copy h1 {
+  letter-spacing: -1px;
+  line-height: 1.24;
+}
+.release-chip {
+  border: 1px solid color-mix(in srgb, var(--mint) 28%, var(--line));
+}
+.audience-choices > button {
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease;
+}
+.audience-choices > button:hover {
+  transform: translateY(-3px);
+  border-color: var(--mint);
+}
+.catalogbar {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 13px;
+  gap: 12px;
+}
+.catalogbar .filter {
+  gap: 5px;
+}
+.catalogbar .filter button {
+  min-height: 40px;
+}
+.catalogbar .searchwrap {
+  min-width: 180px;
+}
+.tile {
+  border-radius: 21px;
+}
+.tile:focus-within {
+  outline: 2px solid var(--mint);
+  outline-offset: 3px;
+}
+.actions > button {
+  min-height: 44px;
+}
+.topactions .iconbtn {
+  min-height: 42px;
+}
+.panel {
+  border-radius: 22px;
+}
+.playhead h1 {
+  overflow-wrap: anywhere;
+}
+.setup-blueprint {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--blue) 6%, transparent),
+    var(--surface)
+  );
+}
+.mission-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 17px;
+  padding: 15px 18px;
+  border: 1px solid color-mix(in srgb, var(--mint) 35%, var(--line));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--mint) 5%, var(--surface));
+}
+.mission-ribbon small {
+  color: var(--muted);
+  flex-basis: 100%;
+  line-height: 1.75;
+}
+.mission-ribbon > span {
+  display: flex;
+  gap: 9px;
+}
+.mission-ribbon i {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  font-style: normal;
+  color: var(--muted);
+}
+.mission-ribbon i.complete {
+  color: var(--bg);
+  background: var(--mint);
+  border-color: var(--mint);
+}
+.mission-ribbon i.current {
+  color: var(--mint);
+  border-color: var(--mint);
+}
+.mission-results {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+.mission-results > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+}
+.mission-results small {
+  flex-basis: 100%;
+  color: var(--muted);
+}
+.private-vault {
+  max-width: 650px;
+  margin: auto;
+}
+.private-vault input {
+  max-width: 470px;
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 4px;
+}
+.investigator-tools {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+.memory-duel {
+  align-items: center;
+}
+.memory-duel b {
+  color: var(--mint);
+}
+.memory-duel small {
+  flex-basis: 100%;
+}
+.suspect-count {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 12px 0;
+}
+.suspect-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  max-height: 370px;
+  overflow: auto;
+  padding: 3px;
+}
+.suspect-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 11px;
+  font-size: 13px;
+}
+.suspect-card b {
+  overflow-wrap: anywhere;
+}
+.suspect-card.excluded {
+  opacity: 0.65;
+  background: var(--raised);
+}
+.suspect-card.excluded b {
+  text-decoration: line-through;
+}
+.suspect-card button {
+  width: 100%;
+  min-height: 34px;
+}
+.reaction-display {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: default;
+}
+.reaction-directions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 15px;
+}
+.reaction-directions button {
+  min-height: 64px;
+  font-size: 21px;
+  background: var(--raised);
+  border: 1px solid var(--line);
+}
+.question-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+.question-starters button {
+  min-height: 36px;
+}
+.home-guide {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+}
+@media (max-width: 700px) {
+  .catalogbar {
+    padding: 10px;
+    border-radius: 16px;
+  }
+  .catalogbar .searchwrap {
+    min-width: 0;
+    width: 100%;
+  }
+  .lobby-copy h1 {
+    font-size: clamp(36px, 9vw, 49px);
+  }
+  .audience-choices > button:hover {
+    transform: none;
+  }
+  .mission-ribbon {
+    padding: 12px;
+    gap: 8px;
+  }
+  .suspect-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .private-vault input {
+    font-size: 21px;
+  }
+  .reaction-directions button {
+    min-height: 58px;
+    font-size: 18px;
+  }
+  .panel {
+    border-radius: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .audience-choices > button {
+    transition: none;
+  }
+}
+.lounge-random {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin: 16px 0;
+}
+.lounge-random button {
+  min-height: 48px;
+  border-color: color-mix(in srgb, var(--mint) 25%, var(--line));
+}
+@media (max-width: 380px) {
+  .lounge-random {
+    grid-template-columns: 1fr;
+  }
+}

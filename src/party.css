@@ -1,6 +1,126 @@
 .party-panel > .muted {
   margin-bottom: 20px;
 }
+.party-relay-roles {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  text-align: center;
+}
+.party-relay-roles > div {
+  min-width: 0;
+  padding: 12px 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.party-relay-roles .current {
+  border-color: var(--mint);
+  color: var(--mint);
+}
+.party-relay-roles .complete {
+  opacity: 0.65;
+}
+.party-relay-roles small,
+.party-relay-roles b {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.party-relay-roles small {
+  font-size: 11px;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+.party-relay-roles p {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 12px;
+}
+.party-relay-budget,
+.party-chain-brief {
+  padding: 18px;
+  margin: 20px 0;
+  border: 1px solid var(--mint);
+  border-radius: 16px;
+  background: var(--raised);
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.party-relay-budget b,
+.party-chain-brief b,
+.party-chain-link strong {
+  color: var(--mint);
+}
+.party-relay-budget p,
+.party-chain-brief p {
+  margin-top: 10px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.party-chain-brief blockquote {
+  padding: 18px;
+  margin: 14px 0;
+  border-inline-start: 3px solid var(--orange);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 19px;
+  line-height: 1.8;
+}
+.party-court .field,
+.party-court input,
+.party-court select {
+  min-width: 0;
+  width: 100%;
+}
+.party-court-evidence,
+.party-court-trail {
+  text-align: start;
+}
+.party-court-evidence p,
+.party-court-trail p {
+  margin: 12px 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--raised);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.party-shared-story {
+  padding: 22px;
+  margin: 24px 0;
+  background: var(--raised);
+  border: 1px solid var(--orange);
+  border-radius: 20px;
+  text-align: start;
+}
+.party-shared-story > p {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  margin: 16px 0;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.party-shared-story > p > span:last-child {
+  flex: 1;
+  min-width: 0;
+}
+.party-shared-story .party-story-opening {
+  display: block;
+  font-weight: 700;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.party-shared-story small {
+  display: block;
+  color: var(--mint);
+  font-size: 12px;
+}
 .party-extra-options {
   margin-top: 24px;
 }

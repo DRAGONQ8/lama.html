@@ -5,7 +5,7 @@ games.push(
     'snake',
     '🐍',
     'الثعبان',
-    'اجمع الفاكهة ووازن طاقة الاندفاع. لعب مباشر أو تدريب بخطوات آمنة.',
+    'اندفاع وتدريب آمن أو طلبات بستان: اجمع الفاكهة المطلوبة وأوصلها.',
     'بروحك',
     '#a7edbf',
   ],
@@ -13,7 +13,7 @@ games.push(
     'merge',
     '🧱',
     'دمج 2048',
-    'خطط بالقطعة القادمة وعاين الدمج. لوحات 4×4 و5×5 مع تراجع عادل.',
+    'خطط للدمج أو اكسر صناديق الورشة. لوحات 4×4 و5×5 مع تراجع عادل.',
     'بروحك',
     '#ffd59c',
   ],
@@ -21,7 +21,7 @@ games.push(
     'mines',
     '💣',
     'كاسحة الألغام',
-    'اكشف الحقل، دوّن الشك، وراجع الأعلام. أول ضغطة وجيرانها آمنون.',
+    'نظّف الحقل أو انطلق في بعثة آثار مع جهاز مسح. أول ضغطة وجيرانها آمنون.',
     'بروحك',
     '#c8bcff',
   ],
@@ -29,7 +29,7 @@ games.push(
     'maze',
     '🧭',
     'المتاهة',
-    'اكتشف الممرات بالمصباح، اجمع المفاتيح وافتح البوابات إلى المخرج.',
+    'رحلات نجوم ومفاتيح أو توصيل طرود. اكتشف الممرات وعد إلى القاعدة.',
     'بروحك',
     '#9fe1f5',
   ],
@@ -73,6 +73,31 @@ setup = function (id, internal = false) {
     );
     body +=
       '<div class="field arcade-extra-field"><label for="arcadeVision">رؤية المتاهة</label><select id="arcadeVision"><option value="map">الخريطة كاملة</option><option value="lantern">رحلة المصباح · اكتشف الخريطة تدريجياً</option></select><p class="note">ضع علامات عند التقاطعات لتتذكر طريقك. رحلة المفاتيح تضيف بوابتين: لكل بوابة مفتاح يمكن الوصول إليه قبل فتحها.</p></div>';
+    body = body.replace(
+      '<option value="exit">',
+      '<option value="courier">ساعي المتاهة · 3 طرود والعودة للقاعدة</option><option value="exit">',
+    );
+  }
+  const missionSetup = {
+    snake: [
+      'courier',
+      'طلبات البستان · 3 توصيلات',
+      'خذ الفاكهة المطلوبة من بين ثلاثة أنواع، ثم أوصلها للمستودع. حمل الطلب يضاعف استهلاك طاقة الاندفاع. كل اختيار زائد يخصم 5 نقاط؛ الجولة حتى 80 نقطة، والتدريب حتى 50.',
+    ],
+    merge: [
+      'workshop',
+      'ورشة الدمج · صناديق وهدف 256',
+      'الصناديق ثابتة وتفصل الصفوف. كل دمج بجوار صندوق يكسر طبقة منه؛ للصندوق طبقتان. اكسرها كلها وابنِ 256 خلال 60 حركة (80 للوحة الواسعة). المهمة حتى 80 نقطة، والواسعة حتى 75؛ التراجع يعيد الصناديق والقطع.',
+    ],
+    mines: [
+      'survey',
+      'بعثة التنقيب · 4 قطع أثرية',
+      'ابحث عن قطعة أثرية في كل ربع من الحقل؛ تظهر بعد كشف خانتها الآمنة. لديك 3 مسحات للمكان المحدد تكشف عدد القطع القريبة ولا تكشف الألغام، وكل مسحة تخصم 6 نقاط. بعد جمع الأربع اختر الانسحاب حتى 60/80/90 نقطة حسب الحجم، أو نظّف الحقل كله لتحصل على نتيجته المعتادة.',
+    ],
+  };
+  if (missionSetup[id]) {
+    const [value, label, description] = missionSetup[id];
+    body += `<div class="field arcade-extra-field"><label for="arcadeMission">نوع التحدّي</label><select id="arcadeMission"><option value="classic">الجولة الكلاسيكية</option><option value="${value}">${label}</option></select><p class="note">${description}</p></div>`;
   }
   setHTML(
     wrap(
@@ -179,6 +204,7 @@ function startArcade(id) {
     boardSize: Number($('arcadeBoardSize')?.value || 4),
     safety: $('arcadeSafety')?.value || 'direct',
     vision: $('arcadeVision')?.value || 'map',
+    mission: $('arcadeMission')?.value || 'classic',
   };
   const fixed = !!(dailyRun || tourney?.active);
   if (fixed)
@@ -193,6 +219,7 @@ function startArcade(id) {
       boardSize: 4,
       safety: 'direct',
       vision: 'map',
+      mission: 'classic',
     });
   const name = player();
   clearTimers();
@@ -240,6 +267,12 @@ function startSnake() {
   s.boosting = false;
   s.boostSteps = 0;
   s.safePreview = false;
+  s.deliveryDepot = { x: 2, y: 2 };
+  s.deliveryOrders = s.mission === 'courier' ? arcadeShuffle([0, 1, 2]) : [];
+  s.deliveries = 0;
+  s.cargoKind = null;
+  s.wrongPickups = 0;
+  s.foods = [];
   s.drive = s.drive === 'step' ? 'step' : 'live';
   s.running = false;
   s.rocks = [];
@@ -248,7 +281,12 @@ function startSnake() {
       Array.from({ length: 400 }, (_, i) => ({ x: i % 20, y: Math.floor(i / 20) })),
     ).filter(
       (p) =>
-        p.x > 0 && p.y > 0 && p.x < 19 && p.y < 19 && Math.abs(p.x - 5) + Math.abs(p.y - 10) > 5,
+        p.x > 0 &&
+        p.y > 0 &&
+        p.x < 19 &&
+        p.y < 19 &&
+        Math.abs(p.x - 5) + Math.abs(p.y - 10) > 5 &&
+        (s.mission !== 'courier' || p.x !== s.deliveryDepot.x || p.y !== s.deliveryDepot.y),
     )) {
       if (s.rocks.length === 18) break;
       if (s.rocks.every((q) => Math.abs(p.x - q.x) + Math.abs(p.y - q.y) > 2)) s.rocks.push(p);
@@ -294,6 +332,19 @@ function snakeFruit() {
     }
   }
   for (let i = 0; i < s.width * s.width; i++) if (!used.has(i) && reachable.has(i)) free.push(i);
+  if (s.mission === 'courier') {
+    const choices = arcadeShuffle(
+      free.filter((i) => i !== s.deliveryDepot.y * s.width + s.deliveryDepot.x),
+    );
+    if (choices.length < 3) return false;
+    s.foods = [0, 1, 2].map((kind, k) => ({
+      kind,
+      x: choices[k] % s.width,
+      y: Math.floor(choices[k] / s.width),
+    }));
+    s.fruit = s.foods.find((food) => food.kind === s.deliveryOrders[s.deliveries]);
+    return true;
+  }
   if (!free.length) {
     s.fruit = null;
     return false;
@@ -317,12 +368,48 @@ function renderSnake() {
   );
   snakeDraw();
   arcadeSwipe($('snakeCanvas'), snakeTurn);
+  if (s.mission === 'courier') {
+    document
+      .querySelector('.arcade-panel')
+      .insertAdjacentHTML(
+        'afterbegin',
+        '<div id="snakeMissionPanel" class="arcade-mission" role="status"></div>',
+      );
+    snakeCourierUI();
+    $('snakeCanvas').setAttribute(
+      'aria-label',
+      'طلبات البستان: أنت الثعبان. التفاح رقم 1 والتوت رقم 2 والبرتقال رقم 3. المستودع الأزرق في أعلى اليسار. اختر النوع المطلوب ثم أوصله للمستودع.',
+    );
+  }
   $('snakeStatus').insertAdjacentHTML(
     'afterend',
     s.drive === 'step'
       ? '<div class="actions"><button id="snakePreviewButton" onclick="snakePreview()" aria-pressed="false">◉ اتجاهات الخطوة الآمنة</button></div><p id="snakeForecast" class="note center" role="status"></p>'
       : '<div class="snake-engine"><label for="snakeEnergy">طاقة الاندفاع <span id="snakeEnergyLabel">100٪</span></label><progress id="snakeEnergy" max="100" value="100"></progress><button id="snakeBoostButton" onpointerdown="snakeBoost(true,event)" onpointerup="snakeBoost(false,event)" onpointercancel="snakeBoost(false,event)" onlostpointercapture="snakeBoost(false,event)" onclick="if(event.detail===0)snakeBoost(!state.boosting)" aria-pressed="false" aria-describedby="snakeBoostNote">⚡ اضغط باستمرار للاندفاع</button><p id="snakeBoostNote" class="note">Shift أو ضغط مستمر · سرعة أعلى مقابل الطاقة · تتجدد بالحركة العادية</p></div>',
   );
+}
+const snakeFoodNames = ['تفاح', 'توت', 'برتقال'];
+const snakeFoodIcons = ['🍎', '🫐', '🍊'];
+function snakeFoodAt(head, s = state) {
+  return s.mission === 'courier'
+    ? s.foods.find((food) => food.x === head.x && food.y === head.y)
+    : s.fruit && head.x === s.fruit.x && head.y === s.fruit.y
+      ? s.fruit
+      : null;
+}
+function snakeCourierUI() {
+  const s = state,
+    panel = $('snakeMissionPanel');
+  if (!panel) return;
+  const kind = s.deliveryOrders[s.deliveries];
+  const signature = `${s.deliveries}:${s.cargoKind}:${s.wrongPickups}`;
+  if (panel.dataset.signature === signature) return;
+  panel.dataset.signature = signature;
+  $('snakeStatus').textContent =
+    s.cargoKind !== null
+      ? 'الطلب معك؛ عد للمستودع الأزرق لتسليمه.'
+      : `اجمع النوع ${kind + 1} المطلوب ثم أوصله للمستودع. التوصيل هو هدف الجولة.`;
+  panel.innerHTML = `<div class="arcade-mission-head"><b>طلبات البستان · ${s.deliveries}/3 توصيلات</b><span>${s.cargoKind !== null ? '📦 الطلب معك' : snakeFoodIcons[kind] || '✓'}</span></div><progress max="3" value="${s.deliveries}" aria-label="الطلبات المسلّمة"></progress><p>${s.cargoKind !== null ? `أوصل ${snakeFoodNames[s.cargoKind]} للمستودع الأزرق في أعلى يسار اللوحة. الاندفاع يستهلك 16٪ طاقة لكل خطوة أثناء الحمل.` : s.deliveries < 3 ? `الطلب ${s.deliveries + 1}: اجمع ${snakeFoodNames[kind]} ثم عد إلى المستودع. الفاكهة الأخرى تزيد طولك وتخصم 5 نقاط.` : 'سلّمت الطلبات الثلاثة!'} · اختيارات زائدة: ${s.wrongPickups}</p><div class="arcade-mission-stamps">${s.deliveryOrders.map((food, i) => `<span class="${i < s.deliveries ? 'complete' : i === s.deliveries ? 'current' : ''}">${snakeFoodIcons[food]} ${food + 1} · ${i < s.deliveries ? 'تم التسليم' : `طلب ${i + 1}`}</span>`).join('')}</div>`;
 }
 function snakeInterval(s = state) {
   return Math.max(35, Math.round(s.stepMs * (s.boosting && s.energy > 0 ? 0.55 : 1)));
@@ -357,7 +444,7 @@ function snakeNext(dir, s = state) {
     head.x = (head.x + s.width) % s.width;
     head.y = (head.y + s.width) % s.width;
   }
-  const eats = s.fruit && head.x === s.fruit.x && head.y === s.fruit.y;
+  const eats = snakeFoodAt(head, s);
   return {
     ...head,
     safe:
@@ -423,7 +510,7 @@ function snakeStep() {
     s.crash = { ...head, kind: 'edge' };
     return snakeEnd('اصطدمت بالحافة 🐍');
   }
-  const eat = s.fruit && head.x === s.fruit.x && head.y === s.fruit.y,
+  const eat = snakeFoodAt(head, s),
     body = eat ? s.snake : s.snake.slice(0, -1);
   if ([...body, ...s.rocks].some((p) => p.x === head.x && p.y === head.y)) {
     s.crash = {
@@ -440,7 +527,7 @@ function snakeStep() {
   if (s.drive === 'live') {
     if (s.boosting) {
       s.boostSteps++;
-      s.energy = Math.max(0, s.energy - 8);
+      s.energy = Math.max(0, s.energy - (s.mission === 'courier' && s.cargoKind !== null ? 16 : 8));
       if (!s.energy) s.boosting = false;
     } else s.energy = Math.min(100, s.energy + 3);
     snakeEngineUI();
@@ -452,15 +539,31 @@ function snakeStep() {
     if (s.pace !== 'steady')
       s.stepMs = Math.max(60, Math.round(s.speed * Math.pow(0.9, s.level - 1)));
     tone();
-    if (!snakeFruit()) return snakeEnd('ملأت العالم كله! 🏆', true);
+    if (s.mission === 'courier') {
+      s.foods = s.foods.filter((food) => food !== eat);
+      if (s.cargoKind === null && eat.kind === s.deliveryOrders[s.deliveries])
+        s.cargoKind = eat.kind;
+      else s.wrongPickups++;
+      s.fruit = s.foods.find((food) => food.kind === s.deliveryOrders[s.deliveries]) || null;
+    } else if (!snakeFruit()) return snakeEnd('ملأت العالم كله! 🏆', true);
     $('snakeFruitCount').textContent = s.fruitCount;
     $('snakeLength').textContent = s.snake.length;
     $('snakeStatus').textContent =
       s.drive === 'step'
-        ? `تدريب · ${s.steps} خطوة · نقطتان لكل فاكهة. اختر الاتجاه التالي على راحتك.`
+        ? `تدريب · ${s.steps} خطوة · ${s.mission === 'courier' ? 'سلّم الطلبات لتجمع النقاط' : 'نقطتان لكل فاكهة'}. اختر الاتجاه التالي على راحتك.`
         : s.pace === 'steady'
           ? 'سرعة ثابتة · فاكهة أخرى تزيد طولك!'
           : `المستوى ${s.level} · ${5 - (s.fruitCount % 5)} فواكه للمستوى التالي.`;
+  }
+  if (s.mission === 'courier') {
+    if (s.cargoKind !== null && head.x === s.deliveryDepot.x && head.y === s.deliveryDepot.y) {
+      s.deliveries++;
+      s.cargoKind = null;
+      tone();
+      if (s.deliveries === 3) return snakeEnd('سلّمت طلبات البستان الثلاثة! 📦', true);
+      if (!snakeFruit()) return snakeEnd('امتلأ البستان قبل إكمال التوصيل');
+    }
+    snakeCourierUI();
   }
   snakeDraw();
 }
@@ -488,16 +591,51 @@ function snakeDraw() {
     c.fillStyle = '#91a2b3';
     c.fillRect(p.x * u + 5, p.y * u + 5, u - 14, 5);
   }
-  if (s.fruit) {
-    c.fillStyle = '#ffac8b';
+  if (s.mission === 'courier') {
+    const p = s.deliveryDepot;
+    c.fillStyle = '#8ad7ff';
+    c.fillRect(p.x * u + 3, p.y * u + 3, u - 6, u - 6);
+    c.strokeStyle = '#113b55';
+    c.lineWidth = 2;
+    c.strokeRect(p.x * u + u * 0.3, p.y * u + u * 0.45, u * 0.4, u * 0.35);
     c.beginPath();
-    c.arc((s.fruit.x + 0.5) * u, (s.fruit.y + 0.5) * u, u * 0.34, 0, Math.PI * 2);
+    c.moveTo(p.x * u + u * 0.2, p.y * u + u * 0.45);
+    c.lineTo(p.x * u + u * 0.5, p.y * u + u * 0.2);
+    c.lineTo(p.x * u + u * 0.8, p.y * u + u * 0.45);
+    c.stroke();
+  }
+  for (const fruit of s.mission === 'courier' ? s.foods : s.fruit ? [s.fruit] : []) {
+    c.fillStyle =
+      s.mission === 'courier' ? ['#ff8d94', '#b7a0f9', '#ffc275'][fruit.kind] : '#ffac8b';
+    c.beginPath();
+    c.arc((fruit.x + 0.5) * u, (fruit.y + 0.5) * u, u * 0.34, 0, Math.PI * 2);
     c.fill();
     c.fillStyle = '#bcf7b5';
-    c.fillRect((s.fruit.x + 0.52) * u, (s.fruit.y + 0.08) * u, 6, 9);
+    c.fillRect((fruit.x + 0.52) * u, (fruit.y + 0.08) * u, 6, 9);
+    if (
+      s.mission === 'courier' &&
+      fruit.kind === s.deliveryOrders[s.deliveries] &&
+      s.cargoKind === null
+    ) {
+      c.strokeStyle = '#fff2c7';
+      c.lineWidth = 2;
+      c.strokeRect(fruit.x * u + 2, fruit.y * u + 2, u - 4, u - 4);
+    }
+    if (s.mission === 'courier') {
+      c.fillStyle = '#1f2030';
+      c.font = `bold ${u * 0.42}px Arial`;
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText(fruit.kind + 1, (fruit.x + 0.5) * u, (fruit.y + 0.5) * u);
+    }
   }
   s.snake.forEach((p, i) => {
-    c.fillStyle = i === 0 ? '#d8ffd4' : '#73d7a5';
+    c.fillStyle =
+      i === 0
+        ? s.mission === 'courier' && s.cargoKind !== null
+          ? '#ffd194'
+          : '#d8ffd4'
+        : '#73d7a5';
     c.fillRect(p.x * u + 2, p.y * u + 2, u - 4, u - 4);
   });
   if (s.safePreview && !s.done && !s.crash) {
@@ -555,11 +693,21 @@ function snakeEnd(title, full = false) {
   if (screen !== 'snake' || !state || state.done) return;
   const s = state,
     points =
-      s.drive === 'step'
-        ? Math.min(50, s.fruitCount * 2)
-        : full
-          ? 100
-          : Math.min(100, s.fruitCount * ({ 240: 3, 150: 5, 90: 7 }[s.speed] || 5));
+      s.mission === 'courier'
+        ? Math.max(
+            0,
+            (s.deliveries === 3
+              ? s.drive === 'step'
+                ? 50
+                : 80
+              : s.deliveries * (s.drive === 'step' ? 15 : 25)) -
+              s.wrongPickups * 5,
+          )
+        : s.drive === 'step'
+          ? Math.min(50, s.fruitCount * 2)
+          : full
+            ? 100
+            : Math.min(100, s.fruitCount * ({ 240: 3, 150: 5, 90: 7 }[s.speed] || 5));
   snakeDraw();
   const snapshot = arcadeCanvasSnapshot(
       'snakeCanvas',
@@ -575,47 +723,87 @@ function snakeEnd(title, full = false) {
             : 'حافظ على مسار واسع يسمح لجسمك بالتحرك بعيداً عن الفاكهة القادمة.';
   finishExtra(
     title,
-    `جمعت ${s.fruitCount} فاكهة، ووصل طولك إلى ${s.snake.length} خلال ${arcadeTimeText(s.running ? arcadeSeconds(s) : 0)}.${s.drive === 'step' ? ' جولة تدريب: نقطتان لكل فاكهة، حتى 50 نقطة.' : ''}`,
+    `جمعت ${s.fruitCount} فاكهة، ووصل طولك إلى ${s.snake.length} خلال ${arcadeTimeText(s.running ? arcadeSeconds(s) : 0)}.${s.mission === 'courier' ? ` سلّمت ${s.deliveries}/3 طلبات؛ خصم الاختيارات الزائدة ${s.wrongPickups * 5} نقاط.` : s.drive === 'step' ? ' جولة تدريب: نقطتان لكل فاكهة، حتى 50 نقطة.' : ''}`,
     points,
   );
   arcadeReview(
     'راجع مسارك 🐍',
-    `<div class="arcade-review-facts"><span>${s.steps} خطوة</span><span>${s.turns} منعطف</span><span>المستوى ${s.level}</span>${s.drive === 'live' ? `<span>${s.boostSteps || 0} خطوات اندفاع</span>` : ''}</div><p class="muted">${advice}</p>${snapshot}`,
+    `<div class="arcade-review-facts"><span>${s.steps} خطوة</span><span>${s.turns} منعطف</span><span>المستوى ${s.level}</span>${s.mission === 'courier' ? `<span>${s.deliveries}/3 طلبات مسلّمة</span><span>${s.wrongPickups} اختيارات زائدة · −${s.wrongPickups * 5}</span>` : ''}${s.drive === 'live' ? `<span>${s.boostSteps || 0} خطوات اندفاع</span>` : ''}</div><p class="muted">${advice}</p>${snapshot}`,
   );
 }
 
 // 2048: pure slide/merge, one snapshot per effective move, and no spawn on no-op moves.
 function mergeSlide(board, dir) {
   const next = [...board],
-    size = Math.sqrt(board.length);
+    size = Math.sqrt(board.length),
+    merged = [];
   let gained = 0;
-  const merged = [];
   if (!arcadeDelta[dir] || !Number.isInteger(size))
     return { board: next, gained, merged, changed: false };
+  const slideSegment = (indices) => {
+    const values = indices.map((i) => board[i]).filter((v) => v > 0),
+      out = [];
+    for (let k = 0; k < values.length; k++) {
+      if (values[k] === values[k + 1]) {
+        out.push(values[k] * 2);
+        gained += values[k] * 2;
+        merged.push(indices[out.length - 1]);
+        k++;
+      } else out.push(values[k]);
+    }
+    indices.forEach((i, k) => (next[i] = out[k] || 0));
+  };
   for (let line = 0; line < size; line++) {
-    const indices = Array.from({ length: size }, (_, k) =>
+    let segment = [];
+    for (let k = 0; k < size; k++) {
+      const index =
         dir === 'left'
           ? line * size + k
           : dir === 'right'
             ? line * size + size - 1 - k
             : dir === 'up'
               ? k * size + line
-              : (size - 1 - k) * size + line,
-      ),
-      values = indices.map((i) => board[i]).filter(Boolean),
-      out = [];
-    for (let k = 0; k < values.length; k++) {
-      if (values[k] === values[k + 1]) {
-        const v = values[k] * 2;
-        out.push(v);
-        gained += v;
-        merged.push(indices[out.length - 1]);
-        k++;
-      } else out.push(values[k]);
+              : (size - 1 - k) * size + line;
+      if (board[index] < 0) {
+        slideSegment(segment);
+        segment = [];
+      } else segment.push(index);
     }
-    indices.forEach((i, k) => (next[i] = out[k] || 0));
+    slideSegment(segment);
   }
   return { board: next, gained, merged, changed: next.some((v, i) => v !== board[i]) };
+}
+function mergeWorkshopDamage(move, s = state) {
+  const crateHP = { ...(s?.crateHP || {}) },
+    board = [...move.board],
+    size = Math.sqrt(board.length);
+  let broken = 0,
+    hits = 0;
+  if (s?.mission === 'workshop')
+    for (const key of Object.keys(crateHP)) {
+      const index = Number(key),
+        neighbours = [];
+      if (index % size) neighbours.push(index - 1);
+      if (index % size < size - 1) neighbours.push(index + 1);
+      if (index >= size) neighbours.push(index - size);
+      if (index + size < board.length) neighbours.push(index + size);
+      const damage = move.merged.filter((i) => neighbours.includes(i)).length;
+      if (!damage) continue;
+      hits += Math.min(crateHP[index], damage);
+      crateHP[index] -= damage;
+      if (crateHP[index] <= 0) {
+        delete crateHP[index];
+        board[index] = 0;
+        broken++;
+      }
+    }
+  return { ...move, board, crateHP, broken, hits };
+}
+function mergeMissionUI() {
+  const s = state,
+    panel = $('mergeMissionPanel');
+  if (!panel) return;
+  panel.innerHTML = `<div class="arcade-mission-head"><b>ورشة الدمج · اكسر الصناديق وابنِ 256</b><span>${Math.max(0, s.moveLimit - s.moves)} حركة</span></div><progress max="${s.crateTotal}" value="${s.cratesBroken}" aria-label="الصناديق المكسورة"></progress><p>${s.cratesBroken}/${s.crateTotal} صناديق مكسورة · أكبر قطعة ${Math.max(...s.board)}/256. الدمج بجوار الصندوق يكسر طبقة؛ الخانات لا تعبر خلاله. كل حركة فعالة تُحسب والتراجع يعيد حالتها.</p>`;
 }
 function mergeSpawnToken(s = state) {
   s.spawnTape ||= [];
@@ -644,13 +832,20 @@ function startMerge() {
   const s = state;
   s.boardSize = s.boardSize === 5 ? 5 : 4;
   s.board = Array(s.boardSize * s.boardSize).fill(0);
+  const crates = s.mission === 'workshop' ? (s.boardSize === 5 ? [6, 8, 16, 18] : [5, 10]) : [];
+  s.crateHP = Object.fromEntries(crates.map((index) => [index, 2]));
+  s.crateTotal = crates.length;
+  s.cratesBroken = 0;
+  s.crateHits = 0;
+  s.moveLimit = s.boardSize === 5 ? 80 : 60;
+  for (const index of crates) s.board[index] = -1;
   s.spawnTape = [];
   s.spawnCursor = 0;
   s.score = 0;
   s.moves = 0;
   s.history = null;
   s.undoStack = [];
-  s.goal = [1024, 2048, 4096].includes(s.goal) ? s.goal : 2048;
+  s.goal = s.mission === 'workshop' ? 256 : [1024, 2048, 4096].includes(s.goal) ? s.goal : 2048;
   s.won = false;
   s.continuing = false;
   s.over = false;
@@ -665,7 +860,13 @@ function startMerge() {
   arcadeClock(s);
 }
 function mergeBoardHTML(s = state, id = 'mergeBoard') {
-  return `<div id="${id}" class="merge-board" data-size="${Math.sqrt(s.board.length)}" style="--merge-size:${Math.sqrt(s.board.length)}" role="img" aria-label="لوحة 2048: ${s.board.map((v) => v || 'فارغة').join('، ')}">${s.board.map((v, i) => `<div class="merge-cell ${v ? 'has-number' : ''} ${i === s.newTile ? 'tile-new' : ''} ${s.merged.includes(i) ? 'tile-merged' : ''}" data-value="${v}" style="--tile-level:${v ? Math.min(11, Math.log2(v)) : 0}">${v ? `<b class="${v >= 1024 ? 'compact' : ''}">${v}</b>` : ''}</div>`).join('')}</div>`;
+  const cells = s.board
+    .map(
+      (v, i) =>
+        `<div class="merge-cell ${v > 0 ? 'has-number' : v < 0 ? 'merge-crate' : ''} ${i === s.newTile ? 'tile-new' : ''} ${s.merged.includes(i) ? 'tile-merged' : ''}" data-value="${v}" style="--tile-level:${v > 0 ? Math.min(11, Math.log2(v)) : 0}" ${v < 0 ? `aria-label="صندوق، ${s.crateHP?.[i] || 0} طبقات"` : ''}>${v > 0 ? `<b class="${v >= 1024 ? 'compact' : ''}">${v}</b>` : v < 0 ? `<span aria-hidden="true">▣</span><small>${s.crateHP?.[i] || 0}</small>` : ''}</div>`,
+    )
+    .join('');
+  return `<div id="${id}" class="merge-board" data-size="${Math.sqrt(s.board.length)}" style="--merge-size:${Math.sqrt(s.board.length)}" role="img" aria-label="لوحة 2048: ${s.board.map((v) => (v < 0 ? 'صندوق' : v || 'فارغة')).join('، ')}">${cells}</div>`;
 }
 function renderMerge() {
   const s = state;
@@ -684,6 +885,11 @@ function renderMerge() {
     );
     // The board remains mounted so a swipe keeps pointer capture and controls keep focus.
     arcadeSwipe($('mergeBoard'), mergeMove, { single: true });
+    if (s.mission === 'workshop')
+      $('mergeLivePanel').insertAdjacentHTML(
+        'afterbegin',
+        '<div id="mergeMissionPanel" class="arcade-mission" role="status"></div>',
+      );
   }
   const template = document.createElement('template');
   template.innerHTML = mergeBoardHTML(s);
@@ -697,6 +903,7 @@ function renderMerge() {
   $('mergeTop').textContent = Math.max(...s.board);
   $('mergeMoves').textContent = s.moves;
   $('mergeStatus').textContent = s.feedback;
+  mergeMissionUI();
   const top = Math.max(...s.board),
     progress = Math.min(
       100,
@@ -722,24 +929,24 @@ function renderMerge() {
   for (const button of $('mergeLivePanel').querySelectorAll('.arcade-directions button'))
     button.disabled = blocked;
   $('mergeOverlay').innerHTML = blocked
-    ? `<div class="arcade-overlay"><div><span class="arcade-big-icon">${s.over ? '🧱' : '🏆'}</span><h3>${s.over ? 'لا توجد حركة متاحة' : `وصلت إلى ${s.goal}!`}</h3><p>${s.over ? 'تراجع عن الحركة الأخيرة أو احفظ نتيجتك.' : 'واصل اللعب للوصول إلى أرقام أكبر.'}</p><div class="actions">${s.over ? `<button onclick="mergeUndo()" ${!s.history ? 'disabled' : ''}>↶ تراجع</button>` : '<button class="primary" onclick="mergeContinue()">واصل اللعب</button>'}<button onclick="mergeEnd()">احفظ النتيجة</button></div></div></div>`
+    ? `<div class="arcade-overlay"><div><span class="arcade-big-icon">${s.over ? '🧱' : '🏆'}</span><h3>${s.over ? (s.mission === 'workshop' && s.moves >= s.moveLimit ? 'انتهى رصيد الحركات' : 'لا توجد حركة متاحة') : s.mission === 'workshop' ? 'اكتملت ورشة الدمج!' : `وصلت إلى ${s.goal}!`}</h3><p>${s.over ? 'تراجع عن الحركة الأخيرة أو احفظ نتيجتك.' : s.mission === 'workshop' ? 'كسرت الصناديق وبنيت 256 ضمن رصيد الحركات.' : 'واصل اللعب للوصول إلى أرقام أكبر.'}</p><div class="actions">${s.over ? `<button onclick="mergeUndo()" ${!s.history ? 'disabled' : ''}>↶ تراجع</button>` : s.mission === 'workshop' ? '' : '<button class="primary" onclick="mergeContinue()">واصل اللعب</button>'}<button onclick="mergeEnd()">احفظ النتيجة</button></div></div></div>`
     : '';
 }
 function mergeForecast(dir) {
   if (!arcadeReady('merge') || state.over || (state.won && !state.continuing) || !arcadeDelta[dir])
     return;
   const s = state,
-    move = mergeSlide(s.board, dir);
+    move = mergeWorkshopDamage(mergeSlide(s.board, dir), s);
   if (!move.changed) return;
   s.forecast = { dir };
   for (const button of $('mergeForecastChoices').querySelectorAll('button'))
     button.setAttribute('aria-pressed', button.getAttribute('onclick').includes(`'${dir}'`));
   const preview = mergeBoardHTML(
-    { ...s, board: move.board, newTile: -1, merged: move.merged },
+    { ...s, board: move.board, crateHP: move.crateHP, newTile: -1, merged: move.merged },
     'mergePreviewBoard',
   );
   $('mergeForecast').innerHTML =
-    `<div class="arcade-review-facts"><span>+${fmt(move.gained)} نقطة دمج</span><span>${move.board.filter((v) => !v).length} خانات قبل القطعة الجديدة</span></div>${preview}<button class="primary merge-apply" onclick="mergeApplyForecast()">نفّذ الحركة المعاينة</button>`;
+    `<div class="arcade-review-facts"><span>+${fmt(move.gained)} نقطة دمج</span><span>${move.board.filter((v) => !v).length} خانات قبل القطعة الجديدة</span>${s.mission === 'workshop' ? `<span>${move.hits} طبقات و${move.broken} صناديق تكسرها هذه الحركة</span>` : ''}</div>${preview}<button class="primary merge-apply" onclick="mergeApplyForecast()">نفّذ الحركة المعاينة</button>`;
 }
 // This coach evaluates only the visible board, without advancing the spawn stream.
 function mergeRecommend() {
@@ -748,12 +955,12 @@ function mergeRecommend() {
     corners = [0, size - 1, size * (size - 1), size * size - 1];
   const ranked = Object.keys(arcadeDelta)
     .map((dir) => {
-      const move = mergeSlide(state.board, dir),
+      const move = mergeWorkshopDamage(mergeSlide(state.board, dir)),
         empty = move.board.filter((v) => !v).length,
         top = Math.max(...move.board);
       let pairs = 0;
       for (let i = 0; i < move.board.length; i++)
-        if (move.board[i]) {
+        if (move.board[i] > 0) {
           if (i % size < size - 1 && move.board[i] === move.board[i + 1]) pairs++;
           if (i + size < move.board.length && move.board[i] === move.board[i + size]) pairs++;
         }
@@ -765,6 +972,8 @@ function mergeRecommend() {
         anchored: corners.some((i) => move.board[i] === top),
         rank:
           empty * 30 +
+          move.hits * 20 +
+          move.broken * 35 +
           pairs * 8 +
           Math.log2(Math.max(1, move.gained)) * 4 +
           (corners.some((i) => move.board[i] === top) ? 12 : 0),
@@ -786,7 +995,7 @@ function mergeMove(dir) {
   if (!arcadeReady('merge') || !arcadeDelta[dir] || state.over || (state.won && !state.continuing))
     return;
   const s = state,
-    move = mergeSlide(s.board, dir);
+    move = mergeWorkshopDamage(mergeSlide(s.board, dir), s);
   if (!move.changed) {
     s.feedback = 'هذا الاتجاه لا يغيّر اللوحة. جرّب اتجاهاً آخر.';
     $('mergeStatus').textContent = s.feedback;
@@ -800,19 +1009,30 @@ function mergeMove(dir) {
     continuing: s.continuing,
     bestGain: s.bestGain,
     spawnCursor: s.spawnCursor,
+    crateHP: { ...s.crateHP },
+    cratesBroken: s.cratesBroken,
+    crateHits: s.crateHits,
   };
   s.undoStack.push(snapshot);
   if (s.undoStack.length > 5) s.undoStack.shift();
   s.history = snapshot;
   s.board = move.board;
+  s.crateHP = move.crateHP;
+  s.cratesBroken += move.broken;
+  s.crateHits += move.hits;
   s.score += move.gained;
   s.bestGain = Math.max(s.bestGain, move.gained);
   s.forecast = null;
   s.moves++;
   s.merged = move.merged;
   s.newTile = mergeSpawn(s);
-  if (s.board.some((v) => v >= s.goal)) s.won = true;
-  s.over = !mergePossible(s.board);
+  if (
+    s.board.some((v) => v >= s.goal) &&
+    (s.mission !== 'workshop' || !Object.keys(s.crateHP).length)
+  )
+    s.won = true;
+  s.over =
+    !mergePossible(s.board) || (s.mission === 'workshop' && !s.won && s.moves >= s.moveLimit);
   const free = s.board.filter((v) => !v).length;
   s.feedback = `${move.gained ? `+${fmt(move.gained)} نقطة دمج · ` : ''}هدف ${s.goal} · ${free} خانات فارغة${free < 3 ? '؛ انتبه، المساحة ضيقة.' : '.'}`;
   if (move.gained) tone();
@@ -832,7 +1052,7 @@ function mergeUndo() {
   renderMerge();
 }
 function mergeContinue() {
-  if (!arcadeReady('merge') || !state.won || state.over) return;
+  if (!arcadeReady('merge') || !state.won || state.over || state.mission === 'workshop') return;
   state.continuing = true;
   state.forecast = null;
   state.feedback = `حققت هدف ${state.goal}! أكمل لبناء قطعة أكبر.`;
@@ -841,21 +1061,31 @@ function mergeContinue() {
 function mergeEnd() {
   if (!arcadeReady('merge')) return;
   const s = state,
-    rawPoints = s.won
-      ? { 1024: 75, 2048: 100, 4096: 100 }[s.goal]
-      : Math.min(s.goal === 1024 ? 70 : 95, Math.floor(s.score / 20)),
+    rawPoints =
+      s.mission === 'workshop'
+        ? s.won
+          ? 80
+          : Math.min(
+              60,
+              Math.round(
+                (s.cratesBroken / s.crateTotal) * 40 + Math.min(1, Math.max(...s.board) / 256) * 20,
+              ),
+            )
+        : s.won
+          ? { 1024: 75, 2048: 100, 4096: 100 }[s.goal]
+          : Math.min(s.goal === 1024 ? 70 : 95, Math.floor(s.score / 20)),
     points = s.boardSize === 5 ? Math.min(75, rawPoints) : rawPoints,
     snapshot = mergeBoardHTML(s);
   finishExtra(
     s.won ? 'بطل الدمج 🏆' : 'انتهت جولة الدمج',
-    `جمعت ${fmt(s.score)} نقطة دمج خلال ${s.moves} حركة. أكبر قطعة: ${Math.max(...s.board)}. هدف الجولة: ${s.goal}.${s.boardSize === 5 ? ' لوحة واسعة: النتيجة العامة حتى 75 نقطة.' : ''}`,
+    `جمعت ${fmt(s.score)} نقطة دمج خلال ${s.moves} حركة. أكبر قطعة: ${Math.max(...s.board)}. هدف الجولة: ${s.goal}.${s.mission === 'workshop' ? ` كسرت ${s.cratesBroken}/${s.crateTotal} صناديق خلال ${s.moves}/${s.moveLimit} حركة؛ المهمة حتى 80 نقطة.` : ''}${s.boardSize === 5 ? ' لوحة واسعة: النتيجة العامة حتى 75 نقطة.' : ''}`,
     points,
   );
   $('app')
     .querySelector('.play')
     .insertAdjacentHTML(
       'beforeend',
-      `<section class="panel arcade-panel arcade-review"><h3 class="center">لوحتك الأخيرة</h3><div class="arcade-review-facts"><span>أفضل حركة: +${fmt(s.bestGain)}</span><span>${s.board.filter((v) => !v).length} خانات فارغة</span></div><p class="muted">${s.over ? 'امتلأت اللوحة بدون قطعتين متساويتين متجاورتين. حاول إبقاء أكبر قطعة في زاوية وفتح مساحة في الصف المقابل.' : 'راقب الخانات الفارغة مع نقاط الدمج. دمج أكثر من زوج في الحركة نفسها يفتح مساحة للقطع القادمة.'}</p>${snapshot}</section>`,
+      `<section class="panel arcade-panel arcade-review"><h3 class="center">لوحتك الأخيرة</h3><div class="arcade-review-facts"><span>أفضل حركة: +${fmt(s.bestGain)}</span><span>${s.board.filter((v) => !v).length} خانات فارغة</span>${s.mission === 'workshop' ? `<span>${s.cratesBroken}/${s.crateTotal} صناديق مكسورة</span><span>${s.crateHits} طبقات أزلتها</span>` : ''}</div><p class="muted">${s.mission === 'workshop' ? (s.won ? 'أنجزت الهدفين قبل نفاد الحركات. توزيع الدمج حول الصناديق فتح المساحة لبناء القطعة المطلوبة.' : s.moves >= s.moveLimit ? 'نفد رصيد الحركات قبل إكمال الهدفين. وجّه الدمج نحو الصناديق أولاً، واحفظ مساحة لبناء 256.' : 'الصناديق تفصل الصفوف والأعمدة. اختر دمجاً بجوارها لتزيل طبقاتها وتفتح ممرات ومساحة جديدة.') : s.over ? 'امتلأت اللوحة بدون قطعتين متساويتين متجاورتين. حاول إبقاء أكبر قطعة في زاوية وفتح مساحة في الصف المقابل.' : 'راقب الخانات الفارغة مع نقاط الدمج. دمج أكثر من زوج في الحركة نفسها يفتح مساحة للقطع القادمة.'}</p>${snapshot}</section>`,
     );
 }
 
@@ -882,6 +1112,11 @@ function startMines() {
   s.questionMode = false;
   s.pendingChord = null;
   s.mineScale = 1;
+  s.relics = new Set();
+  s.foundRelics = new Set();
+  s.scans = 0;
+  s.scanReports = new Map();
+  s.extracted = false;
   s.flagMode = false;
   s.generated = false;
   s.clockRunning = false;
@@ -903,8 +1138,70 @@ function mineGenerate(first) {
     s.mines.has(i) ? -1 : mineNeighbours(i, s.size).filter((j) => s.mines.has(j)).length,
   );
   s.generated = true;
+  if (s.mission === 'survey') mineSurveyGenerate(first, s);
   s.clockRunning = true;
   s.started = Date.now();
+}
+function mineSurveyGenerate(first, s = state) {
+  const avoid = new Set([first, ...mineNeighbours(first, s.size)]),
+    half = s.size / 2;
+  s.relics = new Set();
+  for (let quadrant = 0; quadrant < 4; quadrant++) {
+    const safe = s.board
+      .map((v, i) =>
+        v >= 0 &&
+        (Math.floor(i / s.size) >= half ? 2 : 0) + (i % s.size >= half ? 1 : 0) === quadrant
+          ? i
+          : null,
+      )
+      .filter((i) => i !== null);
+    const preferred = safe.filter((i) => !avoid.has(i)),
+      choices = preferred.length ? preferred : safe;
+    s.relics.add(choices[arcadeRand(choices.length, s)]);
+  }
+}
+// A detector reports artifacts only; it never reads hidden mine positions or counts.
+function mineSurveyReading(index, s = state) {
+  const cells = [index, ...mineNeighbours(index, s.size)];
+  return { cells, count: cells.filter((i) => s.relics.has(i) && !s.foundRelics.has(i)).length };
+}
+function mineScan() {
+  if (!arcadeReady('mines') || state.mission !== 'survey' || state.scans >= 3) return;
+  const s = state;
+  if (!s.generated) {
+    s.feedback = 'ابدأ بالكشف الآمن أولاً، ثم حدد مكان المسحة بالأسهم أو بلمس خانة.';
+    $('mineStatus').textContent = s.feedback;
+    return;
+  }
+  const reading = mineSurveyReading(s.selected),
+    signature = `${s.selected}:${[...s.foundRelics].sort((a, b) => a - b).join(',')}`;
+  if (s.scanReports.has(signature)) {
+    s.feedback = 'مسحت هذا المكان بالفعل ولم تجمع قطعة جديدة منذ ذلك. لا نخصم مسحة أخرى.';
+    $('mineStatus').textContent = s.feedback;
+    return;
+  }
+  s.scans++;
+  s.scanReports.set(signature, reading.count);
+  s.highlight = new Set(reading.cells);
+  s.pendingChord = null;
+  s.deduction = null;
+  s.feedback = `المسحة في الصف ${Math.floor(s.selected / s.size) + 1}، العمود ${(s.selected % s.size) + 1}: ${reading.count} قطع غير مكتشفة في الخانة وجيرانها المميزة. هذا لا يدل على أماكن الألغام. خصم المسحة: 6 نقاط.`;
+  renderMines();
+}
+function mineExtract() {
+  if (!arcadeReady('mines') || state.mission !== 'survey' || state.foundRelics.size !== 4) return;
+  state.extracted = true;
+  mineFinish(true);
+}
+function mineSurveyHTML(s = state) {
+  if (s.mission !== 'survey') return '';
+  const half = s.size / 2,
+    found = new Set(
+      [...s.foundRelics].map(
+        (i) => (Math.floor(i / s.size) >= half ? 2 : 0) + (i % s.size >= half ? 1 : 0),
+      ),
+    );
+  return `<div class="arcade-mission" role="status"><div class="arcade-mission-head"><b>بعثة التنقيب · ${s.foundRelics.size}/4 آثار</b><span>مسحات ${3 - s.scans}</span></div><progress max="4" value="${s.foundRelics.size}" aria-label="القطع الأثرية المجموعة"></progress><div class="arcade-mission-stamps">${['شمال غرب', 'شمال شرق', 'جنوب غرب', 'جنوب شرق'].map((label, i) => `<span class="${found.has(i) ? 'complete' : ''}">${found.has(i) ? '◆' : '◇'} ${label}</span>`).join('')}</div><p>قطعة واحدة في كل ربع. المسحة تقرأ الخانة المحددة وجيرانها؛ اختر وضع تحديد المسحة ثم اضغط المكان دون كشفه، أو تنقل بالأسهم. كشف كل الخانات الآمنة يفوز أيضاً.</p><div class="actions"><button class="${s.scanMode ? 'warm' : ''}" onclick="mineMode('scan')" aria-pressed="${!!s.scanMode}">◉ حدّد المكان</button><button aria-label="امسح المكان المحدد مقابل 6 نقاط" onclick="mineScan()" ${s.scans >= 3 ? 'disabled' : ''}>◉ مسحة (−6)</button><button class="primary" onclick="mineExtract()" ${s.foundRelics.size !== 4 ? 'disabled' : ''}>📦 انسحاب بالآثار</button></div></div>`;
 }
 function minesBoardHTML(s = state, final = false) {
   return `<div class="mines-scroll"><div class="mines-board ${s.size === 16 ? 'mines-large' : s.size === 12 ? 'mines-medium' : ''}" style="--mine-size:${s.size};--mine-scale:${s.mineScale || 1}" role="group" aria-label="حقل الألغام">${s.board
@@ -912,9 +1209,10 @@ function minesBoardHTML(s = state, final = false) {
       const open = s.revealed.has(i),
         flag = s.flags.has(i),
         question = s.questions?.has(i),
+        relic = s.mission === 'survey' && s.relics?.has(i) && (open || final),
         bomb = final && s.mines.has(i),
         wrong = final && flag && !s.mines.has(i);
-      return `<button class="mine-cell ${open ? 'revealed' : ''} ${bomb ? 'mine-bomb' : ''} ${i === s.exploded ? 'exploded' : ''} ${flag ? 'flagged' : ''} ${question ? 'questioned' : ''} ${!final && s.highlight?.has(i) ? 'mine-neighbour' : ''} ${!final && s.deduction?.index === i ? 'mine-deduction-' + s.deduction.kind : ''} ${!final && s.deduction?.clues.includes(i) ? 'mine-clue' : ''}" ${final ? 'disabled' : `onclick="mineTap(${i})" oncontextmenu="mineContext(${i},event)"`} tabindex="${!final && s.selected === i ? '0' : '-1'}" data-index="${i}" data-count="${open || final ? v : ''}" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${bomb ? 'لغم' : wrong ? 'علم غير صحيح' : flag ? 'علم' : question ? 'علامة شك، قابلة للكشف' : open ? (v ? 'مكشوفة، ' + v + ' ألغام مجاورة' : 'خانة خالية') : 'مغلقة'}${!final && s.deduction?.index === i ? (s.deduction.kind === 'safe' ? '، آمنة بالاستنتاج' : '، لغم بالاستنتاج') : ''}">${bomb ? '✹' : wrong ? '✕' : flag ? '⚑' : question && !open ? '?' : open && v > 0 ? v : !final && s.deduction?.index === i ? (s.deduction.kind === 'safe' ? '✓' : '!') : ''}</button>`;
+      return `<button class="mine-cell ${open ? 'revealed' : ''} ${bomb ? 'mine-bomb' : ''} ${i === s.exploded ? 'exploded' : ''} ${flag ? 'flagged' : ''} ${question ? 'questioned' : ''} ${relic ? 'mine-relic' : ''} ${!final && s.scanMode && s.selected === i ? 'mine-scan-selected' : ''} ${!final && s.highlight?.has(i) ? 'mine-neighbour' : ''} ${!final && s.deduction?.index === i ? 'mine-deduction-' + s.deduction.kind : ''} ${!final && s.deduction?.clues.includes(i) ? 'mine-clue' : ''}" ${final ? 'disabled' : `onclick="mineTap(${i})" oncontextmenu="mineContext(${i},event)"`} tabindex="${!final && s.selected === i ? '0' : '-1'}" data-index="${i}" data-count="${open || final ? v : ''}" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${bomb ? 'لغم' : wrong ? 'علم غير صحيح' : flag ? 'علم' : question ? 'علامة شك، قابلة للكشف' : open ? (v ? 'مكشوفة، ' + v + ' ألغام مجاورة' : 'خانة خالية') : 'مغلقة'}${!final && s.deduction?.index === i ? (s.deduction.kind === 'safe' ? '، آمنة بالاستنتاج' : '، لغم بالاستنتاج') : ''}${relic ? '، قطعة أثرية' : ''}">${bomb ? '✹' : wrong ? '✕' : relic ? `<span aria-hidden="true">◆</span>${open && v > 0 ? `<small>${v}</small>` : ''}` : flag ? '⚑' : question && !open ? '?' : open && v > 0 ? v : !final && s.deduction?.index === i ? (s.deduction.kind === 'safe' ? '✓' : '!') : ''}</button>`;
     })
     .join('')}</div></div>`;
 }
@@ -932,7 +1230,7 @@ function renderMines() {
         ['خانات آمنة', s.revealed.size + ' / ' + (s.board.length - s.mineCount), 'mineProgress'],
         ['الوقت', arcadeTimeText(s.clockRunning ? arcadeSeconds(s) : 0), 'arcadeTime'],
       ]) +
-        `<section class="panel arcade-panel"><div class="mine-mode"><button class="${!s.flagMode && !s.questionMode ? 'primary' : ''}" onclick="mineMode(false)" aria-pressed="${!s.flagMode && !s.questionMode}">🔍 كشف الخانات</button><button class="${s.flagMode ? 'warm' : ''}" onclick="mineMode(true)" aria-pressed="${s.flagMode}">⚑ وضع الأعلام</button><button class="${s.questionMode ? 'warm' : ''}" onclick="mineMode('question')" aria-pressed="${!!s.questionMode}">؟ علامة شك</button></div><div class="mine-zoom"><label for="mineZoom">حجم الخانات</label><select id="mineZoom" onchange="mineZoom(this.value)"><option value="1" ${s.mineScale === 1 ? 'selected' : ''}>عادي</option><option value="1.25" ${s.mineScale === 1.25 ? 'selected' : ''}>تكبير 125٪</option><option value="1.5" ${s.mineScale === 1.5 ? 'selected' : ''}>تكبير 150٪</option></select></div>${minesBoardHTML(s)}<div class="arcade-status" id="mineStatus" role="status">${s.feedback}</div><div class="actions">${s.pendingChord ? `<button class="warm" onclick="mineConfirmChord()">افتح ${s.pendingChord.cells.length} جيران بعد التأكد</button>` : ''}<button id="mineHintButton" onclick="mineHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ استنتاج منطقي (${3 - s.hints})</button>${s.deduction ? '<button class="primary" onclick="mineApplyHint()">نفّذ الاستنتاج</button>' : ''}</div><p class="note center">${s.questionMode ? 'وضع الشك: اضغط خانة مغلقة لتدوين ؟ أو إزالتها؛ لا تحمي الخانة من الكشف.' : s.flagMode ? 'وضع الأعلام: اضغط خانة مغلقة لوضع علم أو إزالته.' : 'اضغط للكشف. اضغط رقماً مكشوفاً لفتح الجيران بعد وضع أعلامه.'}<br>ضغط مطول أو الفأرة اليمنى أو F للأعلام · Q للشك · الأسهم للتنقل · Enter للكشف.<br>المساعد يستخدم الأرقام المكشوفة، وكل استنتاج ناجح يخصم 8 نقاط.</p>${arcadeToolbar('mines')}</section>`,
+        `<section class="panel arcade-panel">${mineSurveyHTML(s)}<div class="mine-mode"><button class="${!s.flagMode && !s.questionMode && !s.scanMode ? 'primary' : ''}" onclick="mineMode(false)" aria-pressed="${!s.flagMode && !s.questionMode && !s.scanMode}">🔍 كشف الخانات</button><button class="${s.flagMode ? 'warm' : ''}" onclick="mineMode(true)" aria-pressed="${s.flagMode}">⚑ وضع الأعلام</button><button class="${s.questionMode ? 'warm' : ''}" onclick="mineMode('question')" aria-pressed="${!!s.questionMode}">؟ علامة شك</button></div><div class="mine-zoom"><label for="mineZoom">حجم الخانات</label><select id="mineZoom" onchange="mineZoom(this.value)"><option value="1" ${s.mineScale === 1 ? 'selected' : ''}>عادي</option><option value="1.25" ${s.mineScale === 1.25 ? 'selected' : ''}>تكبير 125٪</option><option value="1.5" ${s.mineScale === 1.5 ? 'selected' : ''}>تكبير 150٪</option></select></div>${minesBoardHTML(s)}<div class="arcade-status" id="mineStatus" role="status">${s.feedback}</div><div class="actions">${s.pendingChord ? `<button class="warm" onclick="mineConfirmChord()">افتح ${s.pendingChord.cells.length} جيران بعد التأكد</button>` : ''}<button id="mineHintButton" onclick="mineHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ استنتاج منطقي (${3 - s.hints})</button>${s.deduction ? '<button class="primary" onclick="mineApplyHint()">نفّذ الاستنتاج</button>' : ''}</div><p class="note center">${s.questionMode ? 'وضع الشك: اضغط خانة مغلقة لتدوين ؟ أو إزالتها؛ لا تحمي الخانة من الكشف.' : s.flagMode ? 'وضع الأعلام: اضغط خانة مغلقة لوضع علم أو إزالته.' : 'اضغط للكشف. اضغط رقماً مكشوفاً لفتح الجيران بعد وضع أعلامه.'}<br>ضغط مطول أو الفأرة اليمنى أو F للأعلام · Q للشك · الأسهم للتنقل · Enter للكشف.<br>المساعد يستخدم الأرقام المكشوفة، وكل استنتاج ناجح يخصم 8 نقاط.</p>${arcadeToolbar('mines')}</section>`,
     ),
   );
   const board = document.querySelector('.mines-scroll');
@@ -986,6 +1284,7 @@ function mineMode(flag) {
   if (!arcadeReady('mines')) return;
   state.flagMode = flag === true;
   state.questionMode = flag === 'question';
+  state.scanMode = flag === 'scan' && state.mission === 'survey';
   state.pendingChord = null;
   renderMines();
 }
@@ -1059,6 +1358,12 @@ function mineTap(i, forceReveal = false) {
     return;
   }
   s.selected = i;
+  if (s.scanMode && !forceReveal) {
+    s.pendingChord = null;
+    s.highlight = new Set();
+    s.feedback = `حددت الصف ${Math.floor(i / s.size) + 1}، العمود ${(i % s.size) + 1} للمسحة بدون كشفه. اضغط زر المسح؛ لم تُستهلك مسحة بعد.`;
+    return renderMines();
+  }
   if (s.pendingChord?.index !== i) s.pendingChord = null;
   if (s.questionMode && !forceReveal && !s.revealed.has(i)) return mineQuestion(i);
   if (s.flagMode && !forceReveal && !s.revealed.has(i)) return mineFlag(i);
@@ -1111,6 +1416,7 @@ function mineReveal(i) {
     if (s.revealed.has(j) || s.flags.has(j) || s.mines.has(j)) continue;
     s.questions?.delete(j);
     s.revealed.add(j);
+    if (s.relics?.has(j)) s.foundRelics.add(j);
     if (s.board[j] === 0)
       for (const v of mineNeighbours(j, s.size))
         if (!s.revealed.has(v) && !s.flags.has(v) && !s.mines.has(v)) queue.push(v);
@@ -1221,14 +1527,16 @@ function mineFinish(win) {
   const s = state,
     snapshot = minesBoardHTML(s, true),
     basePoints = win
-      ? { 8: 70, 12: 90, 16: 100 }[s.size]
+      ? s.extracted
+        ? { 8: 60, 12: 80, 16: 90 }[s.size]
+        : { 8: 70, 12: 90, 16: 100 }[s.size]
       : Math.min(20, Math.floor((s.revealed.size / (s.board.length - s.mineCount)) * 20)),
-    points = Math.max(0, basePoints - s.hints * 8),
+    points = Math.max(0, basePoints - s.hints * 8 - s.scans * 6),
     wrongFlags = [...s.flags].filter((i) => !s.mines.has(i)).length;
   finishExtra(
-    win ? 'نظّفت الحقل كله! 🏆' : 'عثرت على لغم 💣',
+    win ? (s.extracted ? 'رجعت بالآثار الأربع! 📦' : 'نظّفت الحقل كله! 🏆') : 'عثرت على لغم 💣',
     win
-      ? `كشفت جميع الخانات الآمنة خلال ${arcadeTimeText(arcadeSeconds(s))}. استخدمت ${s.hints} مساعدات منطقية (−${s.hints * 8} نقاط).`
+      ? `${s.extracted ? 'جمعت الآثار الأربع وانسحبت' : 'كشفت جميع الخانات الآمنة'} خلال ${arcadeTimeText(arcadeSeconds(s))}. استخدمت ${s.hints} مساعدات منطقية (−${s.hints * 8} نقاط).`
       : `كشفت ${s.revealed.size} خانة آمنة. لديك ${wrongFlags} أعلام خاطئة، وتظهر بعلامة × في الحقل. استخدمت ${s.hints} مساعدات منطقية (−${s.hints * 8} نقاط).`,
     points,
   );
@@ -1236,7 +1544,7 @@ function mineFinish(win) {
     .querySelector('.play')
     .insertAdjacentHTML(
       'beforeend',
-      `<section class="panel arcade-panel arcade-review"><h3 class="center">الحقل بعد الجولة</h3><p class="muted">${win ? 'كشفت كل الخانات الآمنة؛ لا يلزم وضع علم على كل لغم للفوز.' : wrongFlags ? 'العلم اختيار منك، وليس ضماناً. فتح جيران رقم يعتمد على أماكن أعلامك؛ العدد الصحيح وحده لا يكفي إذا كان علم في المكان الخطأ.' : 'عندما لا يوجد استنتاج مضمون، ابحث عن أرقام أخرى تساعدك قبل المخاطرة بخانة مغلقة.'}</p>${snapshot}</section>`,
+      `<section class="panel arcade-panel arcade-review"><h3 class="center">الحقل بعد الجولة</h3>${s.mission === 'survey' ? `<div class="arcade-review-facts"><span>${s.foundRelics.size}/4 آثار</span><span>${s.scans} مسحات · −${s.scans * 6}</span><span>${s.extracted ? 'انسحاب ناجح' : 'تنقيب وكشف'}</span></div>` : ''}<p class="muted">${win ? (s.extracted ? 'اخترت الانسحاب بعد جمع الآثار الأربع. بقيت خانات لم تُكشف، وتظهر مواقع الألغام والآثار في المراجعة.' : 'كشفت كل الخانات الآمنة؛ لا يلزم وضع علم على كل لغم للفوز.') : wrongFlags ? 'العلم اختيار منك، وليس ضماناً. فتح جيران رقم يعتمد على أماكن أعلامك؛ العدد الصحيح وحده لا يكفي إذا كان علم في المكان الخطأ.' : 'عندما لا يوجد استنتاج مضمون، ابحث عن أرقام أخرى تساعدك قبل المخاطرة بخانة مغلقة.'}</p>${snapshot}</section>`,
     );
 }
 function mineNavigate(dir) {
@@ -1372,6 +1680,80 @@ function mazeBuildKeys(s = state) {
     return sum + steps;
   }, 0);
 }
+function mazeBuildCourier(s = state) {
+  s.base = s.position;
+  const distances = mazeReachable(s.grid, s.width, s.base),
+    farthest = Math.max(...distances.values());
+  const choices = arcadeShuffle(
+    [...distances]
+      .filter(([i, distance]) => i !== s.base && distance >= farthest * 0.35)
+      .map(([i]) => i),
+    s,
+  );
+  s.courierStations = [];
+  for (const index of choices) {
+    if (s.courierStations.length === 3) break;
+    if (
+      s.courierStations.every(
+        (other) => mazePath(s.grid, s.width, index, other).length - 1 >= s.size,
+      )
+    )
+      s.courierStations.push(index);
+  }
+  for (const index of choices)
+    if (s.courierStations.length < 3 && !s.courierStations.includes(index))
+      s.courierStations.push(index);
+  s.stars = new Set(s.courierStations);
+  s.exit = s.base;
+  s.delivered = 0;
+  s.parcel = null;
+  s.courierEvents = [];
+  s.parMoves = s.courierStations.reduce((sum, index) => sum + distances.get(index) * 2, 0);
+}
+function mazeCourierTarget(s = state) {
+  return s.parcel !== null ? s.base : s.courierStations[s.delivered];
+}
+function mazeCourierUI() {
+  const s = state,
+    panel = $('mazeMissionPanel');
+  if (!panel) return;
+  const signature = `${s.delivered}:${s.parcel}`;
+  if (panel.dataset.signature === signature) return;
+  panel.dataset.signature = signature;
+  const target = mazeCourierTarget(s);
+  panel.innerHTML = `<div class="arcade-mission-head"><b>ساعي المتاهة · ${s.delivered}/3 طرود مسلّمة</b><span>${s.parcel !== null ? '📦 معك طرد' : 'انطلق للمحطة'}</span></div><progress max="3" value="${s.delivered}" aria-label="الطرود المسلّمة"></progress><p>${s.parcel !== null ? `الطرد ${s.parcel + 1} معك. عد إلى القاعدة الخضراء لتسليمه قبل استلام غيره.` : s.delivered < 3 ? `اذهب للمحطة ${s.delivered + 1} الصفراء، خذ طردها ثم ارجع إلى القاعدة الخضراء.` : 'سلّمت الطرود الثلاثة وعدت إلى القاعدة.'}${target !== undefined ? ` الهدف في الصف ${Math.floor(target / s.width) + 1}، العمود ${(target % s.width) + 1}.` : ''}</p><div class="arcade-mission-stamps">${s.courierStations.map((_, i) => `<span class="${i < s.delivered ? 'complete' : i === s.delivered ? 'current' : ''}">📦 ${i + 1} · ${i < s.delivered ? 'تم التسليم' : s.parcel === i ? 'في الطريق' : 'ينتظر'}</span>`).join('')}</div>`;
+}
+function mazeCourierVisit(index, s = state) {
+  let stop = s.stars.has(index);
+  if (index === s.courierStations[s.delivered] && s.parcel === null) {
+    s.stars.delete(index);
+    s.parcel = s.delivered;
+    s.courierEvents.push({ step: s.moves, type: 'pickup', parcel: s.parcel, index });
+    s.hintPath = [];
+    s.hintTarget = null;
+    tone();
+  }
+  if (index === s.base && s.parcel !== null) {
+    s.courierEvents.push({ step: s.moves, type: 'deliver', parcel: s.parcel, index });
+    s.delivered++;
+    s.parcel = null;
+    stop = true;
+    s.hintPath = [];
+    s.hintTarget = null;
+    tone();
+  }
+  return stop;
+}
+function mazeCourierReview(at, s = state) {
+  const events = s.courierEvents.filter((event) => event.step <= at),
+    picked = new Set(events.filter((event) => event.type === 'pickup').map((event) => event.index)),
+    last = events.at(-1);
+  return {
+    stars: new Set(s.courierStations.filter((index) => !picked.has(index))),
+    delivered: events.filter((event) => event.type === 'deliver').length,
+    parcel: last?.type === 'pickup' ? last.parcel : null,
+  };
+}
 function mazeDiscover(s = state) {
   s.seen ||= new Set();
   if (s.vision !== 'lantern') {
@@ -1451,10 +1833,11 @@ function startMaze() {
   );
   s.stars = new Set(s.mode === 'stars' ? options.slice(0, { 7: 3, 10: 5, 15: 7 }[s.size]) : []);
   if (s.mode === 'keys') mazeBuildKeys(s);
+  if (s.mode === 'courier') mazeBuildCourier(s);
   s.starTotal = s.stars.size;
   s.originalStars = [...s.stars];
   s.route = [s.position];
-  if (s.mode !== 'keys')
+  if (!['keys', 'courier'].includes(s.mode))
     s.parMoves = mazeBestRoute(s.grid, s.width, s.position, [...s.stars], s.exit);
   mazeDiscover(s);
   renderMaze();
@@ -1467,18 +1850,32 @@ function renderMaze() {
       'maze',
       smallStats([
         [
-          s.mode === 'keys' ? 'المفاتيح' : 'النجوم',
-          s.starTotal - s.stars.size + ' / ' + s.starTotal,
+          s.mode === 'courier' ? 'الطرود المسلّمة' : s.mode === 'keys' ? 'المفاتيح' : 'النجوم',
+          (s.mode === 'courier' ? s.delivered : s.starTotal - s.stars.size) + ' / ' + s.starTotal,
           'mazeStars',
         ],
         ['الخطوات', s.moves, 'mazeMoves'],
         ['الوقت', arcadeTimeText(arcadeSeconds(s)), 'arcadeTime'],
       ]) +
-        `<section class="panel arcade-panel"><canvas id="mazeCanvas" width="620" height="620" role="img" aria-label="متاهة. موقعك هو الدائرة الزرقاء. اجمع النجوم الصفراء ثم اتجه إلى المخرج الأخضر. يمكنك لمس خانة مجاورة للتحرك أو نجمة لتحديد هدف التلميح."></canvas><div class="arcade-status" id="mazeStatus" role="status">${s.mode === 'keys' ? 'ابحث عن المفتاح 1 لفتح بوابته ثم تابع للمفتاح 2.' : s.stars.size ? 'اجمع النجوم قبل الوصول إلى المخرج.' : 'البوابة مفتوحة. اتجه إلى المخرج الأخضر!'}</div>${arcadeDirections('mazeMove')}<p class="note center" id="mazeExplored" role="status"></p><div class="actions"><button id="mazeMarkButton" onclick="mazeMark()" aria-pressed="false">⚑ علّم هذا المكان</button></div><div class="actions"><button id="mazeHintButton" onclick="mazeHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ تلميح (${3 - s.hints} متبقية)</button><button id="mazeTravelButton" onclick="mazeToggleTravel()" aria-pressed="${s.travel === 'corridor'}">${s.travel === 'corridor' ? 'حتى التقاطع' : 'خطوة بخطوة'}</button><button onclick="mazeClearTrail()">امسح آثار خطواتي</button></div>${arcadeToolbar('maze')}<p class="note center">الأزرق: أنت · الأصفر: ${s.mode === 'keys' ? 'مفتاح' : 'نجمة'} · الأخضر: المخرج<br>${s.vision === 'lantern' ? 'المصباح يكشف الممرات القريبة؛ الخريطة المكتشفة تبقى ظاهرة. التلميح يضيء الطريق المطلوب. <br>' : ''}المس خانة مجاورة للحركة، أو ${s.mode === 'keys' ? 'مفتاحاً' : 'نجمة'} لتوجيه التلميح إليه · M لوضع علامة · الأسهم أو WASD · Shift مع الاتجاه للمشي حتى التقاطع.<br>المسار المثالي لهذه الجولة: ${s.parMoves} خطوة. كل خانة تتحركها تُحسب، حتى مع التحرك التلقائي. كل تلميح يخصم 8 نقاط.</p></section>`,
+        `<section class="panel arcade-panel"><canvas id="mazeCanvas" width="620" height="620" role="img" aria-label="متاهة. موقعك هو الدائرة الزرقاء. اجمع النجوم الصفراء ثم اتجه إلى المخرج الأخضر. يمكنك لمس خانة مجاورة للتحرك أو نجمة لتحديد هدف التلميح."></canvas><div class="arcade-status" id="mazeStatus" role="status">${s.mode === 'keys' ? 'ابحث عن المفتاح 1 لفتح بوابته ثم تابع للمفتاح 2.' : s.stars.size ? 'اجمع النجوم قبل الوصول إلى المخرج.' : 'البوابة مفتوحة. اتجه إلى المخرج الأخضر!'}</div>${arcadeDirections('mazeMove')}<p class="note center" id="mazeExplored" role="status"></p><div class="actions"><button id="mazeMarkButton" onclick="mazeMark()" aria-pressed="false">⚑ علّم هذا المكان</button></div><div class="actions"><button id="mazeHintButton" onclick="mazeHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ تلميح (${3 - s.hints} متبقية)</button><button id="mazeTravelButton" onclick="mazeToggleTravel()" aria-pressed="${s.travel === 'corridor'}">${s.travel === 'corridor' ? 'حتى التقاطع' : 'خطوة بخطوة'}</button><button onclick="mazeClearTrail()">امسح آثار خطواتي</button></div>${arcadeToolbar('maze')}<p class="note center">الأزرق: أنت · الأصفر: ${s.mode === 'courier' ? 'محطة طرد مرقمة' : s.mode === 'keys' ? 'مفتاح' : 'نجمة'} · الأخضر: ${s.mode === 'courier' ? 'القاعدة' : 'المخرج'}<br>${s.vision === 'lantern' ? 'المصباح يكشف الممرات القريبة؛ الخريطة المكتشفة تبقى ظاهرة. التلميح يضيء الطريق المطلوب. <br>' : ''}المس خانة مجاورة للحركة، أو ${s.mode === 'courier' ? 'محطة الطرد الحالية' : s.mode === 'keys' ? 'مفتاحاً' : 'نجمة'} لتوجيه التلميح إليه · M لوضع علامة · الأسهم أو WASD · Shift مع الاتجاه للمشي حتى التقاطع.<br>المسار المثالي لهذه الجولة: ${s.parMoves} خطوة. كل خانة تتحركها تُحسب، حتى مع التحرك التلقائي. كل تلميح يخصم 8 نقاط.</p></section>`,
     ),
   );
   mazeDraw();
   mazeExplorationUI();
+  if (s.mode === 'courier') {
+    document
+      .querySelector('.arcade-panel')
+      .insertAdjacentHTML(
+        'afterbegin',
+        '<div id="mazeMissionPanel" class="arcade-mission" role="status"></div>',
+      );
+    mazeCourierUI();
+    $('mazeCanvas').setAttribute(
+      'aria-label',
+      'ساعي المتاهة: تحرك إلى المحطات المرقمة 1 ثم 2 ثم 3. عد إلى القاعدة الخضراء بعد كل طرد. لونك برتقالي عندما تحمل طرداً.',
+    );
+    $('mazeStatus').textContent = 'اذهب للمحطة 1 ثم ارجع للقاعدة. الطرود تُستلم وتُسلّم بالترتيب.';
+  }
   arcadeSwipe($('mazeCanvas'), mazeMove, { tap: mazeTap });
 }
 function mazeTap(event) {
@@ -1499,7 +1896,15 @@ function mazeTap(event) {
     py = Math.floor(s.position / s.width);
   if (Math.abs(x - px) + Math.abs(y - py) === 1)
     return mazeMove(x > px ? 'right' : x < px ? 'left' : y > py ? 'down' : 'up', false, true);
-  if (s.stars.has(target) || (target === s.exit && !s.stars.size)) {
+  if (
+    s.stars.has(target) ||
+    (target === s.exit && (!s.stars.size || (s.mode === 'courier' && s.parcel !== null)))
+  ) {
+    if (s.mode === 'courier' && target !== mazeCourierTarget(s)) {
+      $('mazeStatus').textContent =
+        'وجّه التلميح إلى هدفك الحالي؛ سلّم الطرد المحمول قبل استلام التالي.';
+      return;
+    }
     if (s.hints >= 3) {
       $('mazeStatus').textContent =
         'استخدمت التلميحات الثلاثة. اتبع الممرات للوصول إلى هدفك؛ لا توجد مساعدة إضافية.';
@@ -1507,9 +1912,9 @@ function mazeTap(event) {
     }
     s.hintTarget = target;
     $('mazeStatus').textContent =
-      `اخترت ${s.stars.has(target) ? (s.mode === 'keys' ? 'هذا المفتاح' : 'هذه النجمة') : 'المخرج'} هدفاً. اضغط التلميح لإظهار الطريق مقابل 8 نقاط؛ اختيار الهدف مجاني.`;
+      `اخترت ${s.stars.has(target) ? (s.mode === 'courier' ? 'محطة الطرد' : s.mode === 'keys' ? 'هذا المفتاح' : 'هذه النجمة') : s.mode === 'courier' ? 'القاعدة' : 'المخرج'} هدفاً. اضغط التلميح لإظهار الطريق مقابل 8 نقاط؛ اختيار الهدف مجاني.`;
     $('mazeHintButton').textContent =
-      `✦ الطريق إلى ${s.stars.has(target) ? (s.mode === 'keys' ? 'المفتاح' : 'النجمة') : 'المخرج'} (${3 - s.hints})`;
+      `✦ الطريق إلى ${s.stars.has(target) ? (s.mode === 'courier' ? 'الطرد' : s.mode === 'keys' ? 'المفتاح' : 'النجمة') : s.mode === 'courier' ? 'القاعدة' : 'المخرج'} (${3 - s.hints})`;
     mazeDraw();
   } else
     $('mazeStatus').textContent =
@@ -1546,7 +1951,8 @@ function mazeMove(dir, corridor = false, single = false) {
     s.route?.push(next);
     // A hint remains visible when following it and clears when leaving its route.
     s.hintPath = s.hintPath[1] === next ? s.hintPath.slice(1) : [];
-    if (s.stars.delete(next)) {
+    if (s.mode === 'courier') foundStar = mazeCourierVisit(next, s);
+    else if (s.stars.delete(next)) {
       foundStar = true;
       if (s.mode === 'keys')
         for (const [cell, gate] of s.gates) if (gate.key === next) s.gates.delete(cell);
@@ -1565,18 +1971,24 @@ function mazeMove(dir, corridor = false, single = false) {
     previous = next;
     next = onward[0];
   } while (travelled < s.grid.length);
-  $('mazeStars').textContent = s.starTotal - s.stars.size + ' / ' + s.starTotal;
+  $('mazeStars').textContent =
+    (s.mode === 'courier' ? s.delivered : s.starTotal - s.stars.size) + ' / ' + s.starTotal;
   $('mazeMoves').textContent = s.moves;
   mazeExplorationUI();
+  if (s.mode === 'courier') mazeCourierUI();
   if (s.position === s.exit && s.stars.size === 0) return mazeFinish();
   $('mazeStatus').textContent =
-    s.position === s.exit && s.stars.size
-      ? `البوابة تنتظرك. بقيت ${s.stars.size} نجوم.`
-      : s.stars.size
-        ? s.mode === 'keys'
-          ? `بقي ${s.stars.size} مفاتيح. افتح البوابات بالترتيب واستكشف الممرات.`
-          : 'اجمع النجوم قبل الوصول إلى المخرج.'
-        : 'البوابة مفتوحة. اتجه إلى المخرج الأخضر!';
+    s.mode === 'courier'
+      ? s.parcel !== null
+        ? 'الطرد معك؛ ارجع للقاعدة الخضراء لتسليمه.'
+        : `اتجه إلى المحطة ${s.delivered + 1}. المرور بمحطة أخرى لا يستلم طردها.`
+      : s.position === s.exit && s.stars.size
+        ? `البوابة تنتظرك. بقيت ${s.stars.size} نجوم.`
+        : s.stars.size
+          ? s.mode === 'keys'
+            ? `بقي ${s.stars.size} مفاتيح. افتح البوابات بالترتيب واستكشف الممرات.`
+            : 'اجمع النجوم قبل الوصول إلى المخرج.'
+          : 'البوابة مفتوحة. اتجه إلى المخرج الأخضر!';
   mazeDraw();
 }
 function mazeNeighbours(i, grid = state.grid, width = state.width) {
@@ -1618,6 +2030,7 @@ function mazeDraw(canvasID = 'mazeCanvas', reviewAt = null) {
                 .filter((gate) => !visited.has(gate.key))
                 .map((gate) => [gate.gate, gate]),
             ),
+            ...(state.mode === 'courier' ? mazeCourierReview(reviewAt, state) : {}),
           },
     c = canvas.getContext('2d'),
     u = canvas.width / s.width;
@@ -1650,7 +2063,7 @@ function mazeDraw(canvasID = 'mazeCanvas', reviewAt = null) {
       u * 0.34,
     );
   }
-  c.fillStyle = s.stars.size ? '#496553' : '#a7f1a6';
+  c.fillStyle = s.mode === 'courier' || !s.stars.size ? '#a7f1a6' : '#496553';
   if (s.vision !== 'lantern' || s.seen?.has(s.exit) || s.hintPath.includes(s.exit))
     c.fillRect(
       (s.exit % s.width) * u + u * 0.13,
@@ -1664,8 +2077,15 @@ function mazeDraw(canvasID = 'mazeCanvas', reviewAt = null) {
   c.font = `bold ${Math.max(14, u * 0.83)}px Arial`;
   for (const i of s.stars) {
     if (s.vision === 'lantern' && !s.seen?.has(i) && !s.hintPath.includes(i)) continue;
+    if (s.mode === 'courier')
+      c.fillStyle =
+        i === s.courierStations[s.delivered] && s.parcel === null ? '#ffdc8b' : '#9d9278';
     c.fillText(
-      s.mode === 'keys' ? '⚿' : '★',
+      s.mode === 'courier'
+        ? String(s.courierStations.indexOf(i) + 1)
+        : s.mode === 'keys'
+          ? '⚿'
+          : '★',
       ((i % s.width) + 0.5) * u,
       (Math.floor(i / s.width) + 0.5) * u,
     );
@@ -1701,7 +2121,7 @@ function mazeDraw(canvasID = 'mazeCanvas', reviewAt = null) {
     c.font = `bold ${Math.max(9, u * 0.38)}px Arial`;
     c.fillText(number, ((i % s.width) + 0.5) * u, (Math.floor(i / s.width) + 0.5) * u);
   }
-  c.fillStyle = '#90dbff';
+  c.fillStyle = s.mode === 'courier' && s.parcel !== null ? '#ffd194' : '#90dbff';
   c.beginPath();
   c.arc(
     ((s.position % s.width) + 0.5) * u,
@@ -1739,12 +2159,14 @@ function mazeHint() {
   if (!arcadeReady('maze') || state.hints >= 3) return;
   const s = state,
     targets =
-      s.hintTarget !== null &&
-      (s.stars.has(s.hintTarget) || (s.hintTarget === s.exit && !s.stars.size))
-        ? [s.hintTarget]
-        : s.stars.size
-          ? [...s.stars]
-          : [s.exit],
+      s.mode === 'courier'
+        ? [mazeCourierTarget(s)]
+        : s.hintTarget !== null &&
+            (s.stars.has(s.hintTarget) || (s.hintTarget === s.exit && !s.stars.size))
+          ? [s.hintTarget]
+          : s.stars.size
+            ? [...s.stars]
+            : [s.exit],
     paths = targets
       .map((t) => mazePath(s.grid, s.width, s.position, t, s.gates))
       .filter((p) => p.length)
@@ -1772,6 +2194,9 @@ function mazeHint() {
       ? `المسار البنفسجي يصل إلى ${s.mode === 'keys' ? 'المفتاح الذي اخترته' : 'النجمة التي اخترتها'}. خصم التلميح: 8 نقاط.`
       : `المسار البنفسجي يصل إلى أقرب ${s.mode === 'keys' ? 'مفتاح يمكنك الوصول إليه' : 'نجمة'}. خصم التلميح: 8 نقاط.`
     : 'المسار البنفسجي يصل إلى المخرج.';
+  if (s.mode === 'courier')
+    $('mazeStatus').textContent =
+      `المسار البنفسجي يصل إلى ${s.parcel !== null ? 'القاعدة لتسليم الطرد' : `المحطة ${s.delivered + 1}`}. خصم التلميح: 8 نقاط.`;
   mazeDraw();
 }
 function mazeClearTrail() {
@@ -1781,18 +2206,23 @@ function mazeClearTrail() {
 }
 function mazeFinish() {
   if (screen !== 'maze' || !state || state.done) return;
+  if (
+    state.mode === 'courier' &&
+    (state.delivered !== 3 || state.parcel !== null || state.position !== state.base)
+  )
+    return;
   const s = state,
     efficiency = Math.min(1, s.parMoves / Math.max(1, s.moves)),
     base = { 7: 70, 10: 85, 15: 100 }[s.size];
   finishExtra(
-    'وصلت إلى المخرج! 🧭',
-    `جمعت ${s.starTotal} ${s.mode === 'keys' ? 'مفاتيح' : 'نجوم'}، وخرجت خلال ${s.moves} خطوة و${arcadeTimeText(arcadeSeconds(s))}. المسار المثالي ${s.parMoves} خطوة؛ كفاءتك ${Math.round(efficiency * 100)}٪. استخدمت ${s.hints} تلميحات.`,
+    s.mode === 'courier' ? 'سلّمت الطرود الثلاثة وعدت للقاعدة! 📦' : 'وصلت إلى المخرج! 🧭',
+    `${s.mode === 'courier' ? 'سلّمت 3 طرود بعد 3 رحلات ذهاب وعودة' : `جمعت ${s.starTotal} ${s.mode === 'keys' ? 'مفاتيح' : 'نجوم'}، وخرجت`} خلال ${s.moves} خطوة و${arcadeTimeText(arcadeSeconds(s))}. المسار المثالي ${s.parMoves} خطوة؛ كفاءتك ${Math.round(efficiency * 100)}٪. استخدمت ${s.hints} تلميحات.`,
     Math.max(10, Math.round(base * (0.65 + efficiency * 0.35)) - s.hints * 8),
   );
   const last = s.route.length - 1;
   arcadeReview(
     'أعد استكشاف رحلتك 🧭',
-    `<div class="arcade-review-facts"><span>زيادة عن المثالي: ${Math.max(0, s.moves - s.parMoves)} خطوة</span><span>كفاءة ${Math.round(efficiency * 100)}٪</span></div><p class="muted">حرّك الشريط لترى موقعك و${s.mode === 'keys' ? 'المفاتيح والبوابات' : 'النجوم التي جمعتها'} في كل خطوة. مراجعة الرحلة لا تغيّر النتيجة.</p><canvas id="mazeReplayCanvas" width="620" height="620" role="img" aria-label="مراجعة رحلة المتاهة"></canvas><div class="arcade-replay-controls"><label for="mazeReplayRange" id="mazeReplayLabel">الخطوة ${last} من ${last}</label><input type="range" id="mazeReplayRange" min="0" max="${last}" value="${last}" oninput="mazeReplay(this.value)"><div class="actions"><button onclick="mazeReplay(0)">بداية الرحلة</button><button onclick="mazeReplay(-1)">الوصول للمخرج</button></div></div>`,
+    `<div class="arcade-review-facts"><span>زيادة عن المثالي: ${Math.max(0, s.moves - s.parMoves)} خطوة</span><span>كفاءة ${Math.round(efficiency * 100)}٪</span></div><p class="muted">حرّك الشريط لترى موقعك و${s.mode === 'courier' ? 'استلام الطرود وتسليمها' : s.mode === 'keys' ? 'المفاتيح والبوابات' : 'النجوم التي جمعتها'} في كل خطوة. مراجعة الرحلة لا تغيّر النتيجة.</p><canvas id="mazeReplayCanvas" width="620" height="620" role="img" aria-label="مراجعة رحلة المتاهة"></canvas><div class="arcade-replay-controls"><label for="mazeReplayRange" id="mazeReplayLabel">الخطوة ${last} من ${last}</label><input type="range" id="mazeReplayRange" min="0" max="${last}" value="${last}" oninput="mazeReplay(this.value)"><div class="actions"><button onclick="mazeReplay(0)">بداية الرحلة</button><button onclick="mazeReplay(-1)">الوصول للمخرج</button></div></div>`,
   );
   mazeReplay(last);
 }
