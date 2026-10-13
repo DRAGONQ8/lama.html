@@ -1,5 +1,6 @@
 function startExtra(id) {
   if (screen !== 'setup' || state?.id !== id || coreBlocked()) return;
+  if (!requirePlayers(id)) return;
   clearTimers();
   seededRandom = dailyRun
     ? makeSeed(dailyRun.date + ':' + id)
@@ -64,7 +65,11 @@ function startBoard(id) {
   s.bot = ($('opponent')?.value || 'bot') === 'bot';
   s.names = [
     s.name,
-    s.bot ? 'الخصم الذكي' : store.players[Number($('second')?.value || 1)] || store.players[0],
+    s.bot
+      ? 'الخصم الذكي'
+      : normalizePlayerName($('second')?.selectedOptions?.[0]?.textContent) ||
+        store.players[Number($('second')?.value || 1)] ||
+        store.players[0],
   ];
   if (!s.bot && s.names[0] === s.names[1]) {
     screen = 'setup';

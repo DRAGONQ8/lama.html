@@ -293,6 +293,134 @@ try {
       '✓ Failed storage writes can retry once without duplicating prototype-like player names',
     );
   });
+  for (const [id, action] of [
+    ['secret', 'startSecret()'],
+    ['mime', 'startMime()'],
+    ['spy', "startExtra('spy')"],
+    ['taboo', "startExtra('taboo')"],
+    ['ttt', "startExtra('ttt')"],
+    ['connect', "startExtra('connect')"],
+  ]) {
+    await tabs(async (a, b) => {
+      await b.evaluate(() => {
+        store.players = ['أحمد', 'ليلى', 'سالم', 'نورة'];
+        save();
+      });
+      await a.waitForFunction(() => store.players.length === 4);
+      await a.evaluate((id) => {
+        setup(id);
+        if (['ttt', 'connect'].includes(id)) {
+          $('opponent').value = 'friend';
+          opponentChanged();
+        }
+        window.storageSetupBefore = state;
+      }, id);
+      await b.evaluate(() => {
+        store.players = ['أحمد'];
+        save();
+      });
+      await a.waitForFunction(() => store.players.length === 1);
+      // Exercise the still-visible launch button, not a fresh setup screen.
+      await a.locator(`button[onclick="${action}"]`).click();
+      assert.equal(await a.evaluate(() => screen), 'setup', `${id}: started with one player`);
+      assert.equal(await a.evaluate(() => state === window.storageSetupBefore), true);
+      assert.equal(await a.evaluate(() => state.id), id);
+      assert.equal(
+        await a.evaluate(() => !$('toast').hidden && !!$('toast').textContent.trim()),
+        true,
+      );
+      console.log(`✓ ${id}: a stale launch button rechecks the latest minimum roster`);
+    });
+  }
+  for (const id of ['ttt', 'connect']) {
+    await tabs(async (a, b) => {
+      await b.evaluate(() => {
+        store.players = ['أحمد', 'ليلى'];
+        save();
+      });
+      await a.waitForFunction(() => store.players[0] === 'أحمد');
+      const displayedNames = await a.evaluate((id) => {
+        setup(id);
+        $('opponent').value = 'friend';
+        opponentChanged();
+        return [
+          $('player').selectedOptions[0].textContent,
+          $('second').selectedOptions[0].textContent,
+        ];
+      }, id);
+      await b.evaluate(() => {
+        store.players = ['سالم', 'نورة'];
+        save();
+      });
+      await a.waitForFunction(() => store.players[0] === 'سالم');
+      await a.locator(`button[onclick="startExtra('${id}')"]`).click();
+      assert.equal(await a.evaluate(() => screen), id);
+      assert.deepEqual(await a.evaluate(() => state.names), displayedNames);
+      console.log(`✓ ${id}: both selected player labels remain stable through a remote rename`);
+    });
+  }
+  await tabs(async (a, b) => {
+    const oldNames = ['أحمد', 'ليلى', 'سالم', 'نورة'],
+      newNames = ['حسن', 'مريم', 'فهد', 'هند'];
+    await b.evaluate((names) => {
+      store.players = names;
+      save();
+    }, oldNames);
+    await a.waitForFunction(() => store.players.length === 4);
+    await a.evaluate(() => setup('teamcup'));
+    await b.evaluate((names) => {
+      store.players = names;
+      save();
+    }, newNames);
+    await a.waitForFunction(() => store.players[0] === 'حسن');
+    const launch = a.locator('button[onclick="startPartyGame(\'teamcup\')"]');
+    await launch.click();
+    assert.equal(await a.evaluate(() => screen), 'setup', 'Changed teams need review before play');
+    const preview = await a.locator('#partyTeamsPreview').textContent();
+    for (const name of newNames) assert.ok(preview.includes(name));
+    for (const name of oldNames) assert.ok(!preview.includes(name));
+    assert.deepEqual((await a.evaluate(() => state.teams.flat())).sort(), [...newNames].sort());
+    assert.equal(
+      await a.evaluate(() => !$('toast').hidden && !!$('toast').textContent.trim()),
+      true,
+    );
+    await launch.click();
+    assert.equal(await a.evaluate(() => screen), 'teamcup');
+    assert.deepEqual(await a.evaluate(() => state.players), newNames);
+    assert.deepEqual((await a.evaluate(() => state.teams.flat())).sort(), [...newNames].sort());
+    console.log('✓ Team cup refreshes a changed roster for review before launching matching teams');
+  });
+  await tabs(async (a) => {
+    const outcome = await a.evaluate(() => {
+      store.players = ['أحمد', 'ليلى', 'سالم', 'نورة'];
+      save();
+      setup('teamcup');
+      const initial = state,
+        launch = document.querySelector('button[onclick="startPartyGame(\'teamcup\')"]');
+      openGuide('teamcup');
+      launch.click();
+      const blocked = {
+        screen,
+        sameState: state === initial,
+        modalVisible: !$('modalback').hidden,
+        timers: timers.length,
+      };
+      closeModal();
+      launch.click();
+      return { blocked, screen, players: state.players };
+    });
+    assert.deepEqual(outcome.blocked, {
+      screen: 'setup',
+      sameState: true,
+      modalVisible: true,
+      timers: 0,
+    });
+    assert.equal(outcome.screen, 'teamcup');
+    assert.equal(outcome.players.length, 4);
+    console.log(
+      '✓ A saved party launch click stays blocked behind the guide and works after closing it',
+    );
+  });
   assert.deepEqual(errors, [], 'Cross-tab browser errors');
   console.log(`Storage v8: ${passed} browser checks passed.`);
 } finally {

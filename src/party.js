@@ -662,10 +662,26 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && partyHidePrivate()) event.preventDefault();
 });
 function startPartyGame(id) {
-  if (screen !== 'setup' || state?.id !== id || !partyGameIDs.has(id)) return;
+  if (screen !== 'setup' || state?.id !== id || !partyGameIDs.has(id) || coreBlocked()) return;
   const minimum = id === 'teamcup' ? 4 : 3;
   if (store.players.length < minimum) return toast(`أضيفوا ${minimum} لاعبين على الأقل.`);
   const players = [...store.players];
+  if (id === 'teamcup') {
+    const teams = state.teams;
+    const members =
+      Array.isArray(teams) && teams.length === 2 && teams.every(Array.isArray) ? teams.flat() : [];
+    if (
+      members.length !== players.length ||
+      new Set(members).size !== members.length ||
+      members.some((name) => !players.includes(name)) ||
+      !teams.every((team) => team.length >= 2) ||
+      Math.abs(teams[0].length - teams[1].length) > 1
+    ) {
+      partyRemixTeams();
+      toast('تغيّرت قائمة اللاعبين. راجعوا توزيع الفرق الجديد ثم اضغطوا البداية مرة ثانية.');
+      return;
+    }
+  }
   const options = {
     rounds: partyReadOption('partyRounds', [1, 3, 5, 8], id === 'improv' ? 5 : 3),
     duration: partyReadOption(

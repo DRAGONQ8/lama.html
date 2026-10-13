@@ -1411,14 +1411,29 @@ function confirmImport() {
   home();
   toast('تم استيراد نسختك.');
 }
-function setup(id, internal = false) {
-  if (!games.some((g) => g[0] === id)) return;
-  const required = id === 'spy' ? 3 : ['mime', 'secret', 'taboo'].includes(id) ? 2 : 1;
+function requirePlayers(id) {
+  const friendBoard =
+    ['ttt', 'connect'].includes(id) &&
+    screen === 'setup' &&
+    state?.id === id &&
+    $('opponent')?.value === 'friend';
+  const required = ['spy', 'undercover', 'improv'].includes(id)
+    ? 3
+    : id === 'teamcup'
+      ? 4
+      : friendBoard || ['mime', 'secret', 'taboo'].includes(id)
+        ? 2
+        : 1;
   if (store.players.length < required) {
     toast(`هاللعبة تحتاج ${required} لاعبين على الأقل. أضف الأسماء ونكمل.`);
     openPeople();
-    return;
+    return false;
   }
+  return true;
+}
+function setup(id, internal = false) {
+  if (!games.some((g) => g[0] === id)) return;
+  if (!requirePlayers(id)) return;
   if (!internal) {
     tourney = null;
     dailyRun = null;

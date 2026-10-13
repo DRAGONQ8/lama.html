@@ -2177,6 +2177,7 @@ function flipCard(i) {
 }
 function startMime() {
   if (screen !== 'setup' || state?.id !== 'mime' || coreBlocked()) return;
+  if (!requirePlayers('mime')) return;
   const queue = shuffle(selectedItems());
   if (!queue.length) return toast('لا توجد كلمات في هذه الفئة.');
   state = {
@@ -2385,6 +2386,7 @@ function tickParty(id) {
 }
 function startSecret() {
   if (screen !== 'setup' || state?.id !== 'secret' || coreBlocked()) return;
+  if (!requirePlayers('secret')) return;
   const pool = shuffle(selectedItems());
   if (!pool.length) return toast('لا توجد كلمات في هذه الفئة.');
   state = {
