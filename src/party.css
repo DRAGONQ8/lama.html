@@ -1,6 +1,153 @@
 .party-panel > .muted {
   margin-bottom: 20px;
 }
+.party-extra-options {
+  margin-top: 24px;
+}
+.party-explainer,
+.party-clue-lens,
+.party-creative-brief,
+.party-inquiry,
+.party-tactic,
+.party-debrief {
+  padding: 18px;
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--raised);
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.party-explainer b,
+.party-clue-lens b,
+.party-creative-brief > b,
+.party-debrief h3 {
+  color: var(--mint);
+}
+.party-explainer p,
+.party-creative-brief p,
+.party-clue-lens p {
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.party-secret-word.party-scene {
+  font-size: clamp(23px, 4vw, 34px);
+  max-width: 650px;
+}
+.party-tactic {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+.party-tactic b,
+.party-spark strong {
+  color: var(--orange);
+}
+.party-tactic span,
+.party-tactic small,
+.party-debrief small {
+  color: var(--muted);
+}
+.party-streak-track {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+.party-streak-track i {
+  width: 38px;
+  height: 7px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.party-streak-track .complete {
+  background: var(--orange);
+}
+.party-debrief p {
+  padding: 12px 0;
+  line-height: 1.8;
+}
+.party-debrief small {
+  display: block;
+}
+.party-confidence,
+.party-appreciation {
+  min-width: 0;
+  border: 1px solid var(--line);
+  padding: 16px;
+  margin: 18px 0;
+  border-radius: 14px;
+}
+.party-confidence legend,
+.party-appreciation legend {
+  color: var(--orange);
+  font-size: 13px;
+  padding: 0 6px;
+}
+.party-confidence > div,
+.party-appreciation > div {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.party-confidence button,
+.party-appreciation button {
+  min-height: 44px;
+}
+.party-confidence button.selected,
+.party-appreciation button.selected {
+  color: var(--mint);
+  border-color: var(--mint);
+}
+.party-confidence label {
+  display: block;
+  font-size: 13px;
+  margin: 14px 0 8px;
+}
+.party-confidence input,
+.party-inquiry input,
+.party-inquiry select {
+  width: 100%;
+  min-width: 0;
+}
+.party-reasons,
+.party-question-trail {
+  display: grid;
+  gap: 10px;
+}
+.party-reasons p,
+.party-question-trail p {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.party-reasons span,
+.party-question-trail span {
+  display: block;
+  margin-top: 6px;
+}
+.party-focus-card {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  padding: 32px 18px;
+  margin: 24px 0;
+  border: 1px solid var(--orange);
+  border-radius: 20px;
+  text-align: center;
+  background: var(--raised);
+}
+.party-focus-card p {
+  font-size: clamp(22px, 4vw, 30px);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.party-focus-card small {
+  color: var(--muted);
+}
 .party-flow {
   display: flex;
   gap: 6px;

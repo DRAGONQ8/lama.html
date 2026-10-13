@@ -439,3 +439,218 @@ body.keyboard-open .toast {
     justify-content: flex-end;
   }
 }
+
+/* Lamma 8: visible choices and real tools for reasoning. */
+.audience-choices {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  gap: 14px;
+  margin: 20px 0 26px;
+}
+.audience-choices > button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: right;
+  gap: 13px;
+  padding: 22px;
+  border-radius: 23px;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.audience-choices > button > span {
+  font-size: 30px;
+}
+.audience-choices small {
+  color: var(--muted);
+}
+.audience-choices h3 {
+  margin: 5px 0 8px;
+  font-size: 19px;
+  line-height: 1.55;
+}
+.audience-choices p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.audience-choices b {
+  margin-top: auto;
+  font-size: 13px;
+}
+.audience-choices .audience-solo {
+  background: linear-gradient(135deg, rgba(172, 235, 199, 0.1), var(--surface));
+  border-color: rgba(172, 235, 199, 0.3);
+}
+.strategy-lens,
+.setup-blueprint {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  margin-top: 16px;
+  background: var(--surface);
+  text-align: right;
+}
+.strategy-lens summary,
+.setup-blueprint summary,
+.help-question summary {
+  cursor: pointer;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  list-style-position: inside;
+}
+.strategy-lens[open] summary,
+.setup-blueprint[open] summary {
+  margin-bottom: 10px;
+}
+.strategy-lens .guess-entry {
+  margin-top: 8px;
+}
+.split-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 15px;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.split-legend span {
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.split-track {
+  display: flex;
+  height: 13px;
+  gap: 3px;
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--line);
+}
+.split-track i {
+  display: block;
+  background: #e8a69f;
+  flex-shrink: 1;
+}
+.split-track i:nth-child(2) {
+  background: #acebc7;
+}
+.split-track i:nth-child(3) {
+  background: #b5ceff;
+}
+.evidence-edit {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.evidence-edit:last-child {
+  border-bottom: 0;
+}
+.evidence-edit .actions {
+  margin: 9px 0 0;
+}
+.meaning-card.up,
+.meaning-card.matched {
+  font-size: clamp(11px, 2.6vw, 18px);
+  font-weight: 800;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  padding: 4px;
+}
+.scene-rule {
+  color: var(--orange);
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  margin: 12px auto;
+  max-width: 420px;
+  font-weight: 700;
+}
+.turn-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+.turn-ribbon small {
+  color: var(--muted);
+}
+.secret-guess {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 17px;
+}
+.secret-guess .guess-entry {
+  margin-bottom: 13px;
+}
+.reaction.decoy {
+  background: #f5b66b;
+  border-color: #f5b66b;
+  color: #1d2233;
+}
+.reaction.decoy small {
+  color: #353348;
+}
+.help-question {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.help-question p,
+.setup-blueprint p {
+  font-size: 14px;
+  line-height: 1.85;
+  color: var(--muted);
+  margin-top: 8px;
+}
+@media (max-width: 760px) {
+  .audience-choices {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .audience-choices > button {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 17px;
+    gap: 10px;
+  }
+  .audience-choices > button > div {
+    flex: 1;
+    min-width: 175px;
+  }
+  .audience-choices b {
+    width: 100%;
+    padding-right: 40px;
+  }
+  .audience-choices h3 {
+    font-size: 17px;
+    margin: 2px 0 5px;
+  }
+  .audience-choices > button > span {
+    font-size: 26px;
+  }
+  .strategy-lens,
+  .setup-blueprint {
+    padding: 11px;
+  }
+  .strategy-lens .guess-entry {
+    flex-wrap: wrap;
+  }
+  .strategy-lens .guess-entry input {
+    min-width: 0;
+    width: 100%;
+  }
+  .strategy-lens .guess-entry button {
+    width: 100%;
+  }
+  .evidence-edit .actions {
+    flex-wrap: wrap;
+  }
+}

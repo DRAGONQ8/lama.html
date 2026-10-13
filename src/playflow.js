@@ -77,6 +77,7 @@ document.addEventListener('input', (event) => {
   if (event.target.id === 'guessInput') {
     event.target.removeAttribute('aria-invalid');
     $('soloFeedback')?.classList.remove('invalid');
+    updateSoloSplit();
   }
 });
 document.addEventListener('keydown', (event) => {

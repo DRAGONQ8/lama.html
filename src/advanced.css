@@ -88,3 +88,118 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+.match-score {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  text-align: center;
+}
+.match-score small {
+  color: var(--muted);
+}
+.review-moves,
+.digit-notebook,
+.word-slots,
+.sequence-trace {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-block: 16px;
+}
+.review-moves button {
+  min-height: 44px;
+  font-size: 0.82rem;
+}
+.review-moves button[aria-pressed='true'] {
+  outline: 2px solid var(--mint);
+}
+.digit-notebook button {
+  display: grid;
+  gap: 2px;
+  min-width: 46px;
+  min-height: 58px;
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.digit-notebook button small {
+  font-size: 0.75rem;
+}
+.word-slots {
+  min-height: 60px;
+  padding: 10px;
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+}
+.word-slots button {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.2rem;
+  padding: 8px;
+}
+.sequence-trace span {
+  border: 1px solid var(--pad);
+  border-radius: 12px;
+  padding: 6px 12px;
+  color: var(--pad);
+  font-weight: 800;
+}
+.quiz-rule {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--mint);
+  color: var(--mint);
+  font-weight: 800;
+}
+.quiz-rule.rule-word {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+.puzzle {
+  touch-action: none;
+}
+.ttt .last-move,
+.connect .last-move {
+  box-shadow: inset 0 0 0 3px var(--mint);
+}
+@media (max-width: 390px) {
+  .review-moves button {
+    width: 100%;
+  }
+  .word-slots {
+    gap: 6px;
+  }
+  .digit-notebook {
+    gap: 6px;
+  }
+}
+.math-direct {
+  margin-block: 20px;
+}
+.math-input {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-top: 8px;
+}
+.math-input input {
+  min-width: 0;
+  flex: 1;
+}
+.math-input button {
+  flex-shrink: 0;
+}
+@media (max-width: 390px) {
+  .math-input {
+    flex-wrap: wrap;
+  }
+  .math-input button {
+    width: 100%;
+  }
+}

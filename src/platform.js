@@ -115,14 +115,237 @@ function normalizeExtra(raw, strict = false) {
   return extra;
 }
 store.extra = normalizeExtra(rawExtra);
-function save() {
+// Each open document keeps its own cumulative contribution. A concurrent write
+// can temporarily replace another tab's snapshot; the storage event repairs the
+// missing contribution once, using this ledger rather than guessing from totals.
+// Transport metadata stays outside `store`, so backups retain their v3 format.
+const storageClone = (value) => JSON.parse(JSON.stringify(value));
+const storageEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const storageToken = () =>
+  globalThis.crypto?.randomUUID?.() ||
+  Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+function storageTabWriter() {
+  let writer = storageToken();
   try {
-    localStorage.setItem(KEY, JSON.stringify(store));
+    const previous = sessionStorage.getItem(KEY + ':writer'),
+      navigation = performance.getEntriesByType?.('navigation')[0];
+    // Reloads retain this tab's actor. A newly opened or duplicated tab gets a
+    // fresh actor even when the browser copies its opener's sessionStorage.
+    if (navigation?.type === 'reload' && /^[a-zA-Z0-9-]{8,100}$/.test(previous || ''))
+      writer = previous;
+    sessionStorage.setItem(KEY + ':writer', writer);
+  } catch (e) {}
+  return writer;
+}
+const storageWriter = storageTabWriter();
+let storageGeneration = 'legacy',
+  storageHadRecord = false,
+  storageBaseline = storageClone(store),
+  storageLedger = { scores: Object.create(null), played: Object.create(null) };
+try {
+  const raw = localStorage.getItem(KEY);
+  storageHadRecord = !!raw;
+  const metadata = storageMetadata(JSON.parse(raw || 'null')?._sync);
+  storageGeneration = metadata.epoch;
+  if (metadata.writers[storageWriter]) storageLedger = metadata.writers[storageWriter];
+} catch (e) {}
+function storageMetadata(raw) {
+  const metadata = { version: 1, epoch: 'legacy', writers: Object.create(null) };
+  if (!raw || raw.version !== 1) return metadata;
+  if (typeof raw.epoch === 'string' && raw.epoch.length <= 100) metadata.epoch = raw.epoch;
+  if (!raw.writers || typeof raw.writers !== 'object' || Array.isArray(raw.writers))
+    return metadata;
+  for (const [id, writer] of Object.entries(raw.writers)) {
+    if (!/^[a-zA-Z0-9-]{8,100}$/.test(id) || !writer || typeof writer !== 'object') continue;
+    const entry = { scores: Object.create(null), played: Object.create(null) };
+    for (const [name, score] of Object.entries(writer.scores || {})) {
+      if (
+        normalizePlayerName(name) !== name ||
+        !name ||
+        name.length > 24 ||
+        !safeCounter(score?.points) ||
+        !safeCounter(score?.rounds)
+      )
+        continue;
+      entry.scores[name] = { points: score.points, rounds: score.rounds };
+    }
+    for (const [game, count] of Object.entries(writer.played || {}))
+      if (/^[a-z]{2,24}$/.test(game) && safeCounter(count)) entry.played[game] = count;
+    metadata.writers[id] = entry;
+  }
+  return metadata;
+}
+function readStoredProgress() {
+  const text = localStorage.getItem(KEY);
+  if (!text) return null;
+  try {
+    const raw = JSON.parse(text),
+      data = { ...normalizeProgressBase(raw), extra: normalizeExtra(raw.extra) };
+    data.extra.experience = normalizeExperience(data.extra.experience);
+    return { data, metadata: storageMetadata(raw._sync), text };
+  } catch (e) {
+    return null;
+  }
+}
+function storageMergeTree(local, baseline, remote) {
+  if (storageEqual(local, baseline)) return remote;
+  if (!local || typeof local !== 'object' || Array.isArray(local)) return local;
+  const merged = Object.assign(Object.create(null), remote || {});
+  for (const key of new Set([...Object.keys(baseline || {}), ...Object.keys(local)])) {
+    if (!Object.hasOwn(local, key)) delete merged[key];
+    else merged[key] = storageMergeTree(local[key], baseline?.[key], remote?.[key]);
+  }
+  return merged;
+}
+function storageMergeList(local, baseline, remote) {
+  const removed = new Set(baseline.filter((value) => !local.includes(value)));
+  const added = local.filter((value) => !baseline.includes(value));
+  return [...new Set([...remote.filter((value) => !removed.has(value)), ...added])];
+}
+function storageMergeLearned(local, baseline, remote) {
+  const merged = new Map(remote.map((value) => [norm(value.name), value])),
+    old = new Map(baseline.map((value) => [norm(value.name), value]));
+  for (const [name] of old)
+    if (!local.some((value) => norm(value.name) === name)) merged.delete(name);
+  for (const value of local)
+    if (!storageEqual(value, old.get(norm(value.name)))) merged.set(norm(value.name), value);
+  return [...merged.values()].slice(0, 200);
+}
+function storageMergeRecent(local, remote) {
+  const rows = new Map();
+  for (const row of [...remote, ...local])
+    if (!rows.has(row.id) || row.at > rows.get(row.id).at) rows.set(row.id, row);
+  return [...rows.values()].sort((a, b) => b.at - a.at).slice(0, 6);
+}
+function storageMergeHistory(local, remote) {
+  const rows = new Map();
+  for (const row of [...remote, ...local]) rows.set(row.rid || JSON.stringify(row), row);
+  return [...rows.values()].sort((a, b) => b.at - a.at).slice(0, 80);
+}
+function storageMergeProgress(local, baseline, incoming) {
+  const remote = incoming.data,
+    metadata = incoming.metadata,
+    merged = storageMergeTree(local, baseline, remote),
+    oldWriter = metadata.writers[storageWriter] || {
+      scores: Object.create(null),
+      played: Object.create(null),
+    };
+  merged.scores = Object.assign(Object.create(null), remote.scores);
+  for (const [name, score] of Object.entries(local.scores)) {
+    const old = Object.hasOwn(baseline.scores, name)
+        ? baseline.scores[name]
+        : { points: 0, rounds: 0 },
+      points = Math.max(0, score.points - old.points),
+      rounds = Math.max(0, score.rounds - old.rounds);
+    if (!points && !rounds) continue;
+    const ledger = (storageLedger.scores[name] ||= { points: 0, rounds: 0 });
+    ledger.points = sumCounter(ledger.points, points);
+    ledger.rounds = sumCounter(ledger.rounds, rounds);
+  }
+  for (const [name, ledger] of Object.entries(storageLedger.scores)) {
+    const accounted = oldWriter.scores[name] || { points: 0, rounds: 0 },
+      score = (merged.scores[name] ||= { points: 0, rounds: 0 });
+    score.points = sumCounter(score.points, Math.max(0, ledger.points - accounted.points));
+    score.rounds = sumCounter(score.rounds, Math.max(0, ledger.rounds - accounted.rounds));
+  }
+  const extra = merged.extra,
+    current = local.extra,
+    previous = baseline.extra,
+    latest = remote.extra;
+  extra.played = Object.assign(Object.create(null), latest.played);
+  for (const [id, count] of Object.entries(current.played)) {
+    const added = Math.max(0, count - (previous.played[id] || 0));
+    if (added) storageLedger.played[id] = sumCounter(storageLedger.played[id] || 0, added);
+  }
+  for (const [id, count] of Object.entries(storageLedger.played))
+    extra.played[id] = sumCounter(
+      extra.played[id] || 0,
+      Math.max(0, count - (oldWriter.played[id] || 0)),
+    );
+  for (const key of ['best', 'daily']) {
+    extra[key] = Object.assign(Object.create(null), latest[key]);
+    for (const [id, value] of Object.entries(current[key]))
+      extra[key][id] = Math.max(extra[key][id] || 0, value);
+  }
+  for (const key of ['favorites', 'earned'])
+    extra[key] = storageMergeList(current[key], previous[key], latest[key]);
+  extra.learned = storageMergeLearned(current.learned, previous.learned, latest.learned);
+  extra.recent = storageMergeRecent(current.recent, latest.recent);
+  extra.history = storageMergeHistory(current.history, latest.history);
+  if (extra.experience) {
+    extra.experience.completed = Object.assign({}, latest.experience?.completed);
+    for (const [id, value] of Object.entries(current.experience?.completed || {}))
+      extra.experience.completed[id] = Math.max(extra.experience.completed[id] || 0, value);
+    extra.experience = normalizeExperience(extra.experience);
+  }
+  if (Object.keys(storageLedger.scores).length || Object.keys(storageLedger.played).length)
+    metadata.writers[storageWriter] = storageClone(storageLedger);
+  return { data: merged, metadata };
+}
+function save(options = {}) {
+  const before = store,
+    ledgerBefore = storageClone(storageLedger),
+    generationBefore = storageGeneration;
+  try {
+    const incoming = readStoredProgress();
+    let metadata;
+    if (options.replace) {
+      storageGeneration = storageToken();
+      storageLedger = { scores: Object.create(null), played: Object.create(null) };
+      metadata = { version: 1, epoch: storageGeneration, writers: Object.create(null) };
+    } else if (incoming && incoming.metadata.epoch !== storageGeneration) {
+      // A reset/import is an authoritative new generation. Never add a stale
+      // document's old counters or settings back into that replacement.
+      store = incoming.data;
+      storageGeneration = incoming.metadata.epoch;
+      storageLedger = { scores: Object.create(null), played: Object.create(null) };
+      metadata = incoming.metadata;
+      oldScores = null;
+    } else if (incoming) {
+      const merged = storageMergeProgress(storageClone(store), storageBaseline, incoming);
+      store = merged.data;
+      metadata = merged.metadata;
+    } else if (storageHadRecord) {
+      store = {
+        players: ['أنا', 'صاحبي'],
+        scores: Object.create(null),
+        sound: false,
+        extra: normalizeExtra({}),
+      };
+      store.extra.experience = normalizeExperience(null);
+      storageGeneration = storageToken();
+      storageLedger = { scores: Object.create(null), played: Object.create(null) };
+      metadata = { version: 1, epoch: storageGeneration, writers: Object.create(null) };
+      oldScores = null;
+    } else metadata = { version: 1, epoch: storageGeneration, writers: Object.create(null) };
+    const text = JSON.stringify({ ...store, _sync: metadata });
+    if (text !== incoming?.text) localStorage.setItem(KEY, text);
+    storageBaseline = storageClone(store);
+    storageHadRecord = true;
     storageAvailable = true;
   } catch (e) {
+    store = before;
+    storageGeneration = generationBefore;
+    storageLedger = {
+      scores: Object.assign(Object.create(null), ledgerBefore.scores),
+      played: Object.assign(Object.create(null), ledgerBefore.played),
+    };
     storageAvailable = false;
   }
 }
+window.addEventListener('storage', (event) => {
+  if (event.storageArea !== localStorage || (event.key !== KEY && event.key !== null)) return;
+  const before = storageClone(store);
+  save();
+  if (!storageAvailable || storageEqual(before, store)) return;
+  // Updating progress never restarts a board, reveals a role or replaces the
+  // contents of a live modal. Names and secret rounds already have snapshots.
+  syncLearned();
+  applySettings();
+  soundUI();
+  updateDock();
+  if (screen === 'home' && $('modalback').hidden && !$('pausecover')) renderHome();
+});
 const worlds = [
   ['all', '🌌', 'العالم كله'],
   ['guess', '🔮', 'التخمين'],
@@ -593,7 +816,7 @@ function syncLearned(force = false) {
       aliases: [
         v.name,
         ...(Array.isArray(v.aliases)
-          ? v.aliases.filter((a) => typeof a === 'string' && a.length < 50)
+          ? v.aliases.filter((a) => typeof a === 'string' && a.length <= 50)
           : []),
       ],
     })),
@@ -638,6 +861,16 @@ const groupGameIds = new Set([
   'spy',
   'taboo',
 ]);
+const duoGameIds = new Set([
+  'finder',
+  'mind',
+  'mime',
+  'secret',
+  'reaction',
+  'ttt',
+  'connect',
+  'taboo',
+]);
 function isSolo(g) {
   return soloGameIds.has(g[0]);
 }
@@ -648,7 +881,8 @@ function filteredGames() {
   return games.filter(
     (g) =>
       (world === 'all' || gameWorld[g[0]] === world) &&
-      (filter === 'all' || (filter === 'solo' ? isSolo(g) : isGroup(g))) &&
+      (filter === 'all' ||
+        (filter === 'solo' ? isSolo(g) : filter === 'duo' ? duoGameIds.has(g[0]) : isGroup(g))) &&
       (!onlyFavorites || store.extra.favorites.includes(g[0])) &&
       (!searchQuery || norm(g[2] + ' ' + g[3] + ' ' + g[4]).includes(norm(searchQuery))),
   );
@@ -832,7 +1066,12 @@ function resumeClock() {
 }
 function openModal(html) {
   if ($('modalback').hidden) previousFocus = document.activeElement;
-  if (screen === 'reaction' && state && !state.done && ['waiting', 'ready'].includes(state.stage)) {
+  if (
+    screen === 'reaction' &&
+    state &&
+    !state.done &&
+    ['waiting', 'ready', 'decoy'].includes(state.stage)
+  ) {
     clearTimers();
     state.stage = 'idle';
     renderReaction();
@@ -928,7 +1167,7 @@ function removePause() {
 function showPause() {
   if (!state || state.done || screen === 'setup' || screen === 'tour-handoff') return;
   if (!$('pausecover')) pauseFocus = document.activeElement;
-  if (screen === 'reaction' && ['waiting', 'ready'].includes(state.stage)) {
+  if (screen === 'reaction' && ['waiting', 'ready', 'decoy'].includes(state.stage)) {
     clearTimers();
     state.stage = 'idle';
     renderReaction();
@@ -1166,7 +1405,7 @@ function confirmImport() {
     store.extra.experience = normalizeExperience(store.extra.experience);
   oldScores = null;
   syncLearned(true);
-  save();
+  save({ replace: true });
   applySettings();
   soundUI();
   home();
@@ -1221,11 +1460,11 @@ function setup(id, internal = false) {
   let body = '';
   const diff = `<div class="field full"><label for="level">المستوى</label><select id="level"><option value="easy">خفيف</option><option value="normal" selected>متوسط</option><option value="hard">تحدّي</option></select></div>`;
   if (id === 'ttt' || id === 'connect')
-    body = `<p class="muted">${id === 'ttt' ? 'كوّن خطاً من 3 علامات أفقياً أو عمودياً أو قطرياً.' : 'وصّل 4 قطع أفقياً أو عمودياً أو قطرياً. القطعة تنزل لآخر خانة فاضية.'}</p><div class="fields"><div class="field full"><label for="opponent">تلعب مع منو؟</label><select id="opponent" onchange="opponentChanged()"><option value="bot">الخصم الذكي</option><option value="friend">شخص على نفس الجهاز</option></select></div>${playerField('اللاعب الأول')}<div class="field full" id="secondfield" hidden><label for="second">اللاعب الثاني</label><select id="second">${store.players.map((n, i) => `<option value="${i}" ${i === 1 ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div><div class="field full" id="botfield"><label for="level">قوة الخصم</label><select id="level"><option value="easy">خفيف</option><option value="normal">متوسط</option><option value="hard" selected>قوي</option></select></div><div class="field full"><label for="first">منو يبدأ؟</label><select id="first"><option value="0">اللاعب الأول</option><option value="1">الخصم</option><option value="random">قرعة</option></select></div></div><p class="note">${id === 'ttt' ? 'المستوى القوي يفحص كل المسارات ويتجنب الخسارة.' : 'المستوى القوي يبحث عدة حركات للأمام ويصد فرص الفوز.'}</p>`;
+    body = `<p class="muted">${id === 'ttt' ? 'كوّن خطاً من 3 علامات أفقياً أو عمودياً أو قطرياً.' : 'وصّل 4 قطع أفقياً أو عمودياً أو قطرياً. القطعة تنزل لآخر خانة فاضية.'}</p><div class="fields"><div class="field full"><label for="opponent">تلعب مع منو؟</label><select id="opponent" onchange="opponentChanged()"><option value="bot">الخصم الذكي</option><option value="friend">شخص على نفس الجهاز</option></select></div>${playerField('اللاعب الأول')}<div class="field full" id="secondfield" hidden><label for="second">اللاعب الثاني</label><select id="second">${store.players.map((n, i) => `<option value="${i}" ${i === 1 ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div><div class="field full" id="botfield"><label for="level">قوة الخصم</label><select id="level"><option value="easy">خفيف</option><option value="normal">متوسط</option><option value="hard" selected>قوي</option></select></div><div class="field full"><label for="boardseries">طول المواجهة</label><select id="boardseries"><option value="1">جولة واحدة</option><option value="3">3 جولات · البداية بالتناوب</option><option value="5">5 جولات · البداية بالتناوب</option></select></div><div class="field full"><label for="first">منو يبدأ؟</label><select id="first"><option value="0">اللاعب الأول</option><option value="1">الخصم</option><option value="random">قرعة</option></select></div></div><p class="note">${id === 'ttt' ? 'المستوى القوي يفحص كل المسارات ويتجنب الخسارة.' : 'المستوى القوي يبحث عدة حركات للأمام ويصد فرص الفوز.'}</p>`;
   else if (id === 'code')
     body = `<p class="muted">اكتشف الشفرة من 0 إلى 9. الأخضر يعني رقم ومكان صحيحين؛ الأصفر رقم صحيح في مكان آخر. المحاولات: خفيف 12، متوسط 10، تحدّي 8.</p><div class="fields">${diff}<div class="field full"><label for="codelength">طول الشفرة</label><select id="codelength"><option value="3">3 أرقام</option><option value="4" selected>4 أرقام</option><option value="5">5 أرقام</option></select></div><div class="field full"><label for="repeatdigits">طريقة الشفرة</label><select id="repeatdigits"><option value="no">الأرقام مختلفة</option><option value="yes">ممكن الرقم يتكرر</option></select></div>${playerField()}</div>`;
   else if (id === 'simon')
-    body = `<p class="muted">راقب تسلسل الألوان وكرر نفس الترتيب. لكل لون رمز ونغمة. كل نجاح يضيف خطوة.</p><div class="fields">${diff}${playerField()}</div><p class="note">الهدف 15 مرحلة. تقدر تستخدم أرقام لوحة المفاتيح 1–4.</p>`;
+    body = `<p class="muted">راقب تسلسل الألوان وكرر نفس الترتيب. لكل لون رمز ونغمة. كل نجاح يضيف خطوة.</p><div class="fields">${diff}<div class="field full"><label for="simonmode">أسلوب التذكر</label><select id="simonmode"><option value="forward">نفس الترتيب</option><option value="reverse">من الأخير للأول</option></select></div>${playerField()}</div><p class="note">الهدف 15 مرحلة. تقدر تستخدم أرقام لوحة المفاتيح 1–4.</p>`;
   else if (id === 'slide')
     body = `<p class="muted">حرّك القطعة المجاورة للمكان الفاضي ورتّب الأرقام من 1 إلى الأخير. كل لوحة تنتج من حركات قانونية، لذلك لها حل.</p><div class="fields"><div class="field full"><label for="size">حجم اللوحة</label><select id="size"><option value="3">3×3 · 8 قطع</option><option value="4">4×4 · 15 قطعة</option><option value="5">5×5 · 24 قطعة</option></select></div>${diff}${playerField()}</div>`;
   else if (id === 'sudoku')
@@ -1235,9 +1474,9 @@ function setup(id, internal = false) {
   else if (id === 'math')
     body = `<p class="muted">اختَر الناتج الصحيح لكل عملية. اضبط عدد الأسئلة ووقت التحدّي، ثم اختبر دقتك وسرعتك.</p><div class="fields">${diff}${quizFields('math')}${playerField()}</div>`;
   else if (id === 'color')
-    body = `<p class="muted">اختَر لون الحروف نفسها، حتى لو الكلمة تقول لوناً آخر. اضبط الوقت وعدد الأسئلة لتحدٍّ يناسبك.</p><div class="fields">${diff}${quizFields('color')}${playerField()}</div><div class="hintpanel">مثال: كلمة «أحمر» مكتوبة بالأزرق، جوابك «أزرق».</div>`;
+    body = `<p class="muted">اختَر لون الحروف نفسها، حتى لو الكلمة تقول لوناً آخر. اضبط الوقت وعدد الأسئلة لتحدٍّ يناسبك.</p><div class="fields">${diff}<div class="field full"><label for="colormode">قاعدة الإجابة</label><select id="colormode"><option value="ink">لون الحروف دائماً</option><option value="mixed">قاعدة متغيرة · لون أو معنى</option></select></div>${quizFields('color')}${playerField()}</div><div class="hintpanel">مثال: كلمة «أحمر» مكتوبة بالأزرق، جوابك «أزرق».</div>`;
   else if (id === 'pattern')
-    body = `<p class="muted">اكتشف قاعدة كل سلسلة واختر الرقم الناقص. شرح الحل يظهر بعد إجابتك. اضبط الوقت وطول الجولة.</p><div class="fields">${diff}${quizFields('pattern')}${playerField()}</div>`;
+    body = `<p class="muted">اكتشف قاعدة كل سلسلة واختر الرقم الناقص. شرح الحل يظهر بعد إجابتك. اضبط الوقت وطول الجولة.</p><div class="fields">${diff}<div class="field full"><label for="patternmode">مكان العدد الناقص</label><select id="patternmode"><option value="next">العدد التالي</option><option value="missing">خانة داخل السلسلة</option></select></div>${quizFields('pattern')}${playerField()}</div>`;
   else if (id === 'spy')
     body = `<p class="muted">الكل يشوف نفس المكان إلا الجاسوس. كل لاعب يشوف دوره بروحه، وبعدها اسألوا بعض بدون ما تفضحون المكان. في النهاية كل واحد يصوّت.</p><div class="fields"><div class="field full"><label for="spytheme">عالم الأماكن</label><select id="spytheme"><option value="all">كل الأماكن</option><option value="everyday">الحياة اليومية</option><option value="travel">السفر والمغامرات</option><option value="fantasy">عوالم خيالية</option></select></div><div class="field full"><label for="duration">وقت النقاش</label><select id="duration"><option value="180">3 دقائق</option><option value="300" selected>5 دقائق</option><option value="480">8 دقائق</option></select></div></div><p class="note">${store.players.length} لاعبين: ${store.players.map(esc).join('، ')}. تصويت بدون أغلبية واضحة = فوز الجاسوس.</p><div class="actions"><button onclick="openPeople()">عدّل اللاعبين</button></div>`;
   else if (id === 'taboo')
@@ -1510,6 +1749,13 @@ function saveLearned(index) {
       .value.split(/[,،]/)
       .map((v) => latin(v.trim()))
       .filter(Boolean);
+  if (
+    name.length > 40 ||
+    hints.some((hint) => hint.length > 100) ||
+    aliases.length > 10 ||
+    aliases.some((alias) => alias.length > 50)
+  )
+    return toast('الاسم حتى 40 حرفًا، والتلميح حتى 100، وحتى 10 أسماء بديلة طول كل منها 50 حرفًا.');
   const v = { name, cat, tags, hints, aliases };
   if (index < 0) store.extra.learned.push(v);
   else store.extra.learned[index] = v;
@@ -1638,7 +1884,7 @@ const gameGuides = {
     'ابدأ بأرقام متنوعة. تستطيع اختيار 3–5 خانات، والسماح بتكرار الرقم.',
   ],
   simon: [
-    'راقب الأضواء والنغمات، ثم كرر التسلسل بنفس الترتيب.',
+    'راقب الأضواء والنغمات، ثم كرر التسلسل وفق الوضع المختار: بنفس الترتيب أو من الأخير للأول.',
     'تستطيع استخدام الأرقام 1–4. كل مرحلة تزيد خطوة؛ ركز على مجموعات قصيرة.',
   ],
   slide: [
@@ -1658,8 +1904,8 @@ const gameGuides = {
     'في الضرب والقسمة جرّب استبعاد الإجابات البعيدة قبل الحساب النهائي.',
   ],
   color: [
-    'اختر لون الحروف نفسها، حتى لو الكلمة تشير إلى لون مختلف.',
-    'تجاهل معنى الكلمة. اللون هو الجواب في كل مرة.',
+    'اتبع قاعدة السؤال: لون الحروف في الوضع الأساسي، أو اللون ومعنى الكلمة بالتناوب في الوضع المتغير.',
+    'اقرأ بطاقة القاعدة الظاهرة قبل اختيار الجواب. البرهان والشرح يبقيان حتى الجولة التالية.',
   ],
   pattern: [
     'اكتشف قاعدة سلسلة الأرقام واختر العدد الناقص.',
@@ -1833,6 +2079,12 @@ function normalizeSavedSession(raw) {
         revealed: { ...d.revealed },
         draft: [...d.draft],
         analysis: null,
+        digitNotes:
+          Array.isArray(d.digitNotes) &&
+          d.digitNotes.length === 10 &&
+          d.digitNotes.every((n) => [0, 1, 2].includes(n))
+            ? [...d.digitNotes]
+            : Array(10).fill(0),
       });
       for (const [key, value] of Object.entries(data.revealed)) data.draft[Number(key)] = value;
     } else if (raw.id === 'slide') {
@@ -1855,6 +2107,7 @@ function normalizeSavedSession(raw) {
         moves: d.moves,
         hints: d.hints,
         assisted: d.assisted,
+        lineMode: d.lineMode === true,
         initial: { board: [...d.initial.board], empty: d.initial.empty, path: [...d.initial.path] },
         history: [],
       });
@@ -1906,6 +2159,10 @@ function normalizeSavedSession(raw) {
           typeof d.lastCheckedBoard === 'string' && /^[0-9]{81}$/.test(d.lastCheckedBoard)
             ? d.lastCheckedBoard
             : '',
+        lastExplainedBoard:
+          typeof d.lastExplainedBoard === 'string' && /^[0-9]{81}$/.test(d.lastExplainedBoard)
+            ? d.lastExplainedBoard
+            : '',
       });
     }
     return {
@@ -1941,9 +2198,19 @@ function captureSoloSession() {
   }
   const keys =
     s.id === 'code'
-      ? ['length', 'duplicates', 'secret', 'max', 'attempts', 'hints', 'revealed', 'draft']
+      ? [
+          'length',
+          'duplicates',
+          'secret',
+          'max',
+          'attempts',
+          'hints',
+          'revealed',
+          'draft',
+          'digitNotes',
+        ]
       : s.id === 'slide'
-        ? ['size', 'board', 'empty', 'path', 'moves', 'hints', 'assisted', 'initial']
+        ? ['size', 'board', 'empty', 'path', 'moves', 'hints', 'assisted', 'initial', 'lineMode']
         : [
             'solution',
             'board',
@@ -1955,6 +2222,7 @@ function captureSoloSession() {
             'noteMode',
             'showCandidates',
             'lastCheckedBoard',
+            'lastExplainedBoard',
           ];
   const data = Object.fromEntries(keys.map((key) => [key, s[key]]));
   const snapshot = normalizeSavedSession({

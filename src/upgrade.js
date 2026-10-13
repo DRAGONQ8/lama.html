@@ -30,7 +30,13 @@ function normalizeGameHistory(raw) {
         v.at <= 8640000000000000,
     )
     .slice(0, 80)
-    .map((v) => ({ id: v.id, name: normalizePlayerName(v.name), points: v.points, at: v.at }));
+    .map((v) => ({
+      id: v.id,
+      name: normalizePlayerName(v.name),
+      points: v.points,
+      at: v.at,
+      ...(typeof v.rid === 'string' && /^[a-zA-Z0-9-]{8,100}$/.test(v.rid) ? { rid: v.rid } : {}),
+    }));
 }
 let restoringSetup = false;
 let startingDaily = false;
@@ -137,6 +143,7 @@ setup = function (id, internal = false) {
         `<div class="setup-memory"><span>⚙ اختياراتك في هذه اللعبة تُحفظ تلقائياً</span><button class="linkbtn" onclick="resetGamePreferences('${id}')">الإعدادات الأصلية ↺</button></div>`,
       );
   }
+  if (screen === 'setup' && state?.id === id) appendSetupBlueprint(id);
   updateDock();
   return outcome;
 };
@@ -157,6 +164,7 @@ addScore = function (name, points) {
   const outcome = upgradeAddScore(name, points);
   if (id && (store.scores[cleanName]?.rounds || 0) > before) {
     store.extra.history.unshift({
+      rid: storageToken(),
       id,
       name: cleanName,
       points: Math.min(Number.MAX_SAFE_INTEGER, Math.max(0, Math.round(points))),
@@ -203,6 +211,12 @@ const upgradeSettings = openSettings;
 openSettings = function () {
   upgradeSettings();
   $('modal')
+    .querySelector('.actions')
+    ?.insertAdjacentHTML(
+      'beforebegin',
+      '<div class="settingsrow"><div class="primarytext"><b>مساعدة اللعب والحفظ</b><small>الجماعي والخصوصية والاستكمال ونقل تقدّمك</small></div><button onclick="openHelp()">؟ المساعدة</button></div>',
+    );
+  $('modal')
     .querySelector('.hintpanel')
     ?.insertAdjacentHTML(
       'beforebegin',
@@ -218,6 +232,119 @@ function updateDock() {
     else button.removeAttribute('aria-current');
   });
   document.body.classList.toggle('playing', !!state && screen !== 'home' && screen !== 'setup');
+}
+function audienceChoicesHTML() {
+  return `<section class="audience-choices" aria-label="اختَر عدد اللاعبين"><button class="audience-solo" onclick="chooseSoloLobby()"><span>🧠</span><div><small>ابدأ بنفسك</small><h3>وقت لك، تحدٍّ يتطوّر معك</h3><p>${games.filter(isSolo).length} لعبة فردية · تدريب، استنتاج، واستكشاف</p></div><b>العب بمفردك ←</b></button><button onclick="chooseDuoLobby()"><span>⚔</span><div><small>شخصان</small><h3>مواجهة لها أكثر من جولة</h3><p>خصم ذكي أو صديق · تناوب عادل على البداية</p></div><b>ألعاب الشخصين ←</b></button><button onclick="openLounge()"><span>🎭</span><div><small>من 3 إلى 12 لاعبًا</small><h3>كل دور يحرّك اللمّة</h3><p>مشاهد، أدوار سرية، أسئلة، وتصويت</p></div><b>جهّزوا الجلسة ←</b></button></section>`;
+}
+function chooseDuoLobby() {
+  if (screen !== 'home') home();
+  world = 'all';
+  filter = 'duo';
+  searchQuery = '';
+  onlyFavorites = false;
+  renderHome();
+  scrollCatalog();
+}
+const gameControlTips = {
+  finder: '↑ أكبر · ↓ أصغر · Enter صحيح. أو المس زر الإجابة؛ داخل الدفتر تقدر تغيّر التخمين.',
+  solo: 'اكتب رقمًا واضغط Enter، أو استخدم لوحة أرقام اللعبة. افتح معاينة التقسيم للتدريب.',
+  mind: 'أزرار نعم ولا ومو متأكد. افتح دفتر الأدلة لتصحيح إجابة قديمة ومراجعة الاحتمالات.',
+  who: 'اكتب الاسم أو اسمًا بديلًا. تقدر تسأل عن صفتين، بخصم معلن لكل سؤال.',
+  memory: 'لمس بطاقتين، أو الأسهم للتنقل وEnter للقلب. الصورة تطابق صورتها أو اسمها حسب الوضع.',
+  reaction: 'لمس المنطقة أو المسافة. في وضع التمييز اضغط الأخضر فقط وتجاهل البرتقالي.',
+  mime: 'الجهاز مع الممثّل. المراقب يراجع الجواب، والأزرار تسجل النجاح والتجاوز؛ إخفاء الكلمة يحميها.',
+  secret:
+    'مرّر الجهاز بعد إخفاء الكلمة. دوّن الأسئلة أو جرّب التخمين المكتوب؛ السائل المقترح يتناوب.',
+  ttt: 'لمس الخانة أو أرقام 1–9. في المواجهات الطويلة تتناوب البداية؛ راجع الحركات بعد الجولة.',
+  connect: 'لمس العمود أو أرقام 1–7. القطع تسقط لآخر خانة، والمساعد يشرح الفرصة والتهديد.',
+  code: 'لوحة الأرقام أو الكتابة المباشرة؛ الأخضر مكان صحيح والأصفر رقم بمكان مختلف. دفتر الأدلة من المحاولات الظاهرة.',
+  simon: 'لمس الألوان أو أرقام 1–4. اتبع الوضع المختار: نفس الترتيب أو من الأخير للأول.',
+  slide:
+    'لمس قطعة بجوار الفراغ، أو في صفه وعموده بعد تفعيل دفع الصف. الأسهم والسحب للتحريك. تراجع عن الحركة عند الحاجة.',
+  sudoku:
+    'لمس خانة ثم رقم، أو الأرقام والأسهم. N للملاحظات وCtrl+Z للتراجع؛ معاينة الخطوة تشرح دليلها.',
+  word: 'اكتب الكلمة أو اختر الحروف؛ حدّد حرفًا في ترتيبك لتعديله. القراءة بعد الحل لا تستهلك وقت الكلمة التالية.',
+  math: 'اختر جوابًا أو اكتبه. بعد الإجابة اقرأ الشرح ثم اضغط التالي؛ التدريب على الأخطاء لا يضيف نقاطًا.',
+  color: 'اتبع بطاقة القاعدة الظاهرة: لون الحروف، أو معنى الكلمة في الوضع المتغيّر.',
+  pattern: 'ابحث عن الفرق أو النسبة بين الأعداد؛ قد تكون الخانة الناقصة في الداخل حسب الوضع.',
+  spy: 'كل لاعب يرى دوره وحده؛ الأسئلة بين أشخاص محددين، والسجل علني بينما التصويت خاص.',
+  taboo:
+    'الجهاز مع الشارح والمراقب. الصحيح والمخالفة والتجاوز يسجلون النتيجة، وإخفاء البطاقة يحمي السر.',
+  snake:
+    'الأسهم أو أزرار الاتجاه؛ الضغط على التسارع أو Shift يستهلك طاقة. التدريب يسمح بخطوة ومعاينة.',
+  merge: 'الأسهم أو السحب أو أزرار الاتجاه. اختر 4×4 أو 5×5، وشاهد البلاطة القادمة قبل الحركة.',
+  mines:
+    'اكشف الخانة أو بدّل إلى وضع العلامات. الأعلام وعلامات الشك تساعدانك؛ التكبير يوسّع الخانات.',
+  maze: 'الأسهم، أزرار الاتجاه، أو لمس جار. في الاستكشاف تجمع المفاتيح بالترتيب وتضع علامات على الخريطة.',
+  trivia: 'حدد ثقتك واختر الجواب. مساعد حذف خيارين محدود؛ شرح الإجابة يبقى حتى التالي.',
+  hangman:
+    'جرّب حرفًا أو الكلمة كاملة. دفتر الكلمات يساعدك على المقارنة، والتدريب على الكلمات الفائتة بدون نقاط.',
+  wordguess:
+    'اكتب التخمين أو حرّر خاناته. دفتر الأدلة يراعي الحروف المكررة؛ قائمة الاحتمالات تُستنتج من الألوان.',
+  target: 'المس الهدف أو تحرك بالأسهم وأكد بـ Enter. اتبع ترتيب المسار أو احفظه أولًا حسب الوضع.',
+  teamcup:
+    'وزّع الفرق ثم مرّر الجهاز حسب الدور؛ اختاروا التكتيك، وافتحوا البطاقة بعد استعداد الفريق.',
+  undercover: 'بطاقة خاصة لكل لاعب، ثم تلميحات وأسئلة علنية، ثم تصويت سري بعيدًا عن الآخرين.',
+  improv: 'كل لاعب يكتب وحده؛ اعرضوا الأفكار المجهولة ثم صوّتوا وفق معيار الجولة.',
+  nonogram:
+    'املأ الخانات أو ضع علامة فراغ. دفتر الصفوف يعرض فرضيات قابلة للتراجع، وعدسة الحركة تسبق التنفيذ.',
+  lights:
+    'كل ضغطة تغيّر الخانة وجيرانها. جرّب الخطة أو مطاردة الصفوف، ثم نفّذ خطوة واحدة وتابع النتيجة.',
+  pipes: 'دوّر الأنابيب لتوصل المصدر بالهدف. اختبر ضغط الماء طبقة بطبقة وافحص التسريب الفعلي.',
+};
+function appendSetupBlueprint(id) {
+  if ($('setupBlueprint')) return;
+  $('app')
+    .querySelector('.panel')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<details class="setup-blueprint" id="setupBlueprint"><summary>؟ التحكم، والخصوصية، وحفظ الجولة</summary><p>${esc(gameControlTips[id] || 'اتبع أزرار الجولة والتعليمات الظاهرة.')}</p><div class="chips"><span class="chip">${esc(modeLabel(id))}</span><span class="chip">${gameLength(id)}</span><span class="chip">النقاط محلية على جهازك</span></div><p class="tiny">${['code', 'slide', 'sudoku'].includes(id) ? 'يُحفظ آخر لغز فردي مستقل غير مكتمل للاستكمال؛ اليومية والبطولة لهما قواعد منفصلة.' : 'تُحفظ النتيجة بعد انتهاء الجولة؛ الانتقال للعبة أخرى يبدأ جولة جديدة.'} ${groupGameIds.has(id) ? 'احجب الشاشة عند فتح الكلمات والأدوار الخاصة.' : 'المساعدات وخصمها موضّحان داخل كل لعبة.'}</p></details>`,
+    );
+}
+function openHelp() {
+  openModal(
+    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 8 · ${games.length} لعبة عربية في ملف واحد.</p>${[
+      [
+        'هل تحتاج إنترنت أو حسابًا؟',
+        'افتح ملف HTML في متصفح حديث. الألعاب والمحتوى تعمل دون إنترنت أو حساب؛ حفظ النتائج مرتبط بهذا المتصفح.',
+      ],
+      [
+        'كيف نلعب معًا؟',
+        'سجّل الأسماء من اللاعبين. الشخصان أو المجموعة يلعبون بالتناوب على جهاز واحد؛ الأدوار والتصويت السري يحتاجان تمرير الجهاز وحجب الشاشة.',
+      ],
+      [
+        'كيف أنقل نقاطي لهاتف آخر؟',
+        'من الإعدادات صدّر نسخة احتياطية JSON ثم استوردها على الجهاز الآخر. الاستيراد يستبدل تقدم الجهاز بعد عرض المراجعة.',
+      ],
+      [
+        'هل أقدر أكمل جولة قديمة؟',
+        'آخر لغز مستقل غير مكتمل من فك الشفرة أو رتّب الأرقام أو سودوكو يظهر في الرئيسية. المسارات تحفظ المحطات المكتملة. باقي الألعاب تبدأ من جديد.',
+      ],
+      [
+        'كيف تُحسب النقاط؟',
+        'القواعد والخصومات تختلف حسب اللعبة. النتيجة والسجل يعرضان النقاط المكتسبة؛ للمقارنة العادلة استخدم نفس الإعدادات أو بطولة اللمّة.',
+      ],
+      [
+        'كيف أحافظ على بطاقتي السرية؟',
+        'افتحها وحدك، ثم استخدم إخفاء وتمرير الجهاز. الاستراحة تخفي الأدوار الخاصة. لا تُحفظ الكلمات والأدوار الجماعية في النسخة الاحتياطية.',
+      ],
+      [
+        'ما أفضل إعدادات للجوال؟',
+        'ابدأ بمستوى مريح، افتح وضع التركيز ◎، واستخدم أزرار اللمس. الشاشة الكاملة اختيارية حسب دعم المتصفح.',
+      ],
+      [
+        'أين تُحفظ بياناتي؟',
+        'في التخزين المحلي للمتصفح؛ قد يمنعه الوضع الخاص. التبويبات المفتوحة لنفس العنوان تزامن التقدم محليًا. صدّر نسخة قبل نقل الملف أو تغيير عنوانه.',
+      ],
+    ]
+      .map(
+        ([question, answer]) =>
+          `<details class="help-question"><summary>${question}</summary><p>${answer}</p></details>`,
+      )
+      .join(
+        '',
+      )}<div class="actions"><button onclick="openGuide()">دليل الألعاب</button><button onclick="exportProgress()">صدّر تقدّمك</button><button class="primary" onclick="closeModal()">نكمل اللعب</button></div>`,
+  );
 }
 const upgradeSetHTML = setHTML;
 setHTML = function (html) {
@@ -337,9 +464,10 @@ renderHome = function () {
     games.some((g) => g[0] === id),
   );
   setHTML(
-    `<section class="lobby-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 7.0 · العب، تعلّم، وتفوّق</span><h1>وقت للعب.<br><em>ولَمّة تستاهل.</em></h1><p>${games.length} تحدّياً على جوّك. فكّر، جرّب، نافس الربع؛ جرّب الحركة قبل تنفيذها، تعلّم من إجابتك، ونافس الربع على نفس الجهاز.</p><div class="actions"><button class="primary" onclick="openQuickPicker()">✦ اختَر لي تحدّي</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><button class="linkbtn" onclick="chooseSoloLobby()">كل الألعاب الفردية ←</button></div></div><div class="lobby-art" aria-hidden="true"><div class="art-ring one"></div><div class="art-ring two"></div><div class="art-glow"></div><div class="art-dice"><span></span><span></span><span></span><span></span><span></span></div><div class="art-ticket ticket-one"><b>LEVEL ${level()}</b><small>خطوة أذكى كل مرة</small></div><div class="art-ticket ticket-two"><span>🧩</span><b>تحدّي جديد. جوّك نفسه.</b></div><div class="art-spark s-one">✦</div><div class="art-spark s-two">✧</div><span class="art-caption">LET THE GOOD TIMES PLAY.</span></div></section><div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openGameHistory()"><span class="summary-icon">↺</span><span><small>جولاتك ونتائجك</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${snapshotHTML()}${routeResumeHTML()}${quickLaunchHTML()}<details class="discover-drawer"><summary><span>🗺️ مسارات ومنافسات</span><small>ثلاث محطات لك، أو بطولة للربع</small><b>اكتشف أكثر +</b></summary><div class="discovery-content"><div class="discovery-actions"><button onclick="openLounge()">👥 صالة اللمّة</button><button onclick="openTournament()">🏆 نبدأ بطولة</button><button onclick="openGameHistory()">↺ سجل الجولات</button></div>${routeCardsHTML()}</div></details><div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نلعب اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
+    `<section class="lobby-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 8.0 · العب، تعلّم، وتفوّق</span><h1>وقت للعب.<br><em>ولَمّة تستاهل.</em></h1><p>${games.length} تحدّياً على جوّك. تعلّم بروحك، نافس شخصًا، أو اجمع الربع. ألغاز للاستنتاج، جولات للشخصين، وتجارب حركة ومشاهد جماعية على نفس الجهاز.</p><div class="actions"><button class="primary" onclick="openQuickPicker()">✦ اختَر لي تحدّي</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><button class="linkbtn" onclick="chooseSoloLobby()">كل الألعاب الفردية ←</button></div></div><div class="lobby-art" aria-hidden="true"><div class="art-ring one"></div><div class="art-ring two"></div><div class="art-glow"></div><div class="art-dice"><span></span><span></span><span></span><span></span><span></span></div><div class="art-ticket ticket-one"><b>LEVEL ${level()}</b><small>خطوة أذكى كل مرة</small></div><div class="art-ticket ticket-two"><span>🧩</span><b>تحدّي جديد. جوّك نفسه.</b></div><div class="art-spark s-one">✦</div><div class="art-spark s-two">✧</div><span class="art-caption">LET THE GOOD TIMES PLAY.</span></div></section>${audienceChoicesHTML()}<div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openGameHistory()"><span class="summary-icon">↺</span><span><small>جولاتك ونتائجك</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${snapshotHTML()}${routeResumeHTML()}${quickLaunchHTML()}<details class="discover-drawer"><summary><span>🗺️ مسارات ومنافسات</span><small>ثلاث محطات لك، أو بطولة للربع</small><b>اكتشف أكثر +</b></summary><div class="discovery-content"><div class="discovery-actions"><button onclick="openLounge()">👥 صالة اللمّة</button><button onclick="openTournament()">🏆 نبدأ بطولة</button><button onclick="openGameHistory()">↺ سجل الجولات</button></div>${routeCardsHTML()}</div></details><div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نلعب اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
       ['all', 'الكل'],
       ['solo', 'بمفردك'],
+      ['duo', 'شخصان'],
       ['group', 'مع الربع'],
       ['new', 'أحدث الألعاب ✦'],
     ]
@@ -361,8 +489,8 @@ renderHome = function () {
       )
       .join(
         '',
-      )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>أضف الأسماء، مرّر الجهاز، والعبوا بالتناوب. الكلمات والتصويت تبقى سرية أثناء الأدوار.</p></div><div><span class="guide-icon">⚙</span><h3>اللعبة على كيفك</h3><p>لوحة أرقام للجوال، وضع تركيز، وتدريب ومعاينة للحركات. اختَر المستوى والوقت، والباقي محفوظ.</p></div><div><span class="guide-icon">💾</span><h3>نتائجك معك</h3><p>سجل الجولات والنقاط والألغاز محفوظة هنا. صدّر نسخة احتياطية من الإعدادات لنقل تقدمك.</p></div></section>`,
+      )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>أضف الأسماء، مرّر الجهاز، والعبوا بالتناوب. الكلمات والتصويت تبقى سرية أثناء الأدوار.</p></div><div><span class="guide-icon">⚙</span><h3>اللعبة على كيفك</h3><p>مطابقة الصورة باسمها، تسلسل معكوس، خرائط استكشاف، ومواجهات من عدة جولات. اختَر طريقة اللعب والوقت قبل البداية.</p></div><div><span class="guide-icon">💾</span><h3>نتائجك معك</h3><p>سجل الجولات والنقاط والألغاز محفوظة هنا. صدّر نسخة احتياطية من الإعدادات لنقل تقدمك.</p></div></section>`,
   );
   renderCatalog();
-  $('foot').textContent = `لَمّة 7.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
+  $('foot').textContent = `لَمّة 8.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
 };

@@ -18,13 +18,20 @@ const suites = [
   'lab-v7',
   'playflow-v7',
   'browser-v7',
+  'core-v8',
+  'advanced-v8',
+  'arcade-v8',
+  'words-v8',
+  'party-v8',
+  'lab-v8',
+  'storage-v8',
 ];
 const failures = [];
 for (const name of suites) {
   const code = await new Promise((resolve, reject) => {
     const child = spawn(
       process.execPath,
-      [`tests/${name}.mjs`, ...(name === 'arcade-v7' ? ['--built'] : [])],
+      [`tests/${name}.mjs`, ...(['arcade-v7', 'arcade-v8'].includes(name) ? ['--built'] : [])],
       {
         cwd: root,
         stdio: 'inherit',

@@ -38,8 +38,15 @@ async function check(name, test) {
     await context.close();
   }
 }
-const clickAction = (page, action, scope = '#app') =>
-  page.locator(`${scope} button[onclick="${action}"]`).filter({ visible: true }).last().click();
+const clickAction = (page, action, scope = '#app') => {
+  // Zero-argument test actions may now carry generated run/turn guards in the UI.
+  // Explicit arguments identify a particular action and must continue matching exactly.
+  const noArguments = /^([A-Za-z_$][\w$]*)\(\)$/.exec(action),
+    selector = noArguments
+      ? `${scope} button[onclick^="${noArguments[1]}("]`
+      : `${scope} button[onclick="${action}"]`;
+  return page.locator(selector).filter({ visible: true }).last().click();
+};
 
 async function startLab(page, id, level = 'easy') {
   await page.evaluate((id) => setup(id), id);

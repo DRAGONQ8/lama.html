@@ -244,7 +244,9 @@ const games = [
 const player = () =>
   tourney?.active
     ? tourney.players[tourney.turn % tourney.players.length]
-    : store.players[Number($('player')?.value || 0)] || store.players[0];
+    : normalizePlayerName($('player')?.selectedOptions?.[0]?.textContent) ||
+      store.players[Number($('player')?.value || 0)] ||
+      store.players[0];
 
 function boardHTML(names = store.players, results = null) {
   let previous = null,
@@ -268,7 +270,7 @@ let oldScores = null;
 function resetScores() {
   oldScores = JSON.parse(JSON.stringify(store.scores));
   store.scores = Object.create(null);
-  save();
+  save({ replace: true });
   openBoard();
   $('modal').insertAdjacentHTML(
     'beforeend',
@@ -279,7 +281,7 @@ function restoreScores() {
   if (oldScores) {
     store.scores = Object.assign(Object.create(null), oldScores);
     oldScores = null;
-    save();
+    save({ replace: true });
     openBoard();
   }
 }
@@ -392,11 +394,11 @@ function legacySetup(id) {
   } else if (id === 'who') {
     body = `<p class="muted">اكتشف الكلمة من 3 تلميحات متدرجة. اختر الفئة ومستوى التحدي، والكلمات لا تتكرر حتى تمر على أغلب القائمة.</p><div class="fields"><div class="field full">${catField()}</div><div class="field full"><label for="whoLevel">مستوى التخمين</label><select id="whoLevel"><option value="easy">خفيف · تلميحان و7 تخمينات</option><option value="normal" selected>متوسط · تلميح واحد و5 تخمينات</option><option value="hard">خبير · 3 تخمينات بدون قائمة كلمات</option></select></div>${playerField()}</div><div class="actions"><button class="primary" onclick="startWho()">أعطني أول تلميح</button></div>`;
   } else if (id === 'memory') {
-    body = `<p class="muted">طابق الأزواج بأقل حركات. اختر من 8 إلى 48 بطاقة وثيمة البطاقات. عندك كشفتان قصيرتان، كل واحدة تخصم 12 نقطة.</p><div class="fields"><div class="field"><label for="difficulty">حجم اللوحة</label><select id="difficulty"><option value="4">بداية · 8 بطاقات</option><option value="6">خفيف · 12 بطاقة</option><option value="8" selected>متوسط · 16 بطاقة</option><option value="12">تحدي · 24 بطاقة</option><option value="16">قوي · 32 بطاقة</option><option value="20">خبير · 40 بطاقة</option><option value="24">أسطوري · 48 بطاقة</option></select></div><div class="field"><label for="memoryTheme">شكل البطاقات</label><select id="memoryTheme"><option value="mix">عالم متنوع</option><option value="animals">حيوانات</option><option value="food">أطعمة وفواكه</option><option value="travel">رحلات وأماكن</option></select></div>${playerField()}</div><div class="actions"><button class="primary" onclick="startMemory()">جهّز البطاقات</button></div>`;
+    body = `<p class="muted">طابق الأزواج بأقل حركات. اختر من 8 إلى 48 بطاقة وثيمة البطاقات. عندك كشفتان قصيرتان، كل واحدة تخصم 12 نقطة.</p><div class="fields"><div class="field"><label for="difficulty">حجم اللوحة</label><select id="difficulty"><option value="4">بداية · 8 بطاقات</option><option value="6">خفيف · 12 بطاقة</option><option value="8" selected>متوسط · 16 بطاقة</option><option value="12">تحدي · 24 بطاقة</option><option value="16">قوي · 32 بطاقة</option><option value="20">خبير · 40 بطاقة</option><option value="24">أسطوري · 48 بطاقة</option></select></div><div class="field"><label for="memoryTheme">شكل البطاقات</label><select id="memoryTheme"><option value="mix">عالم متنوع</option><option value="animals">حيوانات</option><option value="food">أطعمة وفواكه</option><option value="travel">رحلات وأماكن</option></select></div><div class="field full"><label for="memorymode">طريقة المطابقة</label><select id="memorymode"><option value="pictures">صورتان متطابقتان</option><option value="meaning">صورة واسمها · ذاكرة ومعنى</option></select></div>${playerField()}</div><div class="actions"><button class="primary" onclick="startMemory()">جهّز البطاقات</button></div>`;
   } else if (id === 'reaction') {
-    body = `<p class="muted">انتظر الأخضر ثم اضغط أو استخدم المسافة. اختر 3 أو 5 أو 7 محاولات؛ الفوز لأقل متوسط وقت، والضغط المبكر يحسب 1500 ملّي ثانية.</p><div class="fields"><div class="field full"><label for="trials">المحاولات لكل لاعب</label><select id="trials"><option value="3">سريع · 3 محاولات</option><option value="5" selected>متوازن · 5 محاولات</option><option value="7">دقيق · 7 محاولات</option></select></div>${playerField('من يلعب وحده؟')}</div><div class="check" style="margin-top:15px"><input type="checkbox" id="group"><label for="group">نلعب جميعاً بالتناوب (${store.players.length} لاعبين)</label></div><div class="actions"><button class="primary" onclick="startReaction()">ابدأ تحدي السرعة</button></div><p class="note">تعرض النتيجة المتوسط والوسيط وأسرع ضغطة وعدد الضغطات المبكرة. جرّبوا نفس الجهاز للمقارنة.</p>`;
+    body = `<p class="muted">انتظر الأخضر ثم اضغط أو استخدم المسافة. اختر 3 أو 5 أو 7 محاولات؛ الفوز لأقل متوسط وقت، والضغط المبكر يحسب 1500 ملّي ثانية.</p><div class="fields"><div class="field full"><label for="trials">المحاولات لكل لاعب</label><select id="trials"><option value="3">سريع · 3 محاولات</option><option value="5" selected>متوازن · 5 محاولات</option><option value="7">دقيق · 7 محاولات</option></select></div><div class="field full"><label for="reactionmode">نوع الإشارة</label><select id="reactionmode"><option value="classic">الأخضر · سرعة الاستجابة</option><option value="focus">تمييز الإشارة · تجاهل البرتقالي</option></select></div>${playerField('من يلعب وحده؟')}</div><div class="check" style="margin-top:15px"><input type="checkbox" id="group"><label for="group">نلعب جميعاً بالتناوب (${store.players.length} لاعبين)</label></div><div class="actions"><button class="primary" onclick="startReaction()">ابدأ تحدي السرعة</button></div><p class="note">تعرض النتيجة المتوسط والوسيط وأسرع ضغطة وعدد الضغطات المبكرة. جرّبوا نفس الجهاز للمقارنة.</p>`;
   } else if (id === 'mime') {
-    body = `<p class="muted">شاهد الكلمة ومثّلها بدون كلام، والباقي يخمنون! الصحيح +10، والتجاوز −2. تقدر تخفي الكلمة مؤقتاً أو تتراجع عن ضغطة بالغلط.</p><div class="fields"><div class="field full">${catField()}</div><div class="field"><label for="duration">وقت كل دور</label><select id="duration"><option value="30">30 ثانية</option><option value="45">45 ثانية</option><option value="60" selected>60 ثانية</option><option value="90">90 ثانية</option><option value="120">دقيقتان</option></select></div><div class="field"><label for="rounds">الأدوار لكل لاعب</label><select id="rounds"><option value="1">دور واحد</option><option value="2" selected>دوران</option><option value="3">3 أدوار</option><option value="5">5 أدوار</option></select></div></div><p class="note">يلعبون: ${store.players.map(esc).join('، ')}. النقاط للممثّل، وفي نهاية الدور تشوفون الكلمات اللي لعبتوها.</p><div class="actions"><button class="primary" onclick="startMime()">نبدأ اللمّة</button><button onclick="openPeople()">عدّل اللاعبين</button></div>`;
+    body = `<p class="muted">شاهد الكلمة ومثّلها بدون كلام، والباقي يخمنون! الصحيح +10، والتجاوز −2. تقدر تخفي الكلمة مؤقتاً أو تتراجع عن ضغطة بالغلط.</p><div class="fields"><div class="field full">${catField()}</div><div class="field"><label for="duration">وقت كل دور</label><select id="duration"><option value="30">30 ثانية</option><option value="45">45 ثانية</option><option value="60" selected>60 ثانية</option><option value="90">90 ثانية</option><option value="120">دقيقتان</option></select></div><div class="field"><label for="rounds">الأدوار لكل لاعب</label><select id="rounds"><option value="1">دور واحد</option><option value="2" selected>دوران</option><option value="3">3 أدوار</option><option value="5">5 أدوار</option></select></div></div><div class="field"><label for="mimerule">طريقة التمثيل</label><select id="mimerule"><option value="classic">التمثيل الحر</option><option value="scene">تحدي المشهد · قيد لكل كلمة</option></select></div><p class="note">يلعبون: ${store.players.map(esc).join('، ')}. النقاط للممثّل، وفي نهاية الدور تشوفون الكلمات اللي لعبتوها.</p><div class="actions"><button class="primary" onclick="startMime()">نبدأ اللمّة</button><button onclick="openPeople()">عدّل اللاعبين</button></div>`;
   } else if (id === 'secret') {
     body = `<p class="muted">صاحب الدور يشاهد كلمة سر أو يكتب كلمة من عنده. الباقي يسألونه بنعم أو لا، ويسجلون الإجابات حتى يكتشفون السر.</p><div class="fields"><div class="field full">${catField()}</div><div class="field"><label for="duration">وقت التخمين</label><select id="duration"><option value="60">دقيقة</option><option value="120" selected>دقيقتان</option><option value="180">3 دقائق</option><option value="240">4 دقائق</option></select></div><div class="field"><label for="questionLimit">حد الأسئلة</label><select id="questionLimit"><option value="10">10 أسئلة · سريع</option><option value="20" selected>20 سؤالاً · عادي</option><option value="30">30 سؤالاً · طويل</option></select></div><div class="field full"><label for="rounds">الأدوار لكل لاعب</label><select id="rounds"><option value="1">دور واحد</option><option value="2">دوران</option><option value="3">3 أدوار</option></select></div></div><p class="note">صاحب الجواب الصحيح يكسب 10–30 نقطة، وصاحب الكلمة 10 نقاط. بعد آخر سؤال لكم تخمين أخير.</p><div class="actions"><button class="primary" onclick="startSecret()">نبدأ أول دور</button><button onclick="openPeople()">عدّل اللاعبين</button></div>`;
   }
@@ -481,11 +483,12 @@ function startNumber(id) {
 }
 function renderFinder(msg = '') {
   const s = state;
+  s.finderVersion = (s.finderVersion || 0) + 1;
   const count = s.l !== null && s.h !== null ? s.h - s.l + 1n : null;
   setHTML(
     wrap(
       'finder',
-      `<div class="stats"><div class="stat"><small>التخمين الحالي</small><b>${s.attempt}</b></div><div class="stat"><small>${s.max ? 'المحاولات المتبقية' : 'استكشاف النطاق'}</small><b>${s.max ? s.max - s.attempt + 1 : '∞'}</b></div><div class="stat"><small>الاحتمالات الباقية</small><b style="font-size:17px;overflow-wrap:anywhere">${count === null ? 'غير محددة' : fmt(count)}</b></div></div><section class="panel"><div class="spot"><small>هل الرقم اللي اخترته هو…</small><div class="huge">${fmt(s.guess)}</div><div class="range">${s.l === null ? '−∞' : fmt(s.l)} ≤ ? ≤ ${s.h === null ? '+∞' : fmt(s.h)}</div></div><div class="answerrow"><button class="warm" onclick="finderAnswer('higher')">⬆ أكبر<small>رقمه أكبر من التخمين</small></button><button class="primary" onclick="finderAnswer('correct')">✓ صح<small>هذا الرقم بالضبط</small></button><button class="rose" onclick="finderAnswer('lower')">⬇ أصغر<small>رقمه أصغر من التخمين</small></button></div><p class="note" role="status">${msg || (count === 1n ? 'باقي رقم واحد. اضغط «صح» إذا هو الرقم اللي اخترته.' : s.phase === 'explore' ? 'نحدد الاتجاه ونوسّع البحث، وبعدها نضيّق النطاق.' : 'كل إجابة تقرّبنا من الرقم. جاوب حسب الرقم السرّي.')}</p><div class="actions"><button onclick="undoFinder()" ${!s.history.length ? 'disabled' : ''}>↶ تراجع خطوة</button><button class="quiet" onclick="setup('finder')">نطاق يديد</button></div>${
+      `<div class="stats"><div class="stat"><small>التخمين الحالي</small><b>${s.attempt}</b></div><div class="stat"><small>${s.max ? 'معيار تخمينات المنتصف' : 'استكشاف النطاق'}</small><b>${s.max || '∞'}</b></div><div class="stat"><small>الاحتمالات الباقية</small><b style="font-size:17px;overflow-wrap:anywhere">${count === null ? 'غير محددة' : fmt(count)}</b></div></div><section class="panel"><div class="spot"><small>هل الرقم اللي اخترته هو…</small><div class="huge">${fmt(s.guess)}</div><div class="range">${s.l === null ? '−∞' : fmt(s.l)} ≤ ? ≤ ${s.h === null ? '+∞' : fmt(s.h)}</div></div><div class="answerrow"><button class="warm" onclick="finderAnswer('higher')">⬆ أكبر<small>رقمه أكبر من التخمين</small></button><button class="primary" onclick="finderAnswer('correct')">✓ صح<small>هذا الرقم بالضبط</small></button><button class="rose" onclick="finderAnswer('lower')">⬇ أصغر<small>رقمه أصغر من التخمين</small></button></div><p class="note" role="status">${msg || (count === 1n ? 'باقي رقم واحد. اضغط «صح» إذا هو الرقم اللي اخترته.' : s.phase === 'explore' ? 'نحدد الاتجاه ونوسّع البحث، وبعدها نضيّق النطاق.' : 'كل إجابة تقرّبنا من الرقم. جاوب حسب الرقم السرّي.')}</p><div class="actions"><button onclick="undoFinder()" ${!s.history.length ? 'disabled' : ''}>↶ تراجع خطوة</button><button class="quiet" onclick="setup('finder')">نطاق يديد</button></div>${
         s.history.length
           ? `<details class="history"><summary>الإجابات السابقة (${s.history.length})</summary><ol>${s.history
               .slice(-10)
@@ -510,7 +513,32 @@ function renderFinder(msg = '') {
       $('app').querySelector('button[onclick="finderAnswer(\'higher\')"]').disabled = true;
     if (s.guess === s.l)
       $('app').querySelector('button[onclick="finderAnswer(\'lower\')"]').disabled = true;
+    const split = splitNumberRange(s.l, s.h, s.guess);
+    panel?.insertAdjacentHTML(
+      'beforeend',
+      `<details class="strategy-lens"><summary>⚖ سؤال جاهز، أو اختر تخمينك</summary><div class="split-legend"><span>↓ أصغر: <bdi>${fmt(split.lower)}</bdi></span><span>✓ نفس الرقم: 1</span><span>↑ أكبر: <bdi>${fmt(split.higher)}</bdi></span></div><p class="tiny">الأعداد حسب النطاق الذي اتفقتوا عليه وإجابات صاحب الرقم. المنتصف يعطي تقسيمًا متوازنًا؛ تقدر تجرب سؤالًا من اختيارك.</p>${count > 1n ? `<form onsubmit="event.preventDefault();planFinderGuess(${s.finderVersion})"><label for="finderGuessInput">بدّل التخمين المعروض دون احتساب جواب</label><div class="guess-entry"><input id="finderGuessInput" inputmode="numeric" dir="ltr" maxlength="90" value="${s.guess}"><button type="submit">اعرض السؤال</button></div></form>` : ''}</details>`,
+    );
   }
+}
+function planFinderGuess(version = state?.finderVersion) {
+  if (
+    screen !== 'finder' ||
+    state.done ||
+    coreBlocked() ||
+    state.finderVersion !== version ||
+    state.l === null ||
+    state.h === null
+  )
+    return;
+  let guess;
+  try {
+    guess = integer($('finderGuessInput').value);
+  } catch (error) {
+    return toast(error.message);
+  }
+  if (guess < state.l || guess > state.h) return toast('اختار تخمينًا داخل النطاق المتفق عليه.');
+  state.guess = guess;
+  renderFinder('غيّرنا السؤال؛ عدد المحاولات لا يزيد حتى تسجلوا الإجابة.');
 }
 function finderAnswer(a) {
   if (screen !== 'finder' || state.done || coreBlocked()) return;
@@ -619,6 +647,45 @@ function renderSolo(msg = '') {
     $('guessInput').placeholder = (s.l + (s.h - s.l) / 2n).toString();
     $('guessInput').setAttribute('aria-label', 'اكتب تخمينك؛ التلميح المعروض هو منتصف النطاق');
   }
+  $('app')
+    .querySelector('.solo-assists')
+    ?.insertAdjacentHTML(
+      'beforebegin',
+      `<details class="strategy-lens"><summary>⚖ جرّب تقسيم النطاق قبل التخمين</summary><p class="tiny">المعاينة تحسب الاحتمالات من النطاق الظاهر فقط؛ لا تعرف الرقم السري ولا تستهلك محاولة.</p><div id="soloSplit" role="status" aria-live="polite"></div></details>`,
+    );
+  updateSoloSplit();
+}
+function splitNumberRange(low, high, guess) {
+  if (guess < low || guess > high) return null;
+  const lower = guess - low,
+    higher = high - guess,
+    total = high - low + 1n;
+  return {
+    lower,
+    higher,
+    total,
+    worst: lower > higher ? lower : higher,
+    balanced: lower - higher <= 1n && higher - lower <= 1n,
+  };
+}
+function updateSoloSplit() {
+  if (screen !== 'solo' || state?.done || !$('soloSplit')) return;
+  const s = state;
+  let guess;
+  try {
+    guess = integer($('guessInput').value);
+  } catch {
+    $('soloSplit').textContent = 'اكتب رقماً لترى كيف يقسم الاحتمالات.';
+    return;
+  }
+  const split = splitNumberRange(s.l, s.h, guess);
+  if (!split) {
+    $('soloSplit').textContent = 'اختر رقماً داخل النطاق المتبقي.';
+    return;
+  }
+  const percent = (n) => Number((n * 10000n) / split.total) / 100;
+  $('soloSplit').innerHTML =
+    `<div class="split-legend"><span>↓ أصغر: <bdi>${fmt(split.lower)}</bdi></span><span>✓ هو نفسه: 1</span><span>↑ أكبر: <bdi>${fmt(split.higher)}</bdi></span></div><div class="split-track" dir="ltr" aria-hidden="true"><i style="width:${percent(split.lower)}%"></i><i style="width:${Math.max(0.4, percent(1n))}%"></i><i style="width:${percent(split.higher)}%"></i></div><p class="note">${split.balanced ? 'تقسيم متوازن: هذا التخمين يترك أقل عدد ممكن في أسوأ حالة.' : `في أسوأ حالة يبقى ${fmt(split.worst)} احتمال. المنتصف يوازن فرعي البحث.`}</p>`;
 }
 function soloKeypadHTML() {
   return `<div class="solo-keypad" dir="ltr" role="group" aria-label="لوحة أرقام التخمين">${['1', '2', '3', '4', '5', '6', '7', '8', '9', 'clear', '0', 'back'].map((key) => `<button type="button" onclick="soloKey('${key}')" aria-label="${key === 'clear' ? 'مسح الرقم' : key === 'back' ? 'حذف آخر خانة' : key}">${key === 'clear' ? 'مسح' : key === 'back' ? '⌫' : key}</button>`).join('')}</div>`;
@@ -642,6 +709,7 @@ function toggleSoloPad() {
   state.soloPad = !state.soloPad;
   renderSolo();
   $('guessInput').value = draft;
+  updateSoloSplit();
   if (!state.soloPad) $('guessInput').focus({ preventScroll: true });
 }
 function soloMidpoint() {
@@ -1391,6 +1459,7 @@ function startMind() {
     history: [],
     evidence: [],
     initialCount: selectedItems().length,
+    initialPool: selectedItems(),
     answers: 0,
     name: player(),
     done: false,
@@ -1450,6 +1519,71 @@ function renderMindEvidence() {
       'beforeend',
       `<div class="progressline" aria-label="تضييق الخيارات ${progress}%"><span style="width:${progress}%"></span></div><p class="note">${s.candidates.length === 1 ? 'كل الإجابات الواضحة تقود إلى هذا الخيار؛ أكّد الاسم أو تراجع لتصحيح الأدلة.' : s.q === null ? 'الخيارات الباقية تتشابه في الصفات المتاحة؛ اختر الاسم أو أضف صفة تميز الشيء في قاعدة التخمين.' : `اخترنا هذا السؤال لأنه يقسم الخيارات إلى ${yes} جوابها نعم و${s.candidates.length - yes} جوابها لا. «مو متأكد» يحفظ كل الخيارات.`}</p>${s.evidence.length ? `<details class="history"><summary>الأدلة التي ضيّقت الخيارات (${s.evidence.length})</summary><ol>${s.evidence.map((v) => `<li>${esc(questions[v.q][1])} — <b>${v.answer === 'yes' ? 'نعم' : v.answer === 'no' ? 'لا' : 'مو متأكد'}</b><small> · استبعدنا ${v.before - v.after} وبقي ${v.after}</small></li>`).join('')}</ol></details>` : ''}`,
     );
+  s.notebookVersion = (s.notebookVersion || 0) + 1;
+  const version = s.notebookVersion;
+  $('app')
+    .querySelector('.panel')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<details class="strategy-lens" id="mindNotebook"><summary>📒 دفتر الاحتمالات وتصحيح الأدلة</summary><p class="tiny">تعديل إجابة قديمة يعيد فحص كل الأدلة. الإجابة المتناقضة تُرفض؛ التراجع يعيد التصحيح السابق.</p>${s.evidence
+        .map(
+          (entry) =>
+            `<div class="evidence-edit"><b>${esc(questions[entry.q][1])}</b><div class="actions">${[
+              ['yes', 'نعم'],
+              ['no', 'لا'],
+              ['unknown', 'مو متأكد'],
+            ]
+              .map(
+                ([value, label]) =>
+                  `<button class="smallbtn ${entry.answer === value ? 'primary' : ''}" aria-pressed="${entry.answer === value}" onclick="mindRevisit(${entry.q},'${value}',${version})" ${entry.answer === value ? 'disabled' : ''}>${label}</button>`,
+              )
+              .join('')}</div></div>`,
+        )
+        .join(
+          '',
+        )}<p class="note">الخيارات المتوافقة الآن: ${s.candidates.length}</p><div class="listchips">${s.candidates
+        .slice(0, 80)
+        .map((i) => `<span>${esc(items[i].name)}</span>`)
+        .join(
+          '',
+        )}</div>${s.candidates.length > 80 ? '<p class="tiny">نعرض أول 80 اسماً؛ العدد أعلاه يشمل كل الخيارات.</p>' : ''}</details>`,
+    );
+}
+function mindRevisit(q, answer, version = state?.notebookVersion) {
+  if (
+    screen !== 'mind' ||
+    state.done ||
+    coreBlocked() ||
+    state.notebookVersion !== version ||
+    !['yes', 'no', 'unknown'].includes(answer)
+  )
+    return;
+  const s = state,
+    old = s.evidence.find((entry) => entry.q === q);
+  if (!old || old.answer === answer) return;
+  let remaining = [...(s.initialPool || s.history[0]?.candidates || s.candidates)];
+  const evidence = [];
+  for (const entry of s.evidence) {
+    const value = entry.q === q ? answer : entry.answer,
+      before = remaining.length;
+    if (value !== 'unknown')
+      remaining = remaining.filter(
+        (i) => items[i].tags.has(questions[entry.q][0]) === (value === 'yes'),
+      );
+    evidence.push({ q: entry.q, answer: value, before, after: remaining.length });
+  }
+  if (!remaining.length) return toast('التعديل يناقض أدلة أخرى. لم نغيّر إجاباتك.');
+  s.history.push({
+    candidates: [...s.candidates],
+    asked: [...s.asked],
+    answers: s.answers,
+    evidence: [...s.evidence],
+  });
+  s.candidates = remaining;
+  s.evidence = evidence;
+  s.answers = evidence.filter((entry) => entry.answer !== 'unknown').length;
+  renderMind();
+  renderMindEvidence();
 }
 function pickMind(i) {
   if (screen !== 'mind' || !state || state.done || coreBlocked()) return;
@@ -1481,6 +1615,7 @@ function startWho() {
     level,
     ...config,
     initialHints: config.hints,
+    inquiries: [],
     attempt: 0,
     seen: [],
     wrong: [],
@@ -1499,7 +1634,8 @@ function whoPoints() {
     s.base -
       (s.hints - s.initialHints) * 10 -
       Math.max(0, s.attempt - 1) * 5 -
-      (s.listOpen ? 5 : 0),
+      (s.listOpen ? 5 : 0) -
+      (s.inquiries?.length || 0) * 6,
   );
 }
 function renderWho(msg = '') {
@@ -1507,7 +1643,7 @@ function renderWho(msg = '') {
   setHTML(
     wrap(
       'who',
-      `<div class="stats"><div class="stat"><small>تخمينات باقية</small><b>${s.max - s.attempt}</b></div><div class="stat"><small>تلميحات مفتوحة</small><b>${s.hints} / 3</b></div><div class="stat"><small>نقاط الإجابة الآن</small><b>${Math.max(10, s.base - (s.hints - s.initialHints) * 10 - s.attempt * 5 - (s.listOpen ? 5 : 0))}</b></div></div><section class="panel"><h2>من أنا؟ 🕵️</h2>${s.item.hints
+      `<div class="stats"><div class="stat"><small>تخمينات باقية</small><b>${s.max - s.attempt}</b></div><div class="stat"><small>تلميحات مفتوحة</small><b>${s.hints} / 3</b></div><div class="stat"><small>نقاط الإجابة الآن</small><b>${Math.max(10, s.base - (s.hints - s.initialHints) * 10 - s.attempt * 5 - (s.listOpen ? 5 : 0) - (s.inquiries?.length || 0) * 6)}</b></div></div><section class="panel"><h2>من أنا؟ 🕵️</h2>${s.item.hints
         .slice(0, s.hints)
         .map((h, i) => `<div class="hint"><b>التلميح ${i + 1}</b>${esc(h)}</div>`)
         .join(
@@ -1515,6 +1651,46 @@ function renderWho(msg = '') {
         )}<form onsubmit="event.preventDefault();guessWho()"><label for="whoInput">ما هو الشيء؟</label><input id="whoInput" maxlength="50" autocomplete="off" placeholder="اكتب الاسم أو اسماً بديلاً له"><div class="actions"><button class="primary" type="submit">خمنت!</button><button type="button" onclick="whoHint()" ${s.hints === 3 ? 'disabled' : ''}>تلميح إضافي −10</button></div></form><p class="note" role="status">${msg || 'التخمين الغلط يخصم 5 نقاط؛ تكرار التخمين نفسه لا يستهلك محاولة.'}</p>${s.wrong.length ? `<div class="listchips" aria-label="التخمينات السابقة">${s.wrong.map((v) => `<span>✕ ${esc(v)}</span>`).join('')}</div>` : ''}${s.level === 'hard' ? '' : s.listOpen ? `<details class="history" open><summary>الكلمات في الفئة المختارة (${s.pool.length})</summary><div class="listchips">${s.pool.map((i) => `<span>${esc(items[i].name)}</span>`).join('')}</div></details>` : '<div class="actions"><button onclick="whoCandidates()">شاهد قائمة الكلمات −5</button></div>'}<div class="actions"><button class="quiet" onclick="revealWho()">اكشف الجواب</button></div></section>`,
     ),
   );
+  renderWhoInquiries();
+}
+function whoInquiryOptions(s = state) {
+  return questions
+    .map((q, i) => ({ i, count: s.pool.filter((item) => items[item].tags.has(q[0])).length }))
+    .filter(
+      (entry) =>
+        entry.count > 0 &&
+        entry.count < s.pool.length &&
+        !s.inquiries?.some((q) => q.q === entry.i),
+    )
+    .sort((a, b) => Math.abs(s.pool.length / 2 - a.count) - Math.abs(s.pool.length / 2 - b.count))
+    .slice(0, 8)
+    .map((entry) => entry.i);
+}
+function renderWhoInquiries() {
+  const s = state,
+    options = whoInquiryOptions(s);
+  $('app')
+    .querySelector('.panel')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<details class="strategy-lens" ${s.inquiries?.length ? 'open' : ''}><summary>🔎 اسأل عن صفة · −6 نقاط للسؤال</summary><p class="tiny">سؤالان كحد أقصى؛ الجواب عن الصفة المعتادة في قاموس اللعبة. السؤال لا يستهلك تخميناً.</p>${s.inquiries?.map((v) => `<div class="hint"><b>${esc(questions[v.q][1])}</b>${v.yes ? 'نعم ✓' : 'لا ✕'}</div>`).join('') || ''}${(s.inquiries?.length || 0) < 2 && options.length ? `<label for="whoQuestion">اختر صفة لفحصها</label><select id="whoQuestion">${options.map((q) => `<option value="${q}">${esc(questions[q][1])}</option>`).join('')}</select><div class="actions"><button onclick="askWhoInquiry(${s.inquiries?.length || 0})">اسأل عن الصفة −6</button></div>` : '<p class="note">انتهت أسئلة الصفات المتاحة؛ استعمل أدلتك للتخمين.</p>'}</details>`,
+    );
+}
+function askWhoInquiry(count = state?.inquiries?.length || 0) {
+  if (
+    screen !== 'who' ||
+    state.done ||
+    coreBlocked() ||
+    (state.inquiries?.length || 0) >= 2 ||
+    count !== (state.inquiries?.length || 0)
+  )
+    return;
+  const q = Number($('whoQuestion')?.value);
+  if (!whoInquiryOptions().includes(q)) return;
+  state.inquiries ||= [];
+  state.inquiries.push({ q, yes: state.item.tags.has(questions[q][0]) });
+  renderWho('أضفنا جواب الصفة لدفتر الأدلة. طابقه مع التلميحات.');
+  $('whoInput')?.focus({ preventScroll: true });
 }
 function whoCandidates() {
   if (screen !== 'who' || state.done || coreBlocked() || state.level === 'hard' || state.listOpen)
@@ -1702,6 +1878,123 @@ const memoryThemes = {
     '🏝️',
   ],
 };
+const memoryNames = Object.fromEntries([
+  ['🍉', 'بطيخ'],
+  ['🚀', 'صاروخ'],
+  ['🐱', 'قط'],
+  ['🍕', 'بيتزا'],
+  ['⚽', 'كرة قدم'],
+  ['🎧', 'سماعة'],
+  ['🌴', 'نخلة'],
+  ['🦋', 'فراشة'],
+  ['🎲', 'نرد'],
+  ['🐬', 'دلفين'],
+  ['🍓', 'فراولة'],
+  ['🚗', 'سيارة'],
+  ['⭐', 'نجمة'],
+  ['🦊', 'ثعلب'],
+  ['🎈', 'بالون'],
+  ['🌙', 'قمر'],
+  ['🧭', 'بوصلة'],
+  ['💎', 'ألماس'],
+  ['🎸', 'غيتار'],
+  ['🌈', 'قوس قزح'],
+  ['🎨', 'ألوان'],
+  ['🦉', 'بومة'],
+  ['🍩', 'دونات'],
+  ['⛵', 'شراع'],
+  ['🌻', 'دوار الشمس'],
+  ['🐙', 'أخطبوط'],
+  ['🛸', 'صحن طائر'],
+  ['🍄', 'فطر'],
+  ['🦁', 'أسد'],
+  ['🏆', 'كأس'],
+  ['🪁', 'طائرة ورقية'],
+  ['🧩', 'أحجية'],
+  ['🐶', 'كلب'],
+  ['🐯', 'نمر'],
+  ['🐮', 'بقرة'],
+  ['🐷', 'خنزير'],
+  ['🐸', 'ضفدع'],
+  ['🐵', 'قرد'],
+  ['🐔', 'دجاجة'],
+  ['🐧', 'بطريق'],
+  ['🦆', 'بطة'],
+  ['🐝', 'نحلة'],
+  ['🐌', 'حلزون'],
+  ['🐢', 'سلحفاة'],
+  ['🐍', 'ثعبان'],
+  ['🦀', 'سلطعون'],
+  ['🐳', 'حوت'],
+  ['🦈', 'قرش'],
+  ['🦒', 'زرافة'],
+  ['🦓', 'حمار وحشي'],
+  ['🐘', 'فيل'],
+  ['🦔', 'قنفذ'],
+  ['🐇', 'أرنب'],
+  ['🐿️', 'سنجاب'],
+  ['🦎', 'سحلية'],
+  ['🍎', 'تفاح'],
+  ['🍊', 'برتقال'],
+  ['🍋', 'ليمون'],
+  ['🍌', 'موز'],
+  ['🍇', 'عنب'],
+  ['🫐', 'توت'],
+  ['🍒', 'كرز'],
+  ['🍑', 'خوخ'],
+  ['🥭', 'مانجو'],
+  ['🍍', 'أناناس'],
+  ['🥝', 'كيوي'],
+  ['🥑', 'أفوكادو'],
+  ['🥕', 'جزر'],
+  ['🌽', 'ذرة'],
+  ['🍞', 'خبز'],
+  ['🥐', 'كرواسون'],
+  ['🥞', 'بانكيك'],
+  ['🧀', 'جبن'],
+  ['🍔', 'برغر'],
+  ['🌮', 'تاكو'],
+  ['🍿', 'فشار'],
+  ['🍪', 'بسكويت'],
+  ['🎂', 'كيك'],
+  ['🍫', 'شوكولاتة'],
+  ['🍯', 'عسل'],
+  ['🍦', 'آيس كريم'],
+  ['🚕', 'تاكسي'],
+  ['🚌', 'حافلة'],
+  ['🚎', 'باص كهربائي'],
+  ['🚓', 'شرطة'],
+  ['🚑', 'إسعاف'],
+  ['🚒', 'إطفاء'],
+  ['🚚', 'شاحنة'],
+  ['🚜', 'جرار'],
+  ['🏎️', 'سيارة سباق'],
+  ['🚲', 'دراجة'],
+  ['🛵', 'سكوتر'],
+  ['🏍️', 'دراجة نارية'],
+  ['🚆', 'قطار'],
+  ['🚇', 'مترو'],
+  ['🚊', 'ترام'],
+  ['✈️', 'طائرة'],
+  ['🚁', 'مروحية'],
+  ['🛶', 'زورق'],
+  ['🚢', 'سفينة'],
+  ['⚓', 'مرساة'],
+  ['🏰', 'قلعة'],
+  ['⛺', 'خيمة'],
+  ['🗼', 'برج'],
+  ['🗽', 'تمثال الحرية'],
+  ['🎡', 'عجلة ملاهي'],
+  ['🏝️', 'جزيرة'],
+]);
+function memoryFaces(s) {
+  const seen = new Set();
+  return s.deck.map((symbol) => {
+    const repeated = seen.has(symbol);
+    seen.add(symbol);
+    return s.memoryMode === 'meaning' && repeated ? memoryNames[symbol] || symbol : symbol;
+  });
+}
 function memoryElapsed(s = state) {
   return s.started ? Math.max(0, Math.floor(((s.pausedAt || Date.now()) - s.started) / 1000)) : 0;
 }
@@ -1711,12 +2004,13 @@ function startMemory() {
   const value = Number($('difficulty').value),
     pairs = [4, 6, 8, 12, 16, 20, 24].includes(value) ? value : 8,
     theme = $('memoryTheme')?.value || 'mix',
-    picked = shuffle(memoryThemes[theme] || symbols).slice(0, pairs);
+    picked = shuffle([...new Set(memoryThemes[theme] || symbols)]).slice(0, pairs);
   state = {
     id: 'memory',
     deck: shuffle([...picked, ...picked]),
     pairs,
     theme,
+    memoryMode: $('memorymode')?.value === 'meaning' ? 'meaning' : 'pictures',
     up: [],
     matched: [],
     moves: 0,
@@ -1731,6 +2025,7 @@ function startMemory() {
     name: player(),
     done: false,
   };
+  state.faces = memoryFaces(state);
   screen = 'memory';
   renderMemory();
   repeat(() => {
@@ -1753,14 +2048,22 @@ function renderMemory() {
       `<div class="stats"><div class="stat"><small>الحركات</small><b>${s.moves}</b></div><div class="stat"><small>الأزواج</small><b>${s.matched.length / 2} / ${s.pairs}</b></div><div class="stat"><small>الوقت</small><b id="memtime">${memoryElapsed(s)} ث</b></div></div><div class="progressline"><span style="width:${(s.matched.length / s.deck.length) * 100}%"></span></div><div class="memory" style="grid-template-columns:repeat(${columns},minmax(0,1fr))">${s.deck
         .map((v, i) => {
           const m = s.matched.includes(i),
-            up = m || s.up.includes(i) || s.peek;
-          return `<button class="memcard ${m ? 'matched' : up ? 'up' : ''}" data-memory-index="${i}" tabindex="${i === s.memoryFocus ? 0 : -1}" onclick="flipCard(${i})" ${m || s.locked || s.done ? 'disabled' : ''} aria-label="بطاقة ${i + 1}، ${m ? 'زوج مكتمل ' : ''}${up ? esc(v) : 'مقلوبة'}" aria-pressed="${up}">${up ? v : '✦'}</button>`;
+            up = m || s.up.includes(i) || s.peek,
+            face = s.faces?.[i] || v;
+          return `<button class="memcard ${m ? 'matched' : up ? 'up' : ''} ${s.memoryMode === 'meaning' && face !== v ? 'meaning-card' : ''}" data-memory-index="${i}" tabindex="${i === s.memoryFocus ? 0 : -1}" onclick="flipCard(${i})" ${m || s.locked || s.done ? 'disabled' : ''} aria-label="بطاقة ${i + 1}، ${m ? 'زوج مكتمل ' : ''}${up ? esc(face) : 'مقلوبة'}" aria-pressed="${up}">${up ? esc(face) : '✦'}</button>`;
         })
         .join(
           '',
         )}</div><p class="note center" role="status">${s.peek ? 'تذكر الأماكن! الكشف يختفي بعد ثانيتين.' : s.locked ? 'غير متطابقتين؛ تذكر أماكنهما للمحاولة التالية.' : s.notice || 'اختر بطاقتين وابحث عن الأزواج.'}</p><p class="tiny center">سلسلة الأزواج: ${s.streak} · أفضل سلسلة: ${s.bestStreak} · كفاءة ${s.moves ? Math.round((s.matched.length / 2 / s.moves) * 100) : 0}%</p><div class="actions"><button onclick="memoryHint()" ${s.done || s.locked || s.up.length || s.hintsUsed >= 2 ? 'disabled' : ''}>كشف قصير −12 (${2 - s.hintsUsed})</button><button class="quiet" onclick="setup('memory')">لوحة جديدة</button></div>`,
     ),
   );
+  if (s.memoryMode === 'meaning')
+    $('app')
+      .querySelector('.memory')
+      ?.insertAdjacentHTML(
+        'beforebegin',
+        '<p class="note center">طابق الصورة مع اسمها العربي؛ لكل رمز بطاقة صورة وبطاقة اسم.</p>',
+      );
   if (hadFocus && s.locked) s.memoryRestoreFocus = true;
   if (restoreFocus && !s.done && !s.locked) {
     document
@@ -1881,6 +2184,7 @@ function startMime() {
     players: [...store.players],
     duration: Number($('duration').value),
     rounds: Number($('rounds').value),
+    ruleMode: $('mimerule')?.value === 'scene' ? 'scene' : 'classic',
     turn: 0,
     queue,
     index: 0,
@@ -1893,6 +2197,16 @@ function startMime() {
   mimeHandoff();
   goTop();
 }
+const mimeSceneRules = [
+  'مثّل بحركة بطيئة',
+  'استخدم يديك فقط',
+  'ابدأ بتوضيح الحجم',
+  'مثّل كأنك تحت الماء',
+  'مثّل وأنت جالس',
+  'ابدأ بفعل يرتبط بالكلمة',
+  'استخدم تعابير الوجه والجسم',
+  'كرر حركة واحدة حتى يفهمون',
+];
 function mimeHandoff() {
   const s = state;
   clearTimers();
@@ -1919,6 +2233,9 @@ function nextMimeWord() {
       [s.queue[0], s.queue[1]] = [s.queue[1], s.queue[0]];
   }
   s.word = items[s.queue[s.index++]].name;
+  s.cardSerial = (s.cardSerial || 0) + 1;
+  s.sceneRule =
+    s.ruleMode === 'scene' ? mimeSceneRules[(s.cardSerial - 1) % mimeSceneRules.length] : '';
   s.hiddenWord = false;
 }
 function mimeReady() {
@@ -1941,18 +2258,33 @@ function renderMime() {
   setHTML(
     wrap(
       'mime',
-      `<section class="panel"><div class="timerline"><span class="pill">🎭 ${esc(s.players[s.turn % s.players.length])}</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b><span class="pill">${s.score} نقطة</span></div><div class="spot"><small>مثّل بدون كلام</small><div class="huge word" style="color:var(--orange)">${s.hiddenWord ? '🔒 الكلمة مخفية' : esc(s.word)}</div></div><div class="actions"><button class="primary" onclick="mimeAnswer(true)">عرفوها! +10</button><button onclick="mimeAnswer(false)">تجاوز −2</button></div><p class="note">صح: ${s.correct} · تجاوز: ${s.skips} · سلسلة ${s.streak}. كل 3 كلمات صحيحة متتالية تمنح +5 إضافية؛ التجاوز يقطع السلسلة.</p><div class="actions"><button onclick="toggleMimeWord()">${s.hiddenWord ? 'إظهار الكلمة' : 'إخفاء الكلمة'}</button><button onclick="undoMime()" ${!s.log.length ? 'disabled' : ''}>↶ تراجع عن آخر ضغطة</button><button class="quiet" onclick="endMime()">أنهِ الدور</button></div><p class="tiny center">إخفاء الكلمة يحافظ على السر؛ الوقت يظل شغالاً. نقاط الدور لا تنزل عن صفر.</p></section>`,
+      `<section class="panel"><div class="timerline"><span class="pill">🎭 ${esc(s.players[s.turn % s.players.length])}</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b><span class="pill">${s.score} نقطة</span></div><div class="spot"><small>مثّل بدون كلام</small><div class="huge word" style="color:var(--orange)">${s.hiddenWord ? '🔒 الكلمة مخفية' : esc(s.word)}</div></div><div class="actions"><button class="primary" onclick="mimeAnswer(true,${s.turn},${s.cardSerial})">عرفوها! +10</button><button onclick="mimeAnswer(false,${s.turn},${s.cardSerial})">تجاوز −2</button></div><p class="note">صح: ${s.correct} · تجاوز: ${s.skips} · سلسلة ${s.streak}. كل 3 كلمات صحيحة متتالية تمنح +5 إضافية؛ التجاوز يقطع السلسلة.</p><div class="actions"><button onclick="toggleMimeWord(${s.turn},${s.cardSerial})">${s.hiddenWord ? 'إظهار الكلمة' : 'إخفاء الكلمة'}</button><button onclick="undoMime(${s.turn},${s.cardSerial})" ${!s.log.length ? 'disabled' : ''}>↶ تراجع عن آخر ضغطة</button><button class="quiet" onclick="endMime(${s.turn},${s.cardSerial})">أنهِ الدور</button></div><p class="tiny center">إخفاء الكلمة يحافظ على السر؛ الوقت يظل شغالاً. نقاط الدور لا تنزل عن صفر.</p></section>`,
     ),
   );
+  $('app')
+    .querySelector('.spot')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `${s.sceneRule && !s.hiddenWord ? `<div class="scene-rule">🎬 ${esc(s.sceneRule)}</div>` : ''}<p class="tiny">المراقب لهذا الدور: ${esc(s.players[(s.turn + 1) % s.players.length])} · يراجع صحة التخمين والالتزام بعدم الكلام.</p>`,
+    );
 }
-function toggleMimeWord() {
+function toggleMimeWord(turn = state?.turn, serial = state?.cardSerial) {
   if (screen !== 'mime' || coreBlocked() || state.stage !== 'active') return;
+  if (state.turn !== turn || state.cardSerial !== serial) return;
   if (Date.now() >= state.endAt) return endMime();
   state.hiddenWord = !state.hiddenWord;
   renderMime();
 }
-function undoMime() {
-  if (screen !== 'mime' || coreBlocked() || state.stage !== 'active' || !state.log.length) return;
+function undoMime(turn = state?.turn, serial = state?.cardSerial) {
+  if (
+    screen !== 'mime' ||
+    coreBlocked() ||
+    state.stage !== 'active' ||
+    !state.log.length ||
+    state.turn !== turn ||
+    state.cardSerial !== serial
+  )
+    return;
   if (Date.now() >= state.endAt) return endMime();
   const previous = state.log.pop();
   Object.assign(state, {
@@ -1964,17 +2296,29 @@ function undoMime() {
     skips: previous.skips,
     streak: previous.streak,
     bestStreak: previous.bestStreak,
-    hiddenWord: false,
+    hiddenWord: state.hiddenWord || previous.hiddenWord,
+    sceneRule: previous.sceneRule,
+    cardSerial: (state.cardSerial || 0) + 1,
   });
   renderMime();
 }
-function mimeAnswer(ok) {
-  if (screen !== 'mime' || coreBlocked() || state.stage !== 'active' || state.done) return;
+function mimeAnswer(ok, turn = state?.turn, serial = state?.cardSerial) {
+  if (
+    screen !== 'mime' ||
+    coreBlocked() ||
+    state.stage !== 'active' ||
+    state.done ||
+    state.turn !== turn ||
+    state.cardSerial !== serial
+  )
+    return;
   if (Date.now() >= state.endAt) return endMime();
   const s = state;
   s.log.push({
     word: s.word,
     ok: !!ok,
+    sceneRule: s.sceneRule,
+    hiddenWord: s.hiddenWord,
     index: s.index,
     queue: [...s.queue],
     score: s.score,
@@ -1997,8 +2341,9 @@ function mimeAnswer(ok) {
   nextMimeWord();
   renderMime();
 }
-function endMime() {
+function endMime(turn = state?.turn, serial = state?.cardSerial) {
   if (screen !== 'mime' || coreBlocked() || state.stage !== 'active') return;
+  if (state.turn !== turn || state.cardSerial !== serial) return;
   clearTimers();
   const s = state,
     name = s.players[s.turn % s.players.length];
@@ -2009,12 +2354,13 @@ function endMime() {
   setHTML(
     wrap(
       'mime',
-      `<section class="panel center"><div class="resulticon">⏱</div><h2>خلص دور ${esc(name)}</h2><div class="resultnum">${s.score} نقطة</div><p class="note">${s.correct} كلمات صحيحة · ${s.skips} تجاوزات · أفضل سلسلة ${s.bestStreak}</p>${s.log.length ? `<details class="history"><summary>الكلمات في هذا الدور (${s.log.length})</summary><div class="listchips">${s.log.map((v) => `<span>${v.ok ? '✓' : '↷'} ${esc(v.word)}</span>`).join('')}</div></details>` : ''}<div class="actions"><button class="primary" onclick="advanceMime()">الدور التالي ←</button></div></section>`,
+      `<section class="panel center"><div class="resulticon">⏱</div><h2>خلص دور ${esc(name)}</h2><div class="resultnum">${s.score} نقطة</div><p class="note">${s.correct} كلمات صحيحة · ${s.skips} تجاوزات · أفضل سلسلة ${s.bestStreak}</p>${s.log.length ? `<details class="history"><summary>الكلمات في هذا الدور (${s.log.length})</summary><div class="listchips">${s.log.map((v) => `<span>${v.ok ? '✓' : '↷'} ${esc(v.word)}</span>`).join('')}</div></details>` : ''}<div class="actions"><button class="primary" onclick="advanceMime(${s.turn})">الدور التالي ←</button></div></section>`,
     ),
   );
 }
-function advanceMime() {
+function advanceMime(turn = state?.turn) {
   if (screen !== 'mime' || coreBlocked() || state.stage !== 'result') return;
+  if (state.turn !== turn) return;
   state.turn++;
   mimeHandoff();
 }
@@ -2072,7 +2418,12 @@ function secretHandoff() {
   s.questions = 0;
   s.questionLog = [];
   s.questionTexts = [];
+  s.questionAuthors = [];
   s.questionDraft = '';
+  s.textGuesses = [];
+  s.questionSerial = 0;
+  s.textWinner = null;
+  s.finalGuessUsed = false;
   s.word = '';
   const name = s.players[secretTurnIndex()];
   setHTML(
@@ -2091,6 +2442,7 @@ function revealSecret() {
     s.index = 0;
   }
   s.word = items[s.pool[s.index++]].name;
+  s.wordAliases = [...items[s.pool[s.index - 1]].aliases];
   setHTML(
     wrap(
       'secret',
@@ -2101,7 +2453,10 @@ function revealSecret() {
 function hideSecret() {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'revealed') return;
   const custom = $('customword').value.trim();
-  if (custom) state.word = custom;
+  if (custom) {
+    state.word = custom;
+    state.wordAliases = [custom];
+  }
   state.stage = 'hidden';
   setHTML(
     wrap(
@@ -2123,37 +2478,109 @@ function renderSecret() {
   setHTML(
     wrap(
       'secret',
-      `<section class="panel"><div class="timerline"><span class="pill">${esc(s.players[secretTurnIndex()])} يعرف السر</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b></div><div class="spot"><div style="font-size:40px">🔐</div><h2>${remaining ? 'اسألوا… وخمنوا' : 'آخر تخمين!'}</h2><p class="note">الأسئلة ${s.questions} / ${s.questionLimit} · باقي ${remaining}</p><div class="progressline"><span style="width:${(s.questions / s.questionLimit) * 100}%"></span></div></div><label for="secretQuestionText">دوّن السؤال حتى تراجعوا الأدلة (اختياري)</label><input id="secretQuestionText" maxlength="100" autocomplete="off" value="${esc(s.questionDraft || '')}" ${!remaining ? 'disabled' : ''} oninput="state.questionDraft=this.value" placeholder="مثلاً: هل نستخدمه داخل البيت؟"><p class="note">بعد كل سؤال سجّلوا إجابة صاحب الكلمة:</p><div class="actions"><button onclick="secretQuestion('yes')" ${!remaining ? 'disabled' : ''}>نعم ✓</button><button onclick="secretQuestion('no')" ${!remaining ? 'disabled' : ''}>لا ✕</button><button onclick="secretQuestion('unknown')" ${!remaining ? 'disabled' : ''}>مو متأكد / غير ذلك</button></div>${s.questionLog.length ? `<ol class="history" aria-label="سجل الأسئلة والأدلة">${s.questionLog.map((v, i) => `<li>${esc(s.questionTexts?.[i] || 'سؤال ' + (i + 1))} — <b>${v === 'yes' ? 'نعم ✓' : v === 'no' ? 'لا ✕' : 'غير محدد'}</b></li>`).join('')}</ol>` : ''}<div class="actions"><button onclick="undoSecretQuestion()" ${!s.questions ? 'disabled' : ''}>↶ تراجع عن سؤال</button><button class="primary" onclick="secretEnd(true)">عرفناها! ✓</button></div><p class="note">بعد السؤال الأخير يبقى تخمين أخير بالكلام قبل كشف الكلمة. الأسئلة والتخمينات تحصل بينكم، والجهاز يسجل العدد والأدلة.</p><div class="actions"><button class="quiet" onclick="secretEnd(false)">ما عرفناها، اكشف السر</button></div></section>`,
+      `<section class="panel"><div class="timerline"><span class="pill">${esc(s.players[secretTurnIndex()])} يعرف السر</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b></div><div class="spot"><div style="font-size:40px">🔐</div><h2>${remaining ? 'اسألوا… وخمنوا' : 'آخر تخمين!'}</h2><p class="note">الأسئلة ${s.questions} / ${s.questionLimit} · باقي ${remaining}</p><div class="progressline"><span style="width:${(s.questions / s.questionLimit) * 100}%"></span></div></div><label for="secretQuestionText">دوّن السؤال حتى تراجعوا الأدلة (اختياري)</label><input id="secretQuestionText" maxlength="100" autocomplete="off" value="${esc(s.questionDraft || '')}" ${!remaining ? 'disabled' : ''} oninput="secretDraft(this.value,${s.turn},${s.questionSerial})" placeholder="مثلاً: هل نستخدمه داخل البيت؟"><p class="note">بعد كل سؤال سجّلوا إجابة صاحب الكلمة:</p><div class="actions"><button onclick="secretQuestion('yes',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>نعم ✓</button><button onclick="secretQuestion('no',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>لا ✕</button><button onclick="secretQuestion('unknown',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>مو متأكد / غير ذلك</button></div>${s.questionLog.length ? `<ol class="history" aria-label="سجل الأسئلة والأدلة">${s.questionLog.map((v, i) => `<li>${esc(s.players[s.questionAuthors?.[i]] || '')}${s.questionAuthors?.[i] !== undefined ? ': ' : ''}${esc(s.questionTexts?.[i] || 'سؤال ' + (i + 1))} — <b>${v === 'yes' ? 'نعم ✓' : v === 'no' ? 'لا ✕' : v === 'wrong' ? 'تخمين خاطئ ✕' : 'غير محدد'}</b></li>`).join('')}</ol>` : ''}<div class="actions"><button onclick="undoSecretQuestion(${s.turn},${s.questionSerial})" ${!s.questions ? 'disabled' : ''}>↶ تراجع عن سؤال</button><button class="primary" onclick="secretEnd(true,${s.turn},${s.questionSerial})">عرفناها! ✓</button></div><p class="note">بعد السؤال الأخير يبقى تخمين أخير بالكلام قبل كشف الكلمة. الأسئلة والتخمينات تحصل بينكم، والجهاز يسجل العدد والأدلة.</p><div class="actions"><button class="quiet" onclick="secretEnd(false,${s.turn},${s.questionSerial})">ما عرفناها، اكشف السر</button></div></section>`,
     ),
   );
+  const panel = $('app').querySelector('.panel'),
+    asker = secretAskerIndex();
+  panel?.insertAdjacentHTML(
+    'afterbegin',
+    `<div class="turn-ribbon"><span>السائل المقترح: <b>${esc(s.players[asker])}</b></span><small>الدور يتبدّل بعد كل سؤال؛ تقدرون تسألون بالتعاون.</small></div>`,
+  );
+  panel?.insertAdjacentHTML(
+    'beforeend',
+    `<form class="secret-guess" onsubmit="event.preventDefault();guessSecret(${s.turn},${s.questionSerial})"><label for="secretGuessInput">خمن الكلمة كتابةً</label><div class="guess-entry"><input id="secretGuessInput" maxlength="40" autocomplete="off" placeholder="الكلمة أو اسمها البديل" ${s.finalGuessUsed ? 'disabled' : ''}><button type="submit" class="primary" ${s.finalGuessUsed ? 'disabled' : ''}>تحقق</button></div><label for="secretGuesser">من صاحب هذا التخمين؟</label><select id="secretGuesser">${s.players.map((name, i) => (i === secretTurnIndex() ? '' : `<option value="${i}" ${i === asker ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select><p class="tiny">الخطأ المكتوب يستهلك سؤالاً؛ تكرار نفس التخمين لا يخصم. عند نفاد الأسئلة بقي تخمين مكتوب أخير. زر «عرفناها» يبقى للتحقق بينكم بالكلام.</p>${s.textGuesses.length ? `<div class="listchips">${s.textGuesses.map((v) => `<span>✕ ${esc(v.raw)}</span>`).join('')}</div>` : ''}</form>`,
+  );
 }
-function secretQuestion(answer = 'unknown') {
+function secretAskerIndex() {
+  const s = state,
+    owner = secretTurnIndex(),
+    askers = s.players.map((_, i) => i).filter((i) => i !== owner);
+  return askers[s.questions % askers.length];
+}
+function secretDraft(value, turn, serial) {
+  if (
+    screen === 'secret' &&
+    !state.done &&
+    !coreBlocked() &&
+    state.stage === 'active' &&
+    state.turn === turn &&
+    state.questionSerial === serial
+  )
+    state.questionDraft = String(value).slice(0, 100);
+}
+function guessSecret(turn = state?.turn, serial = state?.questionSerial) {
   if (
     screen !== 'secret' ||
     coreBlocked() ||
     state.stage !== 'active' ||
-    state.questions >= state.questionLimit
+    state.turn !== turn ||
+    state.questionSerial !== serial ||
+    state.finalGuessUsed
   )
     return;
   if (Date.now() >= state.endAt) return secretEnd(false);
+  const s = state,
+    raw = $('secretGuessInput')?.value.trim(),
+    value = norm(raw || ''),
+    winner = Number($('secretGuesser')?.value);
+  if (!value) return toast('اكتب تخمين الكلمة أولاً.');
+  if (!s.players[winner] || winner === secretTurnIndex()) return;
+  if (s.textGuesses.some((v) => v.value === value))
+    return toast('هذا التخمين جربتوه؛ لم نخصم سؤالاً.');
+  const correct = (s.wordAliases || [s.word]).some((alias) => norm(alias) === value),
+    final = s.questions >= s.questionLimit;
+  if (final) s.finalGuessUsed = true;
+  if (correct) {
+    s.textWinner = winner;
+    return secretEnd(true);
+  }
+  s.textGuesses.push({ raw, value });
+  if (final) return secretEnd(false);
+  s.questionAuthors.push(winner);
+  s.questionTexts.push('تخمين: ' + raw);
+  s.questionLog.push('wrong');
+  s.questions++;
+  s.questionSerial++;
+  renderSecret();
+  toast('الكلمة مختلفة؛ استُهلك سؤال واحد. راجعوا الأدلة.');
+}
+function secretQuestion(answer = 'unknown', turn = state?.turn, serial = state?.questionSerial) {
+  if (
+    screen !== 'secret' ||
+    coreBlocked() ||
+    state.stage !== 'active' ||
+    state.questions >= state.questionLimit ||
+    state.turn !== turn ||
+    state.questionSerial !== serial
+  )
+    return;
+  if (Date.now() >= state.endAt) return secretEnd(false);
+  state.questionAuthors.push(secretAskerIndex());
   state.questionLog.push(['yes', 'no'].includes(answer) ? answer : 'unknown');
   state.questionTexts.push(
     ($('secretQuestionText')?.value ?? state.questionDraft ?? '').trim().slice(0, 100),
   );
   state.questionDraft = '';
   state.questions++;
+  state.questionSerial++;
   renderSecret();
 }
-function undoSecretQuestion() {
+function undoSecretQuestion(turn = state?.turn, serial = state?.questionSerial) {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'active' || !state.questions) return;
+  if (state.turn !== turn || state.questionSerial !== serial) return;
   if (Date.now() >= state.endAt) return secretEnd(false);
+  state.questionAuthors.pop();
+  if (state.questionLog.at(-1) === 'wrong') state.textGuesses.pop();
   state.questionLog.pop();
   state.questionDraft = state.questionTexts.pop() || '';
   state.questions--;
+  state.questionSerial++;
   renderSecret();
 }
-function secretEnd(won) {
+function secretEnd(won, turn = state?.turn, serial = state?.questionSerial) {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'active') return;
+  if (state.turn !== turn || state.questionSerial !== serial) return;
   if (won && Date.now() >= state.endAt) won = false;
   clearTimers();
   const s = state;
@@ -2161,12 +2588,13 @@ function secretEnd(won) {
   setHTML(
     wrap(
       'secret',
-      `<section class="panel center"><div class="resulticon">${won ? '🎉' : '⏱'}</div><h2>${won ? 'عرفتوا السر!' : 'انكشف السر'}</h2><div class="secret">${esc(s.word)}</div><p class="note">${s.questions} أسئلة من ${s.questionLimit}</p>${won ? `<div class="fields"><div class="field full"><label for="winner">من قال الجواب الصحيح أولاً؟</label><select id="winner">${s.players.map((n, i) => (i === secretTurnIndex() ? '' : `<option value="${i}">${esc(n)}</option>`)).join('')}</select></div></div><div class="actions"><button class="primary" onclick="awardSecret()">احسب النقاط ونكمل</button></div>` : `<div class="actions"><button class="primary" onclick="advanceSecret()">الدور التالي ←</button></div>`}</section>`,
+      `<section class="panel center"><div class="resulticon">${won ? '🎉' : '⏱'}</div><h2>${won ? 'عرفتوا السر!' : 'انكشف السر'}</h2><div class="secret">${esc(s.word)}</div><p class="note">${s.questions} أسئلة من ${s.questionLimit}</p>${won ? `<div class="fields"><div class="field full"><label for="winner">من قال الجواب الصحيح أولاً؟</label><select id="winner">${s.players.map((n, i) => (i === secretTurnIndex() ? '' : `<option value="${i}" ${s.textWinner === i ? 'selected' : ''}>${esc(n)}</option>`)).join('')}</select></div></div><div class="actions"><button class="primary" onclick="awardSecret(${s.turn})">احسب النقاط ونكمل</button></div>` : `<div class="actions"><button class="primary" onclick="advanceSecret(${s.turn})">الدور التالي ←</button></div>`}</section>`,
     ),
   );
 }
-function awardSecret() {
+function awardSecret(turn = state?.turn) {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'award') return;
+  if (state.turn !== turn) return;
   const s = state,
     i = Number($('winner').value);
   if (i === secretTurnIndex() || !s.players[i]) return;
@@ -2181,8 +2609,9 @@ function awardSecret() {
   tone(true);
   advanceSecret();
 }
-function advanceSecret() {
+function advanceSecret(turn = state?.turn) {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'result') return;
+  if (state.turn !== turn) return;
   state.turn++;
   secretHandoff();
 }
@@ -2195,6 +2624,8 @@ function startReaction() {
     id: 'reaction',
     players,
     trials,
+    mode: $('reactionmode')?.value === 'focus' ? 'focus' : 'classic',
+    noGoPassed: 0,
     turn: 0,
     results: Object.create(null),
     records: Object.create(null),
@@ -2220,6 +2651,7 @@ function renderReaction() {
       idle: ['جاهز؟ اضغط للبدء', 'بعدها انتظر اللون الأخضر'],
       waiting: ['انتظر…', 'لا تضغط قبل الأخضر'],
       ready: ['الآن! ⚡', 'اضغط بسرعة'],
+      decoy: ['توقف ✋', 'برتقالي: لا تضغط؛ انتظر الأخضر'],
       result: [
         `${s.last} ملّي ثانية`,
         s.anticipated
@@ -2233,7 +2665,7 @@ function renderReaction() {
   setHTML(
     wrap(
       'reaction',
-      `<div class="stats"><div class="stat"><small>الدور على</small><b style="font-size:19px">${esc(name)}</b></div><div class="stat"><small>المحاولة</small><b>${Math.floor(s.turn / s.players.length) + 1} / ${s.trials}</b></div><div class="stat"><small>متوسطك الحالي</small><b>${times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) + ' ms' : '—'}</b></div></div><button class="reaction ${s.stage}" onpointerdown="event.preventDefault();reactionTap()" onclick="if(event.detail===0)reactionTap()" aria-label="${t[0]}"><span>${t[0]}</span><small>${t[1]}</small></button>${s.stage === 'result' ? '<div class="actions"><button class="primary" onclick="advanceReaction()">المحاولة التالية ←</button></div>' : ''}<p class="note center">${s.trials} محاولات لكل لاعب · لمس أو ضغط المسافة · نفس الجهاز يعطي مقارنة أفضل.</p>${times.length ? `<div class="listchips" style="justify-content:center">${s.records[name].map((v, i) => `<span>${i + 1}: ${v.falseStart ? '⚠ ' : ''}${v.time} ms</span>`).join('')}</div>` : ''}`,
+      `<div class="stats"><div class="stat"><small>الدور على</small><b style="font-size:19px">${esc(name)}</b></div><div class="stat"><small>المحاولة</small><b>${Math.floor(s.turn / s.players.length) + 1} / ${s.trials}</b></div><div class="stat"><small>متوسطك الحالي</small><b>${times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) + ' ms' : '—'}</b></div></div><button class="reaction ${s.stage}" onpointerdown="event.preventDefault();reactionTap()" onclick="if(event.detail===0)reactionTap()" aria-label="${t[0]}"><span>${t[0]}</span><small>${t[1]}</small></button>${s.stage === 'result' ? `<div class="actions"><button class="primary" onclick="advanceReaction(${s.turn})">المحاولة التالية ←</button></div>` : ''}<p class="note center">${s.mode === 'focus' ? 'وضع التمييز: اضغط الأخضر فقط؛ تجاهل البرتقالي. ' : ''}${s.trials} محاولات لكل لاعب · لمس أو ضغط المسافة · نفس الجهاز يعطي مقارنة أفضل.</p>${times.length ? `<div class="listchips" style="justify-content:center">${s.records[name].map((v, i) => `<span>${i + 1}: ${v.falseStart ? '⚠ ' : ''}${v.time} ms</span>`).join('')}</div>` : ''}`,
     ),
   );
 }
@@ -2245,33 +2677,61 @@ function reactionTap() {
     s.falseStart = false;
     s.anticipated = false;
     renderReaction();
-    s.waitTimer = later(
-      () => {
-        if (screen === 'reaction' && state === s && s.stage === 'waiting' && !coreBlocked()) {
-          s.stage = 'ready';
-          renderReaction();
-          s.readyAt = performance.now();
-        }
-      },
-      1000 + randInt(3501),
-    );
-  } else if (s.stage === 'waiting') {
+    scheduleReactionSignal(s);
+  } else if (s.stage === 'waiting' || s.stage === 'decoy') {
     clearTimeout(s.waitTimer);
     s.falseStart = true;
     s.last = 1500;
     recordReaction();
   } else if (s.stage === 'ready') {
     const elapsed = performance.now() - s.readyAt;
-    // A sub-70 ms response cannot measure a deliberate reaction to a newly
-    // displayed cue reliably; treat it as anticipation, just like an early tap.
     s.anticipated = elapsed < 70;
     s.last = s.anticipated ? 1500 : Math.max(1, Math.round(elapsed));
     s.falseStart = s.anticipated;
     recordReaction();
   }
 }
+function scheduleReactionSignal(s, afterDecoy = false) {
+  const turn = s.turn;
+  s.waitTimer = later(
+    () => {
+      if (
+        screen === 'reaction' &&
+        state === s &&
+        s.turn === turn &&
+        s.stage === 'waiting' &&
+        !coreBlocked()
+      ) {
+        if (s.mode === 'focus' && !afterDecoy && randInt(2) === 0) {
+          s.stage = 'decoy';
+          renderReaction();
+          s.waitTimer = later(() => {
+            if (
+              screen !== 'reaction' ||
+              state !== s ||
+              s.turn !== turn ||
+              s.stage !== 'decoy' ||
+              coreBlocked()
+            )
+              return;
+            s.noGoPassed++;
+            s.stage = 'waiting';
+            renderReaction();
+            scheduleReactionSignal(s, true);
+          }, 900);
+          return;
+        }
+        s.stage = 'ready';
+        renderReaction();
+        s.readyAt = performance.now();
+      }
+    },
+    1000 + randInt(3501),
+  );
+}
 function recordReaction() {
-  if (screen !== 'reaction' || state.done || !['waiting', 'ready'].includes(state.stage)) return;
+  if (screen !== 'reaction' || state.done || !['waiting', 'ready', 'decoy'].includes(state.stage))
+    return;
   state.results[reactionName()].push(state.last);
   state.records[reactionName()].push({
     time: state.last,
@@ -2291,25 +2751,30 @@ function reactionStats(name) {
     avg: Math.round(a.reduce((x, y) => x + y, 0) / a.length),
     median: a[Math.floor(a.length / 2)],
     best: valid.length ? Math.min(...valid) : null,
+    validTrials: valid.length,
     falseStarts: s.records[name].filter((v) => v.falseStart).length,
   };
 }
-function advanceReaction() {
+function advanceReaction(turn = state?.turn) {
   if (screen !== 'reaction' || coreBlocked() || state.stage !== 'result') return;
   const s = state;
+  if (s.turn !== turn) return;
   s.turn++;
   if (s.turn >= s.players.length * s.trials) {
     s.done = true;
     clearTimers();
-    const ranked = s.players.map(reactionStats).sort((a, b) => a.avg - b.avg);
+    const ranked = s.players
+      .map(reactionStats)
+      .sort((a, b) => Number(b.validTrials > 0) - Number(a.validTrials > 0) || a.avg - b.avg);
     let lastAvg = null,
       rank = -1;
     for (let i = 0; i < ranked.length; i++) {
       const v = ranked[i];
       if (v.avg !== lastAvg) rank = i;
       lastAvg = v.avg;
-      const points =
-        s.players.length === 1
+      const points = !v.validTrials
+        ? 0
+        : s.players.length === 1
           ? Math.min(50, Math.max(5, Math.round(15000 / v.avg)))
           : Math.max(5, 30 - rank * 5);
       v.points = points;
@@ -2319,7 +2784,7 @@ function advanceReaction() {
     setHTML(
       wrap(
         'reaction',
-        `<section class="panel success"><h2 class="center">نتيجة السرعة ⚡</h2><p class="note center" style="margin-bottom:18px">الأقل بالمتوسط يفوز · ${s.trials} محاولات لكل لاعب · المتساوون بالمتوسط متعادلون.</p><div class="board">${ranked.map((v) => `<div class="boardrow"><span>${v.avg === ranked[0].avg ? '🥇' : '⚡'}</span><div class="name"><b>${esc(v.n)}</b><small>+${v.points} نقطة · أسرع ضغطة: ${v.best === null ? 'لا توجد ضغطة صحيحة' : v.best + ' ms'}</small><small>الوسيط: ${v.median} ms · ضغط مبكر: ${v.falseStarts}</small></div><div class="score">${v.avg}<small>متوسط ms</small></div></div>`).join('')}</div><p class="note">الضغط المبكر مشمول بالمتوسط والوسيط بعقوبة 1500 ms، ويُستبعد من أسرع ضغطة.</p><div class="actions"><button class="primary" onclick="setup('reaction')">تحدي جديد</button><button onclick="home()">الألعاب</button></div></section>`,
+        `<section class="panel success"><h2 class="center">نتيجة السرعة ⚡</h2><p class="note center" style="margin-bottom:18px">الأقل بالمتوسط يفوز · ${s.trials} محاولات لكل لاعب · المتساوون بالمتوسط متعادلون.</p><div class="board">${ranked.map((v) => `<div class="boardrow"><span>${v.validTrials && v.avg === ranked[0].avg ? '🥇' : '⚡'}</span><div class="name"><b>${esc(v.n)}</b><small>+${v.points} نقطة · أسرع ضغطة: ${v.best === null ? 'لا توجد ضغطة صحيحة' : v.best + ' ms'}</small><small>الوسيط: ${v.median} ms · ضغط مبكر: ${v.falseStarts}</small></div><div class="score">${v.avg}<small>متوسط ms</small></div></div>`).join('')}</div><p class="note">الضغط المبكر مشمول بالمتوسط والوسيط بعقوبة 1500 ms، ويُستبعد من أسرع ضغطة. تحتاج استجابة صحيحة واحدة على الأقل لكسب النقاط.${s.mode === 'focus' ? ' تجاهلتم ' + s.noGoPassed + ' إشارات برتقالية بنجاح.' : ''}</p><div class="actions"><button class="primary" onclick="setup('reaction')">تحدي جديد</button><button onclick="home()">الألعاب</button></div></section>`,
       ),
     );
   } else {
