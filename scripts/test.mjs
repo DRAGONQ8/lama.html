@@ -32,6 +32,10 @@ const suites = [
   'words-v9',
   'party-v9',
   'lab-v9',
+  'settings-v10',
+  'solo-v10',
+  'quality-v10',
+  'gameplay-v10',
 ];
 const failures = [];
 for (const name of suites) {

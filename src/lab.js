@@ -104,6 +104,24 @@ setup = function (id, internal = false) {
 function labReady(id = state?.id) {
   return labIDs.has(id) && screen === id && state?.id === id && !state.done && !advancedBlocked();
 }
+const labBoundControls = new WeakSet();
+function labBindControls(root = document.querySelector('.lab-panel')) {
+  if (!root) return;
+  const s = state;
+  for (const control of root.querySelectorAll('button')) {
+    if (labBoundControls.has(control)) continue;
+    labBoundControls.add(control);
+    for (const name of ['onclick', 'onfocus', 'onpointerdown', 'onpointerenter', 'oncontextmenu']) {
+      const handler = control[name];
+      if (typeof handler !== 'function') continue;
+      // A removed render or a previous puzzle must never act on the current board.
+      control[name] = function (event) {
+        if (state !== s || screen !== s.id || !this.isConnected) return;
+        return handler.call(this, event);
+      };
+    }
+  }
+}
 function labRand(n, s = state) {
   return s.rng ? Math.floor(s.rng() * n) : randInt(n);
 }
@@ -383,7 +401,10 @@ function labLensHTML() {
   return `<aside class="lab-lens"><button id="labLensToggle" class="lab-lens-toggle" aria-expanded="${!!state.lensOpen}" aria-controls="labLensContent" onclick="labToggleLens()">⌕ عدسة الحركة <span>${state.lensOpen ? 'إخفاء المعاينة' : 'جرّب قبل القرار'}</span></button><div id="labLensContent" ${state.lensOpen ? '' : 'hidden'}>${labMoveLensHTML()}</div></aside>`;
 }
 function labRefreshLens() {
-  if (state.lensOpen && $('labLensContent')) $('labLensContent').innerHTML = labMoveLensHTML();
+  if (state.lensOpen && $('labLensContent')) {
+    $('labLensContent').innerHTML = labMoveLensHTML();
+    labBindControls($('labLensContent'));
+  }
 }
 function labApplyLensMove() {
   if (!labReady() || !state.lensOpen || labMoveLensData().blocked) return;
@@ -435,6 +456,7 @@ function renderLab() {
         `<section class="panel lab-panel">${labRuleHTML(s)}${body}${labLensHTML()}${labToolbar()}</section>`,
     ),
   );
+  labBindControls();
   const scroll = $('labBoard')?.closest('.lab-scroll');
   if (scroll && horizontalScroll !== undefined) scroll.scrollLeft = horizontalScroll;
   if (focusCell)
@@ -457,7 +479,10 @@ function labSelect(i, focus = false) {
   if (state.id === 'nonogram' && previous !== i) {
     state.patternPage = 0;
     state.patternPreview = null;
-    if ($('labNotebookContent')) $('labNotebookContent').innerHTML = labPatternContentHTML();
+    if ($('labNotebookContent')) {
+      $('labNotebookContent').innerHTML = labPatternContentHTML();
+      labBindControls($('labNotebookContent'));
+    }
   }
   $('labBoard')
     ?.querySelectorAll('.lab-cell')
@@ -1672,7 +1697,10 @@ function labRefreshPipeTest() {
     flow = labPipeFlowState();
   if (!flow) return;
   const focused = document.activeElement?.closest?.('#labFlow') ? document.activeElement.id : null;
-  if ($('labFlow')) $('labFlow').innerHTML = labPipeFlowHTML();
+  if ($('labFlow')) {
+    $('labFlow').innerHTML = labPipeFlowHTML();
+    labBindControls($('labFlow'));
+  }
   if (focused) $(focused)?.focus({ preventScroll: true });
   $('labBoard')
     ?.querySelectorAll('.lab-pipe')
@@ -1868,11 +1896,7 @@ function labHint() {
   renderLab();
 }
 document.addEventListener('keydown', (event) => {
-  if (
-    !labReady() ||
-    event.repeat ||
-    event.target?.matches?.('input,textarea,select,[contenteditable="true"]')
-  )
+  if (!labReady() || event.repeat || event.isComposing || advancedEditableTarget(event.target))
     return;
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
     event.preventDefault();

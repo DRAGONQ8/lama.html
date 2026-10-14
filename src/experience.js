@@ -138,7 +138,7 @@ function setCatalogSort(value) {
   save();
   renderCatalog();
 }
-renderCatalog = function () {
+function renderCatalog() {
   if (!$('catalog')) return;
   const focusedFavorite = document.activeElement?.matches('#catalog .fav')
     ? document.activeElement.dataset.game
@@ -162,7 +162,7 @@ renderCatalog = function () {
       $('search');
     focus?.focus({ preventScroll: true });
   }
-};
+}
 
 function routeCardsHTML() {
   return `<section class="routes-section" aria-labelledby="routes-heading"><div class="sectionhead"><div><span class="world-label">بمفردك · 3 محطات لكل مسار</span><h2 id="routes-heading">تحدّيك ما يوقف عند لعبة.</h2></div><span class="routes-note">نتيجة واحدة، رحلة كاملة</span></div><div class="route-grid">${experienceRoutes.map((r) => `<button class="route-card" style="--route:${r.color}" onclick="openRoute('${r.id}')"><span class="route-icon">${r.icon}</span><div><small>${r.tag}</small><h3>${r.name}</h3><p>${r.desc}</p><div class="route-stops">${r.games.map((id) => `<span title="${esc(games.find((g) => g[0] === id)?.[2] || id)}">${games.find((g) => g[0] === id)?.[1] || '✦'}</span>`).join('<i>·</i>')}<b>${experience().completed[r.id] != null ? 'أفضل نتيجة ' + experience().completed[r.id] + ' / 300' : 'ابدأ الرحلة ←'}</b></div></div></button>`).join('')}</div></section>`;
@@ -174,46 +174,8 @@ function routeResumeHTML() {
     ? `<div class="continue-route"><span>🗺️</span><div><b>مسار ${r.name} ينتظرك</b><small>أكملت ${saved.at} من 3 محطات · المحطة ${saved.at ? 'التالية' : 'الأولى'} تبدأ بجولة جديدة</small></div><button class="primary" onclick="continueRoute()">نكمل ←</button></div>`
     : '';
 }
-renderHome = function () {
-  homeRenderedDate = dayKey();
-  store.extra.favorites = [...new Set(store.extra.favorites)].filter((id) =>
-    games.some((g) => g[0] === id),
-  );
-  const recent = store.extra.recent
-    .map((v) => games.find((g) => g[0] === v.id))
-    .filter(Boolean)
-    .slice(0, 3);
-  setHTML(
-    `<section class="lobby-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 5.0 · ${games.length} لعبة في عالمك</span><h1>هذي لَمّتك.<br><em>خلّ التحدّي يبدأ.</em></h1><p>لحظة تركيز لك، ومنافسة تجمع الربع. ألغاز تتجدد، أسرار تنكشف، وفرق تلعب للنهاية.</p><div class="actions"><button class="primary" onclick="chooseSoloLobby()">✦ ألعب بمفردي</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><span>كمبيوتر وجوال</span></div></div><div class="lobby-art" aria-hidden="true"><div class="art-ring one"></div><div class="art-ring two"></div><div class="art-glow"></div><div class="art-dice"><span></span><span></span><span></span><span></span><span></span></div><div class="art-ticket ticket-one"><b>+100</b><small>كل جولة لها حكاية</small></div><div class="art-ticket ticket-two"><span>🧠</span><b>فكّر. جرّب. افوز.</b></div><div class="art-spark s-one">✦</div><div class="art-spark s-two">✧</div><span class="art-caption">PLAY TOGETHER. GROW TOGETHER.</span></div></section><div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openBoard()"><span class="summary-icon">🏆</span><span><small>نقاط اللمّة</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${typeof snapshotHTML === 'function' ? snapshotHTML() : ''}${routeResumeHTML()}<section class="spotlight-grid"><div class="spotlight-card group-spotlight"><div><span class="world-label">الليلة مع الربع</span><h2>فريقك، سرّك،<br>وأحلى تصويت.</h2><p>ثلاث تجارب جديدة للمجموعة. وزّعوا الفرق ومرّروا الجهاز.</p><button onclick="openLounge()">شوف ألعاب اللمّة ←</button></div><span class="spotlight-emblem" aria-hidden="true">🎭</span></div><div class="spotlight-card"><span class="world-label">${recent.length ? '↺ آخر ألعابك' : '✧ ألغاز جديدة'}</span><h3>${recent.length ? 'مكانك محفوظ، نرجع للتحدّي؟' : 'جرّب طريقة جديدة للتفكير'}</h3><div class="recent-games">${(recent.length ? recent : ['lights', 'pipes', 'nonogram'].map((id) => games.find((g) => g[0] === id)).filter(Boolean)).map((g) => `<button onclick="setup('${g[0]}')"><span style="--tile:${g[5]}">${g[1]}</span><b>${g[2]}</b><small>${store.extra.played[g[0]] || 0} جولة · ${gameLength(g[0])}</small></button>`).join('')}</div></div></section>${routeCardsHTML()}<div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · اختَر جوّك</span><h2>مكتبة التحدّيات</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ طريقة اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
-      ['all', 'الكل'],
-      ['solo', 'بمفردك'],
-      ['group', 'مع الربع'],
-      ['new', 'الجديد ✦'],
-    ]
-      .map(
-        ([id, label]) =>
-          `<button class="${filter === id ? 'active' : ''}" onclick="setFilter('${id}')" aria-pressed="${filter === id}">${label}</button>`,
-      )
-      .join(
-        '',
-      )}<button class="${onlyFavorites ? 'active' : ''}" onclick="toggleFavorites()" aria-pressed="${onlyFavorites}">☆ المفضّلة <span id="favcount">${store.extra.favorites.length}</span></button></nav><div class="searchwrap"><label class="sr" for="search">ابحث عن لعبة</label><input id="search" type="search" placeholder="ابحث عن تحدّيك…" value="${esc(searchQuery)}" oninput="searchGames(this.value)" autocomplete="off"></div></div><div class="catalogsummary"><p class="tiny" id="gamecount" aria-live="polite"></p><div class="catalog-sort"><label for="catalogsort">الترتيب</label><select id="catalogsort" onchange="setCatalogSort(this.value)">${[
-      ['recommended', 'اختيارات لَمّة'],
-      ['name', 'أبجدي'],
-      ['recent', 'آخر ألعابك'],
-      ['popular', 'الأكثر لعباً عندك'],
-    ]
-      .map(
-        ([v, t]) =>
-          `<option value="${v}" ${experience().sort === v ? 'selected' : ''}>${t}</option>`,
-      )
-      .join(
-        '',
-      )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>الألعاب الجماعية بالتناوب على نفس الجهاز. الأدوار والكلمات تختفي قبل انتقال الجهاز للاعب التالي.</p></div><div><span class="guide-icon">💡</span><h3>خطة، تلميح، محاولة جديدة</h3><p>اضبط المستوى، جرّب الألغاز الجديدة، أو اختر مساراً من ثلاث محطات. ما تحتاج حساباً لتبدأ.</p></div><div><span class="guide-icon">💾</span><h3>تقدّم معك</h3><p>النقاط والمفضّلة والمسارات محفوظة محلياً. صدّر نسخة احتياطية من الإعدادات لنقلها لجهاز آخر.</p></div></section>`,
-  );
-  renderCatalog();
-  $('foot').textContent = `لَمّة 5.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
-};
 function chooseSoloLobby() {
+  if (screen !== 'home') home();
   world = 'all';
   onlyFavorites = false;
   searchQuery = '';

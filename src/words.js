@@ -226,17 +226,35 @@ function triviaStrategyHTML(s) {
   if (s.locked) return '';
   return `<div class="words-strategy">${s.mode === 'strategy' ? `<fieldset class="trivia-confidence"><legend>حدد ثقتك قبل الإجابة</legend><button type="button" aria-pressed="${s.confidence === 'normal'}" onclick="triviaConfidence('normal',${s.run},${s.index})">عادي · الصحيح +10</button><button type="button" aria-pressed="${s.confidence === 'confident'}" onclick="triviaConfidence('confident',${s.run},${s.index})">واثق · الصحيح +15 / الخطأ −5</button></fieldset>` : ''}<button class="trivia-aid" onclick="triviaHalfChoices(${s.run},${s.index})" ${s.usedAid || !s.aidsRemaining ? 'disabled' : ''}>💡 نصف الخيارات · ${s.aidsRemaining} مساعدات · −3</button></div>`;
 }
+function triviaRememberFocus() {
+  const active = document.activeElement;
+  if (active?.matches('.trivia-choice'))
+    return `.trivia-choice:nth-child(${[...active.parentElement.children].indexOf(active) + 1})`;
+  if (active?.matches('.trivia-confidence button'))
+    return `.trivia-confidence button:nth-of-type(${[...active.parentElement.querySelectorAll('button')].indexOf(active) + 1})`;
+  if (active?.matches('.trivia-aid')) return '.trivia-aid';
+  if (active?.id === 'triviaConfirm') return '#triviaConfirm';
+  if (active?.id === 'triviaNext') return '.trivia-choice';
+  return null;
+}
+function triviaRestoreFocus(selector) {
+  if (!selector) return;
+  const control = state.locked ? $('triviaNext') : document.querySelector(selector);
+  if (control && !control.disabled && !control.hidden) control.focus({ preventScroll: true });
+}
 function renderTrivia() {
   if (state.mode === 'facts') return renderTriviaFacts();
   const s = state,
+    focus = triviaRememberFocus(),
     q = s.questions[s.index],
     cat = triviaCategories.find((c) => c[0] === q.cat)[1];
   setHTML(
     wrap(
       'trivia',
-      `<section class="panel"><div class="words-status"><span class="pill">${s.index + 1} / ${s.questions.length}</span><span class="pill">${esc(cat)}</span><span class="pill">✓ ${s.correct}</span><span class="pill">🔥 ${s.streak || 0}</span>${s.mode === 'strategy' ? `<span class="pill">رصيد المعرفة: ${s.knowledgePoints}</span>` : ''}${s.duration ? `<b id="triviaClock" class="countdown">${s.locked ? 'شرح الإجابة' : wordsSeconds(s) + ' ث'}</b>` : '<span class="pill">بدون مؤقت</span>'}</div><div class="progressline"><span style="width:${(100 * (s.index + (s.locked ? 1 : 0))) / s.questions.length}%"></span></div>${s.duration ? `<div class="words-clock-track"><span id="triviaTimebar" style="width:${s.locked ? 0 : (100 * wordsSeconds(s)) / s.duration}%"></span></div>` : ''}<h3 class="trivia-question">${esc(q.question)}</h3><div class="trivia-choices">${q.choices.map((c, i) => `<button class="trivia-choice ${s.locked ? (c === q.answer ? 'correct' : i === s.choice ? 'incorrect' : 'faded') : ''}" onclick="answerTrivia(${i},${s.run},${s.index})" ${s.locked || s.hiddenChoices.includes(i) ? 'disabled' : ''} ${!s.locked && s.hiddenChoices.includes(i) ? 'hidden' : ''}><span class="choice-number">${i + 1}</span><span>${esc(c)}</span>${s.locked && c === q.answer ? '<b>✓</b>' : s.locked && i === s.choice ? '<b>✕</b>' : ''}</button>`).join('')}</div>${triviaStrategyHTML(s)}${s.locked ? `<div class="trivia-explanation" role="status"><b>${s.choice === -1 ? 'انتهى الوقت' : q.choices[s.choice] === q.answer ? 'إجابة صحيحة!' : 'تعلمنا معلومة جديدة'}</b><p>${esc(q.explanation)}</p><p class="note">${s.answers.at(-1)?.gain >= 0 ? '+' : ''}${s.answers.at(-1)?.gain || 0} رصيد معرفة${s.usedAid ? ' · استخدمت نصف الخيارات' : ''}${s.mode === 'strategy' ? ` · ثقتك: ${s.confidence === 'confident' ? 'واثق' : 'عادي'}` : ''}</p></div><div class="actions"><button class="primary" onclick="nextTrivia(${s.run},${s.index})">${s.index + 1 === s.questions.length ? 'اعرض النتيجة' : 'السؤال التالي'} ←</button></div>` : '<p class="note center">اختر الجواب أو اضغط رقمه على لوحة المفاتيح.</p>'}</section>`,
+      `<section class="panel"><div class="words-status"><span class="pill">${s.index + 1} / ${s.questions.length}</span><span class="pill">${esc(cat)}</span><span class="pill">✓ ${s.correct}</span><span class="pill">🔥 ${s.streak || 0}</span>${s.mode === 'strategy' ? `<span class="pill">رصيد المعرفة: ${s.knowledgePoints}</span>` : ''}${s.duration ? `<b id="triviaClock" class="countdown">${s.locked ? 'شرح الإجابة' : wordsSeconds(s) + ' ث'}</b>` : '<span class="pill">بدون مؤقت</span>'}</div><div class="progressline"><span style="width:${(100 * (s.index + (s.locked ? 1 : 0))) / s.questions.length}%"></span></div>${s.duration ? `<div class="words-clock-track"><span id="triviaTimebar" style="width:${s.locked ? 0 : (100 * wordsSeconds(s)) / s.duration}%"></span></div>` : ''}<h3 class="trivia-question">${esc(q.question)}</h3><div class="trivia-choices">${q.choices.map((c, i) => `<button class="trivia-choice ${s.locked ? (c === q.answer ? 'correct' : i === s.choice ? 'incorrect' : 'faded') : ''}" onclick="answerTrivia(${i},${s.run},${s.index})" ${s.locked || s.hiddenChoices.includes(i) ? 'disabled' : ''} ${!s.locked && s.hiddenChoices.includes(i) ? 'hidden' : ''}><span class="choice-number">${i + 1}</span><span>${esc(c)}</span>${s.locked && c === q.answer ? '<b>✓</b>' : s.locked && i === s.choice ? '<b>✕</b>' : ''}</button>`).join('')}</div>${triviaStrategyHTML(s)}${s.locked ? `<div class="trivia-explanation" role="status"><b>${s.choice === -1 ? 'انتهى الوقت' : q.choices[s.choice] === q.answer ? 'إجابة صحيحة!' : 'تعلمنا معلومة جديدة'}</b><p>${esc(q.explanation)}</p><p class="note">${s.answers.at(-1)?.gain >= 0 ? '+' : ''}${s.answers.at(-1)?.gain || 0} رصيد معرفة${s.usedAid ? ' · استخدمت نصف الخيارات' : ''}${s.mode === 'strategy' ? ` · ثقتك: ${s.confidence === 'confident' ? 'واثق' : 'عادي'}` : ''}</p></div><div class="actions"><button id="triviaNext" class="primary" onclick="nextTrivia(${s.run},${s.index})">${s.index + 1 === s.questions.length ? 'اعرض النتيجة' : 'السؤال التالي'} ←</button></div>` : '<p class="note center">اختر الجواب أو اضغط رقمه على لوحة المفاتيح.</p>'}</section>`,
     ),
   );
+  triviaRestoreFocus(focus);
 }
 function answerTrivia(choice, run, index) {
   if (state?.mode === 'facts') {
@@ -290,13 +308,15 @@ function triviaFactExplanationHTML(q) {
 }
 function renderTriviaFacts() {
   const s = state,
+    focus = triviaRememberFocus(),
     q = s.questions[s.index];
   setHTML(
     wrap(
       'trivia',
-      `<section class="panel"><div class="words-status"><span class="pill">📰 تحقق من الخبر</span><span class="pill">${s.index + 1} / ${s.questions.length}</span><span class="pill">✓ ${s.correct} كاملة</span><span class="pill">رصيد ${s.knowledgePoints}</span>${s.duration ? `<b class="countdown" id="triviaClock">${s.locked ? 'شرح العبارات' : wordsSeconds(s) + ' ث'}</b>` : '<span class="pill">بدون مؤقت</span>'}</div><div class="progressline"><span style="width:${(100 * (s.index + (s.locked ? 1 : 0))) / s.questions.length}%"></span></div>${s.duration ? `<div class="words-clock-track"><span id="triviaTimebar" style="width:${s.locked ? 0 : (100 * wordsSeconds(s)) / s.duration}%"></span></div>` : ''}<h3 class="trivia-question">${esc(q.question)}</h3><p class="note center">اختر عبارتين صحيحتين؛ تقدر تغيّر اختياراتك قبل التأكيد. ${s.evidenceSelected.length} / 2 مختارة</p>${triviaFactChoicesHTML(q, s.evidenceSelected, s.locked, (i) => `toggleTriviaFact(${i},${s.run},${s.index})`)}${s.locked ? `<div class="trivia-explanation" role="status"><b>${s.choice === -1 ? 'انتهى الوقت قبل التأكيد' : s.answers.at(-1).correct ? 'الحقيقتان صحيحتان!' : 'لنراجع العبارات معاً'}</b><p>+${s.answers.at(-1).gain} رصيد معرفة.</p>${triviaFactExplanationHTML(q)}</div><div class="actions"><button class="primary" onclick="nextTrivia(${s.run},${s.index})">${s.index + 1 === s.questions.length ? 'اعرض النتيجة' : 'الخبر التالي'} ←</button></div>` : `<div class="actions"><button class="primary" onclick="submitTriviaFacts(${s.run},${s.index})" ${s.evidenceSelected.length === 2 ? '' : 'disabled'}>أكد الحقيقتين ↵</button></div><p class="note center">الأرقام 1–4 تغيّر الاختيار؛ Enter يؤكد بعد اختيار عبارتين.</p>`}</section>`,
+      `<section class="panel"><div class="words-status"><span class="pill">📰 تحقق من الخبر</span><span class="pill">${s.index + 1} / ${s.questions.length}</span><span class="pill">✓ ${s.correct} كاملة</span><span class="pill">رصيد ${s.knowledgePoints}</span>${s.duration ? `<b class="countdown" id="triviaClock">${s.locked ? 'شرح العبارات' : wordsSeconds(s) + ' ث'}</b>` : '<span class="pill">بدون مؤقت</span>'}</div><div class="progressline"><span style="width:${(100 * (s.index + (s.locked ? 1 : 0))) / s.questions.length}%"></span></div>${s.duration ? `<div class="words-clock-track"><span id="triviaTimebar" style="width:${s.locked ? 0 : (100 * wordsSeconds(s)) / s.duration}%"></span></div>` : ''}<h3 class="trivia-question">${esc(q.question)}</h3><p class="note center">اختر عبارتين صحيحتين؛ تقدر تغيّر اختياراتك قبل التأكيد. ${s.evidenceSelected.length} / 2 مختارة</p>${triviaFactChoicesHTML(q, s.evidenceSelected, s.locked, (i) => `toggleTriviaFact(${i},${s.run},${s.index})`)}${s.locked ? `<div class="trivia-explanation" role="status"><b>${s.choice === -1 ? 'انتهى الوقت قبل التأكيد' : s.answers.at(-1).correct ? 'الحقيقتان صحيحتان!' : 'لنراجع العبارات معاً'}</b><p>+${s.answers.at(-1).gain} رصيد معرفة.</p>${triviaFactExplanationHTML(q)}</div><div class="actions"><button id="triviaNext" class="primary" onclick="nextTrivia(${s.run},${s.index})">${s.index + 1 === s.questions.length ? 'اعرض النتيجة' : 'الخبر التالي'} ←</button></div>` : `<div class="actions"><button id="triviaConfirm" class="primary" onclick="submitTriviaFacts(${s.run},${s.index})" ${s.evidenceSelected.length === 2 ? '' : 'disabled'}>أكد الحقيقتين ↵</button></div><p class="note center">الأرقام 1–4 تغيّر الاختيار؛ Enter يؤكد بعد اختيار عبارتين.</p>`}</section>`,
     ),
   );
+  triviaRestoreFocus(focus);
 }
 function toggleTriviaFact(choice, run, index) {
   if (
@@ -1882,7 +1902,7 @@ document.addEventListener('keydown', (event) => {
     event.isComposing ||
     (event.repeat &&
       !(screen === 'target' && state?.mode === 'intercept' && event.key.startsWith('Arrow'))) ||
-    event.target.closest?.('input,select,textarea,[contenteditable="true"]')
+    advancedEditableTarget(event.target)
   )
     return;
   if (

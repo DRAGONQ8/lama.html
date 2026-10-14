@@ -21,6 +21,10 @@ const extraDefaults = {
   theme: 'dark',
   motion: true,
   focus: false,
+  textScale: 100,
+  contrast: false,
+  volume: 70,
+  rememberDefaults: true,
   savedSession: null,
   preferences: {},
   history: [],
@@ -92,9 +96,19 @@ function normalizeExtra(raw, strict = false) {
         : [],
     });
   }
-  extra.theme = e.theme === 'light' ? 'light' : 'dark';
+  extra.theme = ['dark', 'light', 'system'].includes(e.theme) ? e.theme : 'dark';
   extra.motion = e.motion !== false;
   extra.focus = e.focus === true;
+  for (const [key, valid] of [
+    ['textScale', (value) => [100, 115, 130].includes(value)],
+    ['contrast', (value) => typeof value === 'boolean'],
+    ['volume', (value) => Number.isInteger(value) && value >= 0 && value <= 100],
+    ['rememberDefaults', (value) => typeof value === 'boolean'],
+  ]) {
+    if (e[key] === undefined) continue;
+    if (valid(e[key])) extra[key] = e[key];
+    else if (strict) throw Error('Invalid setting: ' + key);
+  }
   extra.recent = Array.isArray(e.recent)
     ? e.recent
         .filter(
@@ -110,6 +124,7 @@ function normalizeExtra(raw, strict = false) {
   extra.savedSession = normalizeSavedSession(e.savedSession);
   extra.preferences = normalizeGamePreferences(e.preferences);
   extra.history = normalizeGameHistory(e.history);
+  extra.solo = normalizeSoloProgress(e.solo, strict);
   if (e.experience && typeof e.experience === 'object' && !Array.isArray(e.experience))
     extra.experience = e.experience;
   return extra;
@@ -272,6 +287,7 @@ function storageMergeProgress(local, baseline, incoming) {
   extra.learned = storageMergeLearned(current.learned, previous.learned, latest.learned);
   extra.recent = storageMergeRecent(current.recent, latest.recent);
   extra.history = storageMergeHistory(current.history, latest.history);
+  extra.solo = mergeSoloProgress(current.solo, previous.solo, latest.solo);
   if (extra.experience) {
     extra.experience.completed = Object.assign({}, latest.experience?.completed);
     for (const [id, value] of Object.entries(current.experience?.completed || {}))
@@ -917,33 +933,7 @@ function home() {
   renderHome();
   goTop();
 }
-function renderHome() {
-  homeRenderedDate = dayKey();
-  store.extra.favorites = [...new Set(store.extra.favorites)].filter((id) =>
-    games.some((g) => g[0] === id),
-  );
-  setHTML(
-    `<section class="hero"><div class="copy"><div class="eyebrow">لَمّة أكبر · تحديات أكثر · نفس الروح</div><h1>كل تحدّي،<br><em>عالم جديد.</em></h1><p>${games.length} لعبة تجمع التخمين والذكاء والمنافسة والأركيد. العب بمفردك، تحدّى خصماً ذكياً، أو جمّع الربع وابدأ اللمّة.</p><div class="actions"><button class="primary" onclick="randomGame()">🎲 اختر لي لعبة</button><button class="quiet" onclick="openTournament()">🏆 نبدأ بطولة</button></div><div class="chips"><span class="chip">تعمل بدون إنترنت</span><span class="chip">1–12 لاعب</span><span class="chip">حفظ التقدّم تلقائياً</span></div></div><div class="hero-art" aria-hidden="true"><div class="orbit-track"></div><div class="planet">✦</div><div class="satellite a">🎲</div><div class="satellite b">🧩</div><div class="satellite c">123</div><div class="hero-status"><span></span>جاهز للعب</div></div></section><div class="dashboard"><button class="dash" onclick="openProfile()"><span class="symbol">✦</span><div><small>مستواك</small><b>${level()} <small style="display:inline">مستوى</small></b></div><span class="dash-arrow">←</span></button><button class="dash" onclick="openBoard()"><span class="symbol">🏆</span><div><small>نقاط اللمّة</small><b>${fmt(totalPoints())}</b></div><span class="dash-arrow">←</span></button><button class="dash" onclick="openDaily()"><span class="symbol">☀</span><div><small>تحدّي اليوم</small><b>${dailyCompleted()} <small style="display:inline">/ 3</small></b></div><span class="dash-arrow">←</span></button></div>${featuredHTML()}<div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نروح اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب"><button class="${filter === 'all' ? 'active' : ''}" onclick="setFilter('all')" aria-pressed="${filter === 'all'}">الكل</button><button class="${filter === 'solo' ? 'active' : ''}" onclick="setFilter('solo')" aria-pressed="${filter === 'solo'}">بمفردك</button><button class="${filter === 'group' ? 'active' : ''}" onclick="setFilter('group')" aria-pressed="${filter === 'group'}">مع الربع</button><button class="${onlyFavorites ? 'active' : ''}" onclick="toggleFavorites()" aria-pressed="${onlyFavorites}">☆ المفضّلة <span id="favcount">${store.extra.favorites.length}</span></button></nav><div class="searchwrap"><label class="sr" for="search">ابحث عن لعبة</label><input id="search" type="search" placeholder="ابحث عن لعبة…" value="${esc(searchQuery)}" oninput="searchGames(this.value)" autocomplete="off"></div></div><div class="catalogsummary"><p class="tiny" id="gamecount" aria-live="polite"></p><button class="linkbtn" onclick="clearFilters()">إظهار كل الألعاب ↺</button></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>أضف أسماء اللاعبين، اختر لعبة جماعية، ومرّر الجهاز بين الأدوار. الكلمات السرية تنخفي قبل ما يبدأ اللاعب التالي.</p></div><div><span class="guide-icon">🧠</span><h3>تحديات على مستواك</h3><p>غيّر الصعوبة وحجم اللوحات ووقت التحدّي من شاشة البداية. خذ تلميحاً، أو جرّب مستوى أصعب كل ما تحسّنت.</p></div><div><span class="guide-icon">💾</span><h3>رحلتك محفوظة</h3><p>نقاطك، إنجازاتك ومفضّلتك تنحفظ على هذا المتصفح. صدّر نسخة احتياطية من الإعدادات لنقلها لجهاز ثاني.</p></div></section>`,
-  );
-  renderCatalog();
-  $('foot').textContent =
-    `${games.length} لعبة · فردي أو مع الربع على نفس الجهاز · تعمل بدون إنترنت`;
-}
-function featuredHTML() {
-  const recent = (store.extra.recent || [])
-    .map((v) => games.find((g) => g[0] === v.id))
-    .filter(Boolean)
-    .slice(0, 4);
-  const ids = dayGames();
-  return `<section class="featured-grid"><div class="featured-card"><div class="featured-head"><span class="world-label">☀ اختيارات اليوم</span><button class="linkbtn" onclick="openDaily()">عرض التحديات ←</button></div><h3>ثلاث فرص لنتيجة جديدة</h3><div class="recent-games">${ids
-    .map((id) => {
-      const g = games.find((v) => v[0] === id);
-      return `<button onclick="startDaily('${id}')"><span style="--tile:${g[5]}">${g[1]}</span><b>${g[2]}</b><small>${store.extra.daily[dayKey() + ':done:' + id] ? 'مكتمل ✓' : 'تحدّ جديد'}</small></button>`;
-    })
-    .join(
-      '',
-    )}</div></div><div class="featured-card"><div class="featured-head"><span class="world-label">${recent.length ? '↺ ألعابك الأخيرة' : '✨ البداية من هنا'}</span><button class="linkbtn" onclick="openProfile()">رحلتك ←</button></div><h3>${recent.length ? 'ارجع لألعابك المفضّلة' : 'اختر، جرّب، واكتشف'}</h3>${recent.length ? `<div class="recent-games">${recent.map((g) => `<button onclick="setup('${g[0]}')"><span style="--tile:${g[5]}">${g[1]}</span><b>${g[2]}</b><small>${store.extra.played[g[0]] || 0} جولة مسجّلة</small></button>`).join('')}</div>` : `<p class="note">ألعاب خفيفة للانطلاقة: الذاكرة، خمن رقمي، أو الأركيد. وكل لعبة لها دليل بسيط ومستويات تناسبك.</p><div class="actions"><button onclick="setup('memory')">🧩 تحدي الذاكرة</button><button onclick="setup('solo')">🔢 خمن رقمي</button></div>`}</div></section>`;
-}
+// The catalogue and home screen have one renderer in lobby.js.
 function clearFilters() {
   world = 'all';
   filter = 'all';
@@ -952,20 +942,6 @@ function clearFilters() {
   renderHome();
 }
 
-function renderCatalog() {
-  const list = filteredGames();
-  if ($('favcount')) $('favcount').textContent = store.extra.favorites.length;
-  $('gamecount').textContent =
-    `${list.length} من ${games.length} لعبة${onlyFavorites ? ' · المفضّلة' : ''}`;
-  $('catalog').innerHTML =
-    list
-      .map(
-        (g) =>
-          `<article class="gamecard" style="--tile:${g[5]}"><button class="fav ${store.extra.favorites.includes(g[0]) ? 'on' : ''}" onclick="favorite('${g[0]}')" aria-label="${store.extra.favorites.includes(g[0]) ? 'إزالة' : 'إضافة'} ${esc(g[2])} ${store.extra.favorites.includes(g[0]) ? 'من' : 'إلى'} المفضلة" aria-pressed="${store.extra.favorites.includes(g[0])}">${store.extra.favorites.includes(g[0]) ? '★' : '☆'}</button><button class="cardstart" onclick="setup('${g[0]}')"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span><h3>${g[2]}</h3><p>${g[3]}</p><div class="cardmeta"><span>${modeLabel(g[0])}</span>${store.extra.best[g[0]] ? `<small>★ ${store.extra.best[g[0]]}</small>` : ''}</div><span class="tagline">${store.extra.played[g[0]] ? store.extra.played[g[0]] + ' جولة مسجّلة' : 'جاهز لتحدٍّ جديد'}<b>ابدأ ←</b></span></button></article>`,
-      )
-      .join('') ||
-    '<div class="emptylist"><span style="font-size:38px">🔎</span><h3>ما لقينا لعبة بهالاختيارات</h3><p>جرّب بحثاً أقصر أو غيّر العالم وطريقة اللعب.</p><button class="primary" onclick="clearFilters()">إظهار كل الألعاب</button></div>';
-}
 function modeLabel(id) {
   if (duoGameIds.has(id) && !isGroup([id])) return soloGameIds.has(id) ? 'فردي وشخصان' : 'شخصان';
   return soloGameIds.has(id) && groupGameIds.has(id)
@@ -1321,14 +1297,18 @@ function openBoard() {
     `<div class="modalhead"><h2 id="modaltitle">🏆 لوحة النقاط</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div>${boardHTML(names)}<p class="note">نقاط للتنافس بينكم؛ مستويات الألعاب تختلف. البطولة تقارن نفس الألعاب بين كل اللاعبين.</p><div class="actions"><button onclick="openProfile()">إنجازاتي</button><button class="quiet" onclick="resetScores()">تصفير النقاط</button></div>`,
   );
 }
-function openSettings() {
-  openModal(
-    `<div class="modalhead"><h2 id="modaltitle">⚙ على كيفك</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><div class="settingsrow"><div class="primarytext"><b>الصوت</b><small>نغمات خفيفة وقت اللعب</small></div><button onclick="toggleSound();openSettings()">${store.sound ? 'شغّال 🔊' : 'مقفّل 🔇'}</button></div><div class="settingsrow"><div class="primarytext"><b>شكل العالم</b><small>اختر الوضع اللي يناسبك</small></div><button onclick="toggleTheme()">${store.extra.theme === 'dark' ? 'داكن 🌙' : 'فاتح ☀'}</button></div><div class="settingsrow"><div class="primarytext"><b>حركة الواجهة</b><small>ظهور النتائج والانتقالات</small></div><button onclick="toggleMotion()">${store.extra.motion ? 'شغّالة' : 'مخففة'}</button></div><div class="settingsrow"><div class="primarytext"><b>الشاشة الكاملة</b><small>وسّع مساحة اللعب إلى كامل الشاشة</small></div><button onclick="toggleFullscreen()">⛶ تبديل</button></div><div class="settingsrow"><div class="primarytext"><b>قاعدة التخمين</b><small>${items.length} شي · ${store.extra.learned.length} إضافة منك</small></div><button onclick="openKnowledge()">إدارة</button></div><div class="actions"><button onclick="exportProgress()">⬇ نسخة احتياطية</button><button onclick="document.getElementById('importfile').click()">⬆ استيراد نسخة</button></div><input type="file" id="importfile" accept="application/json,.json" hidden onchange="importProgress(this.files[0])"><div class="hintpanel">الألعاب الجماعية تستخدم جهازاً واحداً. الخصم والتخمين يشتغلون محلياً. حفظ التقدّم يعتمد على سماح المتصفح بالتخزين.${!storageAvailable ? ' المتصفح الحالي ما يسمح بالحفظ؛ صدّر نسخة قبل ما تطلع.' : ''}</div>`,
-  );
-}
 function applySettings() {
   fullscreenUI();
-  document.body.dataset.theme = store.extra.theme;
+  document.body.dataset.theme =
+    store.extra.theme === 'system'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
+      : store.extra.theme;
+  document.body.dataset.themeChoice = store.extra.theme;
+  document.body.dataset.textScale = String(store.extra.textScale);
+  document.body.style.setProperty('--text-scale', String(store.extra.textScale / 100));
+  document.body.classList.toggle('high-contrast', store.extra.contrast);
   const reduceMotion =
     !store.extra.motion || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.body.classList.toggle('reduced-motion', reduceMotion);

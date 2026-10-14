@@ -55,12 +55,14 @@ function setupControls() {
 function rememberSetup() {
   if (
     restoringSetup ||
+    !store.extra.rememberDefaults ||
     startingDaily ||
     screen !== 'setup' ||
     !state?.id ||
     dailyRun ||
     tourney?.active ||
-    activeRoute
+    activeRoute ||
+    state.soloSessionToken
   )
     return;
   const values = Object.create(null);
@@ -72,6 +74,7 @@ function rememberSetup() {
   save();
 }
 function restoreSetup(id) {
+  if (!store.extra.rememberDefaults) return;
   const values = store.extra.preferences[id];
   if (!values) return;
   restoringSetup = true;
@@ -105,7 +108,15 @@ function restoreSetup(id) {
   }
 }
 function resetGamePreferences(id) {
-  if (screen !== 'setup' || state?.id !== id || dailyRun || tourney?.active || activeRoute) return;
+  if (
+    screen !== 'setup' ||
+    state?.id !== id ||
+    dailyRun ||
+    tourney?.active ||
+    activeRoute ||
+    state.soloSessionToken
+  )
+    return;
   delete store.extra.preferences[id];
   save();
   setup(id);
@@ -144,7 +155,7 @@ setup = function (id, internal = false) {
       .querySelector('.panel')
       ?.insertAdjacentHTML(
         'beforeend',
-        `<div class="setup-memory"><span>⚙ اختياراتك في هذه اللعبة تُحفظ تلقائياً</span><button class="linkbtn" onclick="resetGamePreferences('${id}')">الإعدادات الأصلية ↺</button></div>`,
+        `<div class="setup-memory"><span>⚙ ${store.extra.rememberDefaults ? 'اختياراتك في هذه اللعبة تُحفظ تلقائياً' : 'حفظ الاختيارات متوقف؛ نبدأ بالإعدادات الأصلية'}</span><button class="linkbtn" onclick="resetGamePreferences('${id}')">الإعدادات الأصلية ↺</button></div>`,
       );
   }
   if (screen === 'setup' && state?.id === id) appendSetupBlueprint(id);
@@ -211,22 +222,6 @@ openProfile = function () {
       '<button onclick="openGameHistory()">↺ سجل الجولات</button>',
     );
 };
-const upgradeSettings = openSettings;
-openSettings = function () {
-  upgradeSettings();
-  $('modal')
-    .querySelector('.actions')
-    ?.insertAdjacentHTML(
-      'beforebegin',
-      '<div class="settingsrow"><div class="primarytext"><b>مساعدة اللعب والحفظ</b><small>الجماعي والخصوصية والاستكمال ونقل تقدّمك</small></div><button onclick="openHelp()">؟ المساعدة</button></div>',
-    );
-  $('modal')
-    .querySelector('.hintpanel')
-    ?.insertAdjacentHTML(
-      'beforebegin',
-      '<div class="settingsrow"><div class="primarytext"><b>سجل الجولات</b><small>نتائجك الأخيرة محفوظة مع النسخة الاحتياطية</small></div><button onclick="openGameHistory()">عرض السجل</button></div>',
-    );
-};
 function updateDock() {
   const buttons = document.querySelectorAll('.dock button');
   buttons.forEach((button, i) => {
@@ -238,7 +233,7 @@ function updateDock() {
   document.body.classList.toggle('playing', !!state && screen !== 'home' && screen !== 'setup');
 }
 function audienceChoicesHTML() {
-  return `<section class="audience-choices" aria-label="اختَر عدد اللاعبين"><button class="audience-solo" onclick="chooseSoloLobby()"><span>🧠</span><div><small>ابدأ بنفسك</small><h3>وقت لك، تحدٍّ يتطوّر معك</h3><p>${games.filter(isSolo).length} لعبة فردية · تدريب، استنتاج، واستكشاف</p></div><b>العب بمفردك ←</b></button><button onclick="chooseDuoLobby()"><span>⚔</span><div><small>شخصان</small><h3>مواجهة لها أكثر من جولة</h3><p>خصم ذكي أو صديق · تناوب عادل على البداية</p></div><b>ألعاب الشخصين ←</b></button><button onclick="openLounge()"><span>🎭</span><div><small>من 3 إلى 12 لاعبًا</small><h3>كل دور يحرّك اللمّة</h3><p>مشاهد، أدوار سرية، أسئلة، وتصويت</p></div><b>جهّزوا الجلسة ←</b></button></section>`;
+  return `<section class="audience-choices" aria-label="اختَر عدد اللاعبين"><button class="audience-solo" onclick="openSoloHub()"><span>🧠</span><div><small>ابدأ بنفسك</small><h3>وقت لك، تحدٍّ يتطوّر معك</h3><p>${games.filter(isSolo).length} لعبة فردية · تدريب، استنتاج، واستكشاف</p></div><b>الصالة الفردية ←</b></button><button onclick="chooseDuoLobby()"><span>⚔</span><div><small>شخصان</small><h3>مواجهة لها أكثر من جولة</h3><p>خصم ذكي أو صديق · تناوب عادل على البداية</p></div><b>ألعاب الشخصين ←</b></button><button onclick="openLounge()"><span>🎭</span><div><small>من 3 إلى 12 لاعبًا</small><h3>كل دور يحرّك اللمّة</h3><p>مشاهد، أدوار سرية، أسئلة، وتصويت</p></div><b>جهّزوا الجلسة ←</b></button></section>`;
 }
 function chooseDuoLobby() {
   if (screen !== 'home') home();
@@ -320,7 +315,7 @@ function appendSetupBlueprint(id) {
 }
 function openHelp() {
   openModal(
-    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 9 · ${games.length} لعبة عربية في ملف واحد.</p>${[
+    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 10 · ${games.length} لعبة عربية في ملف واحد.</p>${[
       [
         'هل تحتاج إنترنت أو حسابًا؟',
         'افتح ملف HTML في متصفح حديث. الألعاب والمحتوى تعمل دون إنترنت أو حساب؛ حفظ النتائج مرتبط بهذا المتصفح.',
@@ -475,39 +470,3 @@ function quickLaunchHTML() {
     : ['memory', 'merge', 'lights'].map((id) => games.find((g) => g[0] === id));
   return `<section class="quick-launch" aria-label="ابدأ اللعب"><div class="quick-intro"><span class="world-label">${recent.length ? '↺ نكمل التحدّي' : '✦ البداية من هنا'}</span><h2>${recent.length ? 'ألعابك قريبة منك.' : 'اختَر أول تحدّي.'}</h2><button class="linkbtn" onclick="openQuickPicker()">اقترح لي لعبة ←</button></div>${picks.map((g) => `<button class="quick-game" style="--tile:${g[5]}" onclick="setup('${g[0]}')"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span><div><b>${esc(g[2])}</b><small>${gameLength(g[0])}</small></div><span>↗</span></button>`).join('')}</section>`;
 }
-renderHome = function () {
-  homeRenderedDate = dayKey();
-  store.extra.favorites = [...new Set(store.extra.favorites)].filter((id) =>
-    games.some((g) => g[0] === id),
-  );
-  setHTML(
-    `<section class="lobby-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 9.0 · العب، تعلّم، وتفوّق</span><h1>وقت للعب.<br><em>ولَمّة تستاهل.</em></h1><p>${games.length} تحدّياً على جوّك. تعلّم بروحك، نافس شخصًا، أو اجمع الربع. مهمات للفرد، مواجهات للشخصين، وحكايات ومشاهد للمجموعة. اختَر بنفسك أو خلّ الاختيار للصدفة.</p><div class="actions"><button class="primary" onclick="openQuickPicker()">✦ اختَر لي تحدّي</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><button class="linkbtn" onclick="chooseSoloLobby()">كل الألعاب الفردية ←</button></div></div><div class="lobby-art" aria-hidden="true"><div class="art-ring one"></div><div class="art-ring two"></div><div class="art-glow"></div><div class="art-dice"><span></span><span></span><span></span><span></span><span></span></div><div class="art-ticket ticket-one"><b>LEVEL ${level()}</b><small>خطوة أذكى كل مرة</small></div><div class="art-ticket ticket-two"><span>🧩</span><b>تحدّي جديد. جوّك نفسه.</b></div><div class="art-spark s-one">✦</div><div class="art-spark s-two">✧</div><span class="art-caption">LET THE GOOD TIMES PLAY.</span></div></section>${audienceChoicesHTML()}${randomPickButtonsHTML()}<div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openGameHistory()"><span class="summary-icon">↺</span><span><small>جولاتك ونتائجك</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${snapshotHTML()}${routeResumeHTML()}${quickLaunchHTML()}<details class="discover-drawer"><summary><span>🗺️ مسارات ومنافسات</span><small>ثلاث محطات لك، أو بطولة للربع</small><b>اكتشف أكثر +</b></summary><div class="discovery-content"><div class="discovery-actions"><button onclick="openLounge()">👥 صالة اللمّة</button><button onclick="openTournament()">🏆 نبدأ بطولة</button><button onclick="openGameHistory()">↺ سجل الجولات</button></div>${routeCardsHTML()}</div></details><div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نلعب اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
-      ['all', 'الكل'],
-      ['solo', 'بمفردك'],
-      ['duo', 'شخصان'],
-      ['group', 'مع الربع'],
-      ['new', 'أحدث الألعاب ✦'],
-    ]
-      .map(
-        ([id, label]) =>
-          `<button class="${filter === id ? 'active' : ''}" onclick="setFilter('${id}')" aria-pressed="${filter === id}">${label}</button>`,
-      )
-      .join(
-        '',
-      )}<button class="${onlyFavorites ? 'active' : ''}" onclick="toggleFavorites()" aria-pressed="${onlyFavorites}">☆ المفضّلة <span id="favcount">${store.extra.favorites.length}</span></button></nav><div class="searchwrap"><label class="sr" for="search">ابحث عن لعبة</label><input id="search" type="search" placeholder="ابحث عن لعبة…  /" value="${esc(searchQuery)}" oninput="searchGames(this.value)" autocomplete="off"></div></div><div class="catalogsummary"><p class="tiny" id="gamecount" aria-live="polite"></p><div class="catalog-sort"><label for="catalogsort">الترتيب</label><select id="catalogsort" onchange="setCatalogSort(this.value)">${[
-      ['recommended', 'اختيارات لَمّة'],
-      ['name', 'أبجدي'],
-      ['recent', 'آخر ألعابك'],
-      ['popular', 'الأكثر لعباً عندك'],
-    ]
-      .map(
-        ([v, label]) =>
-          `<option value="${v}" ${experience().sort === v ? 'selected' : ''}>${label}</option>`,
-      )
-      .join(
-        '',
-      )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>أضف الأسماء، مرّر الجهاز، والعبوا بالتناوب. الكلمات والتصويت تبقى سرية أثناء الأدوار.</p></div><div><span class="guide-icon">⚙</span><h3>اللعبة على كيفك</h3><p>مهمات أقفال وتوصيل، ذاكرة للشخصين، وتجارب تحقيق وحكايات. الاختيار العشوائي يضبط اللعبة حسب عددكم. اختَر طريقة اللعب والوقت قبل البداية.</p></div><div><span class="guide-icon">💾</span><h3>نتائجك معك</h3><p>سجل الجولات والنقاط والألغاز محفوظة هنا. صدّر نسخة احتياطية من الإعدادات لنقل تقدمك.</p></div></section>`,
-  );
-  renderCatalog();
-  $('foot').textContent = `لَمّة 9.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
-};

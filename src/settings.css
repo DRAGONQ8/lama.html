@@ -1,0 +1,245 @@
+/* Text preferences affect reading and controls; game boards retain their geometry. */
+body {
+  --text-scale: 1;
+  font-size: calc(16px * var(--text-scale));
+}
+label {
+  font-size: calc(14px * var(--text-scale));
+}
+.note,
+.settings-content small {
+  font-size: calc(13px * var(--text-scale));
+}
+.tiny {
+  font-size: calc(12px * var(--text-scale));
+}
+body:not([data-text-scale='100']) .fields :is(input, select),
+body:not([data-text-scale='100']) .actions > button {
+  font-size: calc(16px * var(--text-scale));
+}
+body:not([data-text-scale='100']) .edition-hero .lobby-copy p {
+  font-size: calc(15px * var(--text-scale));
+}
+body:not([data-text-scale='100']) .edition-hero .actions button {
+  font-size: calc(14px * var(--text-scale));
+}
+body.high-contrast {
+  --line: #9cacbf;
+  --muted: #e0e8f2;
+}
+body.high-contrast[data-theme='light'] {
+  --line: #4e6077;
+  --muted: #263c55;
+  --mint: #076255;
+  --orange: #764300;
+}
+.high-contrast :is(button, input, select, textarea) {
+  border-width: 2px;
+}
+.settings-eyebrow {
+  font-size: calc(12px * var(--text-scale));
+  color: var(--mint);
+  margin-bottom: 4px;
+}
+.settings-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 18px 0;
+  padding: 5px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+}
+.settings-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px;
+  border-color: transparent;
+  background: transparent;
+  font-size: calc(14px * var(--text-scale));
+  color: var(--muted);
+}
+.settings-tabs button[aria-selected='true'] {
+  background: var(--raised);
+  border-color: var(--mint);
+  color: var(--ink);
+}
+.settings-content h3 {
+  font-size: calc(18px * var(--text-scale));
+  margin-bottom: 7px;
+}
+.settings-content .settingsrow {
+  gap: 14px;
+}
+.settings-content .primarytext,
+.settingscontrol {
+  min-width: 0;
+}
+.settings-content .primarytext b {
+  font-size: calc(15px * var(--text-scale));
+}
+.settings-content .primarytext label {
+  color: var(--ink);
+  font-size: inherit;
+  margin: 0;
+}
+.settings-content .primarytext small {
+  line-height: 1.65;
+  margin-top: 4px;
+}
+.settingscontrol {
+  flex: 0 1 180px;
+}
+.settingscontrol :is(button, select) {
+  width: 100%;
+  font-size: calc(14px * var(--text-scale));
+}
+.settings-preview,
+.settings-backup {
+  padding: 17px;
+  margin: 18px 0;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--bg);
+}
+.settings-preview .note,
+.settings-backup .note {
+  margin-top: 5px;
+}
+.settings-preview .pill {
+  margin-top: 10px;
+  font-size: calc(12px * var(--text-scale));
+}
+.settings-wide {
+  width: 100%;
+  margin-top: 15px;
+}
+.settings-volume {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings-volume label,
+.settings-volume > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.settings-volume output {
+  color: var(--mint);
+  font-weight: 700;
+}
+.settings-volume input {
+  padding: 0;
+  border: 0;
+  direction: ltr;
+  accent-color: var(--mint);
+}
+.settings-defaults,
+.settings-reset {
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  margin-top: 18px;
+}
+.settings-defaults summary,
+.settings-reset summary {
+  cursor: pointer;
+  font-size: calc(14px * var(--text-scale));
+  font-weight: 700;
+}
+.settings-default-list {
+  margin-top: 12px;
+}
+.settings-default-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings-default-list span {
+  min-width: 0;
+}
+.settings-default-list b,
+.settings-default-list small {
+  display: block;
+}
+.settings-default-list b {
+  font-size: calc(14px * var(--text-scale));
+}
+.settings-default-list > div > div {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+}
+.settings-data-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 15px;
+}
+.settings-data-summary > div {
+  text-align: center;
+  border-radius: 13px;
+  background: var(--raised);
+  padding: 12px 5px;
+}
+.settings-data-summary b,
+.settings-data-summary small {
+  display: block;
+}
+.settings-data-summary b {
+  font-size: calc(23px * var(--text-scale));
+  color: var(--mint);
+}
+.settings-reset-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.settings-reset-actions button {
+  text-align: start;
+}
+.settings-save-status {
+  border-top: 1px solid var(--line);
+  padding-top: 15px;
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: calc(12px * var(--text-scale));
+}
+.settings-confirm > span {
+  display: block;
+  font-size: 42px;
+  color: var(--orange);
+  margin: 15px 0;
+}
+@media (max-width: 480px) {
+  .settings-content .settingsrow {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .settingscontrol {
+    flex-basis: auto;
+  }
+  .settings-tabs button {
+    flex-direction: column;
+    gap: 1px;
+  }
+  .settings-default-list > div {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .settings-default-list > div > div {
+    flex-wrap: wrap;
+  }
+  .settings-data-summary small {
+    font-size: calc(11px * var(--text-scale));
+  }
+}

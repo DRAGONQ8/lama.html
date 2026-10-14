@@ -106,7 +106,8 @@ function legacyAddScore(name, points) {
 }
 let audioCtx;
 function tone(win = false) {
-  if (!store.sound) return;
+  const volume = store.extra?.volume ?? 70;
+  if (!store.sound || !volume) return;
   try {
     audioCtx ??= new (window.AudioContext || window.webkitAudioContext)();
     audioCtx.resume();
@@ -116,8 +117,9 @@ function tone(win = false) {
     g.connect(audioCtx.destination);
     o.frequency.setValueAtTime(win ? 660 : 430, audioCtx.currentTime);
     if (win) o.frequency.setValueAtTime(880, audioCtx.currentTime + 0.12);
-    g.gain.setValueAtTime(0.045, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+    const peak = 0.045 * (volume / 100);
+    g.gain.setValueAtTime(peak, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.000001, peak / 80), audioCtx.currentTime + 0.25);
     o.start();
     o.stop(audioCtx.currentTime + 0.26);
   } catch (e) {}

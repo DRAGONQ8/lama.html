@@ -2243,7 +2243,7 @@ document.addEventListener('keydown', (e) => {
     e.metaKey ||
     e.altKey ||
     e.isComposing ||
-    e.target.closest?.('input,select,textarea,[contenteditable="true"]')
+    advancedEditableTarget(e.target)
   )
     return;
   const dirs = {

@@ -666,6 +666,11 @@ function nextBoardRound() {
 function advancedBlocked(s = state) {
   return !s || screen !== s.id || s.pausedAt || !$('modalback')?.hidden || !!$('pausecover');
 }
+function advancedEditableTarget(target) {
+  return !!target?.closest?.(
+    'input,select,textarea,[contenteditable]:not([contenteditable="false" i])',
+  );
+}
 function advancedLater(s, callback, delay = 0) {
   let remaining = Math.max(0, delay),
     last = Date.now();
@@ -1814,8 +1819,16 @@ function fillAllSudokuNotes() {
 function explainSudokuStep() {
   const s = state;
   if (screen !== 'sudoku' || s.done || advancedBlocked()) return;
+  delete s.logical;
   if (s.board.some((_, i) => sudokuConflicts(s.board, i)))
     return renderSudoku('صحّح الأرقام المتكررة أولاً حتى يكون الاستنتاج من اللوحة موثوقاً.');
+  const blocked = s.board.findIndex((n, i) => !n && !sudokuCandidates(s.board, i).length);
+  if (blocked >= 0) {
+    s.selected = blocked;
+    return renderSudoku(
+      `الخانة في الصف ${Math.floor(blocked / 9) + 1}، العمود ${(blocked % 9) + 1} ليس لها أي رقم ممكن. راجع إدخالات الصف والعمود والمربع قبل الاستنتاج؛ لم تُخصم نقاط.`,
+    );
+  }
   const step = sudokuDeduction(s.board, s.selected);
   if (!step) {
     delete s.logical;
@@ -1982,11 +1995,19 @@ function sudokuHint() {
   );
 }
 function sudokuDeduction(board, preferred = -1) {
+  if (
+    !Array.isArray(board) ||
+    board.length !== 81 ||
+    board.some((n, i) => !Number.isInteger(n) || n < 0 || n > 9 || sudokuConflicts(board, i))
+  )
+    return null;
   const empty = board.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0),
     order = empty.includes(preferred)
       ? [preferred, ...empty.filter((i) => i !== preferred)]
       : empty,
     candidates = new Map(empty.map((i) => [i, sudokuCandidates(board, i)]));
+  // A singleton elsewhere is not a sound next step while another blank is impossible.
+  if ([...candidates.values()].some((values) => !values.length)) return null;
   for (const i of order) {
     const values = candidates.get(i);
     if (values.length === 1)
@@ -2239,9 +2260,11 @@ function startQuiz(id) {
       q.answer = Number(first[0]);
       q.text = original.replace(/\d+/, '□') + ` = ${result}`;
       q.missingOperand = true;
+      if (/^\d+²$/.test(original)) q.acceptedAnswers = [q.answer, -q.answer];
       q.choices = generateChoices(q.answer);
       q.explain =
-        `القيمة المفقودة ${q.answer}؛ بإعادتها تصبح ${original} = ${result}. ` + q.explain;
+        `القيمة المفقودة ${quizSolutionText(q, 'math')}؛ بإعادة ${q.answer} تصبح ${original} = ${result}. ${q.acceptedAnswers ? 'مربع العدد السالب يعطي النتيجة نفسها، لذلك كلا الجذرين صحيح. ' : ''}` +
+        q.explain;
     });
   s.patternMode = s.fixed ? 'next' : $('patternmode')?.value === 'missing' ? 'missing' : 'next';
   if (id === 'pattern' && s.patternMode === 'missing')
@@ -2311,6 +2334,12 @@ function clockLoop(s, onEnd) {
     if (sec === 0) onEnd();
   }, 150);
 }
+function quizAnswerCorrect(q, value) {
+  return value === q.answer || !!q.acceptedAnswers?.includes(value);
+}
+function quizSolutionText(q, id = state.id) {
+  return id === 'color' ? inkColors[q.answer][0] : (q.acceptedAnswers?.join(' أو ') ?? q.answer);
+}
 function renderQuiz() {
   const s = state,
     q = s.questions[s.index],
@@ -2330,7 +2359,7 @@ function renderQuiz() {
         ['صحيح', s.correct],
         ['الوقت', secondsLeft(s), 'gametime'],
       ]) +
-        `${s.practice ? '<p class="hintpanel">🧠 تدريب على أسئلة الجولة السابقة؛ لا نقاط إضافية.</p>' : ''}<section class="panel"><div class="bar"><span id="clockbar" style="width:${(secondsLeft(s) / s.duration) * 100}%"></span></div>${question}${s.id === 'pattern' ? patternWorkpadHTML(s, q) : ''}<div class="quizanswers" ${s.id === 'color' ? '' : 'dir="ltr"'}>${q.choices.map((v, i) => `<button onclick="answerQuiz(${i})" ${s.locked ? 'disabled' : ''} class="${s.locked && v === q.answer ? 'correct' : s.locked && i === s.lastChoice ? 'wrong' : ''}" aria-label="الاختيار ${i + 1}: ${s.id === 'color' ? inkColors[v][0] : v}"><small class="quiz-shortcut" aria-hidden="true">${i + 1}</small>${s.id === 'color' ? inkColors[v][0] : v}</button>`).join('')}</div>${s.id === 'math' && !s.locked ? `<form class="math-direct" onsubmit="event.preventDefault();answerMathText()"><label for="mathanswer">أو احسب واكتب الإجابة مباشرة</label><div class="math-input"><input id="mathanswer" dir="ltr" inputmode="text" maxlength="22" autocomplete="off" placeholder="إجابتك" aria-label="الإجابة الحسابية"><button class="primary" type="submit">اعتمد الإجابة</button></div><p class="tiny">الأرقام العربية مسموحة؛ إشارة − للسالب. الكتابة والاختيارات لهما نفس النتيجة.</p></form>` : ''}${s.locked ? `<div class="hintpanel" role="status">${s.lastSkipped ? '↷ تجاوزت السؤال. الجواب الصحيح: ' + (s.id === 'color' ? inkColors[q.answer][0] : q.answer) : s.lastCorrect ? '✓ صحيح!' : '✕ الجواب الصحيح: ' + (s.id === 'color' ? inkColors[q.answer][0] : q.answer)}${Number.isFinite(s.lastTyped) ? `<p>إجابتك المكتوبة: <bdi>${s.lastTyped}</bdi></p>` : ''}<br><bdi>${esc(q.explain)}</bdi><p class="tiny">الوقت متوقف. اقرأ الشرح ثم انتقل عندما تكون جاهزًا.</p></div><div class="actions"><button id="quiznext" class="primary" onclick="nextQuiz()">${s.index === s.questions.length - 1 ? 'شوف نتيجة الجولة' : 'السؤال التالي ←'}</button></div>` : `<p class="note center">${s.id === 'color' ? (q.rule === 'shape' ? 'اتبع مفتاح الرموز لهذه الإجابة. ' : q.rule === 'word' ? 'اقرأ معنى الكلمة هذه المرة. ' : 'ركز على لون الكلمة. ') : 'اختر الجواب الصحيح. '}يمكنك استخدام الأرقام 1–${q.choices.length}.</p>`}<p class="tiny center">أفضل سلسلة صحيحة: ${s.bestStreak} · ${Math.round((s.correct / Math.max(1, s.answers.length)) * 100)}% دقة</p><div class="actions">${!s.locked ? '<button onclick="skipQuiz()">تجاوز السؤال</button>' : ''}<button class="quiet" onclick="quizEnd()">أنهي الجولة</button></div></section>`,
+        `${s.practice ? '<p class="hintpanel">🧠 تدريب على أسئلة الجولة السابقة؛ لا نقاط إضافية.</p>' : ''}<section class="panel"><div class="bar"><span id="clockbar" style="width:${(secondsLeft(s) / s.duration) * 100}%"></span></div>${question}${s.id === 'pattern' ? patternWorkpadHTML(s, q) : ''}<div class="quizanswers" ${s.id === 'color' ? '' : 'dir="ltr"'}>${q.choices.map((v, i) => `<button onclick="answerQuiz(${i})" ${s.locked ? 'disabled' : ''} class="${s.locked && quizAnswerCorrect(q, v) ? 'correct' : s.locked && i === s.lastChoice ? 'wrong' : ''}" aria-label="الاختيار ${i + 1}: ${s.id === 'color' ? inkColors[v][0] : v}"><small class="quiz-shortcut" aria-hidden="true">${i + 1}</small>${s.id === 'color' ? inkColors[v][0] : v}</button>`).join('')}</div>${s.id === 'math' && !s.locked ? `<form class="math-direct" onsubmit="event.preventDefault();answerMathText()"><label for="mathanswer">أو احسب واكتب الإجابة مباشرة</label><div class="math-input"><input id="mathanswer" dir="ltr" inputmode="text" maxlength="22" autocomplete="off" placeholder="إجابتك" aria-label="الإجابة الحسابية"><button class="primary" type="submit">اعتمد الإجابة</button></div><p class="tiny">الأرقام العربية مسموحة؛ إشارة − للسالب. الكتابة والاختيارات لهما نفس النتيجة.</p></form>` : ''}${s.locked ? `<div class="hintpanel" role="status">${s.lastSkipped ? '↷ تجاوزت السؤال. الجواب الصحيح: ' + quizSolutionText(q, s.id) : s.lastCorrect ? '✓ صحيح!' : '✕ الجواب الصحيح: ' + quizSolutionText(q, s.id)}${Number.isFinite(s.lastTyped) ? `<p>إجابتك المكتوبة: <bdi>${s.lastTyped}</bdi></p>` : ''}<br><bdi>${esc(q.explain)}</bdi><p class="tiny">الوقت متوقف. اقرأ الشرح ثم انتقل عندما تكون جاهزًا.</p></div><div class="actions"><button id="quiznext" class="primary" onclick="nextQuiz()">${s.index === s.questions.length - 1 ? 'شوف نتيجة الجولة' : 'السؤال التالي ←'}</button></div>` : `<p class="note center">${s.id === 'color' ? (q.rule === 'shape' ? 'اتبع مفتاح الرموز لهذه الإجابة. ' : q.rule === 'word' ? 'اقرأ معنى الكلمة هذه المرة. ' : 'ركز على لون الكلمة. ') : 'اختر الجواب الصحيح. '}يمكنك استخدام الأرقام 1–${q.choices.length}.</p>`}<p class="tiny center">أفضل سلسلة صحيحة: ${s.bestStreak} · ${Math.round((s.correct / Math.max(1, s.answers.length)) * 100)}% دقة</p><div class="actions">${!s.locked ? '<button onclick="skipQuiz()">تجاوز السؤال</button>' : ''}<button class="quiet" onclick="quizEnd()">أنهي الجولة</button></div></section>`,
     ),
   );
   if (keyboardFocus && s.locked) $('quiznext')?.focus({ preventScroll: true });
@@ -2416,7 +2445,7 @@ function answerQuiz(i, typed) {
   s.feedbackRemaining = Math.max(0, s.endAt - Date.now());
   s.lastChoice = i;
   s.lastSkipped = false;
-  s.lastCorrect = choice === q.answer;
+  s.lastCorrect = quizAnswerCorrect(q, choice);
   if (s.lastCorrect) {
     s.correct++;
     s.streak++;
@@ -2514,7 +2543,7 @@ function quizEnd() {
               ? q.seq.map((n) => (n === null ? '؟' : n)).join('، ') +
                 (Number.isInteger(q.gap) ? '' : '، ؟')
               : q.text;
-      return `<div class="hint"><b>${i + 1}. ${esc(label)} ${a?.correct ? '✓' : '✕'}</b><p>${a && !a.skipped ? 'إجابتك: ' + (s.id === 'color' ? inkColors[a.choice][0] : a.choice) : a?.skipped ? 'تجاوزت السؤال' : 'لم تجب'} · الصحيح: ${s.id === 'color' ? inkColors[q.answer][0] : q.answer}${Number.isFinite(a?.ms) ? ' · ' + (a.ms / 1000).toFixed(2) + ' ثانية' : ''}</p><p><bdi>${esc(q.explain)}</bdi></p></div>`;
+      return `<div class="hint"><b>${i + 1}. ${esc(label)} ${a?.correct ? '✓' : '✕'}</b><p>${a && !a.skipped ? 'إجابتك: ' + (s.id === 'color' ? inkColors[a.choice][0] : a.choice) : a?.skipped ? 'تجاوزت السؤال' : 'لم تجب'} · الصحيح: ${quizSolutionText(q, s.id)}${Number.isFinite(a?.ms) ? ' · ' + (a.ms / 1000).toFixed(2) + ' ثانية' : ''}</p><p><bdi>${esc(q.explain)}</bdi></p></div>`;
     })
     .join('')}</details>`;
   $('app')
@@ -3605,7 +3634,8 @@ function updateRangeInfo() {
 document.addEventListener('keydown', (e) => {
   if (
     advancedBlocked() ||
-    e.target?.matches?.('input,select,textarea,[contenteditable="true"]') ||
+    advancedEditableTarget(e.target) ||
+    e.isComposing ||
     e.repeat ||
     state.done
   )

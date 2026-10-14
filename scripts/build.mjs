@@ -17,6 +17,9 @@ const scripts = [
   'upgrade',
   'playflow',
   'navigation',
+  'lobby',
+  'settings',
+  'solo',
   'boot',
 ];
 const styles = [
@@ -31,6 +34,9 @@ const styles = [
   'playflow',
   'navigation',
   'site',
+  'lobby',
+  'settings',
+  'solo',
 ];
 const read = (path) => readFile(resolve(root, path), 'utf8');
 const normalizeArabic = (text) =>

@@ -127,16 +127,6 @@ document.addEventListener('keydown', (event) => {
     }
   }
 });
-const flowSettings = openSettings;
-openSettings = function () {
-  flowSettings();
-  $('modal')
-    .querySelector('.settingsrow')
-    ?.insertAdjacentHTML(
-      'afterend',
-      `<div class="settingsrow"><div class="primarytext"><b>وضع التركيز</b><small>أخفِ رأس الموقع وزد مساحة اللعبة؛ زر ◎ يعيده</small></div><button onclick="togglePlayFocus();openSettings()" aria-pressed="${store.extra.focus}">${store.extra.focus ? 'شغّال ◎' : 'تشغيل'}</button></div>`,
-    );
-};
 const flowResult = result;
 result = function (id, title, text, points = 0, detail = '') {
   const s = state,

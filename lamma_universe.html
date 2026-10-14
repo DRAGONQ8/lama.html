@@ -9,9 +9,9 @@
     <meta name="theme-color" content="#0b1020" />
     <meta
       name="description"
-      content="لَمّة 9: 34 لعبة عربية تفاعلية، أوضاع جديدة للفرد والشخصين والمجموعة، ألغاز استنتاج وتدريب ومواجهات متعددة الجولات. تعمل دون إنترنت وتحفظ تقدمك."
+      content="لَمّة 10: 34 لعبة عربية دون إنترنت، صالة فردية وجلسات تدريب بمستوى متكيف وإعدادات مظهر وصوت وحفظ مرتبة."
     />
-    <title>لَمّة 9 — كل جولة لها حكاية</title>
+    <title>لَمّة 10 — تحدّيك اليوم، خطوتك لباجر</title>
     <style>
       :root {
   color-scheme: dark;
@@ -9640,6 +9640,799 @@ body.keyboard-open .toast {
   }
 }
 
+/* A quieter home: one clear way into personal play, then the shared catalogue. */
+.edition-hero {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  background: radial-gradient(ellipse at 15% 40%, #233e3b 0%, transparent 62%), #142724;
+  border: 1px solid #35554c;
+  padding: 42px;
+  min-height: 370px;
+  overflow: hidden;
+}
+.edition-hero .lobby-copy {
+  position: relative;
+  z-index: 1;
+}
+.edition-hero .lobby-copy h1 {
+  font-size: clamp(36px, 4.6vw, 62px);
+  line-height: 1.3;
+  color: #f0eee3;
+}
+.edition-hero .lobby-copy h1 em {
+  color: #c9ea99;
+}
+.edition-hero .lobby-copy p {
+  max-width: 550px;
+  color: #b8cbc1;
+  font-size: 15px;
+  line-height: 1.9;
+}
+.edition-hero .release-chip {
+  color: #d9e8ca;
+  background: #233c30;
+  border-color: #405a3c;
+}
+.edition-hero .primary {
+  background: #d0ebaa;
+  color: #182c20;
+  border-color: #d0ebaa;
+}
+.edition-hero .lobby-party {
+  color: #e0e9df;
+  border-color: #506357;
+  background: #ffffff08;
+}
+.edition-hero .lobby-details,
+.edition-hero .lobby-details .linkbtn {
+  color: #b8cbc1;
+}
+.edition-art {
+  height: 290px;
+  position: relative;
+  isolation: isolate;
+}
+.edition-orbit {
+  position: absolute;
+  inset: 0;
+  width: 290px;
+  height: 290px;
+  margin: auto;
+  border: 1px solid #9abe8b2b;
+  border-radius: 50%;
+  transform: rotate(-20deg);
+}
+.edition-orbit::before {
+  content: '';
+  position: absolute;
+  inset: 28px;
+  border: 1px dashed #9abe8b35;
+  border-radius: 50%;
+}
+.edition-card {
+  position: absolute;
+  width: 190px;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 18px 40px #0003;
+}
+.edition-card-back {
+  background: #657857;
+  color: #e6ecca;
+  right: 15%;
+  top: 36px;
+  height: 225px;
+  transform: rotate(13deg);
+}
+.edition-card-back > span {
+  display: block;
+  font-size: 52px;
+}
+.edition-card-back > small {
+  display: block;
+  margin-top: 80px;
+  font-size: 12px;
+}
+.edition-card-front {
+  background: #eeeadd;
+  color: #233e31;
+  right: 32%;
+  top: 18px;
+  transform: rotate(-8deg);
+}
+.edition-card-top,
+.edition-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.edition-card-top > span {
+  font-size: 24px;
+}
+.edition-card-top > small {
+  font-size: 10px;
+}
+.edition-card-bottom {
+  margin-top: 16px;
+  font-size: 12px;
+}
+.edition-card-bottom > span {
+  font-size: 24px;
+}
+.edition-board {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.edition-board i {
+  height: 35px;
+  background: #ccdbb5;
+  border: 1px solid #bacba2;
+  border-radius: 8px;
+}
+.edition-board i:nth-child(2n) {
+  background: #335142;
+  border-color: #335142;
+}
+.edition-board i:nth-child(5) {
+  background: #d5ac70;
+  border-color: #d5ac70;
+}
+.edition-seal {
+  position: absolute;
+  left: 0;
+  top: 170px;
+  background: #c9ea99;
+  color: #1b3522;
+  border: 5px solid #233e31;
+  border-radius: 50%;
+  width: 94px;
+  height: 94px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-size: 27px;
+  font-weight: 800;
+  transform: rotate(8deg);
+}
+.edition-seal small {
+  font-size: 10px;
+  font-weight: 600;
+}
+.edition-spark {
+  position: absolute;
+  left: 24px;
+  top: 10px;
+  font-size: 54px;
+  color: #d5ac70;
+}
+body[data-theme='light'] .edition-hero {
+  background: radial-gradient(ellipse at 15% 40%, #dbe6c7 0%, transparent 62%), #eef1e2;
+  border-color: #c7d3b8;
+}
+body[data-theme='light'] .edition-hero .lobby-copy h1 {
+  color: #20392c;
+}
+body[data-theme='light'] .edition-hero .lobby-copy h1 em {
+  color: #45652c;
+}
+body[data-theme='light'] .edition-hero .lobby-copy p,
+body[data-theme='light'] .edition-hero .lobby-details,
+body[data-theme='light'] .edition-hero .lobby-details .linkbtn {
+  color: #536651;
+}
+body[data-theme='light'] .edition-hero .release-chip {
+  background: #dce7c8;
+  border-color: #c0d3a6;
+  color: #385226;
+}
+body[data-theme='light'] .edition-hero .lobby-party {
+  background: #ffffff66;
+  border-color: #b8c9a5;
+  color: #324c2b;
+}
+body[data-theme='light'] .edition-hero .primary {
+  background: #31543c;
+  color: #f2f6e8;
+  border-color: #31543c;
+}
+body[data-theme='light'] .edition-orbit {
+  border-color: #5776473b;
+}
+body[data-theme='light'] .edition-orbit::before {
+  border-color: #57764735;
+}
+@media (max-width: 900px) {
+  .edition-hero {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 28px;
+  }
+  .edition-hero .edition-art {
+    display: none;
+  }
+  .edition-hero .lobby-copy h1 {
+    font-size: 39px;
+  }
+}
+@media (max-width: 480px) {
+  .edition-hero {
+    padding: 23px 20px;
+    border-radius: 20px;
+  }
+  .edition-hero .lobby-copy h1 {
+    font-size: 34px;
+  }
+  .edition-hero .lobby-copy p {
+    font-size: 13px;
+    line-height: 1.85;
+  }
+  .edition-hero .actions {
+    gap: 8px;
+  }
+  .edition-hero .actions button {
+    font-size: 12px;
+    min-height: 44px;
+  }
+  .edition-hero .release-chip {
+    font-size: 10px;
+  }
+}
+
+/* Text preferences affect reading and controls; game boards retain their geometry. */
+body {
+  --text-scale: 1;
+  font-size: calc(16px * var(--text-scale));
+}
+label {
+  font-size: calc(14px * var(--text-scale));
+}
+.note,
+.settings-content small {
+  font-size: calc(13px * var(--text-scale));
+}
+.tiny {
+  font-size: calc(12px * var(--text-scale));
+}
+body:not([data-text-scale='100']) .fields :is(input, select),
+body:not([data-text-scale='100']) .actions > button {
+  font-size: calc(16px * var(--text-scale));
+}
+body:not([data-text-scale='100']) .edition-hero .lobby-copy p {
+  font-size: calc(15px * var(--text-scale));
+}
+body:not([data-text-scale='100']) .edition-hero .actions button {
+  font-size: calc(14px * var(--text-scale));
+}
+body.high-contrast {
+  --line: #9cacbf;
+  --muted: #e0e8f2;
+}
+body.high-contrast[data-theme='light'] {
+  --line: #4e6077;
+  --muted: #263c55;
+  --mint: #076255;
+  --orange: #764300;
+}
+.high-contrast :is(button, input, select, textarea) {
+  border-width: 2px;
+}
+.settings-eyebrow {
+  font-size: calc(12px * var(--text-scale));
+  color: var(--mint);
+  margin-bottom: 4px;
+}
+.settings-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 18px 0;
+  padding: 5px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+}
+.settings-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px;
+  border-color: transparent;
+  background: transparent;
+  font-size: calc(14px * var(--text-scale));
+  color: var(--muted);
+}
+.settings-tabs button[aria-selected='true'] {
+  background: var(--raised);
+  border-color: var(--mint);
+  color: var(--ink);
+}
+.settings-content h3 {
+  font-size: calc(18px * var(--text-scale));
+  margin-bottom: 7px;
+}
+.settings-content .settingsrow {
+  gap: 14px;
+}
+.settings-content .primarytext,
+.settingscontrol {
+  min-width: 0;
+}
+.settings-content .primarytext b {
+  font-size: calc(15px * var(--text-scale));
+}
+.settings-content .primarytext label {
+  color: var(--ink);
+  font-size: inherit;
+  margin: 0;
+}
+.settings-content .primarytext small {
+  line-height: 1.65;
+  margin-top: 4px;
+}
+.settingscontrol {
+  flex: 0 1 180px;
+}
+.settingscontrol :is(button, select) {
+  width: 100%;
+  font-size: calc(14px * var(--text-scale));
+}
+.settings-preview,
+.settings-backup {
+  padding: 17px;
+  margin: 18px 0;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--bg);
+}
+.settings-preview .note,
+.settings-backup .note {
+  margin-top: 5px;
+}
+.settings-preview .pill {
+  margin-top: 10px;
+  font-size: calc(12px * var(--text-scale));
+}
+.settings-wide {
+  width: 100%;
+  margin-top: 15px;
+}
+.settings-volume {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings-volume label,
+.settings-volume > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.settings-volume output {
+  color: var(--mint);
+  font-weight: 700;
+}
+.settings-volume input {
+  padding: 0;
+  border: 0;
+  direction: ltr;
+  accent-color: var(--mint);
+}
+.settings-defaults,
+.settings-reset {
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  margin-top: 18px;
+}
+.settings-defaults summary,
+.settings-reset summary {
+  cursor: pointer;
+  font-size: calc(14px * var(--text-scale));
+  font-weight: 700;
+}
+.settings-default-list {
+  margin-top: 12px;
+}
+.settings-default-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settings-default-list span {
+  min-width: 0;
+}
+.settings-default-list b,
+.settings-default-list small {
+  display: block;
+}
+.settings-default-list b {
+  font-size: calc(14px * var(--text-scale));
+}
+.settings-default-list > div > div {
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+}
+.settings-data-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 15px;
+}
+.settings-data-summary > div {
+  text-align: center;
+  border-radius: 13px;
+  background: var(--raised);
+  padding: 12px 5px;
+}
+.settings-data-summary b,
+.settings-data-summary small {
+  display: block;
+}
+.settings-data-summary b {
+  font-size: calc(23px * var(--text-scale));
+  color: var(--mint);
+}
+.settings-reset-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.settings-reset-actions button {
+  text-align: start;
+}
+.settings-save-status {
+  border-top: 1px solid var(--line);
+  padding-top: 15px;
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: calc(12px * var(--text-scale));
+}
+.settings-confirm > span {
+  display: block;
+  font-size: 42px;
+  color: var(--orange);
+  margin: 15px 0;
+}
+@media (max-width: 480px) {
+  .settings-content .settingsrow {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .settingscontrol {
+    flex-basis: auto;
+  }
+  .settings-tabs button {
+    flex-direction: column;
+    gap: 1px;
+  }
+  .settings-default-list > div {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .settings-default-list > div > div {
+    flex-wrap: wrap;
+  }
+  .settings-data-summary small {
+    font-size: calc(11px * var(--text-scale));
+  }
+}
+
+.solo-home {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 26px 30px;
+  margin: 24px 0;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(110deg, rgba(119, 236, 209, 0.08), rgba(198, 181, 255, 0.08));
+}
+.solo-home-icon {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+  font-size: 38px;
+  color: var(--mint);
+  border: 1px solid var(--line);
+  border-radius: 21px;
+}
+.solo-home h3 {
+  margin: 5px 0;
+  font-size: 23px;
+}
+.solo-home p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.solo-home .primary {
+  margin-inline-start: auto;
+  flex-shrink: 0;
+}
+.solo-hub {
+  max-width: 1100px;
+}
+.solo-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 24px 0;
+}
+.solo-head h1 {
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.2;
+  margin: 10px 0;
+}
+.solo-head h1 em {
+  font-style: normal;
+  color: var(--mint);
+}
+.solo-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.solo-profile label {
+  color: var(--muted);
+  font-size: 13px;
+}
+.solo-profile select {
+  max-width: 240px;
+}
+.solo-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  background: var(--surface);
+}
+.solo-summary > div {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-inline-end: 1px solid var(--line);
+}
+.solo-summary > div:last-child {
+  border: 0;
+}
+.solo-summary small,
+.solo-summary span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.solo-summary b {
+  font-size: 28px;
+}
+.solo-summary progress {
+  height: 6px;
+  width: 100%;
+  accent-color: var(--mint);
+  border: 0;
+  border-radius: 5px;
+}
+.solo-columns {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 22px;
+}
+.solo-columns .panel {
+  margin-top: 0;
+}
+.solo-builder h2,
+.solo-insight h2 {
+  margin: 8px 0 20px;
+  font-size: 25px;
+}
+.solo-resume {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 22px;
+  background: rgba(119, 236, 209, 0.05);
+}
+.solo-resume .actions {
+  flex-shrink: 0;
+}
+.solo-skills {
+  margin-top: 24px;
+  display: grid;
+  gap: 0;
+}
+.solo-skills button {
+  display: flex;
+  text-align: start;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  padding: 16px 0;
+}
+.solo-skills button > span:first-child {
+  width: 38px;
+  font-size: 24px;
+}
+.solo-skills button > span:last-child {
+  margin-inline-start: auto;
+  color: var(--mint);
+}
+.solo-skills small,
+.solo-log-list small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+.solo-log-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 22px;
+}
+.solo-log-list > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.solo-log-list > div > span {
+  font-size: 25px;
+}
+.solo-log-list strong {
+  margin-inline-start: auto;
+  white-space: nowrap;
+  font-size: 23px;
+  color: var(--mint);
+}
+.solo-log-list strong small {
+  display: inline;
+  font-size: 11px;
+}
+.solo-session-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(119, 236, 209, 0.07);
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.solo-session-banner small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.solo-session-banner > span {
+  margin-inline-start: auto;
+  white-space: nowrap;
+  direction: ltr;
+  color: var(--mint);
+  font-weight: 700;
+}
+.solo-session-banner button {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.solo-session-result {
+  border-color: rgba(119, 236, 209, 0.35);
+  text-align: center;
+}
+.solo-hub .sectionhead {
+  gap: 15px;
+}
+.solo-insight p {
+  line-height: 1.8;
+}
+@media (max-width: 700px) {
+  .solo-columns {
+    grid-template-columns: 1fr;
+  }
+  .solo-home {
+    flex-wrap: wrap;
+    padding: 20px;
+    gap: 15px;
+  }
+  .solo-home-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+  }
+  .solo-home > div:nth-child(2) {
+    flex: 1;
+    min-width: 150px;
+  }
+  .solo-home h3 {
+    font-size: 20px;
+  }
+  .solo-home .primary {
+    width: 100%;
+    margin: 0;
+  }
+  .solo-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .solo-summary > div {
+    padding: 18px;
+  }
+  .solo-summary > div:nth-child(2) {
+    border-inline-end: 0;
+  }
+  .solo-summary > div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+  .solo-head {
+    gap: 10px;
+  }
+  .solo-head > .quiet {
+    padding: 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .solo-profile {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .solo-profile select {
+    flex: 1;
+    min-width: 140px;
+  }
+  .solo-resume {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .solo-log-list {
+    grid-template-columns: 1fr;
+  }
+  .solo-session-banner {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 13px;
+  }
+  .solo-session-banner > div {
+    flex: 1;
+    min-width: 180px;
+  }
+  .solo-session-banner button {
+    margin-inline-start: auto;
+  }
+  .solo-hub .sectionhead {
+    align-items: start;
+    flex-direction: column;
+  }
+  .solo-builder .field {
+    min-width: 0;
+  }
+  .solo-builder .actions > button {
+    flex: 1;
+  }
+  .solo-head h1 {
+    font-size: 34px;
+  }
+}
+
     </style>
   </head>
   <body>
@@ -9648,7 +10441,7 @@ body.keyboard-open .toast {
       <header class="top">
         <button class="brand" onclick="home('top')" aria-label="لمة، الرئيسية">
           <span class="brandmark">✦</span
-          ><span class="brandtext">لَمّة<small>عالم التحدّيات · 9.0</small></span>
+          ><span class="brandtext">لَمّة<small>عالم التحدّيات · 10.0</small></span>
         </button>
         <div class="topactions">
           <button
@@ -9681,7 +10474,7 @@ body.keyboard-open .toast {
       </footer>
       <nav class="dock" aria-label="التنقل">
         <button onclick="home()">◈<span>العالم</span></button
-        ><button onclick="openLounge()">👥<span>اللمّة</span></button
+        ><button onclick="openSoloHub()">✦<span>بمفردك</span></button
         ><button onclick="openDaily()">✦<span>اليومي</span></button
         ><button onclick="openProfile()">◎<span>إنجازاتي</span></button>
       </nav>
@@ -9810,7 +10603,8 @@ function legacyAddScore(name, points) {
 }
 let audioCtx;
 function tone(win = false) {
-  if (!store.sound) return;
+  const volume = store.extra?.volume ?? 70;
+  if (!store.sound || !volume) return;
   try {
     audioCtx ??= new (window.AudioContext || window.webkitAudioContext)();
     audioCtx.resume();
@@ -9820,8 +10614,9 @@ function tone(win = false) {
     g.connect(audioCtx.destination);
     o.frequency.setValueAtTime(win ? 660 : 430, audioCtx.currentTime);
     if (win) o.frequency.setValueAtTime(880, audioCtx.currentTime + 0.12);
-    g.gain.setValueAtTime(0.045, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+    const peak = 0.045 * (volume / 100);
+    g.gain.setValueAtTime(peak, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.000001, peak / 80), audioCtx.currentTime + 0.25);
     o.start();
     o.stop(audioCtx.currentTime + 0.26);
   } catch (e) {}
@@ -13929,6 +14724,10 @@ const extraDefaults = {
   theme: 'dark',
   motion: true,
   focus: false,
+  textScale: 100,
+  contrast: false,
+  volume: 70,
+  rememberDefaults: true,
   savedSession: null,
   preferences: {},
   history: [],
@@ -14000,9 +14799,19 @@ function normalizeExtra(raw, strict = false) {
         : [],
     });
   }
-  extra.theme = e.theme === 'light' ? 'light' : 'dark';
+  extra.theme = ['dark', 'light', 'system'].includes(e.theme) ? e.theme : 'dark';
   extra.motion = e.motion !== false;
   extra.focus = e.focus === true;
+  for (const [key, valid] of [
+    ['textScale', (value) => [100, 115, 130].includes(value)],
+    ['contrast', (value) => typeof value === 'boolean'],
+    ['volume', (value) => Number.isInteger(value) && value >= 0 && value <= 100],
+    ['rememberDefaults', (value) => typeof value === 'boolean'],
+  ]) {
+    if (e[key] === undefined) continue;
+    if (valid(e[key])) extra[key] = e[key];
+    else if (strict) throw Error('Invalid setting: ' + key);
+  }
   extra.recent = Array.isArray(e.recent)
     ? e.recent
         .filter(
@@ -14018,6 +14827,7 @@ function normalizeExtra(raw, strict = false) {
   extra.savedSession = normalizeSavedSession(e.savedSession);
   extra.preferences = normalizeGamePreferences(e.preferences);
   extra.history = normalizeGameHistory(e.history);
+  extra.solo = normalizeSoloProgress(e.solo, strict);
   if (e.experience && typeof e.experience === 'object' && !Array.isArray(e.experience))
     extra.experience = e.experience;
   return extra;
@@ -14180,6 +14990,7 @@ function storageMergeProgress(local, baseline, incoming) {
   extra.learned = storageMergeLearned(current.learned, previous.learned, latest.learned);
   extra.recent = storageMergeRecent(current.recent, latest.recent);
   extra.history = storageMergeHistory(current.history, latest.history);
+  extra.solo = mergeSoloProgress(current.solo, previous.solo, latest.solo);
   if (extra.experience) {
     extra.experience.completed = Object.assign({}, latest.experience?.completed);
     for (const [id, value] of Object.entries(current.experience?.completed || {}))
@@ -14825,33 +15636,7 @@ function home() {
   renderHome();
   goTop();
 }
-function renderHome() {
-  homeRenderedDate = dayKey();
-  store.extra.favorites = [...new Set(store.extra.favorites)].filter((id) =>
-    games.some((g) => g[0] === id),
-  );
-  setHTML(
-    `<section class="hero"><div class="copy"><div class="eyebrow">لَمّة أكبر · تحديات أكثر · نفس الروح</div><h1>كل تحدّي،<br><em>عالم جديد.</em></h1><p>${games.length} لعبة تجمع التخمين والذكاء والمنافسة والأركيد. العب بمفردك، تحدّى خصماً ذكياً، أو جمّع الربع وابدأ اللمّة.</p><div class="actions"><button class="primary" onclick="randomGame()">🎲 اختر لي لعبة</button><button class="quiet" onclick="openTournament()">🏆 نبدأ بطولة</button></div><div class="chips"><span class="chip">تعمل بدون إنترنت</span><span class="chip">1–12 لاعب</span><span class="chip">حفظ التقدّم تلقائياً</span></div></div><div class="hero-art" aria-hidden="true"><div class="orbit-track"></div><div class="planet">✦</div><div class="satellite a">🎲</div><div class="satellite b">🧩</div><div class="satellite c">123</div><div class="hero-status"><span></span>جاهز للعب</div></div></section><div class="dashboard"><button class="dash" onclick="openProfile()"><span class="symbol">✦</span><div><small>مستواك</small><b>${level()} <small style="display:inline">مستوى</small></b></div><span class="dash-arrow">←</span></button><button class="dash" onclick="openBoard()"><span class="symbol">🏆</span><div><small>نقاط اللمّة</small><b>${fmt(totalPoints())}</b></div><span class="dash-arrow">←</span></button><button class="dash" onclick="openDaily()"><span class="symbol">☀</span><div><small>تحدّي اليوم</small><b>${dailyCompleted()} <small style="display:inline">/ 3</small></b></div><span class="dash-arrow">←</span></button></div>${featuredHTML()}<div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نروح اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب"><button class="${filter === 'all' ? 'active' : ''}" onclick="setFilter('all')" aria-pressed="${filter === 'all'}">الكل</button><button class="${filter === 'solo' ? 'active' : ''}" onclick="setFilter('solo')" aria-pressed="${filter === 'solo'}">بمفردك</button><button class="${filter === 'group' ? 'active' : ''}" onclick="setFilter('group')" aria-pressed="${filter === 'group'}">مع الربع</button><button class="${onlyFavorites ? 'active' : ''}" onclick="toggleFavorites()" aria-pressed="${onlyFavorites}">☆ المفضّلة <span id="favcount">${store.extra.favorites.length}</span></button></nav><div class="searchwrap"><label class="sr" for="search">ابحث عن لعبة</label><input id="search" type="search" placeholder="ابحث عن لعبة…" value="${esc(searchQuery)}" oninput="searchGames(this.value)" autocomplete="off"></div></div><div class="catalogsummary"><p class="tiny" id="gamecount" aria-live="polite"></p><button class="linkbtn" onclick="clearFilters()">إظهار كل الألعاب ↺</button></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>أضف أسماء اللاعبين، اختر لعبة جماعية، ومرّر الجهاز بين الأدوار. الكلمات السرية تنخفي قبل ما يبدأ اللاعب التالي.</p></div><div><span class="guide-icon">🧠</span><h3>تحديات على مستواك</h3><p>غيّر الصعوبة وحجم اللوحات ووقت التحدّي من شاشة البداية. خذ تلميحاً، أو جرّب مستوى أصعب كل ما تحسّنت.</p></div><div><span class="guide-icon">💾</span><h3>رحلتك محفوظة</h3><p>نقاطك، إنجازاتك ومفضّلتك تنحفظ على هذا المتصفح. صدّر نسخة احتياطية من الإعدادات لنقلها لجهاز ثاني.</p></div></section>`,
-  );
-  renderCatalog();
-  $('foot').textContent =
-    `${games.length} لعبة · فردي أو مع الربع على نفس الجهاز · تعمل بدون إنترنت`;
-}
-function featuredHTML() {
-  const recent = (store.extra.recent || [])
-    .map((v) => games.find((g) => g[0] === v.id))
-    .filter(Boolean)
-    .slice(0, 4);
-  const ids = dayGames();
-  return `<section class="featured-grid"><div class="featured-card"><div class="featured-head"><span class="world-label">☀ اختيارات اليوم</span><button class="linkbtn" onclick="openDaily()">عرض التحديات ←</button></div><h3>ثلاث فرص لنتيجة جديدة</h3><div class="recent-games">${ids
-    .map((id) => {
-      const g = games.find((v) => v[0] === id);
-      return `<button onclick="startDaily('${id}')"><span style="--tile:${g[5]}">${g[1]}</span><b>${g[2]}</b><small>${store.extra.daily[dayKey() + ':done:' + id] ? 'مكتمل ✓' : 'تحدّ جديد'}</small></button>`;
-    })
-    .join(
-      '',
-    )}</div></div><div class="featured-card"><div class="featured-head"><span class="world-label">${recent.length ? '↺ ألعابك الأخيرة' : '✨ البداية من هنا'}</span><button class="linkbtn" onclick="openProfile()">رحلتك ←</button></div><h3>${recent.length ? 'ارجع لألعابك المفضّلة' : 'اختر، جرّب، واكتشف'}</h3>${recent.length ? `<div class="recent-games">${recent.map((g) => `<button onclick="setup('${g[0]}')"><span style="--tile:${g[5]}">${g[1]}</span><b>${g[2]}</b><small>${store.extra.played[g[0]] || 0} جولة مسجّلة</small></button>`).join('')}</div>` : `<p class="note">ألعاب خفيفة للانطلاقة: الذاكرة، خمن رقمي، أو الأركيد. وكل لعبة لها دليل بسيط ومستويات تناسبك.</p><div class="actions"><button onclick="setup('memory')">🧩 تحدي الذاكرة</button><button onclick="setup('solo')">🔢 خمن رقمي</button></div>`}</div></section>`;
-}
+// The catalogue and home screen have one renderer in lobby.js.
 function clearFilters() {
   world = 'all';
   filter = 'all';
@@ -14860,20 +15645,6 @@ function clearFilters() {
   renderHome();
 }
 
-function renderCatalog() {
-  const list = filteredGames();
-  if ($('favcount')) $('favcount').textContent = store.extra.favorites.length;
-  $('gamecount').textContent =
-    `${list.length} من ${games.length} لعبة${onlyFavorites ? ' · المفضّلة' : ''}`;
-  $('catalog').innerHTML =
-    list
-      .map(
-        (g) =>
-          `<article class="gamecard" style="--tile:${g[5]}"><button class="fav ${store.extra.favorites.includes(g[0]) ? 'on' : ''}" onclick="favorite('${g[0]}')" aria-label="${store.extra.favorites.includes(g[0]) ? 'إزالة' : 'إضافة'} ${esc(g[2])} ${store.extra.favorites.includes(g[0]) ? 'من' : 'إلى'} المفضلة" aria-pressed="${store.extra.favorites.includes(g[0])}">${store.extra.favorites.includes(g[0]) ? '★' : '☆'}</button><button class="cardstart" onclick="setup('${g[0]}')"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span><h3>${g[2]}</h3><p>${g[3]}</p><div class="cardmeta"><span>${modeLabel(g[0])}</span>${store.extra.best[g[0]] ? `<small>★ ${store.extra.best[g[0]]}</small>` : ''}</div><span class="tagline">${store.extra.played[g[0]] ? store.extra.played[g[0]] + ' جولة مسجّلة' : 'جاهز لتحدٍّ جديد'}<b>ابدأ ←</b></span></button></article>`,
-      )
-      .join('') ||
-    '<div class="emptylist"><span style="font-size:38px">🔎</span><h3>ما لقينا لعبة بهالاختيارات</h3><p>جرّب بحثاً أقصر أو غيّر العالم وطريقة اللعب.</p><button class="primary" onclick="clearFilters()">إظهار كل الألعاب</button></div>';
-}
 function modeLabel(id) {
   if (duoGameIds.has(id) && !isGroup([id])) return soloGameIds.has(id) ? 'فردي وشخصان' : 'شخصان';
   return soloGameIds.has(id) && groupGameIds.has(id)
@@ -15229,14 +16000,18 @@ function openBoard() {
     `<div class="modalhead"><h2 id="modaltitle">🏆 لوحة النقاط</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div>${boardHTML(names)}<p class="note">نقاط للتنافس بينكم؛ مستويات الألعاب تختلف. البطولة تقارن نفس الألعاب بين كل اللاعبين.</p><div class="actions"><button onclick="openProfile()">إنجازاتي</button><button class="quiet" onclick="resetScores()">تصفير النقاط</button></div>`,
   );
 }
-function openSettings() {
-  openModal(
-    `<div class="modalhead"><h2 id="modaltitle">⚙ على كيفك</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><div class="settingsrow"><div class="primarytext"><b>الصوت</b><small>نغمات خفيفة وقت اللعب</small></div><button onclick="toggleSound();openSettings()">${store.sound ? 'شغّال 🔊' : 'مقفّل 🔇'}</button></div><div class="settingsrow"><div class="primarytext"><b>شكل العالم</b><small>اختر الوضع اللي يناسبك</small></div><button onclick="toggleTheme()">${store.extra.theme === 'dark' ? 'داكن 🌙' : 'فاتح ☀'}</button></div><div class="settingsrow"><div class="primarytext"><b>حركة الواجهة</b><small>ظهور النتائج والانتقالات</small></div><button onclick="toggleMotion()">${store.extra.motion ? 'شغّالة' : 'مخففة'}</button></div><div class="settingsrow"><div class="primarytext"><b>الشاشة الكاملة</b><small>وسّع مساحة اللعب إلى كامل الشاشة</small></div><button onclick="toggleFullscreen()">⛶ تبديل</button></div><div class="settingsrow"><div class="primarytext"><b>قاعدة التخمين</b><small>${items.length} شي · ${store.extra.learned.length} إضافة منك</small></div><button onclick="openKnowledge()">إدارة</button></div><div class="actions"><button onclick="exportProgress()">⬇ نسخة احتياطية</button><button onclick="document.getElementById('importfile').click()">⬆ استيراد نسخة</button></div><input type="file" id="importfile" accept="application/json,.json" hidden onchange="importProgress(this.files[0])"><div class="hintpanel">الألعاب الجماعية تستخدم جهازاً واحداً. الخصم والتخمين يشتغلون محلياً. حفظ التقدّم يعتمد على سماح المتصفح بالتخزين.${!storageAvailable ? ' المتصفح الحالي ما يسمح بالحفظ؛ صدّر نسخة قبل ما تطلع.' : ''}</div>`,
-  );
-}
 function applySettings() {
   fullscreenUI();
-  document.body.dataset.theme = store.extra.theme;
+  document.body.dataset.theme =
+    store.extra.theme === 'system'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
+      : store.extra.theme;
+  document.body.dataset.themeChoice = store.extra.theme;
+  document.body.dataset.textScale = String(store.extra.textScale);
+  document.body.style.setProperty('--text-scale', String(store.extra.textScale / 100));
+  document.body.classList.toggle('high-contrast', store.extra.contrast);
   const reduceMotion =
     !store.extra.motion || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.body.classList.toggle('reduced-motion', reduceMotion);
@@ -16922,6 +17697,11 @@ function nextBoardRound() {
 function advancedBlocked(s = state) {
   return !s || screen !== s.id || s.pausedAt || !$('modalback')?.hidden || !!$('pausecover');
 }
+function advancedEditableTarget(target) {
+  return !!target?.closest?.(
+    'input,select,textarea,[contenteditable]:not([contenteditable="false" i])',
+  );
+}
 function advancedLater(s, callback, delay = 0) {
   let remaining = Math.max(0, delay),
     last = Date.now();
@@ -18070,8 +18850,16 @@ function fillAllSudokuNotes() {
 function explainSudokuStep() {
   const s = state;
   if (screen !== 'sudoku' || s.done || advancedBlocked()) return;
+  delete s.logical;
   if (s.board.some((_, i) => sudokuConflicts(s.board, i)))
     return renderSudoku('صحّح الأرقام المتكررة أولاً حتى يكون الاستنتاج من اللوحة موثوقاً.');
+  const blocked = s.board.findIndex((n, i) => !n && !sudokuCandidates(s.board, i).length);
+  if (blocked >= 0) {
+    s.selected = blocked;
+    return renderSudoku(
+      `الخانة في الصف ${Math.floor(blocked / 9) + 1}، العمود ${(blocked % 9) + 1} ليس لها أي رقم ممكن. راجع إدخالات الصف والعمود والمربع قبل الاستنتاج؛ لم تُخصم نقاط.`,
+    );
+  }
   const step = sudokuDeduction(s.board, s.selected);
   if (!step) {
     delete s.logical;
@@ -18238,11 +19026,19 @@ function sudokuHint() {
   );
 }
 function sudokuDeduction(board, preferred = -1) {
+  if (
+    !Array.isArray(board) ||
+    board.length !== 81 ||
+    board.some((n, i) => !Number.isInteger(n) || n < 0 || n > 9 || sudokuConflicts(board, i))
+  )
+    return null;
   const empty = board.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0),
     order = empty.includes(preferred)
       ? [preferred, ...empty.filter((i) => i !== preferred)]
       : empty,
     candidates = new Map(empty.map((i) => [i, sudokuCandidates(board, i)]));
+  // A singleton elsewhere is not a sound next step while another blank is impossible.
+  if ([...candidates.values()].some((values) => !values.length)) return null;
   for (const i of order) {
     const values = candidates.get(i);
     if (values.length === 1)
@@ -18495,9 +19291,11 @@ function startQuiz(id) {
       q.answer = Number(first[0]);
       q.text = original.replace(/\d+/, '□') + ` = ${result}`;
       q.missingOperand = true;
+      if (/^\d+²$/.test(original)) q.acceptedAnswers = [q.answer, -q.answer];
       q.choices = generateChoices(q.answer);
       q.explain =
-        `القيمة المفقودة ${q.answer}؛ بإعادتها تصبح ${original} = ${result}. ` + q.explain;
+        `القيمة المفقودة ${quizSolutionText(q, 'math')}؛ بإعادة ${q.answer} تصبح ${original} = ${result}. ${q.acceptedAnswers ? 'مربع العدد السالب يعطي النتيجة نفسها، لذلك كلا الجذرين صحيح. ' : ''}` +
+        q.explain;
     });
   s.patternMode = s.fixed ? 'next' : $('patternmode')?.value === 'missing' ? 'missing' : 'next';
   if (id === 'pattern' && s.patternMode === 'missing')
@@ -18567,6 +19365,12 @@ function clockLoop(s, onEnd) {
     if (sec === 0) onEnd();
   }, 150);
 }
+function quizAnswerCorrect(q, value) {
+  return value === q.answer || !!q.acceptedAnswers?.includes(value);
+}
+function quizSolutionText(q, id = state.id) {
+  return id === 'color' ? inkColors[q.answer][0] : (q.acceptedAnswers?.join(' أو ') ?? q.answer);
+}
 function renderQuiz() {
   const s = state,
     q = s.questions[s.index],
@@ -18586,7 +19390,7 @@ function renderQuiz() {
         ['صحيح', s.correct],
         ['الوقت', secondsLeft(s), 'gametime'],
       ]) +
-        `${s.practice ? '<p class="hintpanel">🧠 تدريب على أسئلة الجولة السابقة؛ لا نقاط إضافية.</p>' : ''}<section class="panel"><div class="bar"><span id="clockbar" style="width:${(secondsLeft(s) / s.duration) * 100}%"></span></div>${question}${s.id === 'pattern' ? patternWorkpadHTML(s, q) : ''}<div class="quizanswers" ${s.id === 'color' ? '' : 'dir="ltr"'}>${q.choices.map((v, i) => `<button onclick="answerQuiz(${i})" ${s.locked ? 'disabled' : ''} class="${s.locked && v === q.answer ? 'correct' : s.locked && i === s.lastChoice ? 'wrong' : ''}" aria-label="الاختيار ${i + 1}: ${s.id === 'color' ? inkColors[v][0] : v}"><small class="quiz-shortcut" aria-hidden="true">${i + 1}</small>${s.id === 'color' ? inkColors[v][0] : v}</button>`).join('')}</div>${s.id === 'math' && !s.locked ? `<form class="math-direct" onsubmit="event.preventDefault();answerMathText()"><label for="mathanswer">أو احسب واكتب الإجابة مباشرة</label><div class="math-input"><input id="mathanswer" dir="ltr" inputmode="text" maxlength="22" autocomplete="off" placeholder="إجابتك" aria-label="الإجابة الحسابية"><button class="primary" type="submit">اعتمد الإجابة</button></div><p class="tiny">الأرقام العربية مسموحة؛ إشارة − للسالب. الكتابة والاختيارات لهما نفس النتيجة.</p></form>` : ''}${s.locked ? `<div class="hintpanel" role="status">${s.lastSkipped ? '↷ تجاوزت السؤال. الجواب الصحيح: ' + (s.id === 'color' ? inkColors[q.answer][0] : q.answer) : s.lastCorrect ? '✓ صحيح!' : '✕ الجواب الصحيح: ' + (s.id === 'color' ? inkColors[q.answer][0] : q.answer)}${Number.isFinite(s.lastTyped) ? `<p>إجابتك المكتوبة: <bdi>${s.lastTyped}</bdi></p>` : ''}<br><bdi>${esc(q.explain)}</bdi><p class="tiny">الوقت متوقف. اقرأ الشرح ثم انتقل عندما تكون جاهزًا.</p></div><div class="actions"><button id="quiznext" class="primary" onclick="nextQuiz()">${s.index === s.questions.length - 1 ? 'شوف نتيجة الجولة' : 'السؤال التالي ←'}</button></div>` : `<p class="note center">${s.id === 'color' ? (q.rule === 'shape' ? 'اتبع مفتاح الرموز لهذه الإجابة. ' : q.rule === 'word' ? 'اقرأ معنى الكلمة هذه المرة. ' : 'ركز على لون الكلمة. ') : 'اختر الجواب الصحيح. '}يمكنك استخدام الأرقام 1–${q.choices.length}.</p>`}<p class="tiny center">أفضل سلسلة صحيحة: ${s.bestStreak} · ${Math.round((s.correct / Math.max(1, s.answers.length)) * 100)}% دقة</p><div class="actions">${!s.locked ? '<button onclick="skipQuiz()">تجاوز السؤال</button>' : ''}<button class="quiet" onclick="quizEnd()">أنهي الجولة</button></div></section>`,
+        `${s.practice ? '<p class="hintpanel">🧠 تدريب على أسئلة الجولة السابقة؛ لا نقاط إضافية.</p>' : ''}<section class="panel"><div class="bar"><span id="clockbar" style="width:${(secondsLeft(s) / s.duration) * 100}%"></span></div>${question}${s.id === 'pattern' ? patternWorkpadHTML(s, q) : ''}<div class="quizanswers" ${s.id === 'color' ? '' : 'dir="ltr"'}>${q.choices.map((v, i) => `<button onclick="answerQuiz(${i})" ${s.locked ? 'disabled' : ''} class="${s.locked && quizAnswerCorrect(q, v) ? 'correct' : s.locked && i === s.lastChoice ? 'wrong' : ''}" aria-label="الاختيار ${i + 1}: ${s.id === 'color' ? inkColors[v][0] : v}"><small class="quiz-shortcut" aria-hidden="true">${i + 1}</small>${s.id === 'color' ? inkColors[v][0] : v}</button>`).join('')}</div>${s.id === 'math' && !s.locked ? `<form class="math-direct" onsubmit="event.preventDefault();answerMathText()"><label for="mathanswer">أو احسب واكتب الإجابة مباشرة</label><div class="math-input"><input id="mathanswer" dir="ltr" inputmode="text" maxlength="22" autocomplete="off" placeholder="إجابتك" aria-label="الإجابة الحسابية"><button class="primary" type="submit">اعتمد الإجابة</button></div><p class="tiny">الأرقام العربية مسموحة؛ إشارة − للسالب. الكتابة والاختيارات لهما نفس النتيجة.</p></form>` : ''}${s.locked ? `<div class="hintpanel" role="status">${s.lastSkipped ? '↷ تجاوزت السؤال. الجواب الصحيح: ' + quizSolutionText(q, s.id) : s.lastCorrect ? '✓ صحيح!' : '✕ الجواب الصحيح: ' + quizSolutionText(q, s.id)}${Number.isFinite(s.lastTyped) ? `<p>إجابتك المكتوبة: <bdi>${s.lastTyped}</bdi></p>` : ''}<br><bdi>${esc(q.explain)}</bdi><p class="tiny">الوقت متوقف. اقرأ الشرح ثم انتقل عندما تكون جاهزًا.</p></div><div class="actions"><button id="quiznext" class="primary" onclick="nextQuiz()">${s.index === s.questions.length - 1 ? 'شوف نتيجة الجولة' : 'السؤال التالي ←'}</button></div>` : `<p class="note center">${s.id === 'color' ? (q.rule === 'shape' ? 'اتبع مفتاح الرموز لهذه الإجابة. ' : q.rule === 'word' ? 'اقرأ معنى الكلمة هذه المرة. ' : 'ركز على لون الكلمة. ') : 'اختر الجواب الصحيح. '}يمكنك استخدام الأرقام 1–${q.choices.length}.</p>`}<p class="tiny center">أفضل سلسلة صحيحة: ${s.bestStreak} · ${Math.round((s.correct / Math.max(1, s.answers.length)) * 100)}% دقة</p><div class="actions">${!s.locked ? '<button onclick="skipQuiz()">تجاوز السؤال</button>' : ''}<button class="quiet" onclick="quizEnd()">أنهي الجولة</button></div></section>`,
     ),
   );
   if (keyboardFocus && s.locked) $('quiznext')?.focus({ preventScroll: true });
@@ -18672,7 +19476,7 @@ function answerQuiz(i, typed) {
   s.feedbackRemaining = Math.max(0, s.endAt - Date.now());
   s.lastChoice = i;
   s.lastSkipped = false;
-  s.lastCorrect = choice === q.answer;
+  s.lastCorrect = quizAnswerCorrect(q, choice);
   if (s.lastCorrect) {
     s.correct++;
     s.streak++;
@@ -18770,7 +19574,7 @@ function quizEnd() {
               ? q.seq.map((n) => (n === null ? '؟' : n)).join('، ') +
                 (Number.isInteger(q.gap) ? '' : '، ؟')
               : q.text;
-      return `<div class="hint"><b>${i + 1}. ${esc(label)} ${a?.correct ? '✓' : '✕'}</b><p>${a && !a.skipped ? 'إجابتك: ' + (s.id === 'color' ? inkColors[a.choice][0] : a.choice) : a?.skipped ? 'تجاوزت السؤال' : 'لم تجب'} · الصحيح: ${s.id === 'color' ? inkColors[q.answer][0] : q.answer}${Number.isFinite(a?.ms) ? ' · ' + (a.ms / 1000).toFixed(2) + ' ثانية' : ''}</p><p><bdi>${esc(q.explain)}</bdi></p></div>`;
+      return `<div class="hint"><b>${i + 1}. ${esc(label)} ${a?.correct ? '✓' : '✕'}</b><p>${a && !a.skipped ? 'إجابتك: ' + (s.id === 'color' ? inkColors[a.choice][0] : a.choice) : a?.skipped ? 'تجاوزت السؤال' : 'لم تجب'} · الصحيح: ${quizSolutionText(q, s.id)}${Number.isFinite(a?.ms) ? ' · ' + (a.ms / 1000).toFixed(2) + ' ثانية' : ''}</p><p><bdi>${esc(q.explain)}</bdi></p></div>`;
     })
     .join('')}</details>`;
   $('app')
@@ -19861,7 +20665,8 @@ function updateRangeInfo() {
 document.addEventListener('keydown', (e) => {
   if (
     advancedBlocked() ||
-    e.target?.matches?.('input,select,textarea,[contenteditable="true"]') ||
+    advancedEditableTarget(e.target) ||
+    e.isComposing ||
     e.repeat ||
     state.done
   )
@@ -22242,7 +23047,7 @@ document.addEventListener('keydown', (e) => {
     e.metaKey ||
     e.altKey ||
     e.isComposing ||
-    e.target.closest?.('input,select,textarea,[contenteditable="true"]')
+    advancedEditableTarget(e.target)
   )
     return;
   const dirs = {
@@ -22533,17 +23338,35 @@ function triviaStrategyHTML(s) {
   if (s.locked) return '';
   return `<div class="words-strategy">${s.mode === 'strategy' ? `<fieldset class="trivia-confidence"><legend>حدد ثقتك قبل الإجابة</legend><button type="button" aria-pressed="${s.confidence === 'normal'}" onclick="triviaConfidence('normal',${s.run},${s.index})">عادي · الصحيح +10</button><button type="button" aria-pressed="${s.confidence === 'confident'}" onclick="triviaConfidence('confident',${s.run},${s.index})">واثق · الصحيح +15 / الخطأ −5</button></fieldset>` : ''}<button class="trivia-aid" onclick="triviaHalfChoices(${s.run},${s.index})" ${s.usedAid || !s.aidsRemaining ? 'disabled' : ''}>💡 نصف الخيارات · ${s.aidsRemaining} مساعدات · −3</button></div>`;
 }
+function triviaRememberFocus() {
+  const active = document.activeElement;
+  if (active?.matches('.trivia-choice'))
+    return `.trivia-choice:nth-child(${[...active.parentElement.children].indexOf(active) + 1})`;
+  if (active?.matches('.trivia-confidence button'))
+    return `.trivia-confidence button:nth-of-type(${[...active.parentElement.querySelectorAll('button')].indexOf(active) + 1})`;
+  if (active?.matches('.trivia-aid')) return '.trivia-aid';
+  if (active?.id === 'triviaConfirm') return '#triviaConfirm';
+  if (active?.id === 'triviaNext') return '.trivia-choice';
+  return null;
+}
+function triviaRestoreFocus(selector) {
+  if (!selector) return;
+  const control = state.locked ? $('triviaNext') : document.querySelector(selector);
+  if (control && !control.disabled && !control.hidden) control.focus({ preventScroll: true });
+}
 function renderTrivia() {
   if (state.mode === 'facts') return renderTriviaFacts();
   const s = state,
+    focus = triviaRememberFocus(),
     q = s.questions[s.index],
     cat = triviaCategories.find((c) => c[0] === q.cat)[1];
   setHTML(
     wrap(
       'trivia',
-      `<section class="panel"><div class="words-status"><span class="pill">${s.index + 1} / ${s.questions.length}</span><span class="pill">${esc(cat)}</span><span class="pill">✓ ${s.correct}</span><span class="pill">🔥 ${s.streak || 0}</span>${s.mode === 'strategy' ? `<span class="pill">رصيد المعرفة: ${s.knowledgePoints}</span>` : ''}${s.duration ? `<b id="triviaClock" class="countdown">${s.locked ? 'شرح الإجابة' : wordsSeconds(s) + ' ث'}</b>` : '<span class="pill">بدون مؤقت</span>'}</div><div class="progressline"><span style="width:${(100 * (s.index + (s.locked ? 1 : 0))) / s.questions.length}%"></span></div>${s.duration ? `<div class="words-clock-track"><span id="triviaTimebar" style="width:${s.locked ? 0 : (100 * wordsSeconds(s)) / s.duration}%"></span></div>` : ''}<h3 class="trivia-question">${esc(q.question)}</h3><div class="trivia-choices">${q.choices.map((c, i) => `<button class="trivia-choice ${s.locked ? (c === q.answer ? 'correct' : i === s.choice ? 'incorrect' : 'faded') : ''}" onclick="answerTrivia(${i},${s.run},${s.index})" ${s.locked || s.hiddenChoices.includes(i) ? 'disabled' : ''} ${!s.locked && s.hiddenChoices.includes(i) ? 'hidden' : ''}><span class="choice-number">${i + 1}</span><span>${esc(c)}</span>${s.locked && c === q.answer ? '<b>✓</b>' : s.locked && i === s.choice ? '<b>✕</b>' : ''}</button>`).join('')}</div>${triviaStrategyHTML(s)}${s.locked ? `<div class="trivia-explanation" role="status"><b>${s.choice === -1 ? 'انتهى الوقت' : q.choices[s.choice] === q.answer ? 'إجابة صحيحة!' : 'تعلمنا معلومة جديدة'}</b><p>${esc(q.explanation)}</p><p class="note">${s.answers.at(-1)?.gain >= 0 ? '+' : ''}${s.answers.at(-1)?.gain || 0} رصيد معرفة${s.usedAid ? ' · استخدمت نصف الخيارات' : ''}${s.mode === 'strategy' ? ` · ثقتك: ${s.confidence === 'confident' ? 'واثق' : 'عادي'}` : ''}</p></div><div class="actions"><button class="primary" onclick="nextTrivia(${s.run},${s.index})">${s.index + 1 === s.questions.length ? 'اعرض النتيجة' : 'السؤال التالي'} ←</button></div>` : '<p class="note center">اختر الجواب أو اضغط رقمه على لوحة المفاتيح.</p>'}</section>`,
+      `<section class="panel"><div class="words-status"><span class="pill">${s.index + 1} / ${s.questions.length}</span><span class="pill">${esc(cat)}</span><span class="pill">✓ ${s.correct}</span><span class="pill">🔥 ${s.streak || 0}</span>${s.mode === 'strategy' ? `<span class="pill">رصيد المعرفة: ${s.knowledgePoints}</span>` : ''}${s.duration ? `<b id="triviaClock" class="countdown">${s.locked ? 'شرح الإجابة' : wordsSeconds(s) + ' ث'}</b>` : '<span class="pill">بدون مؤقت</span>'}</div><div class="progressline"><span style="width:${(100 * (s.index + (s.locked ? 1 : 0))) / s.questions.length}%"></span></div>${s.duration ? `<div class="words-clock-track"><span id="triviaTimebar" style="width:${s.locked ? 0 : (100 * wordsSeconds(s)) / s.duration}%"></span></div>` : ''}<h3 class="trivia-question">${esc(q.question)}</h3><div class="trivia-choices">${q.choices.map((c, i) => `<button class="trivia-choice ${s.locked ? (c === q.answer ? 'correct' : i === s.choice ? 'incorrect' : 'faded') : ''}" onclick="answerTrivia(${i},${s.run},${s.index})" ${s.locked || s.hiddenChoices.includes(i) ? 'disabled' : ''} ${!s.locked && s.hiddenChoices.includes(i) ? 'hidden' : ''}><span class="choice-number">${i + 1}</span><span>${esc(c)}</span>${s.locked && c === q.answer ? '<b>✓</b>' : s.locked && i === s.choice ? '<b>✕</b>' : ''}</button>`).join('')}</div>${triviaStrategyHTML(s)}${s.locked ? `<div class="trivia-explanation" role="status"><b>${s.choice === -1 ? 'انتهى الوقت' : q.choices[s.choice] === q.answer ? 'إجابة صحيحة!' : 'تعلمنا معلومة جديدة'}</b><p>${esc(q.explanation)}</p><p class="note">${s.answers.at(-1)?.gain >= 0 ? '+' : ''}${s.answers.at(-1)?.gain || 0} رصيد معرفة${s.usedAid ? ' · استخدمت نصف الخيارات' : ''}${s.mode === 'strategy' ? ` · ثقتك: ${s.confidence === 'confident' ? 'واثق' : 'عادي'}` : ''}</p></div><div class="actions"><button id="triviaNext" class="primary" onclick="nextTrivia(${s.run},${s.index})">${s.index + 1 === s.questions.length ? 'اعرض النتيجة' : 'السؤال التالي'} ←</button></div>` : '<p class="note center">اختر الجواب أو اضغط رقمه على لوحة المفاتيح.</p>'}</section>`,
     ),
   );
+  triviaRestoreFocus(focus);
 }
 function answerTrivia(choice, run, index) {
   if (state?.mode === 'facts') {
@@ -22597,13 +23420,15 @@ function triviaFactExplanationHTML(q) {
 }
 function renderTriviaFacts() {
   const s = state,
+    focus = triviaRememberFocus(),
     q = s.questions[s.index];
   setHTML(
     wrap(
       'trivia',
-      `<section class="panel"><div class="words-status"><span class="pill">📰 تحقق من الخبر</span><span class="pill">${s.index + 1} / ${s.questions.length}</span><span class="pill">✓ ${s.correct} كاملة</span><span class="pill">رصيد ${s.knowledgePoints}</span>${s.duration ? `<b class="countdown" id="triviaClock">${s.locked ? 'شرح العبارات' : wordsSeconds(s) + ' ث'}</b>` : '<span class="pill">بدون مؤقت</span>'}</div><div class="progressline"><span style="width:${(100 * (s.index + (s.locked ? 1 : 0))) / s.questions.length}%"></span></div>${s.duration ? `<div class="words-clock-track"><span id="triviaTimebar" style="width:${s.locked ? 0 : (100 * wordsSeconds(s)) / s.duration}%"></span></div>` : ''}<h3 class="trivia-question">${esc(q.question)}</h3><p class="note center">اختر عبارتين صحيحتين؛ تقدر تغيّر اختياراتك قبل التأكيد. ${s.evidenceSelected.length} / 2 مختارة</p>${triviaFactChoicesHTML(q, s.evidenceSelected, s.locked, (i) => `toggleTriviaFact(${i},${s.run},${s.index})`)}${s.locked ? `<div class="trivia-explanation" role="status"><b>${s.choice === -1 ? 'انتهى الوقت قبل التأكيد' : s.answers.at(-1).correct ? 'الحقيقتان صحيحتان!' : 'لنراجع العبارات معاً'}</b><p>+${s.answers.at(-1).gain} رصيد معرفة.</p>${triviaFactExplanationHTML(q)}</div><div class="actions"><button class="primary" onclick="nextTrivia(${s.run},${s.index})">${s.index + 1 === s.questions.length ? 'اعرض النتيجة' : 'الخبر التالي'} ←</button></div>` : `<div class="actions"><button class="primary" onclick="submitTriviaFacts(${s.run},${s.index})" ${s.evidenceSelected.length === 2 ? '' : 'disabled'}>أكد الحقيقتين ↵</button></div><p class="note center">الأرقام 1–4 تغيّر الاختيار؛ Enter يؤكد بعد اختيار عبارتين.</p>`}</section>`,
+      `<section class="panel"><div class="words-status"><span class="pill">📰 تحقق من الخبر</span><span class="pill">${s.index + 1} / ${s.questions.length}</span><span class="pill">✓ ${s.correct} كاملة</span><span class="pill">رصيد ${s.knowledgePoints}</span>${s.duration ? `<b class="countdown" id="triviaClock">${s.locked ? 'شرح العبارات' : wordsSeconds(s) + ' ث'}</b>` : '<span class="pill">بدون مؤقت</span>'}</div><div class="progressline"><span style="width:${(100 * (s.index + (s.locked ? 1 : 0))) / s.questions.length}%"></span></div>${s.duration ? `<div class="words-clock-track"><span id="triviaTimebar" style="width:${s.locked ? 0 : (100 * wordsSeconds(s)) / s.duration}%"></span></div>` : ''}<h3 class="trivia-question">${esc(q.question)}</h3><p class="note center">اختر عبارتين صحيحتين؛ تقدر تغيّر اختياراتك قبل التأكيد. ${s.evidenceSelected.length} / 2 مختارة</p>${triviaFactChoicesHTML(q, s.evidenceSelected, s.locked, (i) => `toggleTriviaFact(${i},${s.run},${s.index})`)}${s.locked ? `<div class="trivia-explanation" role="status"><b>${s.choice === -1 ? 'انتهى الوقت قبل التأكيد' : s.answers.at(-1).correct ? 'الحقيقتان صحيحتان!' : 'لنراجع العبارات معاً'}</b><p>+${s.answers.at(-1).gain} رصيد معرفة.</p>${triviaFactExplanationHTML(q)}</div><div class="actions"><button id="triviaNext" class="primary" onclick="nextTrivia(${s.run},${s.index})">${s.index + 1 === s.questions.length ? 'اعرض النتيجة' : 'الخبر التالي'} ←</button></div>` : `<div class="actions"><button id="triviaConfirm" class="primary" onclick="submitTriviaFacts(${s.run},${s.index})" ${s.evidenceSelected.length === 2 ? '' : 'disabled'}>أكد الحقيقتين ↵</button></div><p class="note center">الأرقام 1–4 تغيّر الاختيار؛ Enter يؤكد بعد اختيار عبارتين.</p>`}</section>`,
     ),
   );
+  triviaRestoreFocus(focus);
 }
 function toggleTriviaFact(choice, run, index) {
   if (
@@ -24189,7 +25014,7 @@ document.addEventListener('keydown', (event) => {
     event.isComposing ||
     (event.repeat &&
       !(screen === 'target' && state?.mode === 'intercept' && event.key.startsWith('Arrow'))) ||
-    event.target.closest?.('input,select,textarea,[contenteditable="true"]')
+    advancedEditableTarget(event.target)
   )
     return;
   if (
@@ -27376,6 +28201,24 @@ setup = function (id, internal = false) {
 function labReady(id = state?.id) {
   return labIDs.has(id) && screen === id && state?.id === id && !state.done && !advancedBlocked();
 }
+const labBoundControls = new WeakSet();
+function labBindControls(root = document.querySelector('.lab-panel')) {
+  if (!root) return;
+  const s = state;
+  for (const control of root.querySelectorAll('button')) {
+    if (labBoundControls.has(control)) continue;
+    labBoundControls.add(control);
+    for (const name of ['onclick', 'onfocus', 'onpointerdown', 'onpointerenter', 'oncontextmenu']) {
+      const handler = control[name];
+      if (typeof handler !== 'function') continue;
+      // A removed render or a previous puzzle must never act on the current board.
+      control[name] = function (event) {
+        if (state !== s || screen !== s.id || !this.isConnected) return;
+        return handler.call(this, event);
+      };
+    }
+  }
+}
 function labRand(n, s = state) {
   return s.rng ? Math.floor(s.rng() * n) : randInt(n);
 }
@@ -27655,7 +28498,10 @@ function labLensHTML() {
   return `<aside class="lab-lens"><button id="labLensToggle" class="lab-lens-toggle" aria-expanded="${!!state.lensOpen}" aria-controls="labLensContent" onclick="labToggleLens()">⌕ عدسة الحركة <span>${state.lensOpen ? 'إخفاء المعاينة' : 'جرّب قبل القرار'}</span></button><div id="labLensContent" ${state.lensOpen ? '' : 'hidden'}>${labMoveLensHTML()}</div></aside>`;
 }
 function labRefreshLens() {
-  if (state.lensOpen && $('labLensContent')) $('labLensContent').innerHTML = labMoveLensHTML();
+  if (state.lensOpen && $('labLensContent')) {
+    $('labLensContent').innerHTML = labMoveLensHTML();
+    labBindControls($('labLensContent'));
+  }
 }
 function labApplyLensMove() {
   if (!labReady() || !state.lensOpen || labMoveLensData().blocked) return;
@@ -27707,6 +28553,7 @@ function renderLab() {
         `<section class="panel lab-panel">${labRuleHTML(s)}${body}${labLensHTML()}${labToolbar()}</section>`,
     ),
   );
+  labBindControls();
   const scroll = $('labBoard')?.closest('.lab-scroll');
   if (scroll && horizontalScroll !== undefined) scroll.scrollLeft = horizontalScroll;
   if (focusCell)
@@ -27729,7 +28576,10 @@ function labSelect(i, focus = false) {
   if (state.id === 'nonogram' && previous !== i) {
     state.patternPage = 0;
     state.patternPreview = null;
-    if ($('labNotebookContent')) $('labNotebookContent').innerHTML = labPatternContentHTML();
+    if ($('labNotebookContent')) {
+      $('labNotebookContent').innerHTML = labPatternContentHTML();
+      labBindControls($('labNotebookContent'));
+    }
   }
   $('labBoard')
     ?.querySelectorAll('.lab-cell')
@@ -28944,7 +29794,10 @@ function labRefreshPipeTest() {
     flow = labPipeFlowState();
   if (!flow) return;
   const focused = document.activeElement?.closest?.('#labFlow') ? document.activeElement.id : null;
-  if ($('labFlow')) $('labFlow').innerHTML = labPipeFlowHTML();
+  if ($('labFlow')) {
+    $('labFlow').innerHTML = labPipeFlowHTML();
+    labBindControls($('labFlow'));
+  }
   if (focused) $(focused)?.focus({ preventScroll: true });
   $('labBoard')
     ?.querySelectorAll('.lab-pipe')
@@ -29140,11 +29993,7 @@ function labHint() {
   renderLab();
 }
 document.addEventListener('keydown', (event) => {
-  if (
-    !labReady() ||
-    event.repeat ||
-    event.target?.matches?.('input,textarea,select,[contenteditable="true"]')
-  )
+  if (!labReady() || event.repeat || event.isComposing || advancedEditableTarget(event.target))
     return;
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
     event.preventDefault();
@@ -29343,7 +30192,7 @@ function setCatalogSort(value) {
   save();
   renderCatalog();
 }
-renderCatalog = function () {
+function renderCatalog() {
   if (!$('catalog')) return;
   const focusedFavorite = document.activeElement?.matches('#catalog .fav')
     ? document.activeElement.dataset.game
@@ -29367,7 +30216,7 @@ renderCatalog = function () {
       $('search');
     focus?.focus({ preventScroll: true });
   }
-};
+}
 
 function routeCardsHTML() {
   return `<section class="routes-section" aria-labelledby="routes-heading"><div class="sectionhead"><div><span class="world-label">بمفردك · 3 محطات لكل مسار</span><h2 id="routes-heading">تحدّيك ما يوقف عند لعبة.</h2></div><span class="routes-note">نتيجة واحدة، رحلة كاملة</span></div><div class="route-grid">${experienceRoutes.map((r) => `<button class="route-card" style="--route:${r.color}" onclick="openRoute('${r.id}')"><span class="route-icon">${r.icon}</span><div><small>${r.tag}</small><h3>${r.name}</h3><p>${r.desc}</p><div class="route-stops">${r.games.map((id) => `<span title="${esc(games.find((g) => g[0] === id)?.[2] || id)}">${games.find((g) => g[0] === id)?.[1] || '✦'}</span>`).join('<i>·</i>')}<b>${experience().completed[r.id] != null ? 'أفضل نتيجة ' + experience().completed[r.id] + ' / 300' : 'ابدأ الرحلة ←'}</b></div></div></button>`).join('')}</div></section>`;
@@ -29379,46 +30228,8 @@ function routeResumeHTML() {
     ? `<div class="continue-route"><span>🗺️</span><div><b>مسار ${r.name} ينتظرك</b><small>أكملت ${saved.at} من 3 محطات · المحطة ${saved.at ? 'التالية' : 'الأولى'} تبدأ بجولة جديدة</small></div><button class="primary" onclick="continueRoute()">نكمل ←</button></div>`
     : '';
 }
-renderHome = function () {
-  homeRenderedDate = dayKey();
-  store.extra.favorites = [...new Set(store.extra.favorites)].filter((id) =>
-    games.some((g) => g[0] === id),
-  );
-  const recent = store.extra.recent
-    .map((v) => games.find((g) => g[0] === v.id))
-    .filter(Boolean)
-    .slice(0, 3);
-  setHTML(
-    `<section class="lobby-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 5.0 · ${games.length} لعبة في عالمك</span><h1>هذي لَمّتك.<br><em>خلّ التحدّي يبدأ.</em></h1><p>لحظة تركيز لك، ومنافسة تجمع الربع. ألغاز تتجدد، أسرار تنكشف، وفرق تلعب للنهاية.</p><div class="actions"><button class="primary" onclick="chooseSoloLobby()">✦ ألعب بمفردي</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><span>كمبيوتر وجوال</span></div></div><div class="lobby-art" aria-hidden="true"><div class="art-ring one"></div><div class="art-ring two"></div><div class="art-glow"></div><div class="art-dice"><span></span><span></span><span></span><span></span><span></span></div><div class="art-ticket ticket-one"><b>+100</b><small>كل جولة لها حكاية</small></div><div class="art-ticket ticket-two"><span>🧠</span><b>فكّر. جرّب. افوز.</b></div><div class="art-spark s-one">✦</div><div class="art-spark s-two">✧</div><span class="art-caption">PLAY TOGETHER. GROW TOGETHER.</span></div></section><div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openBoard()"><span class="summary-icon">🏆</span><span><small>نقاط اللمّة</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${typeof snapshotHTML === 'function' ? snapshotHTML() : ''}${routeResumeHTML()}<section class="spotlight-grid"><div class="spotlight-card group-spotlight"><div><span class="world-label">الليلة مع الربع</span><h2>فريقك، سرّك،<br>وأحلى تصويت.</h2><p>ثلاث تجارب جديدة للمجموعة. وزّعوا الفرق ومرّروا الجهاز.</p><button onclick="openLounge()">شوف ألعاب اللمّة ←</button></div><span class="spotlight-emblem" aria-hidden="true">🎭</span></div><div class="spotlight-card"><span class="world-label">${recent.length ? '↺ آخر ألعابك' : '✧ ألغاز جديدة'}</span><h3>${recent.length ? 'مكانك محفوظ، نرجع للتحدّي؟' : 'جرّب طريقة جديدة للتفكير'}</h3><div class="recent-games">${(recent.length ? recent : ['lights', 'pipes', 'nonogram'].map((id) => games.find((g) => g[0] === id)).filter(Boolean)).map((g) => `<button onclick="setup('${g[0]}')"><span style="--tile:${g[5]}">${g[1]}</span><b>${g[2]}</b><small>${store.extra.played[g[0]] || 0} جولة · ${gameLength(g[0])}</small></button>`).join('')}</div></div></section>${routeCardsHTML()}<div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · اختَر جوّك</span><h2>مكتبة التحدّيات</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ طريقة اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
-      ['all', 'الكل'],
-      ['solo', 'بمفردك'],
-      ['group', 'مع الربع'],
-      ['new', 'الجديد ✦'],
-    ]
-      .map(
-        ([id, label]) =>
-          `<button class="${filter === id ? 'active' : ''}" onclick="setFilter('${id}')" aria-pressed="${filter === id}">${label}</button>`,
-      )
-      .join(
-        '',
-      )}<button class="${onlyFavorites ? 'active' : ''}" onclick="toggleFavorites()" aria-pressed="${onlyFavorites}">☆ المفضّلة <span id="favcount">${store.extra.favorites.length}</span></button></nav><div class="searchwrap"><label class="sr" for="search">ابحث عن لعبة</label><input id="search" type="search" placeholder="ابحث عن تحدّيك…" value="${esc(searchQuery)}" oninput="searchGames(this.value)" autocomplete="off"></div></div><div class="catalogsummary"><p class="tiny" id="gamecount" aria-live="polite"></p><div class="catalog-sort"><label for="catalogsort">الترتيب</label><select id="catalogsort" onchange="setCatalogSort(this.value)">${[
-      ['recommended', 'اختيارات لَمّة'],
-      ['name', 'أبجدي'],
-      ['recent', 'آخر ألعابك'],
-      ['popular', 'الأكثر لعباً عندك'],
-    ]
-      .map(
-        ([v, t]) =>
-          `<option value="${v}" ${experience().sort === v ? 'selected' : ''}>${t}</option>`,
-      )
-      .join(
-        '',
-      )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>الألعاب الجماعية بالتناوب على نفس الجهاز. الأدوار والكلمات تختفي قبل انتقال الجهاز للاعب التالي.</p></div><div><span class="guide-icon">💡</span><h3>خطة، تلميح، محاولة جديدة</h3><p>اضبط المستوى، جرّب الألغاز الجديدة، أو اختر مساراً من ثلاث محطات. ما تحتاج حساباً لتبدأ.</p></div><div><span class="guide-icon">💾</span><h3>تقدّم معك</h3><p>النقاط والمفضّلة والمسارات محفوظة محلياً. صدّر نسخة احتياطية من الإعدادات لنقلها لجهاز آخر.</p></div></section>`,
-  );
-  renderCatalog();
-  $('foot').textContent = `لَمّة 5.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
-};
 function chooseSoloLobby() {
+  if (screen !== 'home') home();
   world = 'all';
   onlyFavorites = false;
   searchQuery = '';
@@ -29631,12 +30442,14 @@ function setupControls() {
 function rememberSetup() {
   if (
     restoringSetup ||
+    !store.extra.rememberDefaults ||
     startingDaily ||
     screen !== 'setup' ||
     !state?.id ||
     dailyRun ||
     tourney?.active ||
-    activeRoute
+    activeRoute ||
+    state.soloSessionToken
   )
     return;
   const values = Object.create(null);
@@ -29648,6 +30461,7 @@ function rememberSetup() {
   save();
 }
 function restoreSetup(id) {
+  if (!store.extra.rememberDefaults) return;
   const values = store.extra.preferences[id];
   if (!values) return;
   restoringSetup = true;
@@ -29681,7 +30495,15 @@ function restoreSetup(id) {
   }
 }
 function resetGamePreferences(id) {
-  if (screen !== 'setup' || state?.id !== id || dailyRun || tourney?.active || activeRoute) return;
+  if (
+    screen !== 'setup' ||
+    state?.id !== id ||
+    dailyRun ||
+    tourney?.active ||
+    activeRoute ||
+    state.soloSessionToken
+  )
+    return;
   delete store.extra.preferences[id];
   save();
   setup(id);
@@ -29720,7 +30542,7 @@ setup = function (id, internal = false) {
       .querySelector('.panel')
       ?.insertAdjacentHTML(
         'beforeend',
-        `<div class="setup-memory"><span>⚙ اختياراتك في هذه اللعبة تُحفظ تلقائياً</span><button class="linkbtn" onclick="resetGamePreferences('${id}')">الإعدادات الأصلية ↺</button></div>`,
+        `<div class="setup-memory"><span>⚙ ${store.extra.rememberDefaults ? 'اختياراتك في هذه اللعبة تُحفظ تلقائياً' : 'حفظ الاختيارات متوقف؛ نبدأ بالإعدادات الأصلية'}</span><button class="linkbtn" onclick="resetGamePreferences('${id}')">الإعدادات الأصلية ↺</button></div>`,
       );
   }
   if (screen === 'setup' && state?.id === id) appendSetupBlueprint(id);
@@ -29787,22 +30609,6 @@ openProfile = function () {
       '<button onclick="openGameHistory()">↺ سجل الجولات</button>',
     );
 };
-const upgradeSettings = openSettings;
-openSettings = function () {
-  upgradeSettings();
-  $('modal')
-    .querySelector('.actions')
-    ?.insertAdjacentHTML(
-      'beforebegin',
-      '<div class="settingsrow"><div class="primarytext"><b>مساعدة اللعب والحفظ</b><small>الجماعي والخصوصية والاستكمال ونقل تقدّمك</small></div><button onclick="openHelp()">؟ المساعدة</button></div>',
-    );
-  $('modal')
-    .querySelector('.hintpanel')
-    ?.insertAdjacentHTML(
-      'beforebegin',
-      '<div class="settingsrow"><div class="primarytext"><b>سجل الجولات</b><small>نتائجك الأخيرة محفوظة مع النسخة الاحتياطية</small></div><button onclick="openGameHistory()">عرض السجل</button></div>',
-    );
-};
 function updateDock() {
   const buttons = document.querySelectorAll('.dock button');
   buttons.forEach((button, i) => {
@@ -29814,7 +30620,7 @@ function updateDock() {
   document.body.classList.toggle('playing', !!state && screen !== 'home' && screen !== 'setup');
 }
 function audienceChoicesHTML() {
-  return `<section class="audience-choices" aria-label="اختَر عدد اللاعبين"><button class="audience-solo" onclick="chooseSoloLobby()"><span>🧠</span><div><small>ابدأ بنفسك</small><h3>وقت لك، تحدٍّ يتطوّر معك</h3><p>${games.filter(isSolo).length} لعبة فردية · تدريب، استنتاج، واستكشاف</p></div><b>العب بمفردك ←</b></button><button onclick="chooseDuoLobby()"><span>⚔</span><div><small>شخصان</small><h3>مواجهة لها أكثر من جولة</h3><p>خصم ذكي أو صديق · تناوب عادل على البداية</p></div><b>ألعاب الشخصين ←</b></button><button onclick="openLounge()"><span>🎭</span><div><small>من 3 إلى 12 لاعبًا</small><h3>كل دور يحرّك اللمّة</h3><p>مشاهد، أدوار سرية، أسئلة، وتصويت</p></div><b>جهّزوا الجلسة ←</b></button></section>`;
+  return `<section class="audience-choices" aria-label="اختَر عدد اللاعبين"><button class="audience-solo" onclick="openSoloHub()"><span>🧠</span><div><small>ابدأ بنفسك</small><h3>وقت لك، تحدٍّ يتطوّر معك</h3><p>${games.filter(isSolo).length} لعبة فردية · تدريب، استنتاج، واستكشاف</p></div><b>الصالة الفردية ←</b></button><button onclick="chooseDuoLobby()"><span>⚔</span><div><small>شخصان</small><h3>مواجهة لها أكثر من جولة</h3><p>خصم ذكي أو صديق · تناوب عادل على البداية</p></div><b>ألعاب الشخصين ←</b></button><button onclick="openLounge()"><span>🎭</span><div><small>من 3 إلى 12 لاعبًا</small><h3>كل دور يحرّك اللمّة</h3><p>مشاهد، أدوار سرية، أسئلة، وتصويت</p></div><b>جهّزوا الجلسة ←</b></button></section>`;
 }
 function chooseDuoLobby() {
   if (screen !== 'home') home();
@@ -29896,7 +30702,7 @@ function appendSetupBlueprint(id) {
 }
 function openHelp() {
   openModal(
-    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 9 · ${games.length} لعبة عربية في ملف واحد.</p>${[
+    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 10 · ${games.length} لعبة عربية في ملف واحد.</p>${[
       [
         'هل تحتاج إنترنت أو حسابًا؟',
         'افتح ملف HTML في متصفح حديث. الألعاب والمحتوى تعمل دون إنترنت أو حساب؛ حفظ النتائج مرتبط بهذا المتصفح.',
@@ -30051,42 +30857,6 @@ function quickLaunchHTML() {
     : ['memory', 'merge', 'lights'].map((id) => games.find((g) => g[0] === id));
   return `<section class="quick-launch" aria-label="ابدأ اللعب"><div class="quick-intro"><span class="world-label">${recent.length ? '↺ نكمل التحدّي' : '✦ البداية من هنا'}</span><h2>${recent.length ? 'ألعابك قريبة منك.' : 'اختَر أول تحدّي.'}</h2><button class="linkbtn" onclick="openQuickPicker()">اقترح لي لعبة ←</button></div>${picks.map((g) => `<button class="quick-game" style="--tile:${g[5]}" onclick="setup('${g[0]}')"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span><div><b>${esc(g[2])}</b><small>${gameLength(g[0])}</small></div><span>↗</span></button>`).join('')}</section>`;
 }
-renderHome = function () {
-  homeRenderedDate = dayKey();
-  store.extra.favorites = [...new Set(store.extra.favorites)].filter((id) =>
-    games.some((g) => g[0] === id),
-  );
-  setHTML(
-    `<section class="lobby-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 9.0 · العب، تعلّم، وتفوّق</span><h1>وقت للعب.<br><em>ولَمّة تستاهل.</em></h1><p>${games.length} تحدّياً على جوّك. تعلّم بروحك، نافس شخصًا، أو اجمع الربع. مهمات للفرد، مواجهات للشخصين، وحكايات ومشاهد للمجموعة. اختَر بنفسك أو خلّ الاختيار للصدفة.</p><div class="actions"><button class="primary" onclick="openQuickPicker()">✦ اختَر لي تحدّي</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><button class="linkbtn" onclick="chooseSoloLobby()">كل الألعاب الفردية ←</button></div></div><div class="lobby-art" aria-hidden="true"><div class="art-ring one"></div><div class="art-ring two"></div><div class="art-glow"></div><div class="art-dice"><span></span><span></span><span></span><span></span><span></span></div><div class="art-ticket ticket-one"><b>LEVEL ${level()}</b><small>خطوة أذكى كل مرة</small></div><div class="art-ticket ticket-two"><span>🧩</span><b>تحدّي جديد. جوّك نفسه.</b></div><div class="art-spark s-one">✦</div><div class="art-spark s-two">✧</div><span class="art-caption">LET THE GOOD TIMES PLAY.</span></div></section>${audienceChoicesHTML()}${randomPickButtonsHTML()}<div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openGameHistory()"><span class="summary-icon">↺</span><span><small>جولاتك ونتائجك</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${snapshotHTML()}${routeResumeHTML()}${quickLaunchHTML()}<details class="discover-drawer"><summary><span>🗺️ مسارات ومنافسات</span><small>ثلاث محطات لك، أو بطولة للربع</small><b>اكتشف أكثر +</b></summary><div class="discovery-content"><div class="discovery-actions"><button onclick="openLounge()">👥 صالة اللمّة</button><button onclick="openTournament()">🏆 نبدأ بطولة</button><button onclick="openGameHistory()">↺ سجل الجولات</button></div>${routeCardsHTML()}</div></details><div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نلعب اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
-      ['all', 'الكل'],
-      ['solo', 'بمفردك'],
-      ['duo', 'شخصان'],
-      ['group', 'مع الربع'],
-      ['new', 'أحدث الألعاب ✦'],
-    ]
-      .map(
-        ([id, label]) =>
-          `<button class="${filter === id ? 'active' : ''}" onclick="setFilter('${id}')" aria-pressed="${filter === id}">${label}</button>`,
-      )
-      .join(
-        '',
-      )}<button class="${onlyFavorites ? 'active' : ''}" onclick="toggleFavorites()" aria-pressed="${onlyFavorites}">☆ المفضّلة <span id="favcount">${store.extra.favorites.length}</span></button></nav><div class="searchwrap"><label class="sr" for="search">ابحث عن لعبة</label><input id="search" type="search" placeholder="ابحث عن لعبة…  /" value="${esc(searchQuery)}" oninput="searchGames(this.value)" autocomplete="off"></div></div><div class="catalogsummary"><p class="tiny" id="gamecount" aria-live="polite"></p><div class="catalog-sort"><label for="catalogsort">الترتيب</label><select id="catalogsort" onchange="setCatalogSort(this.value)">${[
-      ['recommended', 'اختيارات لَمّة'],
-      ['name', 'أبجدي'],
-      ['recent', 'آخر ألعابك'],
-      ['popular', 'الأكثر لعباً عندك'],
-    ]
-      .map(
-        ([v, label]) =>
-          `<option value="${v}" ${experience().sort === v ? 'selected' : ''}>${label}</option>`,
-      )
-      .join(
-        '',
-      )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>أضف الأسماء، مرّر الجهاز، والعبوا بالتناوب. الكلمات والتصويت تبقى سرية أثناء الأدوار.</p></div><div><span class="guide-icon">⚙</span><h3>اللعبة على كيفك</h3><p>مهمات أقفال وتوصيل، ذاكرة للشخصين، وتجارب تحقيق وحكايات. الاختيار العشوائي يضبط اللعبة حسب عددكم. اختَر طريقة اللعب والوقت قبل البداية.</p></div><div><span class="guide-icon">💾</span><h3>نتائجك معك</h3><p>سجل الجولات والنقاط والألغاز محفوظة هنا. صدّر نسخة احتياطية من الإعدادات لنقل تقدمك.</p></div></section>`,
-  );
-  renderCatalog();
-  $('foot').textContent = `لَمّة 9.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
-};
 
 // Source: src/playflow.js
 // Shared play comfort: keyboard-aware viewports, focus mode and useful round reviews.
@@ -30218,16 +30988,6 @@ document.addEventListener('keydown', (event) => {
     }
   }
 });
-const flowSettings = openSettings;
-openSettings = function () {
-  flowSettings();
-  $('modal')
-    .querySelector('.settingsrow')
-    ?.insertAdjacentHTML(
-      'afterend',
-      `<div class="settingsrow"><div class="primarytext"><b>وضع التركيز</b><small>أخفِ رأس الموقع وزد مساحة اللعبة؛ زر ◎ يعيده</small></div><button onclick="togglePlayFocus();openSettings()" aria-pressed="${store.extra.focus}">${store.extra.focus ? 'شغّال ◎' : 'تشغيل'}</button></div>`,
-    );
-};
 const flowResult = result;
 result = function (id, title, text, points = 0, detail = '') {
   const s = state,
@@ -30630,6 +31390,1241 @@ function chooseRandomGame(mode) {
 function randomPickButtonsHTML() {
   return `<section class="random-launches" aria-label="اختيار لعبة عشوائية"><button onclick="chooseRandomGame('solo')"><span aria-hidden="true">🎲</span><b>عشوائي بمفردك</b><small>تحدٍّ مناسب لك</small></button><button onclick="chooseRandomGame('duo')"><span aria-hidden="true">⚔</span><b>عشوائي لشخصين</b><small>نختار لكم مواجهة</small></button><button onclick="chooseRandomGame('group')"><span aria-hidden="true">🎭</span><b>عشوائي للمجموعة</b><small>3 لاعبين أو أكثر</small></button></section>`;
 }
+
+// Source: src/lobby.js
+// One home renderer, shared by every navigation entry.
+function renderHome() {
+  homeRenderedDate = dayKey();
+  store.extra.favorites = [...new Set(store.extra.favorites)].filter((id) =>
+    games.some((g) => g[0] === id),
+  );
+  setHTML(
+    `<section class="lobby-hero edition-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 10 · مساحة للعب والتطوّر</span><h1>تحدّيك اليوم.<br><em>خطوتك لباجر.</em></h1><p>${games.length} لعبة عربية، وصالة فردية تبني فيها جلستك على مستواك. درّب مهارة، جرّب تحدّيًا محسوبًا، أو اجمع الربع على نفس الجهاز.</p><div class="actions"><button class="primary" onclick="openSoloHub()">✦ ابدأ جلستك الفردية</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><button class="linkbtn" onclick="chooseSoloLobby()">كل الألعاب الفردية ↓</button></div></div><div class="lobby-art edition-art" aria-hidden="true"><div class="edition-orbit"></div><div class="edition-card edition-card-back"><span>◈</span><small>فكّر بطريقتك</small></div><div class="edition-card edition-card-front"><div class="edition-card-top"><span>✦</span><small>تحدٍّ على مستواك</small></div><div class="edition-board"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="edition-card-bottom"><b>كل محاولة، خطوة.</b><span>↗</span></div></div><span class="edition-seal">${games.length}<small>لعبة عربية</small></span><span class="edition-spark">✧</span></div></section>${audienceChoicesHTML()}${randomPickButtonsHTML()}<div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openGameHistory()"><span class="summary-icon">↺</span><span><small>جولاتك ونتائجك</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${soloHomeHTML()}${snapshotHTML()}${routeResumeHTML()}${quickLaunchHTML()}<details class="discover-drawer"><summary><span>🗺️ مسارات ومنافسات</span><small>ثلاث محطات لك، أو بطولة للربع</small><b>اكتشف أكثر +</b></summary><div class="discovery-content"><div class="discovery-actions"><button onclick="openLounge()">👥 صالة اللمّة</button><button onclick="openTournament()">🏆 نبدأ بطولة</button><button onclick="openGameHistory()">↺ سجل الجولات</button></div>${routeCardsHTML()}</div></details><div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نلعب اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
+      ['all', 'الكل'],
+      ['solo', 'بمفردك'],
+      ['duo', 'شخصان'],
+      ['group', 'مع الربع'],
+      ['new', 'أحدث الألعاب ✦'],
+    ]
+      .map(
+        ([id, label]) =>
+          `<button class="${filter === id ? 'active' : ''}" onclick="setFilter('${id}')" aria-pressed="${filter === id}">${label}</button>`,
+      )
+      .join(
+        '',
+      )}<button class="${onlyFavorites ? 'active' : ''}" onclick="toggleFavorites()" aria-pressed="${onlyFavorites}">☆ المفضّلة <span id="favcount">${store.extra.favorites.length}</span></button></nav><div class="searchwrap"><label class="sr" for="search">ابحث عن لعبة</label><input id="search" type="search" placeholder="ابحث عن لعبة…  /" value="${esc(searchQuery)}" oninput="searchGames(this.value)" autocomplete="off"></div></div><div class="catalogsummary"><p class="tiny" id="gamecount" aria-live="polite"></p><div class="catalog-sort"><label for="catalogsort">الترتيب</label><select id="catalogsort" onchange="setCatalogSort(this.value)">${[
+      ['recommended', 'اختيارات لَمّة'],
+      ['name', 'أبجدي'],
+      ['recent', 'آخر ألعابك'],
+      ['popular', 'الأكثر لعباً عندك'],
+    ]
+      .map(
+        ([v, label]) =>
+          `<option value="${v}" ${experience().sort === v ? 'selected' : ''}>${label}</option>`,
+      )
+      .join(
+        '',
+      )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>أضف الأسماء، مرّر الجهاز، والعبوا بالتناوب. الكلمات والتصويت تبقى سرية أثناء الأدوار.</p></div><div><span class="guide-icon">⚙</span><h3>إعدادات واضحة</h3><p>خصص المظهر وحجم الخط والتباين والصوت. رتّب اختيارات الألعاب، وخذ نسخة احتياطية من تقدمك في أي وقت.</p></div><div><span class="guide-icon">💾</span><h3>نتائجك معك</h3><p>سجل الجولات والنقاط والألغاز محفوظة هنا. صدّر نسخة احتياطية من الإعدادات لنقل تقدمك.</p></div></section>`,
+  );
+  renderCatalog();
+  $('foot').textContent = `لَمّة 10.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
+}
+
+// Source: src/settings.js
+// One settings screen owns preferences, backups and explicitly scoped resets.
+const settingsSections = [
+  ['appearance', '◐', 'المظهر'],
+  ['play', '◎', 'اللعب'],
+  ['data', '↺', 'البيانات'],
+];
+let settingsSection = 'appearance',
+  pendingSettingsReset = null;
+
+function settingsRow(title, description, control) {
+  return `<div class="settingsrow"><div class="primarytext"><b>${title}</b><small>${description}</small></div><div class="settingscontrol">${control}</div></div>`;
+}
+function settingsStorageStatus() {
+  return storageAvailable
+    ? '✓ محفوظ تلقائياً على هذا المتصفح'
+    : '⚠ الحفظ غير متاح هنا؛ صدّر نسخة قبل إغلاق الصفحة';
+}
+function settingsDefaultsHTML() {
+  const saved = games.filter((game) => Object.keys(store.extra.preferences[game[0]] || {}).length);
+  const canOpen = ['home', 'setup', 'solo-hub'].includes(screen) || state?.done;
+  return `<details class="settings-defaults"><summary>اختيارات الألعاب المحفوظة · ${saved.length}</summary><p class="note">يمكنك إعادة لعبة واحدة إلى إعداداتها الأصلية. تعديل اختياراتها يكون من شاشة بدء اللعبة.</p>${saved.length ? `<div class="settings-default-list">${saved.map((game) => `<div><span><b>${game[1]} ${esc(game[2])}</b><small>${Object.keys(store.extra.preferences[game[0]]).length} خيارات محفوظة</small></span><div><button class="quiet smallbtn" onclick="settingsOpenGame('${game[0]}')" ${!canOpen ? 'disabled title="متاح بعد انتهاء الجولة الحالية"' : ''}>تعديل</button><button class="quiet smallbtn" onclick="settingsRequestReset('defaults','${game[0]}')" aria-label="إعادة إعدادات ${esc(game[2])}">↺ إعادة</button></div></div>`).join('')}</div>` : '<p class="note">غيّر اختيارات أي لعبة قبل بدء الجولة لتظهر هنا.</p>'}<button class="quiet settings-wide" onclick="settingsRequestReset('defaults')" ${!saved.length ? 'disabled' : ''}>إعادة اختيارات جميع الألعاب</button></details>`;
+}
+function openSettings(section) {
+  const wasSettings = !$('modalback').hidden && !!$('modal').querySelector('.settings-tabs'),
+    active =
+      wasSettings && $('modal').contains(document.activeElement) ? document.activeElement : null,
+    focusId = active?.id,
+    focusAction = active?.getAttribute('onclick'),
+    scrollTop = wasSettings ? $('modal').scrollTop : 0;
+  if (settingsSections.some(([id]) => id === section)) settingsSection = section;
+  pendingSettingsReset = null;
+  const extra = store.extra;
+  openModal(`<div class="modalhead"><div><p class="settings-eyebrow">مساحتك، على كيفك</p><h2 id="modaltitle">⚙ إعدادات لَمّة</h2></div><button onclick="closeModal()" aria-label="إغلاق الإعدادات">✕</button></div>
+    <div class="settings-tabs" role="tablist" aria-label="أقسام الإعدادات">${settingsSections.map(([id, icon, title]) => `<button type="button" role="tab" id="settings-tab-${id}" aria-controls="settings-panel-${id}" aria-selected="${id === settingsSection}" tabindex="${id === settingsSection ? 0 : -1}" onclick="switchSettingsTab('${id}')"><span aria-hidden="true">${icon}</span>${title}</button>`).join('')}</div>
+    <div class="settings-content">
+      <section id="settings-panel-appearance" role="tabpanel" aria-labelledby="settings-tab-appearance" ${settingsSection !== 'appearance' ? 'hidden' : ''}>
+        <h3>عرض أوضح يناسبك</h3>
+        ${settingsRow(
+          '<label for="settings-theme">شكل العالم</label>',
+          'فاتح، داكن أو يتبع إعداد جهازك تلقائياً',
+          `<select id="settings-theme" onchange="changeSetting('theme',this.value)">${[
+            ['dark', 'داكن 🌙'],
+            ['light', 'فاتح ☀'],
+            ['system', 'حسب الجهاز ◐'],
+          ]
+            .map(
+              ([value, title]) =>
+                `<option value="${value}" ${extra.theme === value ? 'selected' : ''}>${title}</option>`,
+            )
+            .join('')}</select>`,
+        )}
+        ${settingsRow(
+          '<label for="settings-text-scale">حجم النص</label>',
+          'يكبّر التعليمات والأزرار دون تغيير حجم لوحة اللعب',
+          `<select id="settings-text-scale" onchange="changeSetting('textScale',Number(this.value))">${[
+            [100, 'عادي · 100%'],
+            [115, 'أكبر · 115%'],
+            [130, 'كبير · 130%'],
+          ]
+            .map(
+              ([value, title]) =>
+                `<option value="${value}" ${extra.textScale === value ? 'selected' : ''}>${title}</option>`,
+            )
+            .join('')}</select>`,
+        )}
+        ${settingsRow('تباين أوضح', 'حدود ونصوص أقوى لسهولة القراءة', `<button onclick="changeSetting('contrast',!store.extra.contrast);openSettings()" aria-pressed="${extra.contrast}">${extra.contrast ? 'شغّال ✓' : 'تشغيل'}</button>`)}
+        ${settingsRow('حركة الواجهة', 'الانتقالات والاحتفال؛ نحترم تقليل الحركة على جهازك', `<button onclick="toggleMotion()" aria-pressed="${extra.motion}">${extra.motion ? 'شغّالة' : 'مخففة'}</button>`)}
+        <div class="settings-preview" aria-label="معاينة حجم النص"><b>جاهز للتحدّي؟</b><p class="note">اختر لعبتك، خذ وقتك، وجرّب طريقة جديدة.</p><span class="pill">معاينة القراءة</span></div>
+        <button class="quiet settings-wide" onclick="settingsRequestReset('appearance')">إعادة إعدادات المظهر</button>
+      </section>
+      <section id="settings-panel-play" role="tabpanel" aria-labelledby="settings-tab-play" ${settingsSection !== 'play' ? 'hidden' : ''}>
+        <h3>لعب مريح، بطريقتك</h3>
+        ${settingsRow('الصوت', 'نغمات خفيفة وقت اللعب، بدون موسيقى مستمرة', `<button onclick="toggleSound();openSettings()" aria-pressed="${store.sound}">${store.sound ? 'شغّال 🔊' : 'مقفّل 🔇'}</button>`)}
+        <div class="settings-volume"><label for="settings-volume">مستوى الصوت <output id="settings-volume-value" for="settings-volume">${extra.volume}%</output></label><input id="settings-volume" type="range" min="0" max="100" step="1" value="${extra.volume}" oninput="changeSetting('volume',Number(this.value))"><div><small>صامت</small><button class="quiet smallbtn" onclick="settingsPreviewSound()">جرّب النغمة</button><small>مرتفع</small></div></div>
+        ${settingsRow('وضع التركيز', 'أخفِ رأس الموقع وزد مساحة اللعبة؛ زر ◎ يعيده', `<button onclick="togglePlayFocus();openSettings()" aria-pressed="${extra.focus}">${extra.focus ? 'شغّال ◎' : 'تشغيل'}</button>`)}
+        ${settingsRow('حفظ اختيارات الألعاب', 'تذكر المستوى والطريقة تلقائياً للجولة القادمة', `<button onclick="changeSetting('rememberDefaults',!store.extra.rememberDefaults);openSettings()" aria-pressed="${extra.rememberDefaults}">${extra.rememberDefaults ? 'شغّال ✓' : 'مقفّل'}</button>`)}
+        ${settingsRow('الشاشة الكاملة', 'وسّع مساحة اللعب إلى كامل الشاشة', '<button onclick="toggleFullscreen()">⛶ تبديل</button>')}
+        ${settingsDefaultsHTML()}
+        <p class="note">إيقاف حفظ الاختيارات يبدأ الألعاب بإعداداتها الأصلية ويحتفظ باختياراتك السابقة. البطولة وتحدّي اليوم لهما إعداداتهما الخاصة.</p>
+      </section>
+      <section id="settings-panel-data" role="tabpanel" aria-labelledby="settings-tab-data" ${settingsSection !== 'data' ? 'hidden' : ''}>
+        <h3>تقدّمك بين يديك</h3>
+        <div class="settings-data-summary"><div><b>${fmt(totalRounds())}</b><small>جولات مسجّلة</small></div><div><b>${store.extra.history.length}</b><small>نتائج في السجل</small></div><div><b>${store.extra.favorites.length}</b><small>ألعاب مفضّلة</small></div></div>
+        <div class="settings-backup"><b>انقل تقدّمك أو احتفظ بنسخة</b><p class="note">نسخة JSON تضم الأسماء والنقاط والاختيارات والإضافات وتقدّم اللعب الفردي. استيرادها يعرض تأكيداً قبل استبدال بياناتك الحالية.</p><div class="actions"><button class="primary" onclick="exportProgress()">⬇ نسخة احتياطية</button><button onclick="document.getElementById('importfile').click()">⬆ استيراد نسخة</button></div><input type="file" id="importfile" accept="application/json,.json" hidden onchange="importProgress(this.files[0]);this.value=''"></div>
+        ${settingsRow('قاعدة التخمين', `${items.length} شي · ${extra.learned.length} إضافة منك`, '<button onclick="openKnowledge()">إدارة</button>')}
+        ${settingsRow('سجل الجولات', 'راجع نتائجك وألعابك الأخيرة', '<button onclick="openGameHistory()">عرض السجل</button>')}
+        ${settingsRow('مساعدة اللعب والحفظ', 'الخصوصية واللعب الجماعي والاستكمال', '<button onclick="openHelp()">؟ المساعدة</button>')}
+        <details class="settings-reset"><summary>تنظيف بيانات محددة</summary><p class="note">كل خيار يوضح ما يحذفه ويطلب تأكيدك. الأسماء والنقاط تبقى محفوظة.</p><div class="settings-reset-actions"><button onclick="settingsRequestReset('history')" ${!extra.history.length ? 'disabled' : ''}>مسح سجل الجولات</button><button onclick="settingsRequestReset('favorites')" ${!extra.favorites.length ? 'disabled' : ''}>إفراغ المفضّلة</button><button onclick="settingsRequestReset('session')" ${!extra.savedSession ? 'disabled' : ''}>حذف الجولة المحفوظة</button></div></details>
+        <div class="hintpanel">اللعب محلي ومن دون حساب. الحفظ على هذا المتصفح فقط؛ صدّر نسخة عند الانتقال لجهاز آخر. فتح الإعدادات يوقف مؤقت الجولة إلى أن تغلقها.</div>
+      </section>
+    </div><p id="settings-save-status" class="settings-save-status" role="status">${settingsStorageStatus()}</p>`);
+  const target = focusId
+    ? $(focusId)
+    : focusAction
+      ? [...$('modal').querySelectorAll('button')].find(
+          (button) => button.getAttribute('onclick') === focusAction,
+        )
+      : null;
+  if (target && target.getClientRects().length) target.focus({ preventScroll: true });
+  if (wasSettings) $('modal').scrollTop = scrollTop;
+}
+function switchSettingsTab(section, focus = false) {
+  if (!settingsSections.some(([id]) => id === section) || !$('settings-tab-' + section)) return;
+  settingsSection = section;
+  for (const [id] of settingsSections) {
+    const selected = id === section;
+    $('settings-tab-' + id).setAttribute('aria-selected', String(selected));
+    $('settings-tab-' + id).tabIndex = selected ? 0 : -1;
+    $('settings-panel-' + id).hidden = !selected;
+  }
+  if (focus) $('settings-tab-' + section).focus({ preventScroll: true });
+}
+function changeSetting(key, value) {
+  const validators = {
+    theme: (v) => ['dark', 'light', 'system'].includes(v),
+    textScale: (v) => [100, 115, 130].includes(v),
+    contrast: (v) => typeof v === 'boolean',
+    volume: (v) => Number.isInteger(v) && v >= 0 && v <= 100,
+    rememberDefaults: (v) => typeof v === 'boolean',
+  };
+  if (!Object.hasOwn(validators, key) || !validators[key](value)) return false;
+  store.extra[key] = value;
+  save();
+  applySettings();
+  const output = $('settings-volume-value');
+  if (output) output.value = store.extra.volume + '%';
+  const status = $('settings-save-status');
+  if (status) status.textContent = settingsStorageStatus();
+  return true;
+}
+function settingsPreviewSound() {
+  if (!store.sound) return toast('شغّل الصوت أولاً لتجربة النغمة.');
+  if (!store.extra.volume) return toast('مستوى الصوت صفر؛ ارفعه لتسمع النغمة.');
+  tone(true);
+}
+function settingsOpenGame(id) {
+  if (
+    !games.some((game) => game[0] === id) ||
+    (!['home', 'setup', 'solo-hub'].includes(screen) && !state?.done)
+  )
+    return;
+  closeModal();
+  setup(id);
+}
+function settingsResetDescription(kind, id) {
+  const game = id && games.find((entry) => entry[0] === id);
+  if (id && (kind !== 'defaults' || !game)) return null;
+  const descriptions = {
+    appearance: [
+      'إعادة إعدادات المظهر',
+      'يرجع الشكل الداكن وحجم النص العادي والتباين الافتراضي والحركة. إعدادات الصوت واللعب لا تتغير.',
+    ],
+    defaults: [
+      'إعادة اختيارات الألعاب',
+      game
+        ? `تنحذف اختيارات ${game[2]} المحفوظة فقط. الجولة الحالية تبقى كما هي.`
+        : 'تنحذف اختيارات جميع الألعاب المحفوظة. الجولة الحالية تبقى كما هي.',
+    ],
+    history: [
+      'مسح سجل الجولات',
+      'ينحذف سجل النتائج الأخيرة فقط. النقاط والإنجازات وأرقامك القياسية لا تتغير.',
+    ],
+    favorites: [
+      'إفراغ المفضّلة',
+      'تنحذف النجوم من قائمة الألعاب المفضّلة فقط. تقدر تضيفها مرة ثانية.',
+    ],
+    session: [
+      'حذف الجولة المحفوظة',
+      'تنحذف نسخة الاستكمال الحالية فقط. إذا عندك جولة مفتوحة الآن، يمكن حفظها مجدداً عند مغادرتها.',
+    ],
+  };
+  return Object.hasOwn(descriptions, kind) ? descriptions[kind] : null;
+}
+function settingsRequestReset(kind, id = '') {
+  const description = settingsResetDescription(kind, id);
+  if (!description) return;
+  const token = storageToken();
+  pendingSettingsReset = { kind, id, token };
+  openModal(
+    `<div class="modalhead"><h2 id="modaltitle">${description[0]}</h2><button onclick="settingsCancelReset()" aria-label="إلغاء">✕</button></div><div data-settings-confirm="${token}" class="settings-confirm"><span aria-hidden="true">↺</span><p>${esc(description[1])}</p><p class="note">الأسماء والنقاط محفوظة. يمكنك تصدير نسخة قبل المتابعة.</p><div class="actions"><button onclick="exportProgress()">⬇ نسخة احتياطية</button><button onclick="settingsCancelReset()">إلغاء</button><button class="primary" onclick="settingsConfirmReset('${token}')">تأكيد الإعادة</button></div></div>`,
+  );
+}
+function settingsCancelReset() {
+  pendingSettingsReset = null;
+  openSettings();
+}
+function settingsConfirmReset(token) {
+  const pending = pendingSettingsReset;
+  if (
+    !pending ||
+    pending.token !== token ||
+    $('modalback').hidden ||
+    $('modal').querySelector('[data-settings-confirm]')?.dataset.settingsConfirm !== token
+  )
+    return false;
+  pendingSettingsReset = null;
+  const resetSetupId =
+    pending.kind === 'defaults' &&
+    screen === 'setup' &&
+    (!pending.id || pending.id === state?.id) &&
+    !state?.soloSessionToken &&
+    !dailyRun &&
+    !tourney?.active &&
+    !activeRoute
+      ? state.id
+      : null;
+  // Merge any recent remote contributions before creating a new generation.
+  // Scoped deletions then remain deleted when an older tab saves again.
+  save();
+  switch (pending.kind) {
+    case 'appearance':
+      Object.assign(store.extra, { theme: 'dark', textScale: 100, contrast: false, motion: true });
+      break;
+    case 'defaults':
+      if (pending.id) delete store.extra.preferences[pending.id];
+      else store.extra.preferences = Object.create(null);
+      break;
+    case 'history':
+      store.extra.history = [];
+      break;
+    case 'favorites':
+      store.extra.favorites = [];
+      break;
+    case 'session':
+      store.extra.savedSession = null;
+      break;
+    default:
+      return false;
+  }
+  save({ replace: true });
+  applySettings();
+  if (resetSetupId) setup(resetSetupId, true);
+  updateDock();
+  openSettings(
+    pending.kind === 'appearance' ? 'appearance' : pending.kind === 'defaults' ? 'play' : 'data',
+  );
+  toast('تمت إعادة البيانات المحددة؛ الأسماء والنقاط محفوظة.');
+  return true;
+}
+document.addEventListener('keydown', (event) => {
+  const tab = event.target.closest?.('[role="tab"][id^="settings-tab-"]');
+  if (
+    !tab ||
+    !$('modal').contains(tab) ||
+    $('modalback').hidden ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey
+  )
+    return;
+  const current = settingsSections.findIndex(([id]) => tab.id === 'settings-tab-' + id);
+  let next;
+  if (event.key === 'ArrowLeft') next = (current + 1) % settingsSections.length;
+  else if (event.key === 'ArrowRight')
+    next = (current + settingsSections.length - 1) % settingsSections.length;
+  else if (event.key === 'Home') next = 0;
+  else if (event.key === 'End') next = settingsSections.length - 1;
+  else return;
+  event.preventDefault();
+  switchSettingsTab(settingsSections[next][0], true);
+});
+const settingsSystemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+settingsSystemTheme.addEventListener?.('change', () => {
+  if (store.extra.theme === 'system') applySettings();
+});
+
+// Source: src/solo.js
+// Personal training: saved stations, adaptable difficulty and a separate practice record.
+// This declaration is intentionally safe to call before the rest of this file runs.
+function normalizeSoloProgress(raw, strict = false) {
+  const clean = { version: 1, profiles: [] },
+    skillIds = ['memory', 'logic', 'numbers', 'words', 'focus'],
+    allowed = [
+      'memory',
+      'simon',
+      'code',
+      'lights',
+      'pipes',
+      'nonogram',
+      'slide',
+      'math',
+      'pattern',
+      'solo',
+      'word',
+      'hangman',
+      'wordguess',
+      'color',
+      'target',
+    ],
+    levels = ['easy', 'normal', 'hard'],
+    record = (v) => !!v && typeof v === 'object' && !Array.isArray(v),
+    counter = (v) => Number.isSafeInteger(v) && v >= 0,
+    token = (v) => typeof v === 'string' && /^[a-zA-Z0-9-]{8,100}$/.test(v),
+    stamp = (v) => Number.isSafeInteger(v) && v > 0 && v <= 8640000000000000,
+    points = (v) => Number.isInteger(v) && v >= 0 && v <= 100,
+    name = (v) => typeof v === 'string' && v.length <= 24 && normalizePlayerName(v),
+    invalid = () => {
+      if (strict) throw Error('Invalid solo progress');
+    };
+  if (raw == null) return clean;
+  if (
+    !record(raw) ||
+    raw.version !== 1 ||
+    !Array.isArray(raw.profiles) ||
+    raw.profiles.length > 24
+  ) {
+    invalid();
+    return clean;
+  }
+  const seen = new Set();
+  for (const p of raw.profiles) {
+    const normalizedName = name(p?.name);
+    if (!record(p) || !normalizedName || seen.has(normalizedName)) {
+      invalid();
+      continue;
+    }
+    seen.add(normalizedName);
+    const profile = {
+      name: normalizedName,
+      goal: 3,
+      prefs: { rounds: 3, skill: 'all', level: 'normal', mode: 'practice', adaptive: true },
+      sessions: 0,
+      rounds: 0,
+      practiceRounds: 0,
+      total: 0,
+      best: 0,
+      skills: {},
+      days: {},
+      recent: [],
+      active: null,
+    };
+    if (Number.isInteger(p.goal) && p.goal >= 1 && p.goal <= 8) profile.goal = p.goal;
+    else if (p.goal !== undefined) invalid();
+    const prefs = p.prefs;
+    if (record(prefs)) {
+      if ([3, 5, 8].includes(prefs.rounds)) profile.prefs.rounds = prefs.rounds;
+      else invalid();
+      if (['all', ...skillIds].includes(prefs.skill)) profile.prefs.skill = prefs.skill;
+      else invalid();
+      if (levels.includes(prefs.level)) profile.prefs.level = prefs.level;
+      else invalid();
+      if (['practice', 'ranked'].includes(prefs.mode)) profile.prefs.mode = prefs.mode;
+      else invalid();
+      if (typeof prefs.adaptive === 'boolean') profile.prefs.adaptive = prefs.adaptive;
+      else invalid();
+    } else if (prefs !== undefined) invalid();
+    for (const key of ['sessions', 'rounds', 'practiceRounds', 'total', 'best']) {
+      if (counter(p[key]) && (key !== 'best' || p[key] <= 100)) profile[key] = p[key];
+      else if (p[key] !== undefined) invalid();
+    }
+    if (profile.practiceRounds > profile.rounds) {
+      invalid();
+      profile.practiceRounds = profile.rounds;
+    }
+    for (const id of skillIds) {
+      const v = p.skills?.[id];
+      if (v === undefined) continue;
+      if (!record(v) || !counter(v.rounds) || !counter(v.total) || !points(v.best)) {
+        invalid();
+        continue;
+      }
+      profile.skills[id] = { rounds: v.rounds, total: v.total, best: v.best };
+    }
+    if (record(p.days)) {
+      for (const [day, count] of Object.entries(p.days)
+        .sort(([a], [b]) => b.localeCompare(a))
+        .slice(0, 90)) {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(day) && counter(count)) profile.days[day] = count;
+        else invalid();
+      }
+    } else if (p.days !== undefined) invalid();
+    if (Array.isArray(p.recent)) {
+      const rids = new Set();
+      for (const v of p.recent.slice(0, 120)) {
+        if (
+          !record(v) ||
+          !token(v.rid) ||
+          !allowed.includes(v.id) ||
+          !points(v.points) ||
+          !stamp(v.at) ||
+          !['practice', 'ranked'].includes(v.mode) ||
+          !levels.includes(v.level) ||
+          !counter(v.seconds) ||
+          v.seconds > 31536000 ||
+          (v.complete !== undefined && typeof v.complete !== 'boolean') ||
+          (v.day !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(v.day))
+        ) {
+          invalid();
+          continue;
+        }
+        if (rids.has(v.rid)) continue;
+        rids.add(v.rid);
+        profile.recent.push({
+          rid: v.rid,
+          id: v.id,
+          points: v.points,
+          at: v.at,
+          mode: v.mode,
+          level: v.level,
+          seconds: v.seconds,
+          day: v.day || new Date(v.at).toISOString().slice(0, 10),
+          complete: v.complete === true,
+        });
+      }
+      profile.recent.sort((a, b) => b.at - a.at || a.rid.localeCompare(b.rid));
+    } else if (p.recent !== undefined) invalid();
+    const a = p.active;
+    if (a != null) {
+      if (
+        !record(a) ||
+        !token(a.token) ||
+        a.name !== normalizedName ||
+        !Array.isArray(a.queue) ||
+        ![3, 5, 8].includes(a.queue.length) ||
+        !a.queue.every((id) => allowed.includes(id)) ||
+        !Number.isInteger(a.at) ||
+        a.at < 0 ||
+        a.at >= a.queue.length ||
+        !['practice', 'ranked'].includes(a.mode) ||
+        !levels.includes(a.level) ||
+        typeof a.adaptive !== 'boolean' ||
+        !stamp(a.started) ||
+        !Array.isArray(a.results) ||
+        a.results.length !== a.at ||
+        a.results.some(
+          (v, i) =>
+            !record(v) ||
+            v.id !== a.queue[i] ||
+            !points(v.points) ||
+            !levels.includes(v.level) ||
+            !counter(v.seconds) ||
+            v.seconds > 31536000,
+        )
+      )
+        invalid();
+      else
+        profile.active = {
+          token: a.token,
+          name: normalizedName,
+          queue: [...a.queue],
+          at: a.at,
+          mode: a.mode,
+          level: a.level,
+          adaptive: a.adaptive,
+          started: a.started,
+          results: a.results.map((v) => ({
+            id: v.id,
+            points: v.points,
+            level: v.level,
+            seconds: v.seconds,
+          })),
+        };
+    }
+    clean.profiles.push(profile);
+  }
+  return clean;
+}
+
+// Merge new round identities, then add only the contributions the other tab has not seen.
+// Totals remain cumulative even after the bounded recent log discards older rounds.
+function mergeSoloProgress(local, baseline, remote) {
+  const l = normalizeSoloProgress(local),
+    b = normalizeSoloProgress(baseline),
+    r = normalizeSoloProgress(remote),
+    merged = { version: 1, profiles: [] };
+  for (const name of [...new Set([...r.profiles, ...l.profiles].map((p) => p.name))].slice(0, 24)) {
+    const current = l.profiles.find((p) => p.name === name),
+      before = b.profiles.find((p) => p.name === name),
+      latest = r.profiles.find((p) => p.name === name);
+    if (!current) {
+      merged.profiles.push(latest);
+      continue;
+    }
+    if (!latest) {
+      merged.profiles.push(current);
+      continue;
+    }
+    const out = JSON.parse(JSON.stringify(latest)),
+      remoteIds = new Set(latest.recent.map((v) => v.rid)),
+      cutoff = latest.recent.at(-1),
+      added = current.recent.filter(
+        (v) =>
+          !remoteIds.has(v.rid) &&
+          (latest.recent.length < 120 ||
+            v.at > cutoff.at ||
+            (v.at === cutoff.at && v.rid < cutoff.rid)),
+      );
+    for (const event of added) soloApplyEvent(out, event);
+    out.recent = [...new Map([...current.recent, ...latest.recent].map((v) => [v.rid, v])).values()]
+      .sort((a, z) => z.at - a.at || a.rid.localeCompare(z.rid))
+      .slice(0, 120);
+    for (const key of ['goal', 'prefs', 'active'])
+      if (JSON.stringify(current[key]) !== JSON.stringify(before?.[key])) out[key] = current[key];
+    // A stale tab cannot reopen a station that another tab already completed.
+    if (out.active) {
+      while (out.active.at < out.active.queue.length) {
+        const event = out.recent.find((v) => v.rid === `${out.active.token}-${out.active.at}`);
+        if (!event) break;
+        out.active.results.push({
+          id: event.id,
+          points: event.points,
+          level: event.level,
+          seconds: event.seconds,
+        });
+        out.active.at++;
+      }
+      if (out.active.at === out.active.queue.length) out.active = null;
+    }
+    merged.profiles.push(out);
+  }
+  return normalizeSoloProgress(merged);
+}
+
+function soloApplyEvent(profile, event) {
+  // Literal mapping keeps storage normalization and merging independent of script initialization order.
+  const skill = {
+    memory: 'memory',
+    simon: 'memory',
+    code: 'logic',
+    lights: 'logic',
+    pipes: 'logic',
+    nonogram: 'logic',
+    slide: 'logic',
+    math: 'numbers',
+    pattern: 'numbers',
+    solo: 'numbers',
+    word: 'words',
+    hangman: 'words',
+    wordguess: 'words',
+    color: 'focus',
+    target: 'focus',
+  }[event.id];
+  profile.rounds = sumCounter(profile.rounds, 1);
+  profile.practiceRounds = sumCounter(profile.practiceRounds, event.mode === 'practice' ? 1 : 0);
+  profile.total = sumCounter(profile.total, event.points);
+  profile.best = Math.max(profile.best, event.points);
+  profile.sessions = sumCounter(profile.sessions, event.complete ? 1 : 0);
+  const stat = (profile.skills[skill] ||= { rounds: 0, total: 0, best: 0 });
+  stat.rounds = sumCounter(stat.rounds, 1);
+  stat.total = sumCounter(stat.total, event.points);
+  stat.best = Math.max(stat.best, event.points);
+  profile.days[event.day] = sumCounter(profile.days[event.day] || 0, 1);
+  profile.days = Object.fromEntries(
+    Object.entries(profile.days)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .slice(0, 90),
+  );
+}
+
+const soloSkills = [
+  {
+    id: 'memory',
+    icon: '🧠',
+    name: 'الذاكرة',
+    desc: 'احفظ، واربط، واسترجع.',
+    games: ['memory', 'simon'],
+  },
+  {
+    id: 'logic',
+    icon: '🧩',
+    name: 'المنطق',
+    desc: 'خطة واضحة قبل الحركة.',
+    games: ['code', 'lights', 'pipes', 'nonogram', 'slide'],
+  },
+  {
+    id: 'numbers',
+    icon: '🔢',
+    name: 'الأرقام',
+    desc: 'استنتج النمط واحسب بثقة.',
+    games: ['math', 'pattern', 'solo'],
+  },
+  {
+    id: 'words',
+    icon: '✍',
+    name: 'الكلمات',
+    desc: 'اقرأ الأدلة وابنِ المفردات.',
+    games: ['word', 'hangman', 'wordguess'],
+  },
+  {
+    id: 'focus',
+    icon: '◎',
+    name: 'التركيز',
+    desc: 'دقة الاختيار وسرعة الاستجابة.',
+    games: ['color', 'target'],
+  },
+];
+let soloHubName = null,
+  soloRound = null,
+  soloOpening = false,
+  soloManageNames = [],
+  soloPendingRemoval = null;
+store.extra.solo = normalizeSoloProgress(store.extra.solo || rawExtra.solo);
+
+function soloProfile(name = soloHubName || store.players[0], create = true) {
+  store.extra.solo ||= normalizeSoloProgress(null);
+  let profile = store.extra.solo.profiles.find((p) => p.name === name);
+  if (!profile && create && normalizePlayerName(name)) {
+    if (store.extra.solo.profiles.length >= 24) return null;
+    profile = normalizeSoloProgress({ version: 1, profiles: [{ name }] }).profiles[0];
+    store.extra.solo.profiles.push(profile);
+  }
+  return profile;
+}
+function soloSkillFor(id) {
+  return soloSkills.find((skill) => skill.games.includes(id));
+}
+function soloLevelLabel(level) {
+  return { easy: 'خفيف', normal: 'متوسط', hard: 'تحدّي' }[level];
+}
+function soloSample(profile, skill) {
+  const own = profile.recent.filter((v) => skill.games.includes(v.id)),
+    ranked = store.extra.history.filter(
+      (v) =>
+        v.name === profile.name &&
+        skill.games.includes(v.id) &&
+        !own.some((r) => r.mode === 'ranked' && r.id === v.id && Math.abs(r.at - v.at) < 2000),
+    ),
+    sample = [...own, ...ranked].sort((a, b) => b.at - a.at).slice(0, 8);
+  return {
+    count: sample.length,
+    average: sample.length
+      ? Math.round(sample.reduce((n, v) => n + Math.min(100, v.points), 0) / sample.length)
+      : null,
+  };
+}
+function soloRecommendation(profile) {
+  const ranked = soloSkills.map((skill) => ({ skill, ...soloSample(profile, skill) }));
+  return ranked.filter((v) => v.count).sort((a, b) => a.average - b.average)[0] || ranked[0];
+}
+function soloHomeHTML() {
+  const saved = store.extra.solo?.profiles.find((p) => p.active && store.players.includes(p.name));
+  return `<section class="solo-home"><div class="solo-home-icon" aria-hidden="true">◎</div><div><span class="world-label">مساحتك الفردية</span><h3>${saved ? 'جلسة ' + esc(saved.name) + ' تنتظرك' : 'درّب مهارة. وراقب تقدمك.'}</h3><p>${saved ? saved.active.at + ' من ' + saved.active.queue.length + ' جولات مكتملة · الجولة الحالية تبدأ من جديد' : 'جلسة من اختيارك، مستوى يتكيف معك، وتدريب دون التأثير على لوحة النقاط.'}</p></div><button class="primary" onclick="openSoloHub()">${saved ? 'نكمل الجلسة' : 'افتح النادي الفردي'} ←</button></section>`;
+}
+function openSoloHub(name) {
+  const departed = screen === 'home' && navigationHasHome(),
+    previousView = screen;
+  if (departed) {
+    navigationCaptureHome();
+    navigationHistory('home');
+  }
+  captureSoloSession();
+  soloRound = null;
+  activeRoute = null;
+  tourney = null;
+  dailyRun = null;
+  clearTimers();
+  removePause();
+  closeModal(true);
+  const saved = store.extra.solo?.profiles.find((p) => p.active && store.players.includes(p.name));
+  soloHubName = store.players.includes(name)
+    ? name
+    : store.players.includes(soloHubName)
+      ? soloHubName
+      : saved?.name || store.players[0];
+  screen = 'solo-hub';
+  state = null;
+  renderSoloHub();
+  navigationHistory(
+    'solo',
+    null,
+    previousView !== 'solo-hub' && history.state?.lammaView?.view !== 'solo',
+  );
+  goTop();
+}
+function renderSoloHub() {
+  if (screen !== 'solo-hub') return;
+  const p = soloProfile(),
+    prefs = p?.prefs;
+  if (!p) {
+    setHTML(
+      '<section class="panel"><h2>ملفاتك الفردية محفوظة</h2><p>وصلت إلى 24 ملفاً. من إدارة الملفات يمكنك حذف سجل لاعب قديم لإنشاء ملف جديد؛ نقاط لوحة اللمّة تبقى محفوظة.</p><div class="actions"><button class="primary" onclick="openSoloProfiles()">إدارة الملفات المحفوظة</button><button onclick="home()">العالم</button></div></section>',
+    );
+    updateDock();
+    return;
+  }
+  const recommendation = soloRecommendation(p),
+    today = p.days[dayKey()] || 0,
+    last = p.recent[0];
+  setHTML(
+    `<div class="play solo-hub"><div class="solo-head"><div><span class="world-label">مساحتك الفردية · خطوة كل يوم</span><h1>ناديك الخاص.<br><em>تحدٍّ على مستواك.</em></h1><p class="muted">اختَر مهارة وجلسة تناسبك. كل محطة تُحفظ، والمستوى يواكب نتيجتك.</p></div><button class="quiet" onclick="home()" aria-label="العودة لعالم الألعاب">← العالم</button></div><div class="solo-profile"><label for="soloPlayer">ملف اللاعب</label><select id="soloPlayer" onchange="openSoloHub(store.players[Number(this.value)])">${store.players.map((name, i) => `<option value="${i}" ${name === p.name ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select><button class="linkbtn" onclick="openPeople()">إدارة اللاعبين</button></div><div class="solo-summary"><div><small>جلسات مكتملة</small><b>${fmt(p.sessions)}</b></div><div><small>جولات النادي</small><b>${fmt(p.rounds)}</b><span>${fmt(p.practiceRounds)} تدريب</span></div><div><small>متوسط النتيجة</small><b><bdi dir="ltr">${p.rounds ? Math.round(p.total / p.rounds) : '—'}<small> / 100</small></bdi></b></div><div><small>هدف اليوم</small><b><bdi dir="ltr">${Math.min(today, p.goal)}<small> / ${p.goal}</small></bdi></b><progress value="${Math.min(today, p.goal)}" max="${p.goal}" aria-label="تقدم هدف اليوم"></progress></div></div>${p.active ? `<section class="solo-resume panel"><div><span class="world-label">💾 محطاتك محفوظة</span><h3>كمّل جلسة ${p.active.mode === 'practice' ? 'التدريب' : 'النقاط'}</h3><p class="note">${p.active.at} من ${p.active.queue.length} جولات مكتملة. الجولة غير المكتملة تبدأ من جديد، والنقاط المكتملة تبقى محفوظة.</p></div><div class="actions"><button class="primary" onclick="continueSoloSession()">المحطة التالية ←</button><button class="quiet" onclick="discardSoloSession()">إنهاء الجلسة</button></div></section>` : ''}<div class="solo-columns"><section class="panel solo-builder"><span class="world-label">أنت ترتّب الجلسة</span><h2>وش نطوّر اليوم؟</h2><div class="fields"><div class="field full"><label for="soloSkill">المهارة</label><select id="soloSkill" onchange="saveSoloOptions()"><option value="all">تدريب متوازن · جميع المهارات</option>${soloSkills.map((s) => `<option value="${s.id}" ${prefs.skill === s.id ? 'selected' : ''}>${s.icon} ${s.name}</option>`).join('')}</select></div><div class="field"><label for="soloRounds">طول الجلسة</label><select id="soloRounds" onchange="saveSoloOptions()">${[3, 5, 8].map((n) => `<option value="${n}" ${prefs.rounds === n ? 'selected' : ''}>${n} جولات</option>`).join('')}</select></div><div class="field"><label for="soloLevel">مستوى البداية</label><select id="soloLevel" onchange="saveSoloOptions()">${['easy', 'normal', 'hard'].map((l) => `<option value="${l}" ${prefs.level === l ? 'selected' : ''}>${soloLevelLabel(l)}</option>`).join('')}</select></div><div class="field full"><label for="soloMode">طريقة التسجيل</label><select id="soloMode" onchange="saveSoloOptions()"><option value="practice" ${prefs.mode === 'practice' ? 'selected' : ''}>تدريب · سجل شخصي مستقل</option><option value="ranked" ${prefs.mode === 'ranked' ? 'selected' : ''}>نقاط · أضف النتائج للوحة اللمّة</option></select></div><div class="field"><label for="soloGoal">هدفك اليومي</label><select id="soloGoal" onchange="saveSoloOptions()">${Array.from(
+      { length: 8 },
+      (_, i) => i + 1,
+    )
+      .map(
+        (n) => `<option value="${n}" ${p.goal === n ? 'selected' : ''}>${n} جولات يومياً</option>`,
+      )
+      .join(
+        '',
+      )}</select></div><div class="field"><label for="soloAdaptive">تطور المستوى</label><select id="soloAdaptive" onchange="saveSoloOptions()"><option value="yes" ${prefs.adaptive ? 'selected' : ''}>يتكيف مع نتيجتك</option><option value="no" ${!prefs.adaptive ? 'selected' : ''}>ثابت طوال الجلسة</option></select></div></div><div class="hintpanel">التدريب يُحفظ هنا، ولا يضيف نقاطاً أو إنجازات للوحة اللمّة. المستوى المتكيف يرتفع بعد 85/100 أو أكثر، وينخفض عند 40/100 أو أقل. كل محطة تُحسب من 100 حسب أقصى نتيجة لإعداداتها، وتضاف النتيجة نفسها للوحة اللمّة في وضع النقاط. لا يوجد وقت محدد للجلسة؛ كل لعبة لها وقتها.</div><div class="actions"><button class="primary" onclick="startSoloSession()">${p.active ? 'استبدلها بجلسة جديدة' : 'ابدأ جلستي'} ←</button><button onclick="openSoloCatalogue()">كل الألعاب الفردية</button></div></section><section class="panel solo-insight"><span class="world-label">خطوتك القادمة</span><h2>${recommendation.skill.icon} ${recommendation.count ? 'نطوّر ' + recommendation.skill.name : 'ابدأ بالذاكرة'}</h2><p class="muted">${recommendation.count ? `متوسط آخر ${recommendation.count} نتائج في ${recommendation.skill.name}: ${recommendation.average}/100. جلسة مركزة تساعدك تقارن تقدمك.` : 'كل مهارة لها طريقة مختلفة للتفكير. جرّب جلسة قصيرة؛ بعدها تظهر توصية من نتائجك الشخصية.'}</p><button onclick="soloTrainSkill('${recommendation.skill.id}')">جلسة ${recommendation.skill.name} ←</button><div class="solo-skills">${soloSkills
+      .map((skill) => {
+        const sample = soloSample(p, skill);
+        return `<button onclick="soloTrainSkill('${skill.id}')"><span>${skill.icon}</span><div><b>${skill.name}</b><small>${sample.count ? `${sample.average}/100 · آخر ${sample.count} نتائج` : skill.desc}</small></div><span>←</span></button>`;
+      })
+      .join(
+        '',
+      )}</div><p class="note">التوصية تعتمد على آخر 8 نتائج لكل مهارة، وتشمل جولاتك المسجلة باسم ${esc(p.name)}.</p></section></div><section class="panel solo-log"><div class="sectionhead"><div><span class="world-label">سجلّك الخاص</span><h2>كل محاولة لها أثر.</h2></div><div><button class="linkbtn" onclick="openSoloProfiles()">إدارة الملفات</button><span class="note">${last ? 'آخر لعب: ' + new Date(last.at).toLocaleDateString('ar-KW') : 'أول جلسة تبدأ منك'}</span></div></div>${
+      p.recent.length
+        ? `<div class="solo-log-list">${p.recent
+            .slice(0, 8)
+            .map((r) => {
+              const g = games.find((v) => v[0] === r.id);
+              return `<div><span>${g[1]}</span><b>${esc(g[2])}<small>${r.mode === 'practice' ? 'تدريب' : 'نقاط'} · ${soloLevelLabel(r.level)} · ${r.seconds} ثانية</small></b><strong>${r.points}<small>/100</small></strong></div>`;
+            })
+            .join('')}</div>`
+        : '<p class="muted">نتائج جلسات النادي تظهر هنا، وتبقى محفوظة لكل لاعب على هذا المتصفح.</p>'
+    }</section></div>`,
+  );
+  updateDock();
+}
+function saveSoloOptions() {
+  if (screen !== 'solo-hub' || !$('soloSkill')) return;
+  const p = soloProfile();
+  p.prefs = {
+    skill: $('soloSkill').value,
+    rounds: Number($('soloRounds').value),
+    level: $('soloLevel').value,
+    mode: $('soloMode').value,
+    adaptive: $('soloAdaptive').value === 'yes',
+  };
+  p.goal = Number($('soloGoal').value);
+  save();
+}
+function openSoloProfiles() {
+  soloPendingRemoval = null;
+  soloManageNames = store.extra.solo.profiles.map((p) => p.name);
+  openModal(
+    `<div class="modalhead"><h2 id="modaltitle">ملفات النادي الفردي</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">${soloManageNames.length} من 24 ملفاً محفوظاً. حذف ملف يزيل سجله وجلساته وهدفه من النادي، ونقاط لوحة اللمّة وسجل الألعاب تبقى محفوظة.</p>${store.extra.solo.profiles.map((p, i) => `<div class="roundrow"><b>${esc(p.name)}<small style="display:block">${p.rounds} جولات · ${p.sessions} جلسات${p.active ? ' · جلسة غير مكتملة' : ''}</small></b><button onclick="confirmSoloProfileRemoval(${i})" aria-label="حذف ملف ${esc(p.name)}">حذف السجل</button></div>`).join('') || '<p class="note">لا توجد ملفات محفوظة.</p>'}`,
+  );
+}
+function confirmSoloProfileRemoval(index) {
+  const name = soloManageNames[index];
+  if (!name || !soloProfile(name, false)) return;
+  const token = storageToken();
+  soloPendingRemoval = { name, token };
+  openModal(
+    `<div class="modalhead"><h2 id="modaltitle">حذف سجل ${esc(name)}؟</h2><button onclick="openSoloProfiles()" aria-label="العودة">←</button></div><div data-solo-confirm="${token}"><p class="muted">ستُحذف جلسات هذا الملف ونتائج تدريبه وهدفه. نقاط لوحة اللمّة والألعاب المحفوظة تبقى كما هي.</p><div class="actions"><button onclick="openSoloProfiles()">إلغاء</button><button class="primary" onclick="removeSoloProfile('${token}')">حذف سجل النادي</button></div></div>`,
+  );
+}
+function removeSoloProfile(token) {
+  const pending = soloPendingRemoval;
+  if (
+    !pending ||
+    pending.token !== token ||
+    $('modalback').hidden ||
+    $('modal').querySelector('[data-solo-confirm]')?.dataset.soloConfirm !== token
+  )
+    return;
+  const name = pending.name;
+  soloPendingRemoval = null;
+  save();
+  store.extra.solo.profiles = store.extra.solo.profiles.filter((p) => p.name !== name);
+  if (soloRound?.name === name) soloRound = null;
+  save({ replace: true });
+  closeModal(true);
+  if (screen === 'solo-hub') renderSoloHub();
+  else openSoloHub();
+  toast('حُذف سجل النادي لهذا اللاعب.');
+}
+function soloTrainSkill(id) {
+  if (screen !== 'solo-hub' || !soloSkills.some((s) => s.id === id)) return;
+  $('soloSkill').value = id;
+  saveSoloOptions();
+  startSoloSession();
+}
+function openSoloCatalogue() {
+  home();
+  chooseSoloLobby();
+}
+function soloBuildQueue(profile, prefs) {
+  const choices = (
+    prefs.skill === 'all' ? soloSkills : soloSkills.filter((s) => s.id === prefs.skill)
+  )
+    .map((skill) => ({ skill, ...soloSample(profile, skill) }))
+    .sort((a, b) => (a.average ?? 50) - (b.average ?? 50));
+  const visits = new Map(),
+    queue = [];
+  for (let at = 0; at < prefs.rounds; at++) {
+    const skill = choices[at % choices.length].skill,
+      candidates = [...skill.games].sort((a, b) => {
+        const count = (id) =>
+          (visits.get(id) || 0) * 1000 + profile.recent.filter((v) => v.id === id).length;
+        return count(a) - count(b) || skill.games.indexOf(a) - skill.games.indexOf(b);
+      }),
+      id = candidates.find((v) => v !== queue.at(-1)) || candidates[0];
+    queue.push(id);
+    visits.set(id, (visits.get(id) || 0) + 1);
+  }
+  return queue;
+}
+function startSoloSession() {
+  if (screen !== 'solo-hub') return;
+  saveSoloOptions();
+  const p = soloProfile(),
+    prefs = p.prefs;
+  p.active = {
+    token: storageToken(),
+    name: p.name,
+    queue: soloBuildQueue(p, prefs),
+    at: 0,
+    results: [],
+    mode: prefs.mode,
+    level: prefs.level,
+    adaptive: prefs.adaptive,
+    started: Date.now(),
+  };
+  save();
+  continueSoloSession();
+}
+function discardSoloSession() {
+  if (screen !== 'solo-hub') return;
+  soloProfile().active = null;
+  soloRound = null;
+  save();
+  renderSoloHub();
+  toast('انتهت الجلسة. نتائج المحطات المكتملة محفوظة.');
+}
+function soloNextLevel(session) {
+  const last = session.results.at(-1);
+  if (!session.adaptive || !last) return session.level;
+  const levels = ['easy', 'normal', 'hard'],
+    at = levels.indexOf(last.level);
+  return levels[
+    Math.max(0, Math.min(2, at + (last.points >= 85 ? 1 : last.points <= 40 ? -1 : 0)))
+  ];
+}
+function continueSoloSession(expectedToken, expectedAt) {
+  save();
+  const p = soloProfile(soloHubName, false),
+    session = p?.active;
+  if (
+    !session ||
+    !store.players.includes(p.name) ||
+    (expectedToken && expectedToken !== session.token) ||
+    (expectedAt !== undefined && expectedAt !== session.at)
+  )
+    return;
+  if (soloRound && !soloRound.finished && screen !== 'solo-hub') return;
+  const id = session.queue[session.at],
+    push = screen === 'solo-hub';
+  captureSoloSession();
+  activeRoute = null;
+  tourney = null;
+  dailyRun = null;
+  soloRound = {
+    name: p.name,
+    token: session.token,
+    at: session.at,
+    id,
+    mode: session.mode,
+    level: soloNextLevel(session),
+    finished: false,
+    started: 0,
+    scored: false,
+  };
+  soloOpening = true;
+  const historyHandling = navigationHistoryHandling;
+  navigationHistoryHandling = true;
+  try {
+    setup(id, true);
+  } finally {
+    soloOpening = false;
+    navigationHistoryHandling = historyHandling;
+  }
+  if (screen !== 'setup' || state?.id !== id) {
+    soloRound = null;
+    return;
+  }
+  soloConfigureRound(soloRound);
+  navigationHistory('play', id, push);
+}
+function soloConfigureRound(round) {
+  const value = (id, v, disabled = false) => {
+      const el = $(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = v;
+      else el.value = String(v);
+      if (disabled) el.disabled = true;
+    },
+    level = round.level,
+    easy = level === 'easy',
+    hard = level === 'hard';
+  value('player', store.players.indexOf(round.name), true);
+  for (const field of ['level', 'labLevel', 'hangLevel', 'targetLevel']) value(field, level);
+  value('difficulty', easy ? 4 : hard ? 12 : 6);
+  value('memoryplay', 'solo', true);
+  if ($('memoryplay')) memoryPlayChanged();
+  value('memorymode', 'pictures');
+  value('numberQuest', 'classic');
+  value('numberMode', level);
+  value('group', false, true);
+  value('quizcount', 5);
+  value('quizduration', hard ? 45 : easy ? 120 : 90);
+  value('wordcount', 5);
+  value('hangCount', 1);
+  value('hangMode', 'classic');
+  value('wordguessLength', easy ? 4 : 5);
+  value('wordguessMode', hard ? 'focus' : 'classic');
+  value('size', 3);
+  value('codelength', easy ? 3 : hard ? 5 : 4);
+  value('targetDuration', 30);
+  if ($('soloRoundConfig'))
+    $('soloRoundConfig').textContent =
+      `المستوى المقترح: ${soloLevelLabel(level)} · يمكنك تعديل خيارات اللعبة قبل البداية.`;
+  state.soloSessionToken = round.token;
+}
+function soloLinkedRound(id = state?.id) {
+  const round = soloRound,
+    p = round && soloProfile(round.name, false),
+    s = p?.active;
+  return round &&
+    !round.finished &&
+    round.id === id &&
+    state?.id === id &&
+    s?.token === round.token &&
+    s.at === round.at &&
+    !dailyRun &&
+    !tourney?.active &&
+    !activeRoute
+    ? { round, profile: p, session: s }
+    : null;
+}
+function soloElapsed(round) {
+  const s = state;
+  if (typeof s?.started === 'number' && s.started > 0) {
+    const end = s.finishedAt || s.pausedAt || Date.now();
+    return Math.max(0, Math.min(31536000, Math.floor((end - s.started) / 1000)));
+  }
+  return Math.max(
+    0,
+    Math.min(31536000, Math.floor((Date.now() - (round.started || Date.now())) / 1000)),
+  );
+}
+function soloRoundPoints(id, points) {
+  if (!Number.isFinite(points)) return 0;
+  const s = state;
+  let ceiling = 100;
+  if (id === 'memory' && s?.pairs && !s.duo)
+    ceiling = Math.min(100, 60 + s.pairs * 2 + Math.min(10, Math.max(0, s.pairs - 1) * 2));
+  if (id === 'hangman' && s?.queue?.length) {
+    const count = s.queue.length;
+    ceiling = count * (s.mode === 'mission' ? 30 : 20);
+    if (s.mode === 'rescue')
+      ceiling += Array.from({ length: count }, (_, i) => Math.min(8, i * 2)).reduce(
+        (n, v) => n + v,
+        0,
+      );
+  }
+  return Math.max(0, Math.min(100, Math.round((Math.max(0, points) * 100) / ceiling)));
+}
+const soloCapturePrevious = captureSoloSession;
+captureSoloSession = function () {
+  if (soloRound || state?.soloSessionToken) return;
+  return soloCapturePrevious();
+};
+const soloSetupPrevious = setup;
+setup = function (id, internal = false) {
+  const previous = state,
+    opening = soloOpening,
+    refresh = !opening && internal && screen === 'setup' && soloLinkedRound(id),
+    fields = refresh
+      ? setupControls()
+          .filter((el) => !el.disabled)
+          .map((el) => ({ id: el.id, value: el.type === 'checkbox' ? el.checked : el.value }))
+      : [];
+  if (refresh && !store.players.includes(refresh.round.name)) return openSoloHub();
+  if (!opening && !refresh && games.some((g) => g[0] === id)) soloRound = null;
+  let outcome;
+  if (refresh) soloOpening = true;
+  try {
+    outcome = soloSetupPrevious(id, internal);
+  } finally {
+    soloOpening = opening;
+  }
+  if (refresh && screen === 'setup' && state?.id === id) {
+    soloConfigureRound(refresh.round);
+    for (const field of fields) {
+      const el = $(field.id);
+      if (!el || el.disabled) continue;
+      if (el.type === 'checkbox') el.checked = field.value;
+      else if (
+        el.tagName !== 'SELECT' ||
+        [...el.options].some((option) => option.value === field.value)
+      )
+        el.value = field.value;
+    }
+    for (const field of fields)
+      if ($(field.id)?.hasAttribute('onchange'))
+        $(field.id).dispatchEvent(new Event('change', { bubbles: true }));
+    for (const field of fields) {
+      const el = $(field.id);
+      if (!el || el.disabled || el.tagName !== 'INPUT') continue;
+      if (el.type === 'checkbox') el.checked = field.value;
+      else el.value = field.value;
+      if (el.hasAttribute('oninput')) el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+  if (state !== previous && screen === 'setup' && state?.id === id && !soloOpening && !refresh)
+    soloRound = null;
+  return outcome;
+};
+const soloHomePrevious = home;
+home = function (options = {}) {
+  soloRound = null;
+  return soloHomePrevious(options);
+};
+const soloDockPrevious = updateDock;
+updateDock = function () {
+  soloDockPrevious();
+  const button = document.querySelector('.dock button[onclick="openSoloHub()"]'),
+    active = screen === 'solo-hub' || !!soloRound;
+  button?.classList.toggle('active', active);
+  if (active) button?.setAttribute('aria-current', 'page');
+  else button?.removeAttribute('aria-current');
+};
+const soloPeoplePrevious = savePeople;
+savePeople = function () {
+  const outcome = soloPeoplePrevious();
+  if (screen === 'solo-hub' && $('modalback').hidden) {
+    if (!store.players.includes(soloHubName)) soloHubName = store.players[0];
+    renderSoloHub();
+  }
+  return outcome;
+};
+const soloResumeClockPrevious = resumeClock;
+resumeClock = function () {
+  const pausedAt = state?.pausedAt,
+    shiftFallback = soloRound?.started && !state?.started;
+  const outcome = soloResumeClockPrevious();
+  if (pausedAt && !state?.pausedAt && shiftFallback && soloRound)
+    soloRound.started += Date.now() - pausedAt;
+  return outcome;
+};
+const soloResumePrevious = resumeSavedGame;
+resumeSavedGame = function () {
+  soloRound = null;
+  return soloResumePrevious();
+};
+const soloWrapPrevious = wrap;
+wrap = function (id, body) {
+  const linked = soloLinkedRound(id);
+  if (linked) {
+    const { round, session } = linked;
+    state.soloSessionToken = round.token;
+    if (screen !== 'setup' && !round.started) {
+      round.started = Date.now();
+      round.level = ['easy', 'normal', 'hard'].includes(state.level) ? state.level : round.level;
+    }
+    body = `<div class="solo-session-banner"><div><b>◎ ${round.mode === 'practice' ? 'تدريب شخصي' : 'جلسة نقاط'} · ${esc(round.name)}</b><small id="soloRoundConfig">${screen === 'setup' ? 'جهّز محطتك قبل البداية' : soloLevelLabel(round.level) + ' · ' + (round.mode === 'practice' ? 'النتيجة في سجل النادي فقط' : 'النقاط تضاف للوحة اللمّة')}</small></div><span>${round.at + 1} / ${session.queue.length}</span><button class="quiet" onclick="openSoloHub()">نكمل لاحقاً</button></div>${body}`;
+  }
+  return soloWrapPrevious(id, body);
+};
+const soloAddScorePrevious = addScore;
+addScore = function (name, points) {
+  if (state?.soloSessionToken && (!soloRound || soloRound.token !== state.soloSessionToken)) {
+    state.roundRecorded = true;
+    return;
+  }
+  if (soloRound && soloRound.id === state?.id) {
+    save();
+    const linked = soloLinkedRound();
+    if (!linked || soloRound.scored) return;
+    soloRound.scored = true;
+    if (soloRound.mode === 'practice') {
+      state.roundRecorded = true;
+      return;
+    }
+    points = soloRoundPoints(state.id, points);
+  }
+  return soloAddScorePrevious(name, points);
+};
+const soloResultPrevious = result;
+result = function (id, title, text, points = 0, detail = '') {
+  if (state?.resultShown) return;
+  const linked = soloLinkedRound(id),
+    elapsed = linked ? soloElapsed(linked.round) : 0,
+    stale = soloRound && soloRound.id === id && !soloRound.finished && !linked;
+  const normalizedPoints = linked ? soloRoundPoints(id, points) : points;
+  soloResultPrevious(id, title, text, normalizedPoints, detail);
+  if (!linked) {
+    if (stale) {
+      soloRound.finished = true;
+      const panel = $('app').querySelector('.celebrate');
+      if (panel) {
+        const chip = panel.querySelector('.chips .chip');
+        if (chip) chip.textContent = 'هذه المحطة محفوظة مسبقاً';
+        const actions = panel.querySelector('.actions');
+        if (actions)
+          actions.innerHTML =
+            '<button class="primary" onclick="openSoloHub()">شوف تقدمك في النادي</button><button onclick="home()">العالم</button>';
+      }
+      toast('هذه المحطة اكتملت في نافذة أخرى. لم تُضف نقاط جديدة.');
+    }
+    return;
+  }
+  const { round } = linked,
+    p = soloProfile(round.name, false),
+    s = p?.active;
+  round.finished = true;
+  if (!s || s.token !== round.token || s.at !== round.at) {
+    toast('هذه المحطة اكتملت في نافذة أخرى. تقدمك محفوظ في النادي.');
+    return;
+  }
+  const earned = normalizedPoints,
+    event = {
+      rid: `${round.token}-${round.at}`,
+      id,
+      points: earned,
+      at: Date.now(),
+      mode: round.mode,
+      level: round.level,
+      seconds: elapsed,
+      day: dayKey(),
+      complete: s.at + 1 === s.queue.length,
+    };
+  if (!p.recent.some((v) => v.rid === event.rid)) {
+    soloApplyEvent(p, event);
+    p.recent.unshift(event);
+    p.recent = p.recent.slice(0, 120);
+  }
+  s.results.push({ id, points: earned, level: round.level, seconds: elapsed });
+  s.at++;
+  const total = s.results.reduce((n, v) => n + v.points, 0),
+    complete = s.at === s.queue.length,
+    queueLength = s.queue.length,
+    nextLevel = soloNextLevel(s);
+  if (complete) p.active = null;
+  save();
+  const resultPanel = $('app').querySelector('.celebrate');
+  if (resultPanel) {
+    const chip = resultPanel.querySelector('.chips .chip');
+    if (chip && round.mode === 'practice') chip.textContent = `${earned}/100 · نتيجة تدريب`;
+    resultPanel.querySelector('.actions')?.remove();
+  }
+  $('app')
+    .querySelector('.play')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<section class="panel solo-session-result"><span class="world-label">${complete ? '✓ جلسة مكتملة' : '✓ محطة محفوظة'}</span><h2>${complete ? 'خطوة جديدة في مستواك.' : 'استعد للتحدّي التالي.'}</h2><p class="muted">${total} من ${queueLength * 100} · ${complete ? queueLength + ' جولات مكتملة' : s.at + ' من ' + queueLength + ' جولات'}${round.mode === 'practice' ? ' · تدريب في سجلك الشخصي' : ' · النتائج أُضيفت للوحة اللمّة'}</p>${!complete && s.adaptive ? `<p class="note">المحطة التالية: ${soloLevelLabel(nextLevel)}${nextLevel !== round.level ? ' · المستوى تغير حسب نتيجتك' : ''}.</p>` : ''}<div class="actions">${!complete ? `<button class="primary" onclick="continueSoloSession('${s.token}',${s.at})">المحطة التالية ←</button>` : ''}<button class="${complete ? 'primary' : ''}" onclick="openSoloHub()">${complete ? 'شوف تقدّمك' : 'نكمل لاحقاً'}</button><button onclick="home()">العالم</button></div></section>`,
+    );
+};
+
+// Starting another activity detaches the running station while retaining completed stations.
+for (const key of [
+  'startDaily',
+  'startRoute',
+  'continueRoute',
+  'startTournament',
+  'confirmImport',
+]) {
+  const previous = window[key];
+  if (typeof previous === 'function')
+    window[key] = function (...args) {
+      soloRound = null;
+      return previous(...args);
+    };
+}
+const soloNavigationHistoryPrevious = navigationHistory;
+navigationHistory = function (view, id = null, push = false) {
+  const managed =
+    view === 'play' && soloRound?.id === id && state?.soloSessionToken === soloRound.token;
+  const outcome = soloNavigationHistoryPrevious(managed ? 'solo-play' : view, id, push);
+  if (managed && !navigationHistoryHandling) {
+    try {
+      const data = {
+        ...history.state,
+        lammaView: {
+          ...history.state.lammaView,
+          solo: { name: soloRound.name, token: soloRound.token, at: soloRound.at },
+        },
+      };
+      history.replaceState(data, '', location.href);
+    } catch (e) {}
+  }
+  return outcome;
+};
+window.addEventListener('popstate', (event) => {
+  const target = event.state?.lammaView;
+  if (target?.version !== 1 || !['solo', 'solo-play'].includes(target.view)) return;
+  navigationHomePoint = navigationCleanPoint(target.home);
+  navigationHistoryHandling = true;
+  try {
+    openSoloHub(target.solo?.name);
+    const profile = target.solo && soloProfile(target.solo.name, false);
+    if (
+      target.view === 'solo-play' &&
+      profile?.active?.token === target.solo.token &&
+      profile.active.at === target.solo.at &&
+      store.players.includes(profile.name)
+    )
+      continueSoloSession(target.solo.token, target.solo.at);
+  } finally {
+    navigationHistoryHandling = false;
+  }
+});
 
 // Source: src/boot.js
 applySettings();
