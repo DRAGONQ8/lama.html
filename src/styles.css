@@ -3514,3 +3514,43 @@ body:has(.play) .shell {
 body:has(.play) .toast {
   bottom: 22px;
 }
+/* Searchable private words and readable core-game trial reviews. */
+.word-search-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 10px 18px;
+}
+.word-search-results button {
+  flex: 1 1 90px;
+  overflow-wrap: anywhere;
+}
+.private-word-picker {
+  margin-block-end: 18px;
+}
+.reaction-trial-history {
+  display: grid;
+  gap: 12px;
+  margin-block: 16px;
+}
+.reaction-trial-history > div {
+  display: grid;
+  grid-template-columns: 24px minmax(40px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+.reaction-trial-history meter {
+  inline-size: 100%;
+  accent-color: var(--mint);
+}
+.reaction-trial-history small {
+  grid-column: 2 / -1;
+  color: var(--muted);
+}
+.reaction-trial-history .penalty small {
+  color: var(--orange);
+}
+.reaction-analysis section + section {
+  border-block-start: 1px solid var(--line);
+  padding-block-start: 14px;
+}

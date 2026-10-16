@@ -396,7 +396,7 @@ try {
     },
   );
   await check(
-    'Spy question targets change who asks next and preserve a public discussion log',
+    'Spy questions let players choose each asker and target and preserve a public discussion log',
     async (page) => {
       await start(page, 'spy');
       await page.evaluate(() => {
@@ -416,7 +416,7 @@ try {
           state.questionHistory[0].target,
           state.questionHistory[0].asker,
         ]),
-        [target, target, first],
+        [null, target, first],
       );
       await page.evaluate(() => {
         pauseClock();
@@ -432,6 +432,14 @@ try {
           spyVoteReveal();
           castSpyVote((i + 1) % state.players.length);
         }
+      });
+      assert.equal(await page.evaluate(() => state.done), false);
+      assert.equal(await page.evaluate(() => state.stage), 'vote-result');
+      await page.evaluate(() => {
+        spyGuessHandoff();
+        spyGuess();
+        $('spyguess').value = state.location;
+        submitSpyGuess(state.run);
       });
       assert.equal(await page.evaluate(() => state.done), true);
       assert.match(await page.locator('.history summary').innerText(), /سجل النقاش/);

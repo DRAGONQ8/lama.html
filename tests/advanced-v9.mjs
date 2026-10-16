@@ -428,6 +428,13 @@ try {
       });
       assert.equal(await page.evaluate(() => state.votes.length), 3);
       assert.equal(await page.evaluate(() => state.counts.reduce((a, b) => a + b, 0)), 3);
+      assert.equal(await page.evaluate(() => state.stage), 'vote-result');
+      await page.evaluate(() => {
+        spyGuessHandoff();
+        spyGuess();
+        $('spyguess').value = state.location;
+        submitSpyGuess(state.run);
+      });
       await page.locator('.spy-ballot-review summary').click();
       assert.match(await page.locator('.spy-ballot-review').innerText(), /دليل خاص/);
     },

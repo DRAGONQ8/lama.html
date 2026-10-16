@@ -1,6 +1,54 @@
 .party-panel > .muted {
   margin-bottom: 20px;
 }
+.party-team-editor {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 18px;
+  min-width: 0;
+}
+.party-team-editor > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(100px, 1fr);
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+.party-team-editor b {
+  overflow-wrap: anywhere;
+}
+.party-team-editor select {
+  width: 100%;
+  min-width: 0;
+}
+.party-speaker-picker {
+  padding: 16px;
+  margin: 16px 0;
+  border: 1px solid var(--mint);
+  border-radius: 16px;
+  text-align: start;
+}
+.party-constraints {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.party-constraints li {
+  display: flex;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 12px;
+}
+.party-constraints .met {
+  border-color: var(--mint);
+  color: var(--mint);
+}
 .party-relay-roles {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);

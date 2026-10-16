@@ -687,7 +687,7 @@ setup = function (id, internal = false) {
   const people = `<div class="party-people"><div><b>👥 ${store.players.length} لاعبين</b><p class="note">${store.players.map(esc).join(' · ')}</p></div><button onclick="openPeople()">تعديل اللاعبين</button></div>${enough ? '' : `<div class="hintpanel">أضيفوا ${minimum} لاعبين على الأقل لبدء هذه اللعبة.</div>`}`;
   let body = '';
   if (id === 'teamcup')
-    body = `<p class="muted">بطولة للربع تجمع 3 أنواع تحديات. الفريقان يحصلان على الوقت نفسه، والقائد يتبدل كل جولة. تنتهي الجلسة بكأس ولوحة نتائج.</p>${people}<div class="fields"><div class="field"><label for="partyCycles">عدد جولات كل فريق</label><select id="partyCycles"><option value="3">3 جولات · جولة من كل نوع</option><option value="6" selected>6 جولات · بطولة كاملة</option><option value="9">9 جولات · سهرة طويلة</option></select></div><div class="field"><label for="partyDuration">وقت كل دور</label><select id="partyDuration"><option value="45">45 ثانية</option><option value="60" selected>60 ثانية</option><option value="90">90 ثانية</option></select></div><div class="field"><label for="partyDraft">توزيع الفرق</label><select id="partyDraft" onchange="partyRemixTeams()"><option value="balanced">متوازن حسب سجل النقاط</option><option value="random">عشوائي</option></select></div><div class="field"><label for="partyTeamA">اسم الفريق الأول</label><input id="partyTeamA" maxlength="18" value="الصقور"></div><div class="field"><label for="partyTeamB">اسم الفريق الثاني</label><input id="partyTeamB" maxlength="18" value="التنانين"></div></div><div id="partyTeamsPreview">${partyTeamsHTML(state.teams)}</div><div class="actions"><button onclick="partyRemixTeams()">🔀 توزيع جديد</button></div><div class="hintpanel">الصحيح +10 · التجاوز −2 · الكلام في التمثيل أو الكلمة الممنوعة −5. بطاقة المضاعفة مرة في كل دور: الصحيح +20، التجاوز −4، والمخالفة أو جواب المعلومات الخاطئ −10. بعد البطولة تُوزع نقاط الفريق بالتساوي بين أعضائه، ومكافأة الفوز +10. العقوبات تُحسب حتى لو صار رصيد الدور سالباً؛ النقاط العامة لا تنقص. عدد الأعضاء يختلف بواحد فقط إذا كنتم عدداً فردياً. القادة يتناوبون، ويتبدّل ترتيبهم بعد دورة كاملة حتى يجربوا تحديات مختلفة.</div>`;
+    body = `<p class="muted">بطولة للربع تجمع 3 أنواع تحديات. الفريقان يحصلان على الوقت نفسه، والقائد يتبدل كل جولة. تنتهي الجلسة بكأس ولوحة نتائج.</p>${people}<div class="fields"><div class="field"><label for="partyCycles">عدد جولات كل فريق</label><select id="partyCycles"><option value="3">3 جولات · جولة من كل نوع</option><option value="6" selected>6 جولات · بطولة كاملة</option><option value="9">9 جولات · سهرة طويلة</option></select></div><div class="field"><label for="partyDuration">وقت كل دور</label><select id="partyDuration"><option value="45">45 ثانية</option><option value="60" selected>60 ثانية</option><option value="90">90 ثانية</option></select></div><div class="field"><label for="partyDraft">توزيع الفرق</label><select id="partyDraft" onchange="partyRemixTeams()"><option value="balanced">متوازن حسب سجل النقاط</option><option value="random">عشوائي</option></select></div><div class="field"><label for="partyTeamA">اسم الفريق الأول</label><input id="partyTeamA" maxlength="18" value="الصقور"></div><div class="field"><label for="partyTeamB">اسم الفريق الثاني</label><input id="partyTeamB" maxlength="18" value="التنانين"></div></div><div id="partyTeamsPreview">${partyTeamsHTML(state.teams)}</div><div class="actions"><button onclick="partyRemixTeams()">🔀 توزيع جديد</button><button onclick="partyEditTeams()">👥 نختار الفرق بأنفسنا</button></div><div class="hintpanel">الصحيح +10 · التجاوز −2 · الكلام في التمثيل أو الكلمة الممنوعة −5. بطاقة المضاعفة مرة في كل دور: الصحيح +20، التجاوز −4، والمخالفة أو جواب المعلومات الخاطئ −10. بعد البطولة تُوزع نقاط الفريق بالتساوي بين أعضائه، ومكافأة الفوز +10. العقوبات تُحسب حتى لو صار رصيد الدور سالباً؛ النقاط العامة لا تنقص. عدد الأعضاء يختلف بواحد فقط إذا كنتم عدداً فردياً. القادة يتناوبون، ويتبدّل ترتيبهم بعد دورة كاملة حتى يجربوا تحديات مختلفة.</div>`;
   if (id === 'undercover')
     body = `<p class="muted">الجميع يعرف كلمة، لكن بينكم كلمة دخيلة قريبة منها. الكلمات تُعرض سراً، وبعد التلميحات يصوّت كل شخص بعيداً عن أنظار الآخرين.</p>${people}<div class="fields"><div class="field"><label for="partyRounds">عدد الجولات</label><select id="partyRounds"><option value="1">جولة سريعة</option><option value="3" selected>3 جولات</option><option value="5">5 جولات</option></select></div><div class="field"><label for="partyHiddenCount">أصحاب الكلمة الدخيلة</label><select id="partyHiddenCount"><option value="1">لاعب واحد</option><option value="2" ${store.players.length < 7 ? 'disabled' : ''}>لاعبان · يحتاج 7 لاعبين</option></select></div><div class="field"><label for="partyClueRounds">دورات التلميحات</label><select id="partyClueRounds"><option value="1">تلميح من كل لاعب</option><option value="2" selected>تلميحان من كل لاعب</option></select></div><div class="field"><label for="partyDuration">وقت النقاش</label><select id="partyDuration"><option value="90">90 ثانية</option><option value="150" selected>150 ثانية</option><option value="240">240 ثانية</option><option value="0">بدون مؤقت</option></select></div><div class="field"><label for="partyWordCategory">موضوع الكلمات</label><select id="partyWordCategory">${Object.entries(
       partyPairCategories,
@@ -739,6 +739,14 @@ setup = function (id, internal = false) {
       ['off', 'تصويت سري مباشر'],
       ['on', 'ادعاء علني ثم دفاع ثم تصويت سري'],
     ])}</div><div class="party-explainer"><b>⚖️ اسمعوا الجميع قبل الحسم</b><p>كل لاعب يرشّح شخصاً مع دليل أو يمتنع. كل مرشّح يأخذ فرصة دفاع واحدة قبل التصويت السري. الترشيحات والدفاع لا تمنح نقاطاً ولا تستبعد أحداً؛ مؤقت النقاش ينتهي عند بدء هذه المرحلة.</p></div>`;
+  if (id === 'undercover')
+    body += `<div class="fields">${partyChoice('partyClueOrder', 'بداية التلميحات وترتيبها', [
+      ['random', 'بداية عشوائية · نتناوب بعدها'],
+      ['free', 'نختار من يتكلم بأنفسنا'],
+    ])}${partyChoice('partyQuestionOrder', 'من يسأل في الاستجواب؟', [
+      ['turns', 'فرصة سؤال لكل لاعب بالترتيب'],
+      ['free', 'نختار السائل بحرية · فرصة لكل لاعب'],
+    ])}</div><div class="party-explainer"><b>🗣️ اللمّة تختار أسلوبها</b><p>في الترتيب الحر اختاروا صاحب التلميح عند كل دور؛ كل لاعب يتكلم مرة في الدورة. وفي الاستجواب تختارون دائماً من تسألون، ويمكنكم أيضاً اختيار السائل التالي بحرية.</p></div>`;
   if (id === 'improv')
     body += `<div class="fields party-extra-options">${partyChoice(
       'partyCreativeBallot',
@@ -827,6 +835,32 @@ function partyRemixTeams() {
     $('partyTeamB').value.trim() || 'الفريق الثاني',
   ]);
 }
+function partyEditTeams() {
+  if (screen !== 'setup' || state?.id !== 'teamcup' || coreBlocked()) return;
+  const names = [
+    $('partyTeamA').value.trim() || 'الفريق الأول',
+    $('partyTeamB').value.trim() || 'الفريق الثاني',
+  ];
+  $('partyTeamsPreview').innerHTML =
+    `${partyTeamsHTML(state.teams, names)}<fieldset class="party-team-editor"><legend>اختاروا فريق كل لاعب</legend><p class="note">كل فريق يحتاج لاعبين على الأقل؛ الفرق بين العددين لاعب واحد كحد أقصى.</p>${store.players.map((name, i) => `<div><b>${esc(name)}</b><select data-party-member="${i}" aria-label="فريق ${esc(name)}" onchange="partyAssignTeam(${i},this.value)"><option value="0" ${state.teams[0].includes(name) ? 'selected' : ''}>${esc(names[0])}</option><option value="1" ${state.teams[1].includes(name) ? 'selected' : ''}>${esc(names[1])}</option></select></div>`).join('')}<p class="note" role="status">${state.teams[0].length} مقابل ${state.teams[1].length} لاعبين${state.teams.every((team) => team.length >= 2) && Math.abs(state.teams[0].length - state.teams[1].length) <= 1 ? ' · التوزيع جاهز ✓' : ' · عدّلوا التوزيع قبل البداية'}</p></fieldset>`;
+}
+function partyAssignTeam(index, value) {
+  const team = Number(value);
+  if (
+    screen !== 'setup' ||
+    state?.id !== 'teamcup' ||
+    coreBlocked() ||
+    !Number.isInteger(index) ||
+    !store.players[index] ||
+    ![0, 1].includes(team)
+  )
+    return;
+  const name = store.players[index];
+  state.teams = state.teams.map((members) => members.filter((member) => member !== name));
+  state.teams[team].push(name);
+  partyEditTeams();
+  document.querySelector(`[data-party-member="${index}"]`)?.focus({ preventScroll: true });
+}
 function partySessionScore(s) {
   return `<details class="history party-session"><summary>🏅 نقاط الجلسة</summary>${boardHTML(s.players, s.results)}</details>`;
 }
@@ -850,6 +884,8 @@ function partyRematch(token = partyStageToken()) {
     partyHiddenCount: previous.hiddenCount,
     partyClueRounds: previous.clueRounds,
     partyWordCategory: previous.wordCategory,
+    partyClueOrder: previous.clueMode,
+    partyQuestionOrder: previous.questionMode,
     partyMimeDeck: previous.mimeDeck,
     partyTeamTactic: previous.teamTactic,
     partyTeamFormat: previous.teamFormat,
@@ -967,14 +1003,16 @@ function startPartyGame(id) {
     if (
       members.length !== players.length ||
       new Set(members).size !== members.length ||
-      members.some((name) => !players.includes(name)) ||
-      !teams.every((team) => team.length >= 2) ||
-      Math.abs(teams[0].length - teams[1].length) > 1
+      members.some((name) => !players.includes(name))
     ) {
       partyRemixTeams();
       toast('تغيّرت قائمة اللاعبين. راجعوا توزيع الفرق الجديد ثم اضغطوا البداية مرة ثانية.');
       return;
     }
+    if (!teams.every((team) => team.length >= 2) || Math.abs(teams[0].length - teams[1].length) > 1)
+      return toast(
+        'وازنوا الفرق: لاعبان على الأقل لكل فريق، والفرق بين العددين لاعب واحد كحد أقصى.',
+      );
   }
   const options = {
     rounds: partyReadOption('partyRounds', [1, 3, 5, 8], id === 'improv' ? 5 : 3),
@@ -993,6 +1031,8 @@ function startPartyGame(id) {
     teamFormat = partySetting('partyTeamFormat', ['captain', 'relay'], 'captain'),
     inquiry = partySetting('partyInquiry', ['on', 'off'], 'on') === 'on',
     court = partySetting('partyUndercoverCourt', ['on', 'off'], 'off') === 'on',
+    clueMode = partySetting('partyClueOrder', ['random', 'free'], 'random'),
+    questionMode = partySetting('partyQuestionOrder', ['turns', 'free'], 'turns'),
     creativeBallot = partySetting('partyCreativeBallot', ['single', 'ranked'], 'single'),
     creativeCriterion = partySetting('partyCreativeCriterion', ['rotate', 'funny'], 'rotate'),
     creativeSpark = partySetting('partyCreativeSpark', ['on', 'off'], 'off') === 'on',
@@ -1057,6 +1097,8 @@ function startPartyGame(id) {
       wordCategory,
       inquiry,
       court,
+      clueMode,
+      questionMode,
       history: [],
       roleCounts: players.map(() => 0),
       startingPlayer: randInt(players.length),
@@ -1496,11 +1538,14 @@ function undercoverRound() {
     revealIndex: 0,
     clueIndex: 0,
     clueOrder,
+    clueSpeaker: null,
     clues: [],
     clueDraft: '',
     questioning: false,
     questionIndex: 0,
     questions: [],
+    inquiryAsker: null,
+    askedPlayers: [],
     inquiryTarget: null,
     inquiryQuestion: '',
     inquiryAnswer: '',
@@ -1588,14 +1633,69 @@ function renderUndercoverDiscussion() {
     total = s.players.length * s.clueRounds,
     cycle = Math.floor(s.clueIndex / s.players.length),
     order = [...s.clueOrder.slice(cycle), ...s.clueOrder.slice(0, cycle)],
-    current = s.clueIndex < total ? order[s.clueIndex % s.players.length] : null;
+    current = undercoverCurrentClue(s),
+    waiting = s.clueMode === 'free' && s.clueIndex < total && current === null;
   s.clueToken = ++partyActionSerial;
   setHTML(
     partyWrap(
       'undercover',
-      `<div class="party-status"><span>الجولة ${s.round + 1} / ${s.rounds}</span><b id="undercoverClock">${s.duration ? partySeconds() + ' ث' : 'بدون مؤقت'}</b><span>${s.hiddenCount} كلمة دخيلة</span></div><section class="panel center"><p class="party-kicker">${current === null ? 'التلميحات اكتملت' : `دورة التلميحات ${cycle + 1} / ${s.clueRounds}`}</p><h2>${current === null ? 'ناقشوا من المختلف' : `تلميح من ${esc(s.players[current])}`}</h2>${current !== null ? undercoverLens(s) : ''}<p class="note">قولوا وصفاً قصيراً يرتبط بالكلمة؛ لا تذكروها ولا تشيروا إلى حروفها.</p><div class="party-speakers">${order.map((n, i) => `<span class="${n === current ? 'current' : i < s.clueIndex % s.players.length || current === null ? 'spoken' : ''}">${n === current ? '🎤 ' : ''}${esc(s.players[n])}</span>`).join('')}</div><p class="note">${s.clueIndex} / ${total} تلميحات اكتملت</p>${current !== null ? `<div class="party-clue-input"><label for="undercoverClue">دوّنوا التلميح ليراجعه الجميع · اختياري</label><input id="undercoverClue" maxlength="48" autocomplete="off" value="${esc(s.clueDraft)}" placeholder="وصف قصير، بدون الكلمة السرية…" oninput="undercoverClueUpdate()"><p class="note">التلميحات المكتوبة علنية، والكلمات السرية تبقى مخفية.</p></div>` : ''}<div class="actions">${current !== null ? `<button class="primary" data-party-card="${s.clueToken}" onclick="undercoverNextClue()">تم التلميح، التالي ←</button>` : ''}<button ${current === null ? 'class="primary"' : ''} data-party-card="${s.clueToken}" onclick="undercoverStartVote()">ابدأوا التصويت السري</button></div><p class="note">${current !== null ? 'يمكنكم التصويت مبكراً إذا اتفقت اللمّة. ' : ''}التصويت لا يستبعد أحداً حتى يُسجّل الجميع أصواتهم. ترتيب البداية يتبدّل بين دورات التلميحات.</p>${undercoverInquiryHTML(s)}</section>${undercoverClueTrail(s)}${partySessionScore(s)}`,
+      `<div class="party-status"><span>الجولة ${s.round + 1} / ${s.rounds}</span><b id="undercoverClock">${s.duration ? partySeconds() + ' ث' : 'بدون مؤقت'}</b><span>${s.hiddenCount} كلمة دخيلة</span></div><section class="panel center"><p class="party-kicker">${current === null && !waiting ? 'التلميحات اكتملت' : `دورة التلميحات ${cycle + 1} / ${s.clueRounds}`}</p><h2>${waiting ? (s.clueIndex === 0 ? 'من يريد أن يبدأ؟ القرار لكم' : 'من صاحب التلميح التالي؟') : current === null ? 'ناقشوا من المختلف' : `تلميح من ${esc(s.players[current])}`}</h2>${waiting ? undercoverSpeakerChoices(s) : ''}${current !== null ? undercoverLens(s) : ''}<p class="note">قولوا وصفاً قصيراً يرتبط بالكلمة؛ لا تذكروها ولا تشيروا إلى حروفها.</p><div class="party-speakers">${order.map((n, i) => `<span class="${n === current ? 'current' : s.clueIndex >= total ? 'spoken' : s.clueMode === 'free' ? (s.clues.some((clue) => clue.cycle === cycle && clue.player === n) ? 'spoken' : '') : i < s.clueIndex % s.players.length || current === null ? 'spoken' : ''}">${n === current ? '🎤 ' : ''}${esc(s.players[n])}</span>`).join('')}</div><p class="note">${s.clueIndex} / ${total} تلميحات اكتملت</p>${current !== null ? `<div class="party-clue-input"><label for="undercoverClue">دوّنوا التلميح ليراجعه الجميع · اختياري</label><input id="undercoverClue" maxlength="48" autocomplete="off" value="${esc(s.clueDraft)}" placeholder="وصف قصير، بدون الكلمة السرية…" oninput="undercoverClueUpdate()"><p class="note">التلميحات المكتوبة علنية، والكلمات السرية تبقى مخفية.</p></div>` : ''}<div class="actions">${current !== null ? `<button class="primary" data-party-card="${s.clueToken}" onclick="undercoverNextClue()">تم التلميح، التالي ←</button>` : ''}<button ${current === null ? 'class="primary"' : ''} data-party-card="${s.clueToken}" onclick="undercoverStartVote()">ابدأوا التصويت السري</button></div><p class="note">${current !== null ? 'يمكنكم التصويت مبكراً إذا اتفقت اللمّة. ' : ''}التصويت لا يستبعد أحداً حتى يُسجّل الجميع أصواتهم. ${s.clueMode === 'free' ? 'أنتم تختارون صاحب التلميح في كل دور.' : 'ترتيب البداية يتبدّل بين دورات التلميحات.'}</p>${undercoverInquiryHTML(s)}</section>${undercoverClueTrail(s)}${partySessionScore(s)}`,
     ),
   );
+}
+function undercoverCurrentClue(s = state) {
+  if (s.clueIndex >= s.players.length * s.clueRounds) return null;
+  if (s.clueMode === 'free') return s.clueSpeaker;
+  const cycle = Math.floor(s.clueIndex / s.players.length),
+    order = [...s.clueOrder.slice(cycle), ...s.clueOrder.slice(0, cycle)];
+  return order[s.clueIndex % s.players.length];
+}
+function undercoverSpeakerChoices(s, question = false) {
+  const completed = question
+      ? s.askedPlayers
+      : s.clues
+          .filter((clue) => clue.cycle === Math.floor(s.clueIndex / s.players.length))
+          .map((clue) => clue.player),
+    action = question ? 'undercoverSelectAsker' : 'undercoverSelectSpeaker';
+  return `<div class="party-speaker-picker"><p class="note">${question ? 'من يريد أن يسأل الآن؟' : 'اختاروا من يتكلم الآن؛ اللاعب الذي انتهى ينتظر الدورة التالية.'}</p><div class="party-ballots">${s.players.map((name, i) => `<button data-party-card="${s.clueToken}" onclick="${action}(${i})" ${completed.includes(i) ? 'disabled' : ''}>${completed.includes(i) ? '✓ ' : ''}${esc(name)}</button>`).join('')}</div></div>`;
+}
+function undercoverSelectSpeaker(index, token = partyCardToken()) {
+  if (
+    !partyStage('undercover', 'discussion') ||
+    state.clueMode !== 'free' ||
+    state.clueIndex >= state.players.length * state.clueRounds ||
+    !Number.isInteger(index) ||
+    !state.players[index] ||
+    state.clues.some(
+      (clue) =>
+        clue.cycle === Math.floor(state.clueIndex / state.players.length) && clue.player === index,
+    )
+  )
+    return;
+  if (token !== undefined && String(token) !== String(state.clueToken)) return;
+  state.clueSpeaker = index;
+  renderUndercoverDiscussion();
+}
+function undercoverSelectAsker(index, token = partyCardToken()) {
+  if (
+    !partyStage('undercover', 'discussion') ||
+    state.questionMode !== 'free' ||
+    !state.questioning ||
+    state.questionIndex >= state.players.length ||
+    !Number.isInteger(index) ||
+    !state.players[index] ||
+    state.askedPlayers.includes(index)
+  )
+    return;
+  if (token !== undefined && String(token) !== String(state.clueToken)) return;
+  state.inquiryAsker = index;
+  state.inquiryTarget = null;
+  state.inquiryQuestion = '';
+  state.inquiryAnswer = '';
+  renderUndercoverDiscussion();
+}
+function undercoverInquiryAsker(s = state) {
+  return s.questionMode === 'free' ? s.inquiryAsker : s.clueOrder[s.questionIndex];
 }
 function undercoverLens(s) {
   const cycle = Math.floor(s.clueIndex / s.players.length);
@@ -1608,9 +1708,11 @@ function undercoverInquiryHTML(s) {
     return `<div class="party-inquiry"><h3>🔎 هل تحتاجون دليلاً آخر؟</h3><p class="note">جولة أسئلة اختيارية: كل لاعب يسأل شخصاً آخر، ولا يُسمح بذكر أي كلمة سرية.</p><button data-party-card="${s.clueToken}" onclick="undercoverBeginInquiry()">ابدأ الاستجواب المتبادل</button></div>`;
   if (s.questionIndex >= s.players.length)
     return `<div class="party-inquiry"><b>✓ كل لاعب أخذ فرصة السؤال.</b><p class="note">راجعوا دفتر الأدلة ثم صوّتوا؛ الأسئلة لا تغيّر النقاط.</p></div>`;
-  const asker = s.clueOrder[s.questionIndex],
-    target = Number.isInteger(s.inquiryTarget) ? s.inquiryTarget : (asker + 1) % s.players.length;
-  return `<div class="party-inquiry"><p class="party-kicker">سؤال ${s.questionIndex + 1} / ${s.players.length}</p><h3>سؤال من ${esc(s.players[asker])}</h3><div class="fields"><div class="field"><label for="undercoverTarget">وجّه السؤال إلى</label><select id="undercoverTarget" onchange="undercoverInquiryUpdate()">${s.players.map((name, i) => (i === asker ? '' : `<option value="${i}" ${i === target ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select></div><div class="field"><label for="undercoverQuestion">السؤال العلني · 80 حرفاً</label><input id="undercoverQuestion" maxlength="80" autocomplete="off" placeholder="كيف يبدو مكانه الطبيعي؟" value="${esc(s.inquiryQuestion)}" oninput="undercoverInquiryUpdate()"></div><div class="field"><label for="undercoverReply">رد الشخص المختار · 80 حرفاً</label><input id="undercoverReply" maxlength="80" autocomplete="off" placeholder="رد قصير دون الكلمة نفسها" value="${esc(s.inquiryAnswer)}" oninput="undercoverInquiryUpdate()"></div></div><p class="note">يمكنكم السؤال عن الحجم، المكان، أو الاستخدام. لا تسألوا عن الحروف.</p><div class="actions"><button class="primary" data-party-card="${s.clueToken}" onclick="undercoverRecordInquiry()">دوّن السؤال والرد ←</button><button data-party-card="${s.clueToken}" onclick="undercoverSkipInquiry()">أتجاوز فرصة سؤالي</button></div></div>`;
+  const asker = undercoverInquiryAsker(s),
+    target = s.inquiryTarget ?? (s.questionMode === 'free' ? null : (asker + 1) % s.players.length);
+  if (asker === null)
+    return `<div class="party-inquiry"><h3>سؤال ${s.questionIndex + 1} / ${s.players.length}</h3>${undercoverSpeakerChoices(s, true)}</div>`;
+  return `<div class="party-inquiry"><p class="party-kicker">سؤال ${s.questionIndex + 1} / ${s.players.length}</p><h3>سؤال من ${esc(s.players[asker])}</h3><div class="fields"><div class="field"><label for="undercoverTarget">وجّه السؤال إلى</label><select id="undercoverTarget" onchange="undercoverInquiryUpdate()"><option value="" ${target === null ? 'selected' : ''} disabled>اختر الشخص الذي تريد سؤاله</option>${s.players.map((name, i) => (i === asker ? '' : `<option value="${i}" ${i === target ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select></div><div class="field"><label for="undercoverQuestion">السؤال العلني · 80 حرفاً</label><input id="undercoverQuestion" maxlength="80" autocomplete="off" placeholder="كيف يبدو مكانه الطبيعي؟" value="${esc(s.inquiryQuestion)}" oninput="undercoverInquiryUpdate()"></div><div class="field"><label for="undercoverReply">رد الشخص المختار · 80 حرفاً</label><input id="undercoverReply" maxlength="80" autocomplete="off" placeholder="رد قصير دون الكلمة نفسها" value="${esc(s.inquiryAnswer)}" oninput="undercoverInquiryUpdate()"></div></div><p class="note">يمكنكم السؤال عن الحجم، المكان، أو الاستخدام. لا تسألوا عن الحروف.</p><div class="actions"><button class="primary" data-party-card="${s.clueToken}" onclick="undercoverRecordInquiry()">دوّن السؤال والرد ←</button><button data-party-card="${s.clueToken}" onclick="undercoverSkipInquiry()">أتجاوز فرصة سؤالي</button></div></div>`;
 }
 function undercoverBeginInquiry(token = partyCardToken()) {
   if (
@@ -1627,9 +1729,16 @@ function undercoverBeginInquiry(token = partyCardToken()) {
 }
 function undercoverInquiryUpdate() {
   if (!partyStage('undercover', 'discussion') || !state.questioning) return;
-  const target = Number($('undercoverTarget')?.value);
-  if (Number.isInteger(target) && target >= 0 && target < state.players.length)
+  const value = $('undercoverTarget')?.value,
+    target = value === undefined || value === '' ? null : Number(value);
+  if (
+    Number.isInteger(target) &&
+    target >= 0 &&
+    target < state.players.length &&
+    target !== undercoverInquiryAsker()
+  )
     state.inquiryTarget = target;
+  else state.inquiryTarget = null;
   state.inquiryQuestion = $('undercoverQuestion')?.value.slice(0, 80) || '';
   state.inquiryAnswer = $('undercoverReply')?.value.slice(0, 80) || '';
 }
@@ -1644,11 +1753,17 @@ function undercoverRecordInquiry(token = partyCardToken()) {
   if (state.duration && !partySeconds()) return undercoverStartVote();
   undercoverInquiryUpdate();
   const s = state,
-    asker = s.clueOrder[s.questionIndex],
+    asker = undercoverInquiryAsker(s),
     target = s.inquiryTarget,
     question = s.inquiryQuestion.trim().replace(/\s+/gu, ' '),
     answer = s.inquiryAnswer.trim().replace(/\s+/gu, ' ');
-  if (!Number.isInteger(target) || target === asker || !question || !answer)
+  if (
+    !Number.isInteger(asker) ||
+    !Number.isInteger(target) ||
+    target === asker ||
+    !question ||
+    !answer
+  )
     return toast('اختاروا شخصاً آخر واكتبوا السؤال والرد أولاً.');
   if (
     s.pair.some((word) => norm(question).includes(norm(word)) || norm(answer).includes(norm(word)))
@@ -1666,7 +1781,11 @@ function undercoverSkipInquiry(token = partyCardToken()) {
     return;
   if (token !== undefined && String(token) !== String(state.clueToken)) return;
   if (state.duration && !partySeconds()) return undercoverStartVote();
+  const asker = undercoverInquiryAsker();
+  if (!Number.isInteger(asker) || state.askedPlayers.includes(asker)) return;
+  state.askedPlayers.push(asker);
   state.questionIndex++;
+  state.inquiryAsker = null;
   state.inquiryTarget = null;
   state.inquiryQuestion = '';
   state.inquiryAnswer = '';
@@ -1697,16 +1816,17 @@ function undercoverNextClue(token = partyCardToken()) {
   if (state.duration && !partySeconds()) return undercoverStartVote();
   const s = state,
     cycle = Math.floor(s.clueIndex / s.players.length),
-    order = [...s.clueOrder.slice(cycle), ...s.clueOrder.slice(0, cycle)],
-    player = order[s.clueIndex % s.players.length],
+    player = undercoverCurrentClue(s),
     text = (s.clueDraft || '').trim().replace(/\s+/gu, ' '),
     word = s.hidden.includes(player) ? s.pair[1] : s.pair[0];
+  if (!Number.isInteger(player)) return toast('اختاروا صاحب التلميح أولاً.');
   if (text && norm(text).includes(norm(word))) {
     toast('هذا التلميح يحتوي كلمتك؛ اختر وصفاً آخر كي لا تكشفها.');
     return $('undercoverClue')?.focus();
   }
   s.clues.push({ player, cycle, text });
   s.clueDraft = '';
+  s.clueSpeaker = null;
   s.clueIndex++;
   renderUndercoverDiscussion();
 }
@@ -2067,6 +2187,31 @@ function creativeRound() {
 function creativeRules(s = state) {
   return partyCreativeFormats[s.creativeFormat] || partyCreativeFormats.free;
 }
+function creativeHasWord(text, word) {
+  const base = norm(word)
+      .replace(/^ال/u, '')
+      .replace(/ا$/u, (last) => (/[ً]/u.test(word) ? '' : last)),
+    tokens = norm(text).match(/[\p{L}\p{N}]+/gu) || [];
+  if (!base) return false;
+  // Arabic articles and common attached prepositions still count as using the word.
+  const expected = new RegExp(`^(?:و|ف)?(?:(?:ب|ك)?(?:ال)?|لل|ل)${base}(?:ا)?$`, 'u');
+  return tokens.some((token) => token === norm(word) || expected.test(token));
+}
+function creativeConstraintHTML(s = state) {
+  const words = s.answerDraft.trim() ? s.answerDraft.trim().split(/\s+/u).length : 0,
+    rules = [
+      ...(s.creativeFormat === 'seven' ? [[words === 7, `${words} / 7 كلمات`]] : []),
+      ...(s.sparkWord
+        ? [[creativeHasWord(s.answerDraft, s.sparkWord), `كلمة الإلهام: ${s.sparkWord}`]]
+        : []),
+      ...(s.chainBridge
+        ? [[creativeHasWord(s.answerDraft, s.chainBridge), `كلمة الربط: ${s.chainBridge}`]]
+        : []),
+    ];
+  return rules.length
+    ? `<ul class="party-constraints">${rules.map(([met, label]) => `<li class="${met ? 'met' : ''}"><span aria-hidden="true">${met ? '✓' : '○'}</span>${esc(label)}</li>`).join('')}</ul>`
+    : '';
+}
 function creativeRefreshPrompt(token = partyStageToken()) {
   if (!partyStage('improv', 'prompt') || !partyAcceptStage(token)) return;
   const s = state;
@@ -2104,10 +2249,11 @@ function creativeOpenAnswer(token = partyPassToken()) {
   setHTML(
     partyWrap(
       'improv',
-      `<section class="panel party-private"><p class="party-kicker">رد ${esc(s.players[s.answerIndex])}</p><h3 class="party-question">${esc(s.prompt)}</h3><div class="party-format"><b>${format.name}</b><p>${format.rule}</p></div>${creativeBrief(s)}${creativeChainBrief(s, true)}<label for="creativeAnswer">ردك · ${format.limit} حرفاً كحد أقصى</label><textarea id="creativeAnswer" class="party-textarea" maxlength="${format.limit}" rows="3" placeholder="فكرة خفيفة ومبتكرة…" oninput="creativeDraftUpdate()" aria-describedby="creativeCounter">${esc(s.answerDraft)}</textarea><p class="note" id="creativeCounter">${s.answerDraft.length} / ${format.limit}</p><div class="actions"><button class="primary" data-party-card="${s.answerToken}" onclick="creativePreview()">👀 راجع ردي قبل تسليمه</button><button data-party-card="${s.answerToken}" onclick="creativeSubmit()">احفظ ردي وأخفِ الشاشة</button><button onclick="partyHidePrivate()">🔒 إخفاء مؤقت</button></div><p class="note">لا تكتب اسمك. الأجمل فكرة لطيفة يفهمها الجميع. زر Escape يخفي ردك ويحفظ المسودة.</p></section>`,
+      `<section class="panel party-private"><p class="party-kicker">رد ${esc(s.players[s.answerIndex])}</p><h3 class="party-question">${esc(s.prompt)}</h3><div class="party-format"><b>${format.name}</b><p>${format.rule}</p></div>${creativeBrief(s)}${creativeChainBrief(s, true)}<label for="creativeAnswer">ردك · ${format.limit} حرفاً كحد أقصى</label><textarea id="creativeAnswer" class="party-textarea" maxlength="${format.limit}" rows="3" placeholder="فكرة خفيفة ومبتكرة…" oninput="creativeDraftUpdate()" aria-describedby="creativeCounter">${esc(s.answerDraft)}</textarea><p class="note" id="creativeCounter">${s.answerDraft.length} / ${format.limit}</p><div id="creativeConstraints" aria-live="polite">${creativeConstraintHTML(s)}</div><div class="actions"><button class="primary" data-party-card="${s.answerToken}" onclick="creativePreview()">👀 راجع ردي قبل تسليمه</button><button data-party-card="${s.answerToken}" onclick="creativeSubmit()">احفظ ردي وأخفِ الشاشة</button><button onclick="partyHidePrivate()">🔒 إخفاء مؤقت</button></div><p class="note">لا تكتب اسمك. الأجمل فكرة لطيفة يفهمها الجميع. زر Escape يخفي ردك ويحفظ المسودة.</p></section>`,
     ),
   );
   $('creativeAnswer').focus();
+  creativeDraftUpdate();
 }
 function creativeDraftUpdate() {
   if (!partyStage('improv', 'answer-view')) return;
@@ -2119,6 +2265,7 @@ function creativeDraftUpdate() {
     ' / ' +
     format.limit +
     (state.creativeFormat === 'seven' ? ` · ${words} / 7 كلمات` : '');
+  if ($('creativeConstraints')) $('creativeConstraints').innerHTML = creativeConstraintHTML();
 }
 function creativeReadAnswer() {
   return latin($('creativeAnswer')?.value ?? state.answerDraft)
@@ -2137,7 +2284,7 @@ function creativeValidAnswer(answer) {
     $('creativeAnswer')?.focus();
     return false;
   }
-  if (state.sparkWord && !norm(answer).includes(norm(state.sparkWord))) {
+  if (state.sparkWord && !creativeHasWord(answer, state.sparkWord)) {
     toast(`ضمّن كلمة الإلهام «${state.sparkWord}» في ردك.`);
     $('creativeAnswer')?.focus();
     return false;
@@ -2150,7 +2297,7 @@ function creativeValidAnswer(answer) {
   if (
     state.creativeMode === 'chain' &&
     state.chainBridge &&
-    !norm(answer).includes(norm(state.chainBridge))
+    !creativeHasWord(answer, state.chainBridge)
   ) {
     toast(`اربط السطر بما قبله باستعمال كلمة «${state.chainBridge}».`);
     $('creativeAnswer')?.focus();

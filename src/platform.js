@@ -1795,7 +1795,8 @@ function renderMind() {
   );
 }
 function confirmMind(ok) {
-  if (screen !== 'mind' || state.done || coreBlocked()) return;
+  if (screen !== 'mind' || !state || state.done || coreBlocked()) return;
+  if (ok && state.candidates.length !== 1) return;
   if (!ok) {
     openModal(
       '<div class="modalhead"><h2 id="modaltitle">نقدر نعلّمها</h2><button onclick="closeModal()">✕</button></div><p class="muted">إذا الشي خارج القائمة، أضفه مع صفاته. وإذا جاوبت بالغلط، ارجع وصحّح الإجابة.</p><div class="actions"><button onclick="closeModal();undoMind()">تراجع عن سؤال</button><button class="primary" onclick="teachItem()">أضف الشي</button></div>',
@@ -1919,7 +1920,7 @@ const gameGuides = {
   ],
   spy: [
     'اختاروا عام أو حيوانات أو جماد أو أكل أو مهن أو رياضة أو أماكن. في الدول اختاروا الخليج أو قارة محددة، والأسماء كلها معروفة.',
-    'أخفوا الأدوار بين اللاعبين، اسألوا دون ذكر الإجابة ثم صوّتوا. تقدرون تخفون الاحتمالات وتختارون أسئلة أصعب. من 5 لاعبين تقدرون تختارون جاسوسين ما يعرفون بعض؛ لازم أعلى اسمين بالأصوات يكونون الجاسوسين دون تعادل مع لاعب ثالث. محاولة التخمين واحدة مشتركة بينهم.',
+    'اختاروا بداية عشوائية أو اتفقوا عليها بينكم، واسألوا من تريدون بأسئلتكم. صوّتوا أولاً؛ تظهر هوية الجاسوس وهل اختياركم صحيح، ثم يخمّن الكلمة بالبحث والاختيار. الكلمة لا تُكشف قبل التخمين. من 5 لاعبين يمكن اختيار جاسوسين ومحاولة تخمين مشتركة واحدة.',
   ],
   taboo: [
     'اشرح الكلمة دون نطقها أو نطق الكلمات الممنوعة، والباقون يخمنون.',
@@ -1962,9 +1963,30 @@ function openGuide(id = '') {
   const g = games.find((v) => v[0] === id),
     tips = gameGuides[id];
   openModal(
-    `<div class="modalhead"><h2 id="modaltitle">${g ? g[1] + ' ' + esc(g[2]) : '🌌 دليل عالم اللمّة'}</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div>${g ? `<div class="guide-step"><span>1</span><div><h3>هدف اللعبة</h3><p>${tips ? tips[0] : esc(g[3])}</p></div></div><div class="guide-step"><span>2</span><div><h3>نصيحة للبداية</h3><p>${tips ? tips[1] : 'اختر الإعدادات المناسبة، واتبع التعليمات الظاهرة أثناء الجولة.'}</p></div></div>` : `<div class="guide-step"><span>1</span><div><h3>اكتشف ألعابك</h3><p>تصفح العوالم أو استخدم البحث. فلتر «بمفردك» للألعاب الفردية و«مع الربع» للألعاب التي تدعم الأصدقاء. النجمة تحفظ اللعبة في مفضّلتك.</p></div></div><div class="guide-step"><span>2</span><div><h3>اضبط التحدّي</h3><p>كل لعبة تبدأ بشاشة إعدادات. اختر اللاعب والمستوى، وحجم اللوحة أو وقت الجولة عندما تكون متاحة.</p></div></div><div class="guide-step"><span>3</span><div><h3>العب براحتك</h3><p>استخدم زر الإيقاف لأخذ استراحة. الشاشة الكاملة توسع مساحة اللعب، ودليل كل لعبة موجود بجانب عنوانها.</p></div></div><div class="guide-step"><span>4</span><div><h3>نافس وطور مستواك</h3><p>تحديات اليوم تتجدد بتوقيت الكويت. في البطولة كل اللاعبين يواجهون نفس الأسئلة؛ النقاط والإنجازات تنحفظ تلقائياً على هذا المتصفح.</p></div></div>`}<div class="hintpanel">⌨ لوحة المفاتيح: الأسهم للحركة في الألعاب التي تدعمها، والأرقام للسودوكو وتسلسل الألوان. زر Escape يغلق نافذة الدليل.</div><div class="actions"><button class="primary" onclick="closeModal()">جاهز، نكمل</button></div>`,
+    `<div class="modalhead"><h2 id="modaltitle">${g ? g[1] + ' ' + esc(g[2]) : '🌌 دليل عالم اللمّة'}</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div>${g ? `<div class="guide-step"><span>1</span><div><h3>هدف اللعبة</h3><p>${tips ? tips[0] : esc(g[3])}</p></div></div><div class="guide-step"><span>2</span><div><h3>نصيحة للبداية</h3><p>${tips ? tips[1] : 'اختر الإعدادات المناسبة، واتبع التعليمات الظاهرة أثناء الجولة.'}</p></div></div>` : `<div class="guide-step"><span>1</span><div><h3>اكتشف ألعابك</h3><p>تصفح العوالم أو استخدم البحث. فلتر «بمفردك» للألعاب الفردية و«مع الربع» للألعاب التي تدعم الأصدقاء. النجمة تحفظ اللعبة في مفضّلتك.</p></div></div><div class="guide-step"><span>2</span><div><h3>اضبط التحدّي</h3><p>كل لعبة تبدأ بشاشة إعدادات. اختر اللاعب والمستوى، وحجم اللوحة أو وقت الجولة عندما تكون متاحة.</p></div></div><div class="guide-step"><span>3</span><div><h3>العب براحتك</h3><p>استخدم زر الإيقاف لأخذ استراحة. الشاشة الكاملة توسع مساحة اللعب، ودليل كل لعبة موجود بجانب عنوانها.</p></div></div><div class="guide-step"><span>4</span><div><h3>نافس وطور مستواك</h3><p>تحديات اليوم تتجدد بتوقيت الكويت. في البطولة كل اللاعبين يواجهون نفس الأسئلة؛ النقاط والإنجازات تنحفظ تلقائياً على هذا المتصفح.</p></div></div>`}<div class="hintpanel">⌨ لوحة المفاتيح: الأسهم للحركة في الألعاب التي تدعمها، والأرقام للسودوكو وتسلسل الألوان. F1 يفتح دليل اللعبة، وEscape يغلقه.</div><div class="actions"><button class="primary" onclick="closeModal()">جاهز، نكمل</button></div>`,
   );
+  if (g && gameControlTips[id])
+    $('modal')
+      .querySelector('.hintpanel')
+      ?.insertAdjacentHTML(
+        'beforebegin',
+        `<div class="guide-step guide-controls"><span>3</span><div><h3>التحكم أثناء اللعب</h3><p>${esc(gameControlTips[id])}</p></div></div>`,
+      );
 }
+
+// F1 opens the same guide as the visible help button without consuming a move.
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'F1' || event.isComposing || event.repeat || coreBlocked()) return;
+  event.preventDefault();
+  openGuide(screen === 'setup' ? state?.id : state?.id || '');
+});
+
+// Some mobile browsers freeze a page before visibilitychange is delivered.
+// Cover private cards and pause the clock before a back/forward cache snapshot.
+window.addEventListener('pagehide', () => {
+  if (state && !state.done && !['home', 'setup', 'tour-handoff'].includes(screen)) showPause();
+  captureSoloSession();
+});
 
 function quizFields(id) {
   const count = id === 'math' ? 10 : id === 'color' ? 15 : 8,
