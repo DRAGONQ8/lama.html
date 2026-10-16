@@ -3654,6 +3654,7 @@ body:has(.play) .toast {
   font-size: 19px;
   padding-block: 16px;
   border: 2px solid var(--mint);
+  margin-block-end: 10px;
 }
 .spy-word-results {
   display: grid;
@@ -4739,13 +4740,15 @@ body.reduced-motion .tile-merged {
 }
 .maze-viewport {
   max-width: 560px;
-  max-height: min(70vh, 560px);
   overflow: auto;
   margin: 0 auto;
   border-radius: 18px;
   direction: ltr;
   overscroll-behavior: contain;
   scrollbar-width: thin;
+}
+.maze-viewport.zoomed {
+  max-height: min(70vh, 560px);
 }
 .maze-viewport #mazeCanvas {
   max-width: none;

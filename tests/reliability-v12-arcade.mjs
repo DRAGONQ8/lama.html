@@ -234,6 +234,16 @@ try {
           () => $('mazeViewport').scrollLeft < 5 && $('mazeViewport').scrollTop < 5,
         ),
       );
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.evaluate(() => mazeZoom(1));
+      assert.ok(
+        await page.evaluate(
+          () => $('mazeViewport').scrollHeight <= $('mazeViewport').clientHeight + 1,
+        ),
+        'The unzoomed landscape map must remain fully visible instead of trapping lower rows',
+      );
+      await page.evaluate(() => mazeZoom(2));
+      assert.ok(await page.evaluate(() => $('mazeViewport').clientHeight <= innerHeight * 0.7 + 1));
     },
   );
   await check('All arcade play controls fit both narrow and wide layouts', async () => {

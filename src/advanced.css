@@ -82,6 +82,7 @@
   font-size: 19px;
   padding-block: 16px;
   border: 2px solid var(--mint);
+  margin-block-end: 10px;
 }
 .spy-word-results {
   display: grid;
