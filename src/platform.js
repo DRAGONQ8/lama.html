@@ -476,7 +476,7 @@ games.push(
     'spy',
     '🕶️',
     'منو الجاسوس؟',
-    'الكل يعرف المكان إلا واحد. اسألوا، ناقشوا ثم صوّتوا.',
+    'عام، حيوانات، جماد ودول حسب القارة. جاسوس أو جاسوسان؛ اسألوا وصوّتوا.',
     'جماعي',
     '#c2baff',
   ],
@@ -1480,8 +1480,7 @@ function setup(id, internal = false) {
     body = `<p class="muted">اختَر لون الحروف نفسها، حتى لو الكلمة تقول لوناً آخر. اضبط الوقت وعدد الأسئلة لتحدٍّ يناسبك.</p><div class="fields">${diff}<div class="field full"><label for="colormode">قاعدة الإجابة</label><select id="colormode"><option value="ink">لون الحروف دائماً</option><option value="mixed">قاعدة متغيرة · لون أو معنى</option></select></div><div class="field full"><label for="colorrule">نوع التمييز</label><select id="colorrule"><option value="standard">ألوان وكلمات</option><option value="shape">ألوان وأشكال · اتبع البطاقة</option></select></div>${quizFields('color')}${playerField()}</div><div class="hintpanel">مثال: كلمة «أحمر» مكتوبة بالأزرق، جوابك «أزرق».</div>`;
   else if (id === 'pattern')
     body = `<p class="muted">اكتشف قاعدة كل سلسلة واختر الرقم الناقص. شرح الحل يظهر بعد إجابتك. اضبط الوقت وطول الجولة.</p><div class="fields">${diff}<div class="field full"><label for="patternmode">مكان العدد الناقص</label><select id="patternmode"><option value="next">العدد التالي</option><option value="missing">خانة داخل السلسلة</option></select></div>${quizFields('pattern')}${playerField()}</div>`;
-  else if (id === 'spy')
-    body = `<p class="muted">الكل يشوف نفس المكان إلا الجاسوس. كل لاعب يشوف دوره بروحه، وبعدها اسألوا بعض بدون ما تفضحون المكان. في النهاية كل واحد يصوّت.</p><div class="fields"><div class="field full"><label for="spytheme">عالم الأماكن</label><select id="spytheme"><option value="all">كل الأماكن</option><option value="everyday">الحياة اليومية</option><option value="travel">السفر والمغامرات</option><option value="fantasy">عوالم خيالية</option></select></div><div class="field full"><label for="duration">وقت النقاش</label><select id="duration"><option value="180">3 دقائق</option><option value="300" selected>5 دقائق</option><option value="480">8 دقائق</option></select></div></div><p class="note">${store.players.length} لاعبين: ${store.players.map(esc).join('، ')}. تصويت بدون أغلبية واضحة = فوز الجاسوس.</p><div class="actions"><button onclick="openPeople()">عدّل اللاعبين</button></div>`;
+  else if (id === 'spy') body = spySetupHTML();
   else if (id === 'taboo')
     body = `<p class="muted">اشرح الكلمة بدون ما تقولها أو تقول أي كلمة من الممنوعات. جواب صحيح +10، مخالفة −5، تجاوز −2. الباقين يحكمون على الشرح.</p><div class="fields"><div class="field full"><label for="taboocategory">فئة الكلمات</label><select id="taboocategory"><option value="all">كل الفئات</option><option value="everyday">الحياة اليومية</option><option value="science">العلوم والتقنية</option><option value="travel">السفر والأماكن</option><option value="sport">الرياضة</option><option value="food">الأكل والمشروبات</option></select></div><div class="field"><label for="duration">وقت الدور</label><select id="duration"><option value="45">45 ثانية</option><option value="60" selected>60 ثانية</option><option value="90">90 ثانية</option></select></div><div class="field"><label for="rounds">الأدوار لكل لاعب</label><select id="rounds"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div><div class="field"><label for="tabooskips">تجاوزات الدور</label><select id="tabooskips"><option value="unlimited">مفتوحة · −2 لكل تجاوز</option><option value="3">3 تجاوزات · اختر بعناية</option></select></div><p class="note">يلعبون: ${store.players.map(esc).join('، ')}.</p>`;
   setHTML(
@@ -1919,8 +1918,8 @@ const gameGuides = {
     'افحص الفرق، ثم النسبة، ثم القواعد المتناوبة. شرح الحل يظهر بعد الإجابة.',
   ],
   spy: [
-    'الجميع يعرف المكان إلا الجاسوس. اسألوا بعضاً ثم صوّتوا.',
-    'لا تقولوا اسم المكان صراحة. الجاسوس يحاول استنتاجه من أجوبتكم.',
+    'اختاروا عام أو حيوانات أو جماد أو أكل أو مهن أو رياضة أو أماكن. في الدول اختاروا الخليج أو قارة محددة، والأسماء كلها معروفة.',
+    'أخفوا الأدوار بين اللاعبين، اسألوا دون ذكر الإجابة ثم صوّتوا. تقدرون تخفون الاحتمالات وتختارون أسئلة أصعب. من 5 لاعبين تقدرون تختارون جاسوسين ما يعرفون بعض؛ لازم أعلى اسمين بالأصوات يكونون الجاسوسين دون تعادل مع لاعب ثالث. محاولة التخمين واحدة مشتركة بينهم.',
   ],
   taboo: [
     'اشرح الكلمة دون نطقها أو نطق الكلمات الممنوعة، والباقون يخمنون.',

@@ -1,4 +1,19 @@
 /* Interaction cues for the board and deduction games. */
+.spy-setup-preview {
+  margin-top: 18px;
+  line-height: 1.9;
+}
+.spy-round-category {
+  display: inline-flex;
+  margin-block: 0 16px;
+  white-space: normal;
+}
+.spy-candidates .listchips {
+  max-height: 22rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 8px;
+}
 .ttt .board-shortcut {
   font:
     700 0.9rem system-ui,

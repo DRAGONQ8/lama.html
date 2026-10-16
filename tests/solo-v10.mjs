@@ -124,7 +124,7 @@ try {
           rejected,
         };
       });
-      assert.equal(value.games, 34);
+      assert.equal(value.games, 37);
       assert.deepEqual(value.legacy, { version: 1, profiles: [] });
       assert.equal(value.active, null);
       assert.equal(value.rejected, true);

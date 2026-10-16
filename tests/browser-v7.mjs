@@ -250,7 +250,7 @@ try {
       home();
     });
     const ids = await page.evaluate(() => games.map((game) => game[0]));
-    assert.equal(ids.length, 34);
+    assert.equal(ids.length, 37);
     report.games = ids;
     await inspect(page, 'home', width, true);
     await page.locator('.discover-drawer > summary').click();
@@ -453,7 +453,7 @@ try {
     });
     await inspect(page, 'home-light', width, width === 320 || width === 1440);
     console.log(
-      `✓ ${width}px: 34 setups, games, guides, results; seven dialogs; tournament; light theme`,
+      `✓ ${width}px: 37 setups, games, guides, results; seven dialogs; tournament; light theme`,
     );
     await context.close();
   }

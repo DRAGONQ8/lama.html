@@ -2993,6 +2993,370 @@ const spyPlaces = {
   ],
 };
 const spyLocations = [...new Set(Object.values(spyPlaces).flat())];
+// Country lists deliberately favour familiar names. Gulf countries also belong to Asia.
+const spyCountries = {
+  gulf: ['الكويت', 'السعودية', 'الإمارات', 'قطر', 'البحرين', 'عُمان'],
+  europe: [
+    'فرنسا',
+    'ألمانيا',
+    'إيطاليا',
+    'بريطانيا',
+    'إسبانيا',
+    'البرتغال',
+    'هولندا',
+    'سويسرا',
+    'النمسا',
+    'اليونان',
+    'السويد',
+    'النرويج',
+    'الدنمارك',
+    'روسيا',
+    'أوكرانيا',
+    'بلجيكا',
+  ],
+  asia: [
+    'الكويت',
+    'السعودية',
+    'الإمارات',
+    'قطر',
+    'البحرين',
+    'عُمان',
+    'الصين',
+    'اليابان',
+    'كوريا الجنوبية',
+    'الهند',
+    'تركيا',
+    'تايلاند',
+    'إندونيسيا',
+    'ماليزيا',
+    'الفلبين',
+    'لبنان',
+    'الأردن',
+    'فلسطين',
+    'العراق',
+    'سوريا',
+    'إيران',
+    'باكستان',
+  ],
+  africa: [
+    'مصر',
+    'المغرب',
+    'الجزائر',
+    'تونس',
+    'ليبيا',
+    'السودان',
+    'جنوب أفريقيا',
+    'كينيا',
+    'نيجيريا',
+  ],
+  northAmerica: ['أمريكا', 'كندا', 'المكسيك', 'كوبا', 'جامايكا'],
+  southAmerica: ['البرازيل', 'الأرجنتين', 'تشيلي', 'كولومبيا', 'بيرو', 'أوروغواي'],
+  oceania: ['أستراليا', 'نيوزيلندا'],
+};
+const spyCountryPool = [...new Set(Object.values(spyCountries).flat())];
+const spyWordPools = {
+  animals: [
+    'أسد',
+    'نمر',
+    'فهد',
+    'فيل',
+    'زرافة',
+    'قرد',
+    'غوريلا',
+    'دب',
+    'باندا',
+    'ذئب',
+    'ثعلب',
+    'أرنب',
+    'قطة',
+    'كلب',
+    'حصان',
+    'حمار',
+    'جمل',
+    'بقرة',
+    'خروف',
+    'ماعز',
+    'غزال',
+    'كنغر',
+    'كوالا',
+    'سنجاب',
+    'قنفذ',
+    'فأر',
+    'خفاش',
+    'سلحفاة',
+    'تمساح',
+    'ثعبان',
+    'حرباء',
+    'ضفدع',
+    'بطريق',
+    'نعامة',
+    'نسر',
+    'صقر',
+    'بومة',
+    'ببغاء',
+    'حمامة',
+    'دجاجة',
+    'بطة',
+    'طاووس',
+    'دلفين',
+    'حوت',
+    'قرش',
+    'أخطبوط',
+    'حصان البحر',
+    'فراشة',
+    'نحلة',
+    'نملة',
+  ],
+  objects: [
+    'هاتف',
+    'كمبيوتر',
+    'تلفزيون',
+    'سماعة',
+    'كاميرا',
+    'ساعة',
+    'نظارة',
+    'قلم',
+    'كتاب',
+    'دفتر',
+    'مسطرة',
+    'حقيبة',
+    'مفتاح',
+    'قفل',
+    'باب',
+    'نافذة',
+    'كرسي',
+    'طاولة',
+    'سرير',
+    'وسادة',
+    'بطانية',
+    'سجادة',
+    'مرآة',
+    'مصباح',
+    'مروحة',
+    'مكيف',
+    'ثلاجة',
+    'غسالة',
+    'فرن',
+    'ميكروويف',
+    'ملعقة',
+    'شوكة',
+    'سكين',
+    'صحن',
+    'كوب',
+    'إبريق',
+    'قدر',
+    'مقلاة',
+    'مظلة',
+    'حذاء',
+    'قبعة',
+    'خاتم',
+    'عطر',
+    'صابون',
+    'منشفة',
+    'فرشاة أسنان',
+    'مشط',
+    'مقص',
+    'كرة',
+    'دراجة',
+    'سيارة',
+    'طائرة',
+    'قطار',
+    'قارب',
+    'خوذة',
+    'خيمة',
+    'شمعة',
+    'ريموت',
+    'شاحن',
+    'محفظة',
+  ],
+  food: [
+    'مجبوس',
+    'برياني',
+    'كبسة',
+    'مرقوق',
+    'هريس',
+    'جريش',
+    'مطبق زبيدي',
+    'مندي',
+    'شاورما',
+    'فلافل',
+    'حمص',
+    'كباب',
+    'مشاوي',
+    'بيتزا',
+    'برغر',
+    'بطاطس مقلية',
+    'معكرونة',
+    'لازانيا',
+    'سوشي',
+    'شوربة',
+    'سلطة',
+    'خبز',
+    'جبن',
+    'بيض',
+    'لبن',
+    'زبادي',
+    'تمر',
+    'تفاح',
+    'موز',
+    'برتقال',
+    'بطيخ',
+    'فراولة',
+    'مانجو',
+    'عنب',
+    'كنافة',
+    'بقلاوة',
+    'لقيمات',
+    'كيك',
+    'بسكويت',
+    'شوكولاتة',
+    'آيس كريم',
+    'فشار',
+    'قهوة',
+    'شاي',
+    'عصير',
+    'حليب',
+    'ماء',
+    'عسل',
+  ],
+  jobs: [
+    'طبيب',
+    'ممرض',
+    'طبيب أسنان',
+    'صيدلي',
+    'معلم',
+    'مهندس',
+    'محامي',
+    'قاضي',
+    'شرطي',
+    'إطفائي',
+    'طيار',
+    'مضيف طيران',
+    'قبطان',
+    'سائق',
+    'طباخ',
+    'خباز',
+    'نجار',
+    'حداد',
+    'كهربائي',
+    'سباك',
+    'ميكانيكي',
+    'مزارع',
+    'صياد',
+    'بائع',
+    'محاسب',
+    'مترجم',
+    'مبرمج',
+    'مصمم',
+    'مصور',
+    'رسام',
+    'ممثل',
+    'مذيع',
+    'صحفي',
+    'كاتب',
+    'مدرب',
+    'حارس مرمى',
+    'حلاق',
+    'خياط',
+    'رائد فضاء',
+    'باحث',
+  ],
+  sports: [
+    'كرة قدم',
+    'كرة سلة',
+    'كرة طائرة',
+    'كرة يد',
+    'تنس',
+    'تنس الطاولة',
+    'ريشة طائرة',
+    'سباحة',
+    'جري',
+    'مشي',
+    'ركوب الدراجات',
+    'ركوب الخيل',
+    'قفز الحواجز',
+    'ملاكمة',
+    'كاراتيه',
+    'تايكوندو',
+    'جودو',
+    'مصارعة',
+    'جمباز',
+    'رفع الأثقال',
+    'تزلج',
+    'تسلق',
+    'غوص',
+    'تجديف',
+    'بولينغ',
+    'غولف',
+    'رماية',
+    'مبارزة',
+    'سباق سيارات',
+    'هوكي',
+  ],
+};
+const spyThemes = [
+  ['all', '🌟 عام · كل الكلمات'],
+  ['animals', '🐾 حيوانات'],
+  ['objects', '🪑 جماد'],
+  ['countries', '🌍 دول مشهورة'],
+  ['food', '🍕 أكل ومشروبات'],
+  ['jobs', '👨‍⚕️ مهن ووظائف'],
+  ['sports', '⚽ رياضة'],
+  ['places', '📍 أماكن · كل العوالم'],
+  ['everyday', '🏠 أماكن الحياة اليومية'],
+  ['travel', '✈️ أماكن السفر والمغامرات'],
+  ['fantasy', '🚀 أماكن خيالية'],
+];
+const spyRegions = [
+  ['all', 'كل الدول المشهورة'],
+  ['gulf', '🇰🇼 دول الخليج'],
+  ['europe', 'أوروبا'],
+  ['asia', 'آسيا'],
+  ['africa', 'أفريقيا'],
+  ['northAmerica', 'أمريكا الشمالية'],
+  ['southAmerica', 'أمريكا الجنوبية'],
+  ['oceania', 'أوقيانوسيا · أستراليا ونيوزيلندا'],
+];
+function spyPool(theme = 'all', region = 'all') {
+  if (theme === 'countries') return [...(spyCountries[region] || spyCountryPool)];
+  if (spyWordPools[theme]) return [...spyWordPools[theme]];
+  if (spyPlaces[theme]) return [...spyPlaces[theme]];
+  if (theme === 'places') return [...spyLocations];
+  return [...new Set([...Object.values(spyWordPools).flat(), ...spyCountryPool, ...spyLocations])];
+}
+function spyIsPlace(theme) {
+  return ['places', 'everyday', 'travel', 'fantasy'].includes(theme);
+}
+function spyTerms(s = state) {
+  if (s.theme === 'countries')
+    return { noun: 'الدولة', possible: 'الدول المحتملة', reveal: 'الدولة كانت', icon: '🌍' };
+  if (spyIsPlace(s.theme))
+    return { noun: 'المكان', possible: 'الأماكن المحتملة', reveal: 'المكان كان', icon: '📍' };
+  return { noun: 'الكلمة', possible: 'الكلمات المحتملة', reveal: 'الكلمة كانت', icon: '💬' };
+}
+function spySetupHTML() {
+  return `<p class="muted">اختاروا عام أو فئة تحبونها. الكل يشوف نفس الكلمة إلا الجاسوس، وكل لاعب يشوف دوره بروحه. اسألوا بعض بدون ذكر الإجابة، وبعدها صوّتوا سراً.</p><div class="fields"><div class="field full"><label for="spytheme">فئة الجولة</label><select id="spytheme" onchange="spySetupChanged()">${spyThemes.map(([id, label]) => `<option value="${id}">${label}</option>`).join('')}</select></div><div class="field full" id="spyregionfield" hidden><label for="spyregion">دول أي منطقة أو قارة؟</label><select id="spyregion" onchange="spySetupChanged()">${spyRegions.map(([id, label]) => `<option value="${id}">${label}</option>`).join('')}</select><p class="tiny">دول الخليج الست ضمن آسيا أيضاً. اخترنا أسماء معروفة؛ أوقيانوسيا فيها أستراليا ونيوزيلندا.</p></div><div class="field"><label for="spycount">عدد الجواسيس</label><select id="spycount" onchange="spySetupChanged()"><option value="1">جاسوس واحد · من 3 لاعبين</option><option value="2" ${store.players.length < 5 ? 'disabled' : ''}>جاسوسان · من 5 لاعبين</option></select></div><div class="field"><label for="duration">وقت النقاش</label><select id="duration"><option value="120">دقيقتان</option><option value="180">3 دقائق</option><option value="300" selected>5 دقائق</option><option value="480">8 دقائق</option><option value="600">10 دقائق</option></select></div><div class="field"><label for="spycandidates">قائمة الاحتمالات</label><select id="spycandidates" onchange="spySetupChanged()"><option value="show">تظهر للجميع · أسهل</option><option value="hide">مخفية · تخمين بالكتابة</option></select></div><div class="field"><label for="spystyle">أسلوب الأسئلة المقترحة</label><select id="spystyle"><option value="balanced">حسب الفئة · أسئلة متنوعة</option><option value="subtle">تلميحات خفيفة · تحدّي أصعب</option></select></div></div><div class="hintpanel spy-setup-preview" id="spypreview" role="status">عام · ${spyPool().length} كلمة محتملة. جاسوس واحد؛ صاحب أعلى الأصوات منفرداً يُتهم، والتعادل ينقذه.</div><p class="note">${store.players.length} لاعبين: ${store.players.map(esc).join('، ')}. الجاسوسان ما يعرفون بعض؛ لهم محاولة تخمين واحدة مشتركة، ولازم تكشفون الاثنين للفوز.</p><div class="actions"><button onclick="openPeople()">عدّل اللاعبين</button></div>`;
+}
+function spySetupChanged() {
+  if (screen !== 'setup' || state?.id !== 'spy') return;
+  const theme = $('spytheme')?.value || 'all',
+    region = $('spyregion')?.value || 'all',
+    count = $('spycount');
+  if ($('spyregionfield')) $('spyregionfield').hidden = theme !== 'countries';
+  if (count) {
+    count.querySelector('[value="2"]').disabled = store.players.length < 5;
+    if (count.value === '2' && store.players.length < 5) count.value = '1';
+  }
+  if ($('spypreview')) {
+    const label = spyThemes.find(([id]) => id === theme)?.[1] || spyThemes[0][1],
+      regionLabel =
+        theme === 'countries'
+          ? ` · ${spyRegions.find(([id]) => id === region)?.[1] || 'كل الدول المشهورة'}`
+          : '';
+    $('spypreview').textContent =
+      `${label}${regionLabel} · ${spyPool(theme, region).length} ${theme === 'countries' ? 'دولة' : spyIsPlace(theme) ? 'مكان' : 'كلمة'} محتملة. ${count?.value === '2' ? 'لازم أعلى اسمين بالأصوات يكونون الجاسوسين؛ أي تعادل مع لاعب ثالث ينقذهم.' : 'صاحب أعلى الأصوات منفرداً يُتهم؛ التعادل ينقذ الجاسوس.'}`;
+  }
+}
 const spyPrompts = [
   'ما أول شيء تفعله عندما تصل إلى هذا المكان؟',
   'هل تذهب إلى هذا المكان وحدك أم مع الآخرين؟',
@@ -3010,22 +3374,121 @@ const spyPrompts = [
   'من الشخص الذي تطلب مساعدته في هذا المكان؟',
   'ما القاعدة التي يلتزم بها الزوار؟',
 ];
+const spySubtlePrompts = [
+  'شنو أول إحساس يجيك لما تسمع الإجابة؟',
+  'هل يرتبط عندك بذكرى من الطفولة؟ بدون تفاصيل تكشفه.',
+  'إذا كان له لون واحد في بالك، شنو تختار؟ وليش؟',
+  'تفضل تعرف عنه أكثر أو تكتفي باللي تعرفه؟',
+  'هل الناس غالباً يتفقون عليه أو تختلف أذواقهم؟',
+  'لو تشبهه بشي من فئة ثانية، شنو تقول بدون ما تكشفه؟',
+  'شنو أكثر كلمة ممكن تصفه بدون ما تكون الإجابة واضحة؟',
+  'هل تتغير نظرتك له مع العمر؟',
+  'اختار له موسم من السنة وفسّر باختصار.',
+  'لو تكلمت عنه لشخص ما يعرفه، من وين تبدأ؟',
+  'هل تربطه بشي قديم أو حديث؟',
+  'شلون توصفه بكلمتين بدون ذكر اسمه أو حروفه؟',
+];
+const spyThemePrompts = {
+  animals: [
+    'وين تتوقع تشوفه؟',
+    'هل ممكن يتربّى في البيت؟',
+    'شلون يتحرك عادة؟',
+    'شنو نوع أكله؟',
+    'هل يعيش مع مجموعة أو بروحه؟',
+    'متى يكون نشيط عادة؟',
+    'هل يحتاج مساحة كبيرة؟',
+    'هل يقرب له الإنسان أو يحافظ على مسافة؟',
+  ],
+  objects: [
+    'وين نستخدمه عادة؟',
+    'هل تلقاه في أغلب البيوت؟',
+    'هل يحتاج كهرباء؟',
+    'تستخدمه كل يوم أو نادراً؟',
+    'هل ممكن تحطه في جيبك؟',
+    'شنو تسوي إذا خرب؟',
+    'هل تشتريه مرة أو تستبدله كثير؟',
+    'من أكثر شخص يستخدمه؟',
+  ],
+  countries: [
+    'شنو نوع الجو اللي تتوقعه هناك؟',
+    'ليش ممكن الناس يسافرون لها؟',
+    'شنو الأكل اللي يذكّرك فيها بدون ذكر اسمه؟',
+    'هل تفضّل تزورها في الصيف أو الشتاء؟',
+    'هل تشتهر أكثر بالطبيعة أو المدن؟',
+    'هل تحتاج رحلة طويلة من الكويت؟',
+    'شنو نشاط تحب تسويه هناك؟',
+    'شنو تتوقع تحط في شنطة سفرك لها؟',
+    'هل تتابع منها رياضة أو أفلام أو منتجات؟',
+    'هل تتوقع التنقل فيها أسهل بالسيارة أو المواصلات؟',
+  ],
+  food: [
+    'عادة ناكله أو نشربه بأي وقت؟',
+    'حلو أو مالح؟',
+    'حار أو بارد؟',
+    'تفضله من البيت أو من برّه؟',
+    'هل نقدّمه للضيوف؟',
+    'هل يحتاج أدوات للأكل؟',
+    'هل يناسب الفطور؟',
+    'شنو أكثر شي يميّز قوامه بدون ذكر المكونات؟',
+  ],
+  jobs: [
+    'وين يشتغل صاحب هالمهنة عادة؟',
+    'هل يحتاج لبس خاص؟',
+    'هل يتعامل مع ناس كثير؟',
+    'هل ممكن يشتغل من البيت؟',
+    'شنو صفة لازم تكون فيه؟',
+    'هل عمله فردي أو مع فريق؟',
+    'هل يحتاج دراسة طويلة أو تدريب عملي؟',
+    'هل دوامه ممكن يكون بالليل؟',
+  ],
+  sports: [
+    'هل تلعبها بروحك أو مع فريق؟',
+    'هل تحتاج معدات كثيرة؟',
+    'تلعبها داخل صالة أو برّه؟',
+    'هل السرعة أهم أو الدقة؟',
+    'هل تحتاج حكم؟',
+    'هل ممكن تمارسها في البيت؟',
+    'هل يتنافس اثنان أو مجموعة؟',
+    'شنو أكثر شي يتعبك فيها؟',
+  ],
+};
+function spyQuestions(theme, style) {
+  if (style === 'subtle' || theme === 'all') return [...spySubtlePrompts];
+  return [...(spyThemePrompts[theme] || spyPrompts), ...spySubtlePrompts.slice(0, 4)];
+}
+function isSpy(index, s = state) {
+  return (s.spies || [s.spy]).includes(index);
+}
 function startSpy() {
   const s = state,
-    theme = $('spytheme')?.value || 'all',
-    pool = spyPlaces[theme] || spyLocations;
+    requested = $('spytheme')?.value || 'all',
+    theme = spyThemes.some(([id]) => id === requested) ? requested : 'all',
+    region = spyRegions.some(([id]) => id === $('spyregion')?.value) ? $('spyregion').value : 'all',
+    pool = spyPool(theme, region),
+    count = $('spycount')?.value === '2' && store.players.length >= 5 ? 2 : 1,
+    firstSpy = gameRand(store.players.length),
+    otherSpies =
+      count === 2
+        ? [gShuffle(store.players.map((_, i) => i).filter((i) => i !== firstSpy))[0]]
+        : [];
   Object.assign(s, {
     players: [...store.players],
+    theme,
+    region,
+    showCandidates: $('spycandidates')?.value !== 'hide',
+    questionStyle: $('spystyle')?.value === 'subtle' ? 'subtle' : 'balanced',
     location: pool[gameRand(pool.length)],
     locationPool: [...pool],
-    spy: gameRand(store.players.length),
+    spy: firstSpy,
+    spies: [firstSpy, ...otherSpies],
+    spyCount: count,
     turn: 0,
     stage: 'handoff',
     duration: extraOption('duration', 300, 60, 900),
     votes: [],
     voteTurn: 0,
     questionIndex: 0,
-    questionOrder: gShuffle(spyPrompts),
+    questionOrder: gShuffle(spyQuestions(theme, $('spystyle')?.value)),
     asker: gameRand(store.players.length),
     roles: gShuffle([
       'زائر لأول مرة',
@@ -3070,11 +3533,15 @@ function spyReveal() {
   if (screen !== 'spy' || state.stage !== 'handoff' || state.done || advancedBlocked()) return;
   const s = state;
   s.stage = 'view';
-  const spy = s.turn === s.spy;
+  const spy = isSpy(s.turn),
+    terms = spyTerms(s),
+    roleText = spyIsPlace(s.theme)
+      ? `<p class="pill">دورك التمثيلي: ${esc(s.roles[s.turn])}</p>`
+      : '<p class="pill">أنت تعرف الإجابة؛ حافظ عليها سرية</p>';
   setHTML(
     wrap(
       'spy',
-      `<section class="panel center"><div class="secretcover"><div class="symbol">${spy ? '🕶️' : '📍'}</div><small>دورك سري</small><h2>${spy ? 'أنت الجاسوس' : esc(s.location)}</h2>${spy ? '' : `<p class="pill">دورك التمثيلي: ${esc(s.roles[s.turn])}</p>`}<p class="note">${spy ? 'حاول معرفة المكان من الأسئلة دون أن يكتشفوك. لديك محاولة واحدة لتخمينه.' : 'أجب كأنك في هذا المكان وبهذا الدور، دون قول اسم المكان.'}</p></div><div class="actions"><button class="primary" onclick="spyHide()">إخفاء وتمرير الجهاز</button></div></section>`,
+      `<section class="panel center"><div class="secretcover"><div class="symbol">${spy ? '🕶️' : terms.icon}</div><small>دورك سري</small><h2>${spy ? (s.spyCount === 2 ? 'أنت واحد من الجاسوسين' : 'أنت الجاسوس') : esc(s.location)}</h2>${spy ? '' : roleText}<p class="note">${spy ? `حاول معرفة ${terms.noun} من الأسئلة دون أن يكتشفوك. ${s.spyCount === 2 ? 'ما تعرف الجاسوس الثاني؛ لكم محاولة تخمين واحدة مشتركة.' : 'لديك محاولة واحدة للتخمين.'}` : spyIsPlace(s.theme) ? 'أجب كأنك في هذا المكان وبهذا الدور، دون قول اسم المكان.' : `جاوب بما يناسب ${terms.noun} دون ذكر اسمها أو حروفها.`}</p></div><div class="actions"><button class="primary" onclick="spyHide()">إخفاء وتمرير الجهاز</button></div></section>`,
     ),
   );
 }
@@ -3086,7 +3553,7 @@ function spyHide() {
   setHTML(
     wrap(
       'spy',
-      '<section class="panel center"><div class="resulticon">🕶️</div><h2>الكل شاهد دوره</h2><p class="note">اسألوا بعضكم عن المكان دون ذكر اسمه. تجنبوا الأسئلة التي تكشفه فوراً. التصويت سري؛ التعادل يسمح للجاسوس بالفوز.</p><div class="actions"><button class="primary" onclick="spyDiscuss()">نبدأ النقاش</button></div></section>',
+      `<section class="panel center"><div class="resulticon">🕶️</div><h2>الكل شاهد دوره</h2><p class="note">اسألوا بعضكم عن ${spyTerms().noun} دون ذكر الإجابة أو حروفها. تجنبوا الأسئلة التي تكشفها فوراً. التصويت سري. ${state.spyCount === 2 ? 'لازم تكشفون الجاسوسين؛ أعلى اسمين بالأصوات يُتهمون إذا ما تعادل معهم لاعب ثالث.' : 'صاحب أعلى الأصوات منفرداً يُتهم؛ التعادل ينقذ الجاسوس.'}</p><div class="actions"><button class="primary" onclick="spyDiscuss()">نبدأ النقاش</button></div></section>`,
     ),
   );
 }
@@ -3099,15 +3566,20 @@ function spyDiscuss() {
   clockLoop(s, startSpyVote);
 }
 function renderSpy() {
-  const s = state;
+  const s = state,
+    terms = spyTerms(s),
+    themeLabel = spyThemes.find(([id]) => id === s.theme)?.[1] || 'عام',
+    regionLabel =
+      s.theme === 'countries' ? ` · ${spyRegions.find(([id]) => id === s.region)?.[1] || ''}` : '';
   setHTML(
     wrap(
       'spy',
       smallStats([
         ['اللاعبون', s.players.length],
+        ['الجواسيس', s.spyCount],
         ['وقت النقاش', secondsLeft(s), 'gametime'],
       ]) +
-        `<section class="panel center"><div class="resulticon">🕶️</div><h2>من إجاباته غريبة؟</h2><div class="hintpanel"><b>${esc(s.players[s.asker])} يسأل ${esc(s.players[s.target])}</b><label for="spytarget">وجّه السؤال إلى</label><select id="spytarget" onchange="setSpyTarget(Number(this.value))">${s.players.map((name, i) => (i === s.asker ? '' : `<option value="${i}" ${i === s.target ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select><p>${esc(s.questionOrder[s.questionIndex % s.questionOrder.length])}</p><button onclick="nextSpyPrompt()">سجّل السؤال وانتقل للّاعب المجيب</button></div><p class="note">لا تقولوا اسم المكان. يمكنكم سؤال أي لاعب، ثم الانتقال لغيره. صاحب أعلى عدد أصوات منفرداً يُتهم؛ التعادل = نجاة الجاسوس.</p>${spyQuestionLog(s)}<details class="history"><summary>الأماكن المحتملة (${s.locationPool.length})</summary><div class="listchips">${s.locationPool.map((v) => `<span>${esc(v)}</span>`).join('')}</div></details><div class="actions"><button class="primary" onclick="startSpyVote()">جاهزون للتصويت</button><button onclick="spyGuess()">الجاسوس يخمّن المكان</button></div></section>`,
+        `<section class="panel center"><div class="resulticon">🕶️</div><h2>من إجاباته غريبة؟</h2><p class="pill spy-round-category">${esc(themeLabel + regionLabel)}</p><div class="hintpanel"><b>${esc(s.players[s.asker])} يسأل ${esc(s.players[s.target])}</b><label for="spytarget">وجّه السؤال إلى</label><select id="spytarget" onchange="setSpyTarget(Number(this.value))">${s.players.map((name, i) => (i === s.asker ? '' : `<option value="${i}" ${i === s.target ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select><p>${esc(s.questionOrder[s.questionIndex % s.questionOrder.length])}</p><button onclick="nextSpyPrompt()">سجّل السؤال وانتقل للّاعب المجيب</button></div><p class="note">لا تذكرون الإجابة أو حروفها. يمكنكم سؤال أي لاعب، ثم الانتقال لغيره. ${s.spyCount === 2 ? 'أعلى اسمين بالأصوات يُتهمون؛ لازم يكونون الجاسوسين، وأي تعادل مع لاعب ثالث ينقذهم.' : 'صاحب أعلى عدد أصوات منفرداً يُتهم؛ التعادل = نجاة الجاسوس.'}</p>${spyQuestionLog(s)}${s.showCandidates ? `<details class="history spy-candidates"><summary>${terms.possible} (${s.locationPool.length})</summary><div class="listchips">${s.locationPool.map((v) => `<span>${esc(v)}</span>`).join('')}</div></details>` : '<p class="note spy-candidates-hidden">قائمة الاحتمالات مخفية؛ التخمين يكون بالكتابة.</p>'}<div class="actions"><button class="primary" onclick="startSpyVote()">جاهزون للتصويت</button><button onclick="spyGuess()">الجاسوس يخمّن ${terms.noun}</button></div></section>`,
     ),
   );
 }
@@ -3150,18 +3622,42 @@ function nextSpyPrompt() {
 function spyGuess() {
   if (screen !== 'spy' || state.stage !== 'active' || advancedBlocked()) return;
   if (secondsLeft() === 0) return startSpyVote();
+  const terms = spyTerms();
   openModal(
-    `<div class="modalhead"><h2 id="modaltitle">تخمين الجاسوس</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">الجاسوس يعلن نفسه ويخمّن مكاناً واحداً. التخمين الصحيح يفوز، والخطأ يعطي الفوز للبقية. يمكنك إلغاء النافذة قبل اعتماد الإجابة.</p><label for="spyguess" style="margin-top:14px">أين المكان؟</label><select id="spyguess">${state.locationPool.map((v) => `<option>${esc(v)}</option>`).join('')}</select><div class="actions"><button onclick="closeModal()">إلغاء</button><button class="primary" onclick="submitSpyGuess()">اعتمد التخمين</button></div>`,
+    `<div class="modalhead"><h2 id="modaltitle">تخمين الجاسوس</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">الجاسوس يعلن نفسه ويخمّن ${terms.noun} بمحاولة واحدة${state.spyCount === 2 ? ' مشتركة بين الجاسوسين' : ''}. الإجابة الصحيحة تعطي الجواسيس الفوز، والخطأ يعطي الفوز للبقية. يمكنك الإلغاء قبل اعتماد الإجابة.</p><label for="spyguess" style="margin-top:14px">شنو ${terms.noun}؟</label>${state.showCandidates ? `<select id="spyguess">${state.locationPool.map((v) => `<option>${esc(v)}</option>`).join('')}</select>` : '<input id="spyguess" maxlength="80" autocomplete="off" placeholder="اكتب الإجابة بدون تلميحات">'}<div class="actions"><button onclick="closeModal()">إلغاء</button><button class="primary" onclick="submitSpyGuess(${state.run})">اعتمد التخمين</button></div>`,
   );
 }
 function cancelSpyGuess() {
   closeModal();
 }
-function submitSpyGuess() {
-  if (screen !== 'spy' || state.stage !== 'active' || state.done || !$('spyguess')) return;
-  const correct = $('spyguess').value === state.location;
+function spyGuessKey(value) {
+  const key = norm(value);
+  const aliases = {
+    [norm('الولايات المتحدة')]: norm('أمريكا'),
+    [norm('الولايات المتحدة الأمريكية')]: norm('أمريكا'),
+    [norm('المملكة المتحدة')]: norm('بريطانيا'),
+    [norm('المملكة العربية السعودية')]: norm('السعودية'),
+    [norm('الإمارات العربية المتحدة')]: norm('الإمارات'),
+    [norm('سلطنة عمان')]: norm('عُمان'),
+  };
+  return aliases[key] || key;
+}
+function submitSpyGuess(run) {
+  if (
+    screen !== 'spy' ||
+    state.stage !== 'active' ||
+    state.done ||
+    !advancedCurrentRun(run) ||
+    !$('spyguess') ||
+    $('modalback').hidden
+  )
+    return;
+  const guess = $('spyguess').value.trim();
+  if (!guess) return toast('اكتب تخمينك أولاً، أو اضغط إلغاء.');
+  const correct = spyGuessKey(guess) === spyGuessKey(state.location),
+    terms = spyTerms();
   closeModal();
-  spyResult(correct, correct ? 'الجاسوس عرف المكان!' : 'تخمين الجاسوس غير صحيح.');
+  spyResult(correct, correct ? `الجاسوس عرف ${terms.noun}!` : 'تخمين الجاسوس غير صحيح.');
 }
 function startSpyVote() {
   if (screen !== 'spy' || state.stage !== 'active' || state.done || advancedBlocked()) return;
@@ -3232,22 +3728,31 @@ function castSpyVote(i, turn, run) {
   s.voteTurn++;
   if (s.voteTurn < s.players.length) return spyVoteHandoff();
   const counts = s.players.map((_, k) => s.votes.filter((v) => v === k).length),
-    max = Math.max(...counts),
-    leaders = counts.map((v, k) => (v === max ? k : -1)).filter((k) => k >= 0),
-    caught = leaders.length === 1 && leaders[0] === s.spy;
+    ranked = counts.map((votes, index) => ({ votes, index })).sort((a, b) => b.votes - a.votes),
+    suspectCount = s.spyCount || 1,
+    tied = ranked[suspectCount - 1].votes === ranked[suspectCount].votes,
+    accused = tied ? [] : ranked.slice(0, suspectCount).map((entry) => entry.index),
+    caught = accused.length === suspectCount && accused.every((index) => isSpy(index, s));
   s.counts = counts;
+  s.accused = accused;
   spyResult(
     !caught,
     caught
-      ? 'كشفتم الجاسوس!'
-      : leaders.length > 1
-        ? 'تعادلت الأصوات، فنجا الجاسوس.'
-        : 'الجاسوس أفلت من التصويت.',
+      ? suspectCount === 2
+        ? 'كشفتم الجاسوسين!'
+        : 'كشفتم الجاسوس!'
+      : tied
+        ? suspectCount === 2
+          ? 'تعادلت الأصوات مع لاعب آخر، فنجا الجاسوسان.'
+          : 'تعادلت الأصوات، فنجا الجاسوس.'
+        : suspectCount === 2
+          ? 'ما كشفتوا الجاسوسين معاً، ففازوا بالجولة.'
+          : 'الجاسوس أفلت من التصويت.',
   );
 }
 function spyBallotReview(s) {
   if (!s.ballotNotes?.length) return '';
-  return `<details class="spy-ballot-review"><summary>أدلة التصويت والثقة</summary>${s.ballotNotes.map((note) => `<p><b>${esc(s.players[note.voter])} ← ${esc(s.players[note.target])}</b> · ${{ unsure: 'متردد', likely: 'أرجّح', sure: 'واثق' }[note.confidence]}${note.target === s.spy ? ' ✓' : ' ✕'}${note.reason ? `<br>${esc(note.reason)}` : ''}</p>`).join('')}<p class="tiny">الثقة لا تضاعف الأصوات؛ راجع مدى توافقها مع النتيجة.</p></details>`;
+  return `<details class="spy-ballot-review"><summary>أدلة التصويت والثقة</summary>${s.ballotNotes.map((note) => `<p><b>${esc(s.players[note.voter])} ← ${esc(s.players[note.target])}</b> · ${{ unsure: 'متردد', likely: 'أرجّح', sure: 'واثق' }[note.confidence]}${isSpy(note.target, s) ? ' ✓' : ' ✕'}${note.reason ? `<br>${esc(note.reason)}` : ''}</p>`).join('')}<p class="tiny">الثقة لا تضاعف الأصوات؛ راجع مدى توافقها مع النتيجة.</p></details>`;
 }
 function spyResult(spyWon, reason) {
   const s = state;
@@ -3256,7 +3761,7 @@ function spyResult(spyWon, reason) {
   s.done = true;
   s.stage = 'result';
   const results = Object.fromEntries(
-    s.players.map((n, i) => [n, (spyWon ? i === s.spy : i !== s.spy) ? 40 : 0]),
+    s.players.map((n, i) => [n, (spyWon ? isSpy(i, s) : !isSpy(i, s)) ? 40 : 0]),
   );
   for (const [n, p] of Object.entries(results)) addScore(n, p);
   tone(true);
@@ -3264,7 +3769,7 @@ function spyResult(spyWon, reason) {
   setHTML(
     wrap(
       'spy',
-      `<section class="panel success center"><div class="resulticon">${spyWon ? '🕶️' : '🏆'}</div><h2>${esc(reason)}</h2><p class="note">الجاسوس: <b>${esc(s.players[s.spy])}</b></p><div class="spot"><small>المكان كان</small><div class="secret">${esc(s.location)}</div></div>${s.counts ? `<p class="note">الأصوات: ${s.players.map((n, i) => esc(n) + ' ' + s.counts[i]).join(' · ')}</p>` : ''}<div style="margin-top:20px;text-align:right">${boardHTML(s.players, results)}</div>${spyQuestionLog(s)}${spyBallotReview(s)}<div class="actions"><button class="primary" onclick="setup('spy')">جولة جديدة</button><button onclick="home()">الألعاب</button></div></section>`,
+      `<section class="panel success center"><div class="resulticon">${spyWon ? '🕶️' : '🏆'}</div><h2>${esc(reason)}</h2><p class="note">${s.spyCount === 2 ? 'الجاسوسان' : 'الجاسوس'}: <b>${(s.spies || [s.spy]).map((i) => esc(s.players[i])).join(' و ')}</b></p><div class="spot"><small>${spyTerms(s).reveal}</small><div class="secret">${esc(s.location)}</div></div>${s.counts ? `<p class="note">الأصوات: ${s.players.map((n, i) => esc(n) + ' ' + s.counts[i]).join(' · ')}</p>${s.accused?.length ? `<p class="note">المتهمون بالأصوات: ${s.accused.map((i) => esc(s.players[i])).join('، ')}</p>` : ''}` : ''}<div style="margin-top:20px;text-align:right">${boardHTML(s.players, results)}</div>${spyQuestionLog(s)}${spyBallotReview(s)}<div class="actions"><button class="primary" onclick="setup('spy')">جولة جديدة</button><button onclick="home()">الألعاب</button></div></section>`,
     ),
   );
 }

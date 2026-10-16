@@ -182,7 +182,104 @@ const partyCreativeFormats = {
   },
 };
 const partyPairCategories = {
-  all: { name: 'كل المواضيع' },
+  all: { name: 'عام · كل المواضيع' },
+  animals: {
+    name: 'حيوانات',
+    pairs: [
+      ['قطة', 'كلب'],
+      ['أسد', 'نمر'],
+      ['فيل', 'وحيد القرن'],
+      ['حصان', 'حمار'],
+      ['جمل', 'لاما'],
+      ['غزال', 'أيل'],
+      ['زرافة', 'حمار وحشي'],
+      ['دب', 'باندا'],
+      ['ذئب', 'ثعلب'],
+      ['أرنب', 'سنجاب'],
+      ['سلحفاة', 'حلزون'],
+      ['ببغاء', 'عصفور'],
+      ['صقر', 'نسر'],
+      ['بطريق', 'بطة'],
+      ['دلفين', 'حوت'],
+      ['تمساح', 'سحلية'],
+      ['نحلة', 'فراشة'],
+      ['أخطبوط', 'حبار'],
+    ],
+  },
+  objects: {
+    name: 'جماد وأدوات',
+    pairs: [
+      ['قلم', 'فرشاة'],
+      ['كرسي', 'كنبة'],
+      ['مرآة', 'نافذة'],
+      ['حقيبة', 'محفظة'],
+      ['ساعة', 'منبه'],
+      ['ثلاجة', 'فريزر'],
+      ['شمعة', 'مصباح'],
+      ['حاسوب', 'تابلت'],
+      ['هاتف', 'جهاز لاسلكي'],
+      ['ملعقة', 'شوكة'],
+      ['كوب', 'فنجان'],
+      ['قدر', 'مقلاة'],
+      ['مفتاح', 'قفل'],
+      ['مقص', 'قطّاعة ورق'],
+      ['وسادة', 'بطانية'],
+      ['مروحة', 'مكيف'],
+      ['مكنسة', 'ممسحة'],
+      ['كتاب', 'دفتر'],
+      ['خريطة', 'بوصلة'],
+      ['مظلة', 'معطف مطر'],
+    ],
+  },
+  countries: {
+    name: 'دول مشهورة',
+    pairs: [
+      ['فرنسا', 'ألمانيا'],
+      ['إيطاليا', 'إسبانيا'],
+      ['بريطانيا', 'فرنسا'],
+      ['أمريكا', 'كندا'],
+      ['مصر', 'المغرب'],
+      ['السعودية', 'الكويت'],
+      ['اليابان', 'الصين'],
+      ['الهند', 'باكستان'],
+      ['البرازيل', 'الأرجنتين'],
+      ['أستراليا', 'نيوزيلندا'],
+      ['روسيا', 'تركيا'],
+      ['السويد', 'النرويج'],
+      ['اليونان', 'إيطاليا'],
+      ['البرتغال', 'إسبانيا'],
+      ['المكسيك', 'أمريكا'],
+      ['تونس', 'الجزائر'],
+      ['لبنان', 'الأردن'],
+      ['قطر', 'البحرين'],
+      ['الإمارات', 'قطر'],
+      ['عُمان', 'السعودية'],
+      ['الكويت', 'البحرين'],
+      ['هولندا', 'بلجيكا'],
+      ['سويسرا', 'النمسا'],
+      ['جنوب أفريقيا', 'كينيا'],
+    ],
+  },
+  gulf: {
+    name: 'دول الخليج',
+    pairs: [
+      ['الكويت', 'السعودية'],
+      ['الكويت', 'الإمارات'],
+      ['الكويت', 'قطر'],
+      ['الكويت', 'البحرين'],
+      ['الكويت', 'عُمان'],
+      ['السعودية', 'الإمارات'],
+      ['السعودية', 'قطر'],
+      ['السعودية', 'البحرين'],
+      ['السعودية', 'عُمان'],
+      ['الإمارات', 'قطر'],
+      ['الإمارات', 'البحرين'],
+      ['الإمارات', 'عُمان'],
+      ['قطر', 'البحرين'],
+      ['قطر', 'عُمان'],
+      ['البحرين', 'عُمان'],
+    ],
+  },
   food: {
     name: 'أكل ومشروبات',
     words: [
@@ -242,6 +339,18 @@ const partyPairCategories = {
     ],
   },
 };
+function partyPairDeck(categoryID = 'all') {
+  const category = partyPairCategories[categoryID] || partyPairCategories.all;
+  if (category.pairs) return category.pairs;
+  if (category.words) return partyPairs.filter((pair) => category.words.includes(pair[0]));
+  const unique = new Map();
+  for (const pair of [
+    ...partyPairs,
+    ...Object.values(partyPairCategories).flatMap((entry) => entry.pairs || []),
+  ])
+    unique.set([...pair].sort().join('|'), pair);
+  return [...unique.values()];
+}
 const partyModes = [
   { id: 'mime', icon: '🎭', name: 'تمثيل', rule: 'مثّل بلا كلام، بلا أصوات، وبلا كتابة حروف.' },
   {
@@ -385,6 +494,133 @@ const partyStoryStarts = [
   'وصلتنا هدية من الجيران: نبتة تحكي قصة كل مساء.',
   'في أول يوم بالمخيم اكتشفنا أن الخريطة تخاف من الضياع.',
 ];
+const partyCreativeThemes = {
+  all: { name: 'عام · كل المواضيع' },
+  daily: {
+    name: 'البيت والطلعات',
+    prompts: [
+      'اختر اسماً لمجلس لا ينتهي فيه النقاش عن العشاء.',
+      'اكتب رسالة من المفتاح الذي نسيتم مكانه للمرة الثالثة.',
+      'اقترح قانوناً لطيفاً لمن يختار مكان الطلعة.',
+      'ما الخدمة التي يقدمها مصعد يتوقف للدردشة؟',
+      'اختر شعاراً لفريق يرتب البيت في آخر خمس دقائق.',
+      'اكتب إعلاناً لكرسي يحجز نفسه للضيف المتأخر.',
+      'ما الاسم المناسب لمسابقة البحث عن شاحن الهاتف؟',
+      'اقترح اختراعاً ينهي حيرة اختيار فيلم السهرة.',
+    ],
+    stories: [
+      'رن جرس البيت فوجدنا صندوقاً يعرف أسماء جميع الجيران.',
+      'قررت الكنبة أن تتحرك إلى الشرفة لتشاهد الغروب.',
+      'في أول طلعة للأصدقاء أخذتنا الحافلة إلى حي لم نزره من قبل.',
+      'تركنا قائمة المشتريات على الطاولة فبدأت تضيف طلباتها بنفسها.',
+      'فتحنا خزانة الأحذية فوجدنا حذاء يحمل دعوة لمسابقة.',
+      'قبل وصول الضيوف بدقيقة أخبرنا المنبه أن لديه خطة.',
+      'في الممشى ظهر مقعد ينتقل إلى مكان جديد كل صباح.',
+      'اجتمع الجيران حول نبتة صغيرة أزهرت على شكل مفتاح.',
+    ],
+  },
+  food: {
+    name: 'أكل ومطاعم',
+    prompts: [
+      'اختر اسم مطعم يتغير منيوه حسب حالة الطقس.',
+      'اكتب شعاراً لبطاطس تحلم بالفوز بكأس العالم.',
+      'ما أول نصيحة تقدمها حبة قهوة لفنجان جديد؟',
+      'اقترح طبقاً مناسباً لحفل تخرج أدوات المطبخ.',
+      'اكتب تقييماً طريفاً لمخبز على سطح القمر.',
+      'ما العذر الذي تقوله ملعقة تأخرت عن وجبة الفطور؟',
+      'اختر اسماً لآيس كريم لا يذوب إلا عند سماع نكتة.',
+      'اقترح خدمة جديدة لعربة شاي تزور المخيمات.',
+    ],
+    stories: [
+      'في المطبخ اكتشفنا قدرًا يطهو الطبق الذي نفكر فيه.',
+      'خرجت حبة بطاطس من الكيس حاملة خريطة إلى المخبز.',
+      'فتح المقهى أبوابه فوجد فنجاناً يطلب تعلم صنع القهوة.',
+      'في مسابقة الحلوى اختفت آخر ملعقة وبدأ البحث في السوق.',
+      'أوصل الخباز رغيفاً بداخله رسالة تدعو إلى رحلة.',
+      'قررت عربة الآيس كريم أن تزور قرية لم تسمع موسيقاها من قبل.',
+      'وضعت الجدة كتاب الوصفات على الطاولة ففتح صفحة من المستقبل.',
+      'في سوق التوابل وجدنا علبة تجعل كل من يشمها يحكي مغامرة.',
+    ],
+  },
+  animals: {
+    name: 'حيوانات وطبيعة',
+    prompts: [
+      'اختر اسماً لفندق يديره بطريق ويستقبل حيوانات الصحراء.',
+      'اكتب إعلان توظيف لسنجاب يحتاج مساعداً لترتيب الجوز.',
+      'ما أول قانون تقترحه زرافة في مجلس الغابة؟',
+      'اقترح هدية لسلحفاة تحب السفر السريع.',
+      'اكتب عنوان برنامج إذاعي تقدمه بومة قبل النوم.',
+      'ما الشكوى التي ترسلها قطة إلى صانع المكانس؟',
+      'اختر شعاراً لفريق دلافين يتعلم لعب كرة السلة.',
+      'اقترح اسماً لمتجر تشتري منه الفراشات حقائب الرحلات.',
+    ],
+    stories: [
+      'وصل عصفور إلى نافذتنا حاملاً تذكرة إلى مهرجان الغابة.',
+      'وجدت سلحفاة نظارة تجعلها ترى الطريق الذي ستمشيه غداً.',
+      'استيقظ المخيم على جمل يعيد ترتيب حقائب المسافرين.',
+      'في الحديقة طلبت قطة مساعدتنا لفتح مكتبة للحيوانات.',
+      'رسم دلفين دائرة حول القارب ثم أشار إلى جزيرة قريبة.',
+      'في صباح بارد وصل بطريق إلى الصحراء ومعه مظلة.',
+      'اكتشفت نحلة زهرة مضيئة تظهر فقط عند اكتمال القمر.',
+      'قررت زرافة أن تبني جسراً لتزور صديقتها في الضفة الأخرى.',
+    ],
+  },
+  travel: {
+    name: 'سفر ودول',
+    prompts: [
+      'اختر شعاراً لرحلة تزور باريس وروما في يوم خيالي واحد.',
+      'اكتب رسالة من حقيبة وصلت إلى لندن قبل صاحبها.',
+      'اقترح هدية تذكارية من رحلة إلى اليابان.',
+      'ما الإعلان المناسب لقطار يتوقف لالتقاط صور الغروب؟',
+      'اختر اسم مهرجان يجمع أكلات دول الخليج.',
+      'اكتب عذراً طريفاً لبوصلة تأخرت عن رحلة بحرية.',
+      'اقترح تطبيقاً يساعد من ينسى اسم الفندق.',
+      'ما السؤال الذي تسأله لخريطة زارت كل قارات العالم؟',
+    ],
+    stories: [
+      'في مطار الكويت وصلتنا حقيبة صغيرة بداخلها خريطة متحركة.',
+      'خلال رحلة إلى باريس وجدنا بطاقة تقود إلى مكتبة سرية.',
+      'في قطار بين مدينتين يابانيتين بدأت التذاكر تعرض صور الغد.',
+      'وصل قاربنا إلى جزيرة وعثرنا على بوصلة تشير إلى السماء.',
+      'في سوق بمسقط اشترينا صندوقاً يحمل أصوات مدن بعيدة.',
+      'أمام متحف في روما ظهرت دراجة تعرف أقصر طريق إلى المغامرة.',
+      'في لندن أعطانا بائع الكتب مظلة عليها عنوان غامض.',
+      'في رحلة بين دول الخليج وجدنا جوازاً لرحّالة من المستقبل.',
+    ],
+  },
+  fantasy: {
+    name: 'خيال واختراعات',
+    prompts: [
+      'اختر اسماً لاختراع يترجم أحلام الوسائد.',
+      'اكتب أول رسالة يرسلها روبوت من إجازته على المريخ.',
+      'اقترح قانوناً لمدرسة يتعلم فيها السحرة الصغار.',
+      'ما المهنة المناسبة لتنين يخاف من الشموع؟',
+      'اختر شعاراً لخدمة توصيل تستخدم سجاداً طائراً.',
+      'اكتب إعلاناً لساعة تمنح دقيقة إضافية للضحك.',
+      'اقترح لعبة لأطفال يعيشون على كوكب بلا جاذبية.',
+      'ما أول طلب تقدمه لآلة تصنع اختراعاً واحداً كل يوم؟',
+    ],
+    stories: [
+      'خرج روبوت من آلة البيع وقال إن موعد الرحلة إلى القمر قد حان.',
+      'وجدنا قلماً يرسم باباً حقيقياً كلما كتب كلمة مفتاح.',
+      'في المدرسة هبط تنين صغير ومعه حقيبة مليئة بالنجوم.',
+      'انطفأ المصباح فظهرت غيمة صغيرة تعرض علينا ثلاث أمنيات.',
+      'ارتفعت سجادة المجلس ومعها خريطة إلى مدينة فوق السحاب.',
+      'صنعنا ساعة تعيد آخر دقيقة لكنها أخفت زر الإيقاف.',
+      'فتح رائد الفضاء نافذة المركبة فوجد رسالة من شجرة.',
+      'على كوكب بعيد احتاج سكان المدينة مساعدتنا لإيقاظ القمر.',
+    ],
+  },
+};
+function partyCreativeDeck(themeID = 'all', mode = 'council') {
+  const theme = partyCreativeThemes[themeID] || partyCreativeThemes.all,
+    key = mode === 'chain' ? 'stories' : 'prompts';
+  if (theme[key]) return theme[key];
+  return [
+    ...(mode === 'chain' ? partyStoryStarts : partyCreativePrompts),
+    ...Object.values(partyCreativeThemes).flatMap((entry) => entry[key] || []),
+  ];
+}
 function partyChoice(id, label, choices) {
   return `<div class="field"><label for="${id}">${label}</label><select id="${id}">${choices.map(([value, name]) => `<option value="${value}">${name}</option>`).join('')}</select></div>`;
 }
@@ -456,7 +692,10 @@ setup = function (id, internal = false) {
     body = `<p class="muted">الجميع يعرف كلمة، لكن بينكم كلمة دخيلة قريبة منها. الكلمات تُعرض سراً، وبعد التلميحات يصوّت كل شخص بعيداً عن أنظار الآخرين.</p>${people}<div class="fields"><div class="field"><label for="partyRounds">عدد الجولات</label><select id="partyRounds"><option value="1">جولة سريعة</option><option value="3" selected>3 جولات</option><option value="5">5 جولات</option></select></div><div class="field"><label for="partyHiddenCount">أصحاب الكلمة الدخيلة</label><select id="partyHiddenCount"><option value="1">لاعب واحد</option><option value="2" ${store.players.length < 7 ? 'disabled' : ''}>لاعبان · يحتاج 7 لاعبين</option></select></div><div class="field"><label for="partyClueRounds">دورات التلميحات</label><select id="partyClueRounds"><option value="1">تلميح من كل لاعب</option><option value="2" selected>تلميحان من كل لاعب</option></select></div><div class="field"><label for="partyDuration">وقت النقاش</label><select id="partyDuration"><option value="90">90 ثانية</option><option value="150" selected>150 ثانية</option><option value="240">240 ثانية</option><option value="0">بدون مؤقت</option></select></div><div class="field"><label for="partyWordCategory">موضوع الكلمات</label><select id="partyWordCategory">${Object.entries(
       partyPairCategories,
     )
-      .map(([id, category]) => `<option value="${id}">${category.name}</option>`)
+      .map(
+        ([id, category]) =>
+          `<option value="${id}">${category.name} · ${partyPairDeck(id).length} زوجاً</option>`,
+      )
       .join(
         '',
       )}</select></div></div><div class="hintpanel">لا تذكروا كلماتكم ولا تعرضوا الشاشة. استبعاد صاحب كلمة دخيلة يمنح العاديين +20، وتصويتهم الصحيح +10. إذا نجا الفريق الدخيل يأخذ كل عضو +30. التعادل يعيد التصويت مرة واحدة، وبعدها النجاة للفريق الدخيل.</div>`;
@@ -467,7 +706,7 @@ setup = function (id, internal = false) {
       .map(([id, format]) => `<option value="${id}">${format.name}</option>`)
       .join(
         '',
-      )}</select></div></div><div class="hintpanel">60 موقفاً عائلياً في بنك اللعبة. كل صوت +5 لصاحب الرد، وأعلى الردود تحصل على +10 حتى في التعادل. اكتبوا ردوداً لطيفة؛ ما تحتاجون معلومات شخصية. تُحفظ نقاط الجلسة عند إكمالها.</div>`;
+      )}</select></div></div><div class="hintpanel">${partyCreativeDeck().length} موقف عائلي في بنك اللعبة. كل صوت +5 لصاحب الرد، وأعلى الردود تحصل على +10 حتى في التعادل. اكتبوا ردوداً لطيفة؛ ما تحتاجون معلومات شخصية. تُحفظ نقاط الجلسة عند إكمالها.</div>`;
   if (id === 'teamcup')
     body += `<div class="fields party-extra-options">${partyChoice(
       'partyMimeDeck',
@@ -519,7 +758,13 @@ setup = function (id, internal = false) {
     body += `<div class="fields">${partyChoice('partyCreativeMode', 'فكرة المجلس', [
       ['council', 'ردود مستقلة على موقف'],
       ['chain', 'قصة مشتركة · كل لاعب يكمل السطر السابق'],
-    ])}</div><div class="party-explainer"><b>📖 قصة نصنعها معاً</b><p>في القصة المشتركة يرى كل لاعب السطر السابق فقط بلا اسم كاتبه، ويكمله مستخدماً كلمة الربط المقترحة. آخر لاعب يكتب النهاية. نكشف القصة بترتيبها قبل التصويت، وإكمالها يمنح كل لاعب +5 بجانب أصواته. 24 بداية قصصية جديدة.</p></div>`;
+    ])}</div><div class="party-explainer"><b>📖 قصة نصنعها معاً</b><p>في القصة المشتركة يرى كل لاعب السطر السابق فقط بلا اسم كاتبه، ويكمله مستخدماً كلمة الربط المقترحة. آخر لاعب يكتب النهاية. نكشف القصة بترتيبها قبل التصويت، وإكمالها يمنح كل لاعب +5 بجانب أصواته. ${partyCreativeDeck('all', 'chain').length} بداية قصصية.</p></div>`;
+  if (id === 'improv')
+    body += `<div class="fields">${partyChoice(
+      'partyCreativeTheme',
+      'موضوع المواقف والقصص',
+      Object.entries(partyCreativeThemes).map(([key, theme]) => [key, theme.name]),
+    )}</div><div class="party-explainer"><b>🗂️ اختاروا جو المجلس</b><p>البيت والطلعات، الأكل، الحيوانات، السفر، أو الخيال. لكل موضوع 8 مواقف و8 بدايات قصصية؛ زر «موقف مختلف» يبقى داخل الموضوع المختار. «عام» يمزج جميع المواضيع، ولا تتكرر المواقف داخل الجلسة.</p></div>`;
   setHTML(
     partyWrap(
       id,
@@ -615,6 +860,7 @@ function partyRematch(token = partyStageToken()) {
     partyCreativeCriterion: previous.creativeCriterion,
     partyCreativeSpark: previous.creativeSpark ? 'on' : 'off',
     partyCreativeMode: previous.creativeMode,
+    partyCreativeTheme: previous.creativeTheme,
   };
   for (const [key, value] of Object.entries(values)) {
     const input = $(key);
@@ -751,6 +997,7 @@ function startPartyGame(id) {
     creativeCriterion = partySetting('partyCreativeCriterion', ['rotate', 'funny'], 'rotate'),
     creativeSpark = partySetting('partyCreativeSpark', ['on', 'off'], 'off') === 'on',
     creativeMode = partySetting('partyCreativeMode', ['council', 'chain'], 'council'),
+    creativeTheme = partySetting('partyCreativeTheme', Object.keys(partyCreativeThemes), 'all'),
     wordCategory = Object.hasOwn(partyPairCategories, $('partyWordCategory')?.value)
       ? $('partyWordCategory').value
       : 'all',
@@ -805,11 +1052,8 @@ function startPartyGame(id) {
     });
     teamCupHandoff();
   } else if (id === 'undercover') {
-    const category = partyPairCategories[wordCategory];
     Object.assign(state, {
-      pairs: shuffle(
-        partyPairs.filter((pair) => !category.words || category.words.includes(pair[0])),
-      ),
+      pairs: shuffle(partyPairDeck(wordCategory)),
       wordCategory,
       inquiry,
       court,
@@ -821,11 +1065,9 @@ function startPartyGame(id) {
     undercoverRound();
   } else {
     Object.assign(state, {
-      prompts: shuffle(creativeMode === 'chain' ? partyStoryStarts : partyCreativePrompts).slice(
-        0,
-        options.rounds,
-      ),
+      prompts: shuffle(partyCreativeDeck(creativeTheme, creativeMode)).slice(0, options.rounds),
       creativeMode,
+      creativeTheme,
       creativeFormat,
       creativeBallot,
       creativeCriterion,
@@ -1829,7 +2071,7 @@ function creativeRefreshPrompt(token = partyStageToken()) {
   if (!partyStage('improv', 'prompt') || !partyAcceptStage(token)) return;
   const s = state;
   s.usedPrompts ||= [...s.prompts];
-  const fresh = (s.creativeMode === 'chain' ? partyStoryStarts : partyCreativePrompts).filter(
+  const fresh = partyCreativeDeck(s.creativeTheme, s.creativeMode).filter(
     (prompt) => !s.usedPrompts.includes(prompt),
   );
   if (!fresh.length) return toast('جرّبتوا كل المواقف المتاحة؛ نكمل بهذا الموقف.');

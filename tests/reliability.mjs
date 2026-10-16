@@ -539,7 +539,7 @@ try {
       });
       assert.equal(await page.locator('#difficulty').inputValue(), '4');
       const ids = await page.evaluate(() => games.map((game) => game[0]));
-      assert.equal(ids.length, 34);
+      assert.equal(ids.length, 37);
       for (const id of ids) {
         const started = await page.evaluate((id) => {
           setup(id);

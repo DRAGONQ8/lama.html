@@ -1,5 +1,16 @@
 // Lamma 5: discovery, curated solo journeys and a local group lounge.
-const freshGameIds = new Set(['teamcup', 'undercover', 'improv', 'nonogram', 'lights', 'pipes']);
+const freshGameIds = new Set([
+  'teamcup',
+  'undercover',
+  'improv',
+  'nonogram',
+  'lights',
+  'pipes',
+  'spy',
+  'flags',
+  'truefalse',
+  'order',
+]);
 const experienceRoutes = [
   {
     id: 'focus',

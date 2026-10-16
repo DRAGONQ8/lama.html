@@ -79,7 +79,7 @@ async function revealUndercover(page) {
 
 try {
   await check(
-    'The new filter lists exactly the six additions and preserves sorting',
+    'The new filter lists all ten additions and upgrades and preserves sorting',
     async (page) => {
       await clickAction(page, "setFilter('new')");
       const ids = await page
@@ -88,17 +88,21 @@ try {
           buttons.map((button) => button.getAttribute('onclick').match(/'([^']+)'/)[1]),
         );
       assert.deepEqual(ids.sort(), [
+        'flags',
         'improv',
         'lights',
         'nonogram',
+        'order',
         'pipes',
+        'spy',
         'teamcup',
+        'truefalse',
         'undercover',
       ]);
       await page.locator('#catalogsort').selectOption('name');
       await page.reload();
       assert.equal(await page.locator('#catalogsort').inputValue(), 'name');
-      assert.equal(await page.evaluate(() => games.length), 34);
+      assert.equal(await page.evaluate(() => games.length), 37);
     },
   );
 

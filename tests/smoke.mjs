@@ -32,7 +32,7 @@ async function check(name, test) {
 
 try {
   await page.goto(`http://127.0.0.1:${port}`);
-  await check('Standalone library has 34 unique games and expanded vocabulary', async () => {
+  await check('Standalone library has 37 unique games and expanded vocabulary', async () => {
     const info = await page.evaluate(() => ({
       games: games.length,
       ids: games.map((g) => g[0]),
@@ -40,9 +40,9 @@ try {
       names: items.map((i) => norm(i.name)),
       cards: document.querySelectorAll('.gamecard').length,
     }));
-    assert.equal(info.games, 34);
-    assert.equal(new Set(info.ids).size, 34);
-    assert.equal(info.cards, 34);
+    assert.equal(info.games, 37);
+    assert.equal(new Set(info.ids).size, 37);
+    assert.equal(info.cards, 37);
     assert.ok(info.vocabulary >= 218, `Vocabulary: ${info.vocabulary}`);
     assert.equal(new Set(info.names).size, info.names.length, 'Vocabulary contains duplicates');
   });
@@ -416,7 +416,7 @@ try {
     assert.ok(!/يديد|يديدة/.test(html));
     assert.deepEqual(errors, []);
   });
-  await check('All 34 games also start with network access disabled', async () => {
+  await check('All 37 games also start with network access disabled', async () => {
     const offline = await browser.newContext();
     await offline.setOffline(true);
     const offlinePage = await offline.newPage();

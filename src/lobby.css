@@ -1,4 +1,61 @@
 /* A quieter home: one clear way into personal play, then the shared catalogue. */
+.latest-games {
+  margin: 28px 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+}
+.latest-games h2 {
+  margin: 6px 0;
+  font-size: clamp(20px, 3vw, 28px);
+}
+.latest-links {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.latest-links > button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 18px;
+  text-align: start;
+}
+.latest-links > button > span {
+  font-size: 26px;
+}
+.latest-links small {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.latest-links em {
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--mint);
+  font-size: 12px;
+  font-style: normal;
+}
+@media (max-width: 900px) {
+  .latest-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .latest-games {
+    padding: 16px;
+  }
+  .latest-links {
+    gap: 8px;
+  }
+  .latest-links > button {
+    padding: 12px;
+    overflow-wrap: anywhere;
+  }
+}
 .edition-hero {
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   background: radial-gradient(ellipse at 15% 40%, #233e3b 0%, transparent 62%), #142724;
