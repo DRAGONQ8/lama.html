@@ -39,6 +39,13 @@ const suites = [
   'spy-v11',
   'party-v11',
   'collection-v11',
+  'spy-v12',
+  'core-v12',
+  'reliability-v12-advanced',
+  'reliability-v12-arcade',
+  'lab-words-v12',
+  'party-v12',
+  'platform-v12',
 ];
 const failures = [];
 for (const name of suites) {

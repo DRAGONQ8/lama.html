@@ -239,7 +239,9 @@ function triviaRememberFocus() {
 }
 function triviaRestoreFocus(selector) {
   if (!selector) return;
-  const control = state.locked ? $('triviaNext') : document.querySelector(selector);
+  let control = state.locked ? $('triviaNext') : document.querySelector(selector);
+  if (control?.disabled || control?.hidden)
+    control = document.querySelector('.trivia-choice:not(:disabled):not([hidden])');
   if (control && !control.disabled && !control.hidden) control.focus({ preventScroll: true });
 }
 function renderTrivia() {
@@ -421,10 +423,13 @@ function startTriviaPractice(run) {
   if (!questions.length) return;
   state.practice = {
     serial: (state.practiceSerial = (state.practiceSerial || 0) + 1),
-    questions: wordsShuffle(questions).map((question) => ({
-      ...question,
-      choices: wordsShuffle(question.choices),
-    })),
+    questions: wordsShuffle(questions).map((question) => {
+      if (question.statements) {
+        const statements = wordsShuffle(question.statements);
+        return { ...question, statements, choices: statements.map((item) => item.text) };
+      }
+      return { ...question, choices: wordsShuffle(question.choices) };
+    }),
     index: 0,
     correct: 0,
     choice: null,
@@ -557,7 +562,25 @@ function wordsKeyboard(handler, disabled = [], statuses = null) {
       : handler === 'typeWordguess'
         ? `,${state.attempts.length}`
         : '';
-  return `<div class="arabic-keyboard" aria-label="لوحة الحروف العربية">${arabicKeyboard.map((letter) => `<button class="letter-key ${statuses?.[letter] || ''}" onclick="${handler}('${letter}',${state.run}${phase})" ${disabled.includes(letter) ? 'disabled' : ''} aria-label="الحرف ${letter}">${letter}</button>`).join('')}</div>`;
+  return `<div class="arabic-keyboard" aria-label="لوحة الحروف العربية">${arabicKeyboard.map((letter) => `<button class="letter-key ${statuses?.[letter] || ''}" data-word-key="${letter}" onclick="${handler}('${letter}',${state.run}${phase})" ${disabled.includes(letter) ? 'disabled' : ''} aria-label="الحرف ${letter}">${letter}</button>`).join('')}</div>`;
+}
+function wordsRememberLetterFocus() {
+  return document.activeElement?.matches('.arabic-keyboard .letter-key')
+    ? document.activeElement.dataset.wordKey
+    : null;
+}
+function wordsRestoreLetterFocus(letter) {
+  if (!letter) return;
+  const keys = [...document.querySelectorAll('.arabic-keyboard [data-word-key]')],
+    index = keys.findIndex((key) => key.dataset.wordKey === letter),
+    next =
+      keys.slice(Math.max(0, index)).find((key) => !key.disabled) ||
+      keys.find((key) => !key.disabled);
+  if (next) next.focus({ preventScroll: true });
+  else
+    document
+      .querySelector('.hangman-panel .actions .primary, .wordguess-panel .actions .primary')
+      ?.focus({ preventScroll: true });
 }
 function startHangman(name) {
   const cat = $('hangCategory').value,
@@ -620,11 +643,18 @@ function hangmanSolved(s) {
   return Array.from(s.item.key).every((letter) => s.guessed.includes(letter));
 }
 function hangmanCandidates(s) {
-  const mask = Array.from(s.item.key).map((letter) => (s.guessed.includes(letter) ? letter : ''));
+  const mask = Array.from(s.item.key).map((letter) => (s.guessed.includes(letter) ? letter : '')),
+    shape = (item) =>
+      (item.display || item.word)
+        .trim()
+        .split(/\s+/)
+        .map((word) => wordsNormalizeKey(word).length)
+        .join(',');
   return (s.mode === 'mission' ? hangmanMissionBank : wordsLexicon).filter(
     (item) =>
       item.cat === s.item.cat &&
       item.key.length === mask.length &&
+      (s.mode !== 'mission' || shape(item) === shape(s.item)) &&
       !s.wordGuesses.includes(item.key) &&
       Array.from(item.key).every((letter, i) =>
         mask[i] ? mask[i] === letter : !s.guessed.includes(letter),
@@ -665,7 +695,7 @@ function hangmanNotebook(s) {
   if (s.over || !s.guessed.length) return '';
   const absent = s.guessed.filter((letter) => !s.item.key.includes(letter)),
     present = s.guessed.filter((letter) => s.item.key.includes(letter));
-  return `<details class="hangman-notebook" ${s.notesOpen ? 'open' : ''} ontoggle="rememberHangmanNotebook(this,${s.run},${s.index})"><summary>🕵 دفتر المحقق · ${hangmanCandidates(s).length} احتمالاً في قاموس الفئة</summary><p class="note">الاحتمالات مبنية على الفئة وطول الكلمة والحروف المكشوفة والمستبعدة فقط.</p>${present.length ? `<div class="chips">${present.map((letter) => `<span class="chip">${esc(letter)}: ${Array.from(s.item.key).filter((value) => value === letter).length} ${Array.from(s.item.key).filter((value) => value === letter).length === 1 ? 'مرة' : 'مرات'}</span>`).join('')}</div>` : ''}${absent.length ? `<p class="note">استبعد: ${absent.map(esc).join('، ')}</p>` : ''}${s.wordGuesses.length ? `<p class="note">كلمات جربتها: ${s.wordGuesses.map(esc).join('، ')}</p>` : ''}</details>`;
+  return `<details class="hangman-notebook" ${s.notesOpen ? 'open' : ''} ontoggle="rememberHangmanNotebook(this,${s.run},${s.index})"><summary>🕵 دفتر المحقق · ${hangmanCandidates(s).length} احتمالاً في قاموس الفئة</summary><p class="note">${s.mode === 'mission' ? 'الاحتمالات تراعي الفئة وحدود الكلمات الظاهرة وعدد حروف كل كلمة، مع الحروف المكشوفة والمستبعدة.' : 'الاحتمالات مبنية على الفئة وطول الكلمة والحروف المكشوفة والمستبعدة فقط.'}</p>${present.length ? `<div class="chips">${present.map((letter) => `<span class="chip">${esc(letter)}: ${Array.from(s.item.key).filter((value) => value === letter).length} ${Array.from(s.item.key).filter((value) => value === letter).length === 1 ? 'مرة' : 'مرات'}</span>`).join('')}</div>` : ''}${absent.length ? `<p class="note">استبعد: ${absent.map(esc).join('، ')}</p>` : ''}${s.wordGuesses.length ? `<p class="note">كلمات جربتها: ${s.wordGuesses.map(esc).join('، ')}</p>` : ''}</details>`;
 }
 function rememberHangmanNotebook(element, run, index) {
   if (
@@ -689,6 +719,7 @@ function hangmanDrawing(misses, limit = 6) {
 }
 function renderHangman() {
   const s = state,
+    focusedLetter = wordsRememberLetterFocus(),
     item = s.item,
     category = wordsCategories.find((c) => c[0] === item.cat)[1],
     maxMisses = s.maxMisses || 6,
@@ -702,6 +733,7 @@ function renderHangman() {
       `<section class="panel hangman-panel"><div class="words-status"><span class="pill">${s.mode === 'mission' ? 'المهمة' : 'الكلمة'} ${s.index + 1} / ${s.queue.length}</span><span class="pill">${esc(category)}</span><span class="pill">✓ ${s.wins} كلمات</span><span class="pill">💎 ${s.total} نقطة</span>${s.mode === 'rescue' ? `<span class="pill">🛡 ${s.shields} / 3 دروع</span><span class="pill">سلسلة الإنقاذ: ${s.rescueStreak}</span>` : ''}<b class="${maxMisses - s.misses <= 2 ? 'danger-text' : ''}">${maxMisses - s.misses} أخطاء متبقية</b><span class="pill">${Array.from(item.key).filter((l) => s.guessed.includes(l)).length} / ${item.key.length} حروف مكشوفة</span></div><div class="hangman-layout">${hangmanDrawing(s.misses, maxMisses)}<div><p class="hangman-clue">${s.mode !== 'mission' && s.level === 'hard' && !s.over ? `تحدي خبير · ${item.key.length} حروف، والفئة دليلك` : esc(item.hint)}</p>${hangmanWordHTML(s)}${s.over ? `<div class="trivia-explanation" id="hangmanOutcome" role="status"><b>${s.won ? 'أحسنت! الكلمة: ' + esc(item.word) : 'الكلمة هي: ' + esc(item.word)}</b><p>${s.won ? `+${s.wordPoints} نقطة · ${s.misses} أخطاء و${s.hints} تلميحات${s.missionCueCost ? ` · أدلة دلالية −${s.missionCueCost}` : ''}${s.rescueBonus ? ` · مكافأة السلسلة +${s.rescueBonus}` : ''}` : 'الكلمة التالية فرصة جديدة.'}</p>${s.level === 'hard' ? `<p>${esc(item.hint)}</p>` : ''}</div>` : `<p class="note">الحروف المجربة: ${s.guessed.length ? s.guessed.map(esc).join('، ') : 'لم تجرب أي حرف بعد'}</p><p class="hangman-feedback" id="hangmanFeedback" role="status">${esc(s.feedback || '')}</p>`}</div></div>${hangmanMissionCluesHTML(s)}${!s.over ? `<form class="words-native hangman-native" onsubmit="event.preventDefault();submitHangmanWord(${s.run},${s.index})"><label for="hangmanInput">عرفت الكلمة؟ اكتبها كاملة</label><div><input id="hangmanInput" maxlength="${s.mode === 'mission' ? 64 : 32}" value="${esc(s.wordDraft || '')}" placeholder="${s.mode === 'mission' ? 'اكتب العبارة مع المسافات أو بدونها' : item.key.length + ' حروف…'}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="hangmanFeedback" onfocus="this.closest('.hangman-panel').classList.add('hangman-typing')" onblur="this.closest('.hangman-panel').classList.remove('hangman-typing')" oninput="if(!event.isComposing)readHangmanDraft(this.value,${s.run},${s.index})" oncompositionend="readHangmanDraft(this.value,${s.run},${s.index})"><button class="primary" type="submit">خمن الكلمة ↵</button></div><small class="note">اختياري · التخمين الخاطئ يستهلك خطأين</small></form>${wordsKeyboard('guessHangman', s.guessed, statuses)}${hangmanNotebook(s)}` : ''}<div class="actions">${s.over ? `<button class="primary" onclick="nextHangman(${s.run},${s.index})">${s.index + 1 === s.queue.length ? 'اعرض النتيجة' : 'الكلمة التالية'} ←</button>` : `<button onclick="hintHangman(${s.run},${s.index})" ${s.hints >= maxHints ? 'disabled' : ''}>💡 اكشف حرفاً (${maxHints - s.hints} متبقي) · −3</button>`}</div></section>`,
     ),
   );
+  wordsRestoreLetterFocus(focusedLetter);
 }
 function finishHangmanWord() {
   const s = state;
@@ -953,6 +985,8 @@ function startWordguess(name) {
     run: ++wordsRunSerial,
     name,
     candidatesShown: false,
+    candidateQuery: '',
+    candidatePage: 0,
     helperPenalty: 0,
     entryCursor: null,
     size,
@@ -1153,22 +1187,69 @@ function wordguessNotebook(s) {
     eliminated = Object.entries(evidence.maximum)
       .filter(([, count]) => count === 0)
       .map(([letter]) => letter);
-  const candidates = s.candidatesShown ? wordguessCandidates(s) : [];
+  const candidates = s.candidatesShown ? wordguessCandidates(s) : [],
+    filtered = candidates.filter((word) => word.includes(s.candidateQuery || '')),
+    pages = Math.max(1, Math.ceil(filtered.length / 24)),
+    page = Math.min(pages - 1, s.candidatePage || 0);
   return `<details class="wordguess-notebook" ${s.notesOpen ? 'open' : ''} ontoggle="rememberWordguessNotebook(this)"><summary>🧩 دفتر الأدلة · ${discovered.length} حروف مكتشفة</summary><p class="note">المواضع من اليمين؛ استنتجنا هذه الأدلة من محاولاتك فقط.</p><div class="wordguess-known" aria-label="المواضع المؤكدة من اليمين">${evidence.positions.map((letter, i) => `<span aria-label="الخانة ${i + 1}: ${letter || 'لم تُعرف بعد'}"><small>${i + 1}</small><b>${esc(letter || '؟')}</b></span>`).join('')}</div><div class="chips">${discovered.map(([letter, count]) => `<span class="chip">${letter}: ${evidence.maximum[letter] === count ? `${count} بالضبط` : `${count} على الأقل`}</span>`).join('')}</div>${eliminated.length ? `<p class="note">الحروف المستبعدة: <b>${eliminated.join('، ')}</b></p>` : ''}${
     s.candidatesShown
-      ? `<div class="wordguess-candidates"><b>${candidates.length} احتمالاً يوافق الأدلة</b><p class="note">قاموس التخمين المحلي؛ الكلمات مرشّحة من محاولاتك${s.hinted ? ' والفئة المكشوفة' : ''}. عرض أول 24 احتمالاً.</p><div class="chips">${
-          candidates
-            .slice(0, 24)
+      ? `<div class="wordguess-candidates"><b>${candidates.length} احتمالاً يوافق الأدلة</b><p class="note">قاموس التخمين المحلي؛ الكلمات مرشّحة من محاولاتك${s.hinted ? ' والفئة المكشوفة' : ''}. ابحث عن حروف متتابعة أو انتقل بين الصفحات.</p><label for="wordguessCandidateSearch">ابحث في الاحتمالات</label><input id="wordguessCandidateSearch" type="search" value="${esc(s.candidateQuery || '')}" placeholder="اكتب بداية الكلمة أو جزءاً منها…" autocomplete="off" oninput="if(!event.isComposing)searchWordguessCandidates(this.value,${s.run},${s.attempts.length})" oncompositionend="searchWordguessCandidates(this.value,${s.run},${s.attempts.length})"><p class="note" role="status">${filtered.length} نتائج · الصفحة ${page + 1} من ${pages}</p><div class="chips">${
+          filtered
+            .slice(page * 24, page * 24 + 24)
             .map(
               (word) =>
-                `<button class="chip" onclick="chooseWordguessCandidate('${word}',${s.run})" ${s.over ? 'disabled' : ''}>${esc(word)}</button>`,
+                `<button class="chip" onclick="chooseWordguessCandidate('${word}',${s.run},${s.attempts.length})" ${s.over ? 'disabled' : ''}>${esc(word)}</button>`,
             )
-            .join('') || '<span class="note">لا توجد احتمالات أخرى في القاموس.</span>'
-        }</div></div>`
+            .join('') || '<span class="note">لا توجد نتائج؛ جرّب حروفاً أخرى أو امسح البحث.</span>'
+        }</div>${pages > 1 ? `<div class="wordguess-candidate-pages"><button onclick="pageWordguessCandidates(-1,${s.run},${s.attempts.length})" ${page ? '' : 'disabled'}>السابق</button><span>${page + 1} / ${pages}</span><button onclick="pageWordguessCandidates(1,${s.run},${s.attempts.length})" ${page < pages - 1 ? '' : 'disabled'}>التالي</button></div>` : ''}</div>`
       : !s.over
         ? `<button onclick="showWordguessCandidates(${s.run})">🕵 اعرض الاحتمالات · −15 مرة واحدة</button>`
         : ''
   }</details>`;
+}
+function searchWordguessCandidates(raw, run, turn) {
+  if (
+    wordsBlocked('wordguess') ||
+    !wordsCurrentRun(run) ||
+    turn !== state.attempts.length ||
+    state.over ||
+    !state.candidatesShown
+  )
+    return;
+  const input = $('wordguessCandidateSearch');
+  if (!input || input.isComposing) return;
+  const selection = input.selectionStart;
+  state.candidateQuery = Array.from(wordsNormalizeKey(raw))
+    .filter((letter) => arabicKeyboard.includes(letter))
+    .slice(0, state.size)
+    .join('');
+  state.candidatePage = 0;
+  renderWordguess();
+  $('wordguessCandidateSearch')?.focus({ preventScroll: true });
+  $('wordguessCandidateSearch')?.setSelectionRange(
+    Math.min(selection ?? state.candidateQuery.length, state.candidateQuery.length),
+    Math.min(selection ?? state.candidateQuery.length, state.candidateQuery.length),
+  );
+}
+function pageWordguessCandidates(direction, run, turn) {
+  if (
+    wordsBlocked('wordguess') ||
+    !wordsCurrentRun(run) ||
+    turn !== state.attempts.length ||
+    state.over ||
+    !state.candidatesShown ||
+    ![-1, 1].includes(direction)
+  )
+    return;
+  const count = wordguessCandidates(state).filter((word) =>
+    word.includes(state.candidateQuery || ''),
+  ).length;
+  state.candidatePage = Math.max(
+    0,
+    Math.min(Math.max(0, Math.ceil(count / 24) - 1), (state.candidatePage || 0) + direction),
+  );
+  renderWordguess();
+  wordsRevealFeedback('wordguessCandidateSearch');
 }
 function wordguessCandidates(s) {
   const allowed = s.hinted
@@ -1198,10 +1279,11 @@ function showWordguessCandidates(run) {
   renderWordguess();
   wordsRevealFeedback('wordguessMessage');
 }
-function chooseWordguessCandidate(word, run) {
+function chooseWordguessCandidate(word, run, turn) {
   if (
     wordsBlocked('wordguess') ||
     !wordsCurrentRun(run) ||
+    (turn !== undefined && turn !== state.attempts.length) ||
     state.over ||
     !state.candidatesShown ||
     !wordguessCandidates(state).includes(word)
@@ -1244,6 +1326,7 @@ function rememberWordguessNotebook(notebook) {
 }
 function renderWordguess() {
   const s = state,
+    focusedLetter = wordsRememberLetterFocus(),
     restoreInput = document.activeElement?.id === 'wordguessInput',
     restoreCell = document.activeElement?.matches('.wordguess-row.current button')
       ? [...document.activeElement.parentElement.children].indexOf(document.activeElement)
@@ -1274,7 +1357,7 @@ function renderWordguess() {
     document
       .querySelector('.wordguess-row.current')
       ?.children[s.entryCursor ?? restoreCell]?.focus({ preventScroll: true });
-  }
+  } else wordsRestoreLetterFocus(focusedLetter);
 }
 function readWordguessDraft(raw, run, turn) {
   if (
@@ -1371,6 +1454,8 @@ function submitWordguess(run, turn) {
     if (rank[marks[i]] > (rank[s.keyStates[letter]] || 0)) s.keyStates[letter] = marks[i];
   });
   s.attempts.push({ word: guess, marks });
+  s.candidatePage = 0;
+  s.candidateQuery = '';
   s.entry = '';
   s.entryCursor = null;
   const correctCount = marks.filter((mark) => mark === 'correct').length,
@@ -1468,6 +1553,7 @@ function startTarget(name) {
     decoy: -1,
     sequence: [],
     sequenceStep: 0,
+    focusCell: 0,
     completedPaths: 0,
     feedback: 'ابحث عن الهدف الملون!',
     done: false,
@@ -1746,11 +1832,25 @@ function targetArenaHTML(s) {
         order = s.sequence.indexOf(i),
         preview = s.memoryPreview && order >= 0,
         queued = s.mode === 'sequence' && order > s.sequenceStep;
-      return `<button class="target-cell ${active ? 'active' : decoy ? 'decoy' : preview ? 'memory-preview' : queued ? 'queued' : ''}" data-index="${i}" onpointerdown="if(event.isPrimary&&event.button===0){event.preventDefault();hitTarget(${i},${s.token},${s.run})}" onclick="if(event.detail===0)hitTarget(${i},${s.token},${s.run})" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${preview ? `احفظ الخانة ${order + 1}` : memoryInput ? 'استرجع المسار' : active ? (s.mode === 'sequence' ? `الهدف ${order + 1}، اضغط هنا` : 'هدف، اضغط هنا') : decoy ? 'قنبلة، تجنبها' : queued ? `الهدف ${order + 1}، انتظر دوره` : 'خانة فارغة'}">${preview ? `<span aria-hidden="true">${order + 1}</span>` : active ? '<span aria-hidden="true">🎯</span>' : decoy ? '<span aria-hidden="true">💣</span>' : queued ? `<span aria-hidden="true">${order + 1}</span>` : '<span aria-hidden="true">·</span>'}${active && s.mode === 'sequence' ? `<strong class="target-order-badge" aria-hidden="true">${order + 1}</strong>` : ''}${s.size === 3 ? `<small class="target-key" aria-hidden="true">${i + 1}</small>` : ''}</button>`;
+      return `<button class="target-cell ${active ? 'active' : decoy ? 'decoy' : preview ? 'memory-preview' : queued ? 'queued' : ''}" data-index="${i}" tabindex="${i === (s.focusCell || 0) ? '0' : '-1'}" onfocus="focusTargetCell(${i},${s.run})" onpointerdown="if(event.isPrimary&&event.button===0){event.preventDefault();hitTarget(${i},${s.token},${s.run})}" onclick="if(event.detail===0)hitTarget(${i},${s.token},${s.run})" aria-label="صف ${Math.floor(i / s.size) + 1}، عمود ${(i % s.size) + 1}: ${preview ? `احفظ الخانة ${order + 1}` : memoryInput ? 'استرجع المسار' : active ? (s.mode === 'sequence' ? `الهدف ${order + 1}، اضغط هنا` : 'هدف، اضغط هنا') : decoy ? 'قنبلة، تجنبها' : queued ? `الهدف ${order + 1}، انتظر دوره` : 'خانة فارغة'}">${preview ? `<span aria-hidden="true">${order + 1}</span>` : active ? '<span aria-hidden="true">🎯</span>' : decoy ? '<span aria-hidden="true">💣</span>' : queued ? `<span aria-hidden="true">${order + 1}</span>` : '<span aria-hidden="true">·</span>'}${active && s.mode === 'sequence' ? `<strong class="target-order-badge" aria-hidden="true">${order + 1}</strong>` : ''}${s.size === 3 ? `<small class="target-key" aria-hidden="true">${i + 1}</small>` : ''}</button>`;
     },
   ).join(
     '',
   )}</div><div class="target-life-track" aria-hidden="true"><span id="targetLife" style="width:${s.slot >= 0 ? Math.max(0, s.memoryPreview ? (100 * (s.memoryPreviewUntil - targetElapsed(s))) / s.memoryPreviewDuration : (100 * (s.targetExpires - targetElapsed(s))) / s.targetLifetime) : 0}%"></span></div><p class="target-feedback" id="targetFeedback" role="status">${esc(s.feedback)}</p><div class="chips center"><span class="chip">أفضل سلسلة: ${s.bestCombo}</span><span class="chip">أهداف فاتت: ${s.misses}</span><span class="chip">ضغطات خاطئة: ${s.wrong}</span>${s.reactions?.length ? `<span class="chip">متوسط الاستجابة: ${Math.round(s.reactions.reduce((a, b) => a + b, 0) / s.reactions.length)} ملّي ثانية</span>` : ''}</div>${targetGoalsHTML(s)}`;
+}
+function focusTargetCell(index, run) {
+  if (
+    wordsBlocked('target') ||
+    !wordsCurrentRun(run) ||
+    !Number.isInteger(index) ||
+    index < 0 ||
+    index >= state.size ** 2
+  )
+    return;
+  state.focusCell = index;
+  document.querySelectorAll('.target-cell').forEach((cell) => {
+    cell.tabIndex = Number(cell.dataset.index) === index ? 0 : -1;
+  });
 }
 function renderTarget() {
   const s = state,

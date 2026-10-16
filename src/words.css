@@ -484,6 +484,22 @@ button.wordguess-cell {
 .wordguess-candidates .chips {
   margin-top: 12px;
 }
+.wordguess-candidates label {
+  display: block;
+  font-size: 14px;
+  margin: 14px 0 8px;
+}
+.wordguess-candidates input {
+  width: 100%;
+  min-width: 0;
+}
+.wordguess-candidate-pages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
 .wordguess-candidates button.chip {
   color: var(--mint);
   border: 1px solid var(--line);

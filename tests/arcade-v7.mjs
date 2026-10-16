@@ -81,7 +81,8 @@ try {
       await page.locator('.pausebox .primary').click();
       await page.locator('.arcade-directions .dir-left').click();
       await page.locator('.arcade-directions .dir-left').click();
-      await page.locator('.arcade-directions .dir-right').click();
+      assert.equal(await page.locator('.arcade-directions .dir-right').isDisabled(), true);
+      await page.evaluate(() => snakeTurn('right'));
       assert.deepEqual(
         await page.evaluate(() => ({
           head: state.snake[0],

@@ -1,6 +1,6 @@
 {
   "name": "lamma-universe",
-  "version": "11.0.0",
+  "version": "12.0.0",
   "private": true,
   "description": "Arabic offline party and brain games in a single HTML file",
   "type": "module",

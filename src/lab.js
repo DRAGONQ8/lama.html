@@ -275,13 +275,9 @@ function labFinish(title, text) {
         ? s.parMoves
         : s.answer.filter(Boolean).length;
   const efficiencyPenalty = Math.floor(Math.max(0, s.moves - baseline) / 4);
-  const points = Math.max(
-    20,
-    { easy: 85, normal: 115, hard: 145 }[s.level] -
-      s.hints * 8 -
-      efficiencyPenalty -
-      Math.floor(elapsed / 45),
-  );
+  const base = { easy: 85, normal: 115, hard: 145 }[s.level],
+    timePenalty = Math.floor(elapsed / 45),
+    points = Math.max(20, base - s.hints * 8 - efficiencyPenalty - timePenalty);
   s.done = true;
   s.finishedAt = Date.now();
   s.points = points;
@@ -295,6 +291,12 @@ function labFinish(title, text) {
     ),
     points,
   );
+  document
+    .querySelector('#app .play')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<section class="panel lab-result-review"><h3>حصيلة اللغز</h3><div class="lab-score-breakdown"><span>مكافأة المستوى <b>+${base}</b></span><span>التلميحات <b>−${s.hints * 8}</b></span><span>الحركات الإضافية <b>−${efficiencyPenalty}</b></span><span>الوقت الفعلي <b>−${timePenalty}</b></span><strong>النتيجة <b>${points}</b></strong></div><p class="note">${s.id === 'lights' ? `أقصر حل للوحة البداية ${s.parMoves} ضغطات؛ لعبت ${s.moves} ضغطات. ترتيب الضغطات لا يغيّر النتيجة.` : s.id === 'pipes' ? 'أي شبكة قانونية متصلة بلا تسريب تقبل كحل. راجع الاتجاهات النهائية والقطع التي ثبتّها.' : 'هذه صورتك المكتملة من الأرقام. الخانات الفارغة لا تحتاج شطباً للفوز.'} ${points === 20 ? 'حُفظ الحد الأدنى للمكافأة: 20 نقطة.' : ''}</p><details><summary>شاهد اللوحة المكتملة · ${s.size}×${s.size}</summary><div class="lab-result-board lab-result-${s.id}" style="--lab-n:${s.size}" role="img" aria-label="اللوحة المكتملة: ${s.id === 'nonogram' ? 'صورة منطقية مطابقة للأرقام' : s.id === 'lights' ? 'جميع المصابيح مطفأة' : 'شبكة أنابيب متصلة بلا تسريب'}">${s.board.map((v, i) => `<span class="${s.id === 'nonogram' && v === 1 ? 'lab-result-filled' : ''}">${s.id === 'pipes' ? labPipeSVG(v, true, labPipeIsSource(i, s), 0) : s.id === 'lights' ? '·' : v === 1 ? '■' : ''}</span>`).join('')}</div></details></section>`,
+    );
 }
 function labToolbar() {
   return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labRedo" onclick="labRedo()" ${state.future?.length ? '' : 'disabled'}>↷ إعادة</button><button id="labHint" onclick="labHint()">✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
@@ -329,6 +331,21 @@ function labMoveLensData(s = state) {
         s.colClues[column],
       ),
     ];
+    const mirroredColumn = s.rule === 'mirror' ? s.size - 1 - column : column,
+      mirrorBefore =
+        mirroredColumn !== column
+          ? labLineAnalysis(
+              Array.from({ length: s.size }, (_, r) => s.board[r * s.size + mirroredColumn]),
+              s.colClues[mirroredColumn],
+            )
+          : null,
+      mirrorAfter =
+        mirroredColumn !== column
+          ? labLineAnalysis(
+              Array.from({ length: s.size }, (_, r) => board[r * s.size + mirroredColumn]),
+              s.colClues[mirroredColumn],
+            )
+          : null;
     return {
       kind: 'nonogram',
       label: s.fixed[i] ? 'خانة معطاة ثابتة' : ['مسح العلامة', 'تعبئة الخانة', 'شطب الخانة'][next],
@@ -336,7 +353,14 @@ function labMoveLensData(s = state) {
       before: before.map((line) => line.options.length),
       after: after.map((line) => line.options.length),
       clues: [s.rowClues[row], s.colClues[column]],
-      conflict: after.some((line) => line.conflict),
+      mirror: mirrorBefore
+        ? {
+            column: mirroredColumn,
+            before: mirrorBefore.options.length,
+            after: mirrorAfter.options.length,
+          }
+        : null,
+      conflict: after.some((line) => line.conflict) || !!mirrorAfter?.conflict,
     };
   }
   if (s.id === 'lights') {
@@ -384,7 +408,9 @@ function labMoveLensHTML() {
     coordinate = `الصف ${Math.floor(s.selected / s.size) + 1} · العمود ${(s.selected % s.size) + 1}`;
   let details;
   if (data.kind === 'nonogram') {
-    details = `<div class="lab-lens-comparison">${['الصف', 'العمود'].map((axis, k) => `<div><span>${axis} <b dir="ltr">${data.clues[k].join('، ')}</b></span><strong dir="ltr">${data.before[k]} → ${data.after[k]}</strong><small>ترتيبات تسمح بها العلامات</small></div>`).join('')}</div><p>${data.conflict ? '! هذه الحركة تترك خطاً بلا ترتيب ممكن. تستطيع تنفيذها كمحاولة ثم التراجع.' : 'هذه المقارنة تختبر الخطين فقط؛ وجود ترتيبات ممكنة لا يثبت أن الخانة صحيحة.'}</p>`;
+    details = `<div class="lab-lens-comparison">${['الصف', 'العمود'].map((axis, k) => `<div><span>${axis} <b dir="ltr">${data.clues[k].join('، ')}</b></span><strong dir="ltr">${data.before[k]} → ${data.after[k]}</strong><small>ترتيبات تسمح بها العلامات</small></div>`).join('')}</div><p>${data.conflict ? '! هذه الحركة تترك خطاً بلا ترتيب ممكن. تستطيع تنفيذها كمحاولة ثم التراجع.' : data.mirror ? 'المقارنة تختبر الصف والعمودين المتناظرين؛ وجود ترتيبات ممكنة لا يثبت أن الخانة صحيحة.' : 'هذه المقارنة تختبر الخطين فقط؛ وجود ترتيبات ممكنة لا يثبت أن الخانة صحيحة.'}</p>`;
+    if (data.mirror)
+      details += `<p class="lab-mirror-impact">↔ العمود النظير ${data.mirror.column + 1}: <b dir="ltr">${data.mirror.before} → ${data.mirror.after}</b> ترتيبات. الحركة تغيّر الخانتين معاً.</p>`;
   } else if (data.kind === 'lights') {
     details = `<div class="lab-lens-comparison"><div><span>أنوار مضاءة</span><strong dir="ltr">${data.before} → ${data.after}</strong></div><div><span>أثر الضغطة</span><strong>${data.off} تنطفئ · ${data.on} تضيء</strong></div></div><p>${s.mode === 'plan' ? 'المقارنة تبدأ من نتيجة خطتك الحالية؛ الإضافة أو الحذف لا يغيّران اللوحة حتى التنفيذ.' : 'قلة الأنوار لا تعني دائماً قرب الحل. جرّب التخطيط لرؤية أثر أكثر من ضغطة معاً.'}</p>`;
   } else {

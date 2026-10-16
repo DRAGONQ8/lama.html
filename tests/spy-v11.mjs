@@ -269,9 +269,17 @@ try {
       await discuss(page);
       assert.equal(await page.locator('.spy-candidates').count(), 0);
       assert.ok(!(await page.locator('#app').innerText()).includes('فرنسا'));
-      await page.evaluate(() => spyGuess());
+      await page.evaluate(() => {
+        state.spy = 0;
+        state.spies = [0, 1];
+      });
+      await vote(page, [2, 2, 3, 2, 2]);
+      await page.evaluate(() => {
+        spyGuessHandoff();
+        spyGuess();
+      });
       assert.equal(await page.locator('#spyguess').evaluate((element) => element.tagName), 'INPUT');
-      assert.ok(!(await page.locator('#modal').innerText()).includes('فرنسا'));
+      assert.ok(!(await page.locator('#app').innerText()).includes('فرنسا'));
       await page.evaluate(() => submitSpyGuess(state.run));
       assert.equal(await page.evaluate(() => state.done), false);
       await page.locator('#spyguess').fill('الولايات المتحدة الأمريكية');
@@ -301,8 +309,16 @@ try {
       await start(page, { spytheme: 'countries', spyregion: 'gulf' });
       await discuss(page);
       assert.equal(await page.locator('.spy-candidates .listchips span').count(), 6);
-      await page.evaluate(() => spyGuess());
-      assert.equal(await page.locator('#spyguess option').count(), 6);
+      await page.evaluate(() => {
+        state.spy = 0;
+        state.spies = [0];
+      });
+      await vote(page, [1, 0, 0, 0, 0]);
+      await page.evaluate(() => {
+        spyGuessHandoff();
+        spyGuess();
+      });
+      assert.equal(await page.locator('#spyguessresults button').count(), 6);
       await page.evaluate(() => {
         $('spyguess').value = state.locationPool.find((word) => word !== state.location);
         submitSpyGuess(state.run);
@@ -327,7 +343,14 @@ try {
         store.players = ['شخص جديد', 'اسم آخر', 'ضيف'];
       });
       await vote(page, [1, 0, 0, 1, 0]);
-      assert.match(await page.locator('.success h2').innerText(), /كشفتم الجاسوسين/);
+      assert.match(await page.locator('.spy-vote-result h2').innerText(), /كشفتم الجاسوسين/);
+      assert.equal(await page.evaluate(() => state.done), false);
+      await page.evaluate(() => {
+        spyGuessHandoff();
+        spyGuess();
+        $('spyguess').value = 'تخمين خاطئ';
+        submitSpyGuess(state.run);
+      });
       assert.deepEqual(await page.evaluate(() => state.accused), [0, 1]);
       assert.deepEqual(
         await page.evaluate(() => state.players.map((name) => store.scores[name]?.points || 0)),
@@ -344,7 +367,13 @@ try {
       });
       await discuss(page);
       await vote(page, [1, 0, 0, 2, 3]);
-      assert.match(await page.locator('.success h2').innerText(), /تعادلت/);
+      assert.match(await page.locator('.spy-vote-result h2').innerText(), /تعادلت/);
+      await page.evaluate(() => {
+        spyGuessHandoff();
+        spyGuess();
+        $('spyguess').value = state.location;
+        submitSpyGuess(state.run);
+      });
       assert.deepEqual(await page.evaluate(() => state.accused), []);
       assert.deepEqual(
         await page.evaluate(() => state.players.map((name) => store.scores[name]?.points || 0)),
@@ -353,7 +382,7 @@ try {
     },
   );
   await check(
-    'Single-spy votes and timeouts retain the original outcome and guard duplicate ballots',
+    'Single-spy votes reveal the outcome before guessing and timeouts and guard duplicate ballots',
     async (page) => {
       await start(page, { spycount: 1 });
       await page.evaluate(() => {
@@ -362,7 +391,8 @@ try {
       });
       await discuss(page);
       await vote(page, [1, 0, 0, 0, 0]);
-      assert.match(await page.locator('.success h2').innerText(), /كشفتم الجاسوس!/);
+      assert.match(await page.locator('.spy-vote-result h2').innerText(), /كشفتم الجاسوس!/);
+      assert.equal(await page.evaluate(() => state.done), false);
       await start(page, { spytheme: 'animals' });
       await discuss(page);
       await page.evaluate(() => {
