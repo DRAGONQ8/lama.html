@@ -249,6 +249,8 @@ function continueRoute() {
   const config = experienceRoutes.find((v) => v.id === saved?.id);
   if (!config) return;
   closeModal(true);
+  tourney = null;
+  dailyRun = null;
   activeRoute = { config, id: config.games[saved.at], at: saved.at, finished: false };
   setup(activeRoute.id, true);
   // Curated starting settings; players can still choose their own challenge.
@@ -257,6 +259,7 @@ function continueRoute() {
   if ($('arcadeSize')) $('arcadeSize').value = '7';
   if ($('hangCount')) $('hangCount').value = '1';
   if ($('quizcount')) $('quizcount').value = '5';
+  if (activeRoute.id === 'hangman') updateHangmanAvailability();
 }
 const experienceSetup = setup;
 setup = function (id, internal = false) {
@@ -332,7 +335,8 @@ document.addEventListener('keydown', (event) => {
     event.metaKey ||
     event.altKey ||
     event.repeat ||
-    /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)
+    event.isComposing ||
+    advancedEditableTarget(event.target)
   )
     return;
   if (event.key === '/') {

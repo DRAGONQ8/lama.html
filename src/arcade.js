@@ -102,7 +102,7 @@ setup = function (id, internal = false) {
   setHTML(
     wrap(
       id,
-      `<section class="panel">${body}${id === 'snake' ? '<div class="field arcade-extra-field"><label for="arcadeDrive">أسلوب اللعب</label><select id="arcadeDrive"><option value="live">مباشر · الثعبان يتحرك باستمرار</option><option value="step">تدريب · خطوة مع كل ضغطة</option></select><p class="note">التدريب يتيح التفكير قبل كل خطوة: نقطتان لكل فاكهة، حتى 50 نقطة. السرعة تؤثر في اللعب المباشر فقط.</p></div>' : id === 'merge' ? '<div class="hintpanel">جديد: عاين أثر أي اتجاه قبل تحريكه. المعاينة لا تولّد قطعة ولا تستهلك تراجعاً.</div>' : id === 'mines' ? '<div class="hintpanel">المساعد المنطقي يشرح خانة مضمونة باستخدام الأرقام المكشوفة فقط. لديك 3 مساعدات؛ كل استنتاج ناجح يخصم 8 نقاط.</div>' : '<div class="hintpanel">المس خانة مجاورة للتحرك إليها، أو اختر نجمة على اللوحة لتوجيه أحد تلميحاتك إليها.</div>'}<div class="actions"><button class="primary" onclick="startArcade('${id}')">ابدأ التحدّي ←</button></div></section>`,
+      `<section class="panel">${body}${id === 'snake' ? '<div class="field arcade-extra-field"><label for="arcadeDrive">أسلوب اللعب</label><select id="arcadeDrive"><option value="live">مباشر · الثعبان يتحرك باستمرار</option><option value="step">تدريب · خطوة مع كل ضغطة</option></select><p class="note">التدريب يتيح التفكير قبل كل خطوة: نقطتان لكل فاكهة، حتى 50 نقطة. السرعة تؤثر في اللعب المباشر فقط.</p></div>' : id === 'merge' ? '<div class="hintpanel">جديد: عاين أثر أي اتجاه قبل تحريكه. المعاينة لا تولّد قطعة ولا تستهلك تراجعاً.</div>' : id === 'mines' ? '<div class="hintpanel">المساعد المنطقي يشرح خانة مضمونة باستخدام الأرقام المكشوفة وإجمالي الألغام المعلن، دون قراءة الخانات المخفية. لديك 3 مساعدات؛ كل استنتاج ناجح يخصم 8 نقاط.</div>' : '<div class="hintpanel">المس خانة مجاورة للتحرك إليها، أو اختر نجمة على اللوحة لتوجيه أحد تلميحاتك إليها.</div>'}<div class="actions"><button class="primary" onclick="startArcade('${id}')">ابدأ التحدّي ←</button></div></section>`,
     ),
   );
   goTop();
@@ -1250,7 +1250,15 @@ function renderMines() {
     previousBoard = document.querySelector('.mines-scroll'),
     scrollLeft = previousBoard?.scrollLeft || 0,
     scrollTop = previousBoard?.scrollTop || 0,
-    restoreFocus = !!document.activeElement?.closest('.mine-cell');
+    active = document.activeElement,
+    focus =
+      $('app').contains(active) && active.matches('button,input,select,textarea,summary')
+        ? {
+            cell: !!active.closest('.mine-cell'),
+            id: active.id,
+            action: active.getAttribute('onclick'),
+          }
+        : null;
   setHTML(
     wrap(
       'mines',
@@ -1259,7 +1267,7 @@ function renderMines() {
         ['خانات آمنة', s.revealed.size + ' / ' + (s.board.length - s.mineCount), 'mineProgress'],
         ['الوقت', arcadeTimeText(s.clockRunning ? arcadeSeconds(s) : 0), 'arcadeTime'],
       ]) +
-        `<section class="panel arcade-panel">${mineSurveyHTML(s)}<div class="mine-mode"><button class="${!s.flagMode && !s.questionMode && !s.scanMode && !s.inspectMode ? 'primary' : ''}" onclick="mineMode(false)" aria-pressed="${!s.flagMode && !s.questionMode && !s.scanMode && !s.inspectMode}">🔍 كشف الخانات</button><button class="${s.flagMode ? 'warm' : ''}" onclick="mineMode(true)" aria-pressed="${s.flagMode}">⚑ وضع الأعلام</button><button class="${s.questionMode ? 'warm' : ''}" onclick="mineMode('question')" aria-pressed="${!!s.questionMode}">؟ علامة شك</button><button class="${s.inspectMode ? 'warm' : ''}" onclick="mineMode('inspect')" aria-pressed="${!!s.inspectMode}">◉ تحديد آمن</button></div><div class="mine-zoom"><label for="mineZoom">حجم الخانات</label><select id="mineZoom" onchange="mineZoom(this.value)"><option value="1" ${s.mineScale === 1 ? 'selected' : ''}>عادي</option><option value="1.25" ${s.mineScale === 1.25 ? 'selected' : ''}>تكبير 125٪</option><option value="1.5" ${s.mineScale === 1.5 ? 'selected' : ''}>تكبير 150٪</option></select></div>${minesBoardHTML(s)}<div class="mine-inspection"><p id="mineSelectionInfo" class="note center" role="status"></p>${s.inspectMode ? '<div class="actions"><button class="primary" onclick="mineTap(state.selected,true)">اكشف المحددة</button><button onclick="mineFlag(state.selected)">⚑ ضع / أزل علماً</button><button onclick="mineQuestion(state.selected)">؟ ضع / أزل شكاً</button></div>' : ''}</div><div class="arcade-status" id="mineStatus" role="status">${s.feedback}</div><div class="actions">${s.pendingChord ? `<button class="warm" onclick="mineConfirmChord()">افتح ${s.pendingChord.cells.length} جيران بعد التأكد</button>` : ''}<button id="mineHintButton" onclick="mineHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ استنتاج منطقي (${3 - s.hints})</button>${s.deduction ? '<button class="primary" onclick="mineApplyHint()">نفّذ الاستنتاج</button>' : ''}</div><p class="note center">${s.inspectMode ? 'التحديد الآمن: المس أي خانة لمعاينة معلوماتها الظاهرة، ثم اختر كشفها أو تعليمها. اللمس وحده لا يكشف شيئاً.' : s.questionMode ? 'وضع الشك: اضغط خانة مغلقة لتدوين ؟ أو إزالتها؛ لا تحمي الخانة من الكشف.' : s.flagMode ? 'وضع الأعلام: اضغط خانة مغلقة لوضع علم أو إزالته.' : 'اضغط للكشف. اضغط رقماً مكشوفاً لفتح الجيران بعد وضع أعلامه.'}<br>ضغط مطول أو الفأرة اليمنى أو F للأعلام · Q للشك · الأسهم للتنقل · Enter للكشف.<br>المساعد يستخدم الأرقام المكشوفة، وكل استنتاج ناجح يخصم 8 نقاط.</p>${arcadeToolbar('mines')}</section>`,
+        `<section class="panel arcade-panel">${mineSurveyHTML(s)}<div class="mine-mode"><button class="${!s.flagMode && !s.questionMode && !s.scanMode && !s.inspectMode ? 'primary' : ''}" onclick="mineMode(false)" aria-pressed="${!s.flagMode && !s.questionMode && !s.scanMode && !s.inspectMode}">🔍 كشف الخانات</button><button class="${s.flagMode ? 'warm' : ''}" onclick="mineMode(true)" aria-pressed="${s.flagMode}">⚑ وضع الأعلام</button><button class="${s.questionMode ? 'warm' : ''}" onclick="mineMode('question')" aria-pressed="${!!s.questionMode}">؟ علامة شك</button><button class="${s.inspectMode ? 'warm' : ''}" onclick="mineMode('inspect')" aria-pressed="${!!s.inspectMode}">◉ تحديد آمن</button></div><div class="mine-zoom"><label for="mineZoom">حجم الخانات</label><select id="mineZoom" onchange="mineZoom(this.value)"><option value="1" ${s.mineScale === 1 ? 'selected' : ''}>عادي</option><option value="1.25" ${s.mineScale === 1.25 ? 'selected' : ''}>تكبير 125٪</option><option value="1.5" ${s.mineScale === 1.5 ? 'selected' : ''}>تكبير 150٪</option></select></div>${minesBoardHTML(s)}<div class="mine-inspection"><p id="mineSelectionInfo" class="note center" role="status"></p>${s.inspectMode ? '<div class="actions"><button class="primary" onclick="mineTap(state.selected,true)">اكشف المحددة</button><button onclick="mineFlag(state.selected)">⚑ ضع / أزل علماً</button><button onclick="mineQuestion(state.selected)">؟ ضع / أزل شكاً</button></div>' : ''}</div><div class="arcade-status" id="mineStatus" role="status">${s.feedback}</div><div class="actions">${s.pendingChord ? `<button class="warm" onclick="mineConfirmChord()">افتح ${s.pendingChord.cells.length} جيران بعد التأكد</button>` : ''}<button id="mineHintButton" onclick="mineHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ استنتاج منطقي (${3 - s.hints})</button>${s.deduction ? '<button class="primary" onclick="mineApplyHint()">نفّذ الاستنتاج</button>' : ''}</div><p class="note center">${s.inspectMode ? 'التحديد الآمن: المس أي خانة لمعاينة معلوماتها الظاهرة، ثم اختر كشفها أو تعليمها. اللمس وحده لا يكشف شيئاً.' : s.questionMode ? 'وضع الشك: اضغط خانة مغلقة لتدوين ؟ أو إزالتها؛ لا تحمي الخانة من الكشف.' : s.flagMode ? 'وضع الأعلام: اضغط خانة مغلقة لوضع علم أو إزالته.' : 'اضغط للكشف. اضغط رقماً مكشوفاً لفتح الجيران بعد وضع أعلامه.'}<br>ضغط مطول أو الفأرة اليمنى أو F للأعلام · Q للشك · الأسهم للتنقل · Enter للكشف.<br>المساعد يستخدم الأرقام المكشوفة وإجمالي الألغام المعلن؛ الأعلام لا تُعد دليلاً، وكل استنتاج ناجح يخصم 8 نقاط.</p>${arcadeToolbar('mines')}</section>`,
     ),
   );
   const board = document.querySelector('.mines-scroll');
@@ -1267,10 +1275,19 @@ function renderMines() {
   board.scrollTop = scrollTop;
   mineTouchControls(board, s);
   mineSelectionUI();
-  if (restoreFocus)
-    document
-      .querySelector(`.mine-cell[data-index="${s.selected}"]`)
-      ?.focus({ preventScroll: true });
+  if (focus) {
+    // Keep keyboard activation on its control; losing it to BODY makes the next
+    // Enter press reveal a square instead of activating the original button.
+    const target = focus.cell
+      ? document.querySelector(`.mine-cell[data-index="${s.selected}"]`)
+      : (focus.id && $(focus.id)) ||
+        (focus.action &&
+          [...$('app').querySelectorAll('[onclick]')].find(
+            (element) => element.getAttribute('onclick') === focus.action,
+          ));
+    const fallback = $('app').querySelector('[onclick="mineMode(\'inspect\')"]');
+    (target && !target.disabled ? target : fallback)?.focus({ preventScroll: true });
+  }
 }
 function mineTouchControls(board, round) {
   let press = null;
@@ -1460,71 +1477,94 @@ function mineReveal(i) {
   }
   return true;
 }
-// Deductions ignore player flags and never inspect hidden mine positions.
+// Constraints use revealed clues and the public mine total, never hidden values
+// or player flags as evidence. A bounded subset closure also keeps intermediate
+// deductions, so two individually inconclusive comparisons can form a proof.
 function mineDeduction(s = state) {
   const safe = new Map(),
     mines = new Map(),
-    originals = [];
+    rules = [],
+    signatures = new Map(),
+    maxRules = 512,
+    maxComparisons = 160000;
+  let invalid = false,
+    comparisons = 0;
+  const add = (rule) => {
+    if (!Number.isInteger(rule.count) || rule.count < 0 || rule.count > rule.cells.length) {
+      invalid = true;
+      return false;
+    }
+    if (!rule.cells.length) return false;
+    const cells = [...rule.cells].sort((a, b) => a - b),
+      signature = cells.join(',');
+    if (signatures.has(signature)) {
+      if (signatures.get(signature) !== rule.count) invalid = true;
+      return false;
+    }
+    if (rules.length >= maxRules) return false;
+    signatures.set(signature, rule.count);
+    rules.push({ ...rule, cells, cellSet: new Set(cells) });
+    return true;
+  };
   for (const i of s.revealed) {
     if (s.board[i] < 0) continue;
     const cells = mineNeighbours(i, s.size).filter((j) => !s.revealed.has(j));
-    if (s.board[i] > cells.length) return null;
-    if (cells.length) originals.push({ cells, count: s.board[i], clues: [i] });
+    add({ cells, count: s.board[i], clues: [i], total: false });
   }
+  if (Number.isInteger(s.mineCount) && s.mineCount >= 0 && s.mineCount <= s.board.length)
+    add({
+      cells: Array.from({ length: s.board.length }, (_, i) => i).filter((i) => !s.revealed.has(i)),
+      count: s.mineCount,
+      clues: [],
+      total: true,
+    });
   const infer = (rule) => {
-    if (!rule.cells.length || (rule.count !== 0 && rule.count !== rule.cells.length)) return false;
+    if (rule.count !== 0 && rule.count !== rule.cells.length) return;
     const target = rule.count === 0 ? safe : mines;
-    let changed = false;
-    for (const i of rule.cells)
-      if (!target.has(i)) {
-        target.set(i, rule.clues);
-        changed = true;
-      }
-    return changed;
+    for (const i of rule.cells) if (!target.has(i)) target.set(i, rule);
   };
-  for (let pass = 0; pass < s.board.length; pass++) {
-    const rules = originals.map((rule) => ({
-      cells: rule.cells.filter((i) => !safe.has(i) && !mines.has(i)),
-      count: rule.count - rule.cells.filter((i) => mines.has(i)).length,
-      clues: [
-        ...new Set([
-          ...rule.clues,
-          ...rule.cells.flatMap((i) => safe.get(i) || mines.get(i) || []),
-        ]),
-      ],
-    }));
-    if (rules.some((rule) => rule.count < 0 || rule.count > rule.cells.length)) return null;
-    let changed = false;
-    for (const rule of rules) changed = infer(rule) || changed;
-    for (const a of rules)
-      for (const b of rules) {
-        if (a.cells.length >= b.cells.length || !a.cells.every((i) => b.cells.includes(i)))
-          continue;
+  for (let pass = 0; pass < 12; pass++) {
+    if (invalid) return null;
+    const count = rules.length;
+    for (const rule of rules) infer(rule);
+    for (let ai = 0; ai < count && comparisons < maxComparisons; ai++)
+      for (let bi = 0; bi < count && comparisons < maxComparisons; bi++) {
+        comparisons++;
+        const a = rules[ai],
+          b = rules[bi];
+        if (a.cells.length >= b.cells.length || !a.cells.every((i) => b.cellSet.has(i))) continue;
         const difference = {
-          cells: b.cells.filter((i) => !a.cells.includes(i)),
+          cells: b.cells.filter((i) => !a.cellSet.has(i)),
           count: b.count - a.count,
           clues: [...new Set([...a.clues, ...b.clues])],
+          total: a.total || b.total,
         };
-        if (difference.count < 0 || difference.count > difference.cells.length) return null;
-        changed = infer(difference) || changed;
+        add(difference);
+        infer(difference);
       }
+    if (invalid || [...safe.keys()].some((i) => mines.has(i))) return null;
     const candidate =
-      [...safe].find(([i]) => !s.revealed.has(i)) || [...mines].find(([i]) => !s.flags.has(i));
+      [...safe].find(([i]) => !s.revealed.has(i)) || [...mines].find(([i]) => !s.flags?.has(i));
     if (candidate) {
-      const [index, clues] = candidate,
+      const [index, proof] = candidate,
+        clues = proof.clues,
         kind = safe.has(index) ? 'safe' : 'mine',
         location = `الصف ${Math.floor(index / s.size) + 1}، العمود ${(index % s.size) + 1}`,
         evidence = clues
           .map((i) => `(${Math.floor(i / s.size) + 1}، ${(i % s.size) + 1})`)
-          .join(' و');
+          .join(' و'),
+        reasoning = proof.total
+          ? `إجمالي الحقل المعلن (${s.mineCount} ألغام)${clues.length ? ` مع الأرقام في ${evidence}` : ''}`
+          : `${clues.length > 1 ? 'مقارنة الأرقام' : 'الرقم'} في ${evidence}`;
       return {
         index,
         kind,
         clues,
-        explanation: `${location}: ${kind === 'safe' ? 'خانة آمنة مضمونة' : 'لغم مؤكد'}. ${clues.length > 1 ? 'مقارنة الأرقام' : 'الرقم'} في ${evidence} ${kind === 'safe' ? 'يستبعد وجود لغم هنا' : 'يفرض وجود لغم هنا'}. الأرقام الداعمة مميزة بالبنفسجي.`,
+        total: proof.total,
+        explanation: `${location}: ${kind === 'safe' ? 'خانة آمنة مضمونة' : 'لغم مؤكد'}. ${reasoning} ${kind === 'safe' ? 'يستبعد وجود لغم هنا' : 'يفرض وجود لغم هنا'}.${clues.length ? ' الأرقام الداعمة مميزة بالبنفسجي.' : ''}`,
       };
     }
-    if (!changed) break;
+    if (rules.length === count || comparisons >= maxComparisons) break;
   }
   return null;
 }
@@ -1535,7 +1575,7 @@ function mineHint() {
   const deduction = s.generated ? mineDeduction(s) : null;
   if (!deduction) {
     s.feedback = s.generated
-      ? 'لا يوجد استنتاج مضمون من الأرقام المكشوفة الآن. لم نستهلك مساعدة؛ جرّب كشف منطقة أخرى.'
+      ? 'لم يجد المساعد استنتاجاً مضموناً من المعلومات الظاهرة الآن. لم نستهلك مساعدة؛ راجع الأرقام أو استكشف منطقة أخرى.'
       : 'اكشف خانتك الأولى الآمنة، ثم اطلب استنتاجاً من الأرقام.';
     $('mineStatus').textContent = s.feedback;
     return;
@@ -1847,8 +1887,24 @@ function mazeMark() {
       Array.from({ length: 12 }, (_, i) => i + 1).find((number) => !used.has(number)),
     );
   }
+  state.markerEvents ||= [];
+  state.markerEvents.push({
+    step: state.moves,
+    index: state.position,
+    number: state.markers.get(state.position) || null,
+  });
   mazeExplorationUI();
+  mazeNavigationUI();
   mazeDraw();
+}
+function mazeMarkersAt(step, s = state) {
+  const markers = new Map();
+  for (const event of s.markerEvents || []) {
+    if (event.step > step) break;
+    if (event.number === null) markers.delete(event.index);
+    else markers.set(event.index, event.number);
+  }
+  return markers;
 }
 function mazeExplorationUI() {
   const s = state,
@@ -1878,6 +1934,7 @@ function startMaze() {
   s.hintTarget = null;
   s.trail = new Set([s.position]);
   s.markers = new Map();
+  s.markerEvents = [];
   s.mazeScale = 1;
   s.seen = new Set();
   s.gates = new Map();
@@ -1913,7 +1970,7 @@ function renderMaze() {
         ['الخطوات', s.moves, 'mazeMoves'],
         ['الوقت', arcadeTimeText(arcadeSeconds(s)), 'arcadeTime'],
       ]) +
-        `<section class="panel arcade-panel"><div class="maze-view-controls"><label for="mazeZoom">حجم الخريطة</label><select id="mazeZoom" onchange="mazeZoom(this.value)"><option value="1">الخريطة كاملة</option><option value="1.5">تكبير 150٪</option><option value="2">تكبير 200٪</option></select><button onclick="mazeCenterView()">⌖ موقعي</button></div><div id="mazeViewport" class="maze-viewport"><canvas id="mazeCanvas" width="620" height="620" role="img" aria-label="متاهة. موقعك هو الدائرة الزرقاء. اجمع النجوم الصفراء ثم اتجه إلى المخرج الأخضر. يمكنك لمس خانة مجاورة للتحرك أو نجمة لتحديد هدف التلميح."></canvas></div><p class="note center" id="mazeViewNote">اسحب على الخريطة للتحرك، أو المس خانة مجاورة. كبّرها لتسهيل رؤية الممرات الصغيرة.</p><div class="arcade-status" id="mazeStatus" role="status">${s.mode === 'keys' ? 'ابحث عن المفتاح 1 لفتح بوابته ثم تابع للمفتاح 2.' : s.stars.size ? 'اجمع النجوم قبل الوصول إلى المخرج.' : 'البوابة مفتوحة. اتجه إلى المخرج الأخضر!'}</div>${arcadeDirections('mazeMove')}<p class="note center" id="mazeExplored" role="status"></p><div class="actions"><button id="mazeMarkButton" onclick="mazeMark()" aria-pressed="false">⚑ علّم هذا المكان</button></div><div class="actions"><button id="mazeHintButton" onclick="mazeHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ تلميح (${3 - s.hints} متبقية)</button><button id="mazeTravelButton" onclick="mazeToggleTravel()" aria-pressed="${s.travel === 'corridor'}">${s.travel === 'corridor' ? 'حتى التقاطع' : 'خطوة بخطوة'}</button><button onclick="mazeClearTrail()">امسح آثار خطواتي</button></div>${arcadeToolbar('maze')}<p class="note center">الأزرق: أنت · الأصفر: ${s.mode === 'courier' ? 'محطة طرد مرقمة' : s.mode === 'keys' ? 'مفتاح' : 'نجمة'} · الأخضر: ${s.mode === 'courier' ? 'القاعدة' : 'المخرج'}<br>${s.vision === 'lantern' ? 'المصباح يكشف الممرات القريبة؛ الخريطة المكتشفة تبقى ظاهرة. التلميح يضيء الطريق المطلوب. <br>' : ''}المس خانة مجاورة للحركة، أو ${s.mode === 'courier' ? 'محطة الطرد الحالية' : s.mode === 'keys' ? 'مفتاحاً' : 'نجمة'} لتوجيه التلميح إليه · M لوضع علامة · الأسهم أو WASD · Shift مع الاتجاه للمشي حتى التقاطع.<br>المسار المثالي لهذه الجولة: ${s.parMoves} خطوة. كل خانة تتحركها تُحسب، حتى مع التحرك التلقائي. كل تلميح يخصم 8 نقاط.</p></section>`,
+        `<section class="panel arcade-panel"><div class="maze-view-controls"><label for="mazeZoom">حجم الخريطة</label><select id="mazeZoom" onchange="mazeZoom(this.value)"><option value="1">الخريطة كاملة</option><option value="1.5">تكبير 150٪</option><option value="2">تكبير 200٪</option></select><button onclick="mazeCenterView()">⌖ موقعي</button></div><div id="mazeViewport" class="maze-viewport"><canvas id="mazeCanvas" width="620" height="620" role="img" aria-label="متاهة. موقعك هو الدائرة الزرقاء. اجمع النجوم الصفراء ثم اتجه إلى المخرج الأخضر. يمكنك لمس خانة مجاورة للتحرك أو نجمة لتحديد هدف التلميح."></canvas></div><p class="note center" id="mazeViewNote">اسحب على الخريطة للتحرك، أو المس خانة مجاورة. كبّرها لتسهيل رؤية الممرات الصغيرة.</p><div class="arcade-status" id="mazeStatus" role="status">${s.mode === 'keys' ? 'ابحث عن المفتاح 1 لفتح بوابته ثم تابع للمفتاح 2.' : s.stars.size ? 'اجمع النجوم قبل الوصول إلى المخرج.' : 'البوابة مفتوحة. اتجه إلى المخرج الأخضر!'}</div>${arcadeDirections('mazeMove')}<p class="note center maze-navigation" id="mazeNavigation" role="status" aria-live="polite" aria-atomic="true"></p><p class="note center" id="mazeExplored" role="status"></p><div class="actions"><button id="mazeMarkButton" onclick="mazeMark()" aria-pressed="false">⚑ علّم هذا المكان</button></div><div class="actions"><button id="mazeHintButton" onclick="mazeHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ تلميح (${3 - s.hints} متبقية)</button><button id="mazeTravelButton" onclick="mazeToggleTravel()" aria-pressed="${s.travel === 'corridor'}">${s.travel === 'corridor' ? 'حتى التقاطع' : 'خطوة بخطوة'}</button><button onclick="mazeClearTrail()">امسح آثار خطواتي</button></div>${arcadeToolbar('maze')}<p class="note center">الأزرق: أنت · الأصفر: ${s.mode === 'courier' ? 'محطة طرد مرقمة' : s.mode === 'keys' ? 'مفتاح' : 'نجمة'} · الأخضر: ${s.mode === 'courier' ? 'القاعدة' : 'المخرج'}<br>${s.vision === 'lantern' ? 'المصباح يكشف الممرات القريبة؛ الخريطة المكتشفة تبقى ظاهرة. التلميح يضيء الطريق المطلوب. <br>' : ''}المس خانة مجاورة للحركة، أو ${s.mode === 'courier' ? 'محطة الطرد الحالية' : s.mode === 'keys' ? 'مفتاحاً' : 'نجمة'} لتوجيه التلميح إليه · M لوضع علامة · الأسهم أو WASD · Shift مع الاتجاه للمشي حتى التقاطع.<br>المسار المثالي لهذه الجولة: ${s.parMoves} خطوة. كل خانة تتحركها تُحسب، حتى مع التحرك التلقائي. كل تلميح يخصم 8 نقاط.</p></section>`,
     ),
   );
   mazeDraw();
@@ -1931,7 +1988,16 @@ function renderMaze() {
       'ساعي المتاهة: تحرك إلى المحطات المرقمة 1 ثم 2 ثم 3. عد إلى القاعدة الخضراء بعد كل طرد. لونك برتقالي عندما تحمل طرداً.',
     );
     $('mazeStatus').textContent = 'اذهب للمحطة 1 ثم ارجع للقاعدة. الطرود تُستلم وتُسلّم بالترتيب.';
-  }
+  } else if (s.mode === 'keys')
+    $('mazeCanvas').setAttribute(
+      'aria-label',
+      'رحلة المفاتيح: موقعك هو الدائرة الزرقاء. اجمع المفتاحين المرقمين لفتح بوابتيهما، ثم اتجه للمخرج الأخضر. وصف التنقل يبين موقعك والممرات المفتوحة.',
+    );
+  else if (s.mode === 'exit')
+    $('mazeCanvas').setAttribute(
+      'aria-label',
+      'متاهة الوصول: موقعك هو الدائرة الزرقاء. اتبع الممرات حتى المخرج الأخضر. وصف التنقل يبين موقعك والممرات المفتوحة.',
+    );
   arcadeSwipe(
     $('mazeCanvas'),
     (dir) => {
@@ -2012,13 +2078,19 @@ function mazeCenterView(follow = false) {
 function mazeNavigationUI() {
   const s = state,
     location = `الصف ${Math.floor(s.position / s.width) + 1}، العمود ${(s.position % s.width) + 1}`,
-    names = { up: 'أعلى', down: 'أسفل', left: 'يسار', right: 'يمين' };
+    names = { up: 'أعلى', down: 'أسفل', left: 'يسار', right: 'يمين' },
+    open = [],
+    gates = [];
   for (const [dir, [dx, dy]] of Object.entries(arcadeDelta)) {
     const x = (s.position % s.width) + dx,
       y = Math.floor(s.position / s.width) + dy,
       cell = y * s.width + x,
       wall = x < 0 || y < 0 || x >= s.width || y >= s.width || !!s.grid[cell],
       button = document.querySelector(`.arcade-directions .dir-${dir}`);
+    if (!wall) {
+      if (s.gates?.has(cell)) gates.push(`${names[dir]} بوابة ${s.gates.get(cell).number}`);
+      else open.push(names[dir]);
+    }
     if (!button) continue;
     button.disabled = wall;
     button.setAttribute(
@@ -2026,10 +2098,17 @@ function mazeNavigationUI() {
       `${names[dir]}${wall ? '، جدار' : s.gates?.has(cell) ? '، بوابة مغلقة' : '، ممر مفتوح'}`,
     );
   }
-  $('mazeCanvas')?.setAttribute(
-    'aria-description',
-    `موقعك: ${location}. الأزرار المتاحة تقود إلى الممرات؛ الأزرار المغلقة أمامها جدار.`,
-  );
+  const description =
+    `موقعك: ${location}. الممرات المفتوحة: ${open.join('، ') || 'لا يوجد'}.` +
+    (gates.length ? ` بوابات مغلقة: ${gates.join('، ')}.` : '') +
+    (s.markers?.has(s.position) ? ` أنت عند العلامة ${s.markers.get(s.position)}.` : '') +
+    (s.mode === 'courier'
+      ? ` ${s.parcel !== null ? 'تحمل طرداً؛ عد للقاعدة.' : `الهدف استلام الطرد ${s.delivered + 1}.`}`
+      : s.mode === 'exit'
+        ? ' هدفك الوصول للمخرج الأخضر.'
+        : ` بقي ${s.stars.size} ${s.mode === 'keys' ? 'مفاتيح' : 'نجوم'}؛ ${s.stars.size ? 'اجمعها ثم اتجه للمخرج.' : 'اتجه للمخرج.'}`);
+  $('mazeCanvas')?.setAttribute('aria-description', description);
+  if ($('mazeNavigation')) $('mazeNavigation').textContent = description;
 }
 function mazeTap(event) {
   if (!arcadeReady('maze')) return;
@@ -2177,6 +2256,7 @@ function mazeDraw(canvasID = 'mazeCanvas', reviewAt = null) {
             position: state.route[reviewAt],
             stars: new Set(state.originalStars.filter((i) => !visited.has(i))),
             trail: visited,
+            markers: mazeMarkersAt(reviewAt, state),
             hintPath: [],
             hintTarget: null,
             vision: 'map',

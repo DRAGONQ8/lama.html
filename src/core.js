@@ -618,7 +618,7 @@ function renderFinder(msg = '') {
       coaching = `<p class="note center" role="status">${count === 1n ? 'بقي رقم واحد مؤكد داخل النطاق.' : `من هذا النطاق نحتاج إلى ${limit(s.l, s.h)} تخمينات إضافية كحد أقصى، منها التخمين المعروض.`}${progress !== null ? ` استبعدنا ${progress}% من الاحتمالات.` : ''}</p>`;
     panel?.insertAdjacentHTML(
       'afterbegin',
-      `${progress !== null ? `<div class="progressline" aria-label="استبعاد الاحتمالات ${progress}%"><span style="width:${progress}%"></span></div>` : ''}${coaching}`,
+      `${progress !== null ? `<div class="progressline" role="progressbar" aria-label="استبعاد الاحتمالات" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>` : ''}${coaching}`,
     );
     if (s.guess === s.h)
       $('app').querySelector('button[onclick="finderAnswer(\'higher\')"]').disabled = true;
@@ -757,7 +757,7 @@ function renderSolo(msg = '') {
   setHTML(
     wrap(
       'solo',
-      `<div class="stats solo-stats"><div class="stat"><small>محاولات باقية</small><b>${s.max - s.attempt}</b></div><div class="stat"><small>محاولاتك</small><b>${s.attempt}</b></div><div class="stat"><small>احتمالات باقية</small><b>${fmt(count)}</b></div></div><section class="panel solo-panel"><div class="solo-heading"><span aria-hidden="true">🔐</span><div><h3>قرّب، وضيّق النطاق</h3><p class="tiny">استبعدت ${progress}% من الاحتمالات</p></div></div><div class="number-range" aria-label="النطاق المتبقي من ${fmt(s.l)} إلى ${fmt(s.h)}"><div class="range" dir="ltr"><bdi>${fmt(s.l)}</bdi><span>≤ ? ≤</span><bdi>${fmt(s.h)}</bdi></div><div class="number-track" dir="ltr" aria-hidden="true"><span style="left:${left}%;width:${width}%"></span></div><div class="range-original" dir="ltr"><bdi>${fmt(s.initialL)}</bdi><bdi>${fmt(s.initialH)}</bdi></div></div><div id="soloFeedback" class="guess-feedback ${direction}" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"><span class="feedback-arrow" aria-hidden="true">${direction === 'higher' ? '↑' : direction === 'lower' ? '↓' : '✦'}</span><div><b>${esc(s.soloMessage)}</b><small>النطاق الآن: <bdi dir="ltr">${fmt(s.l)} – ${fmt(s.h)}</bdi>${count === 1n ? ' · بقي رقم واحد!' : ''}</small></div></div><form class="solo-form" onsubmit="event.preventDefault();guessSolo()"><label for="guessInput">تخمينك</label><div class="guess-entry"><input id="guessInput" dir="ltr" type="text" inputmode="${s.soloPad ? 'none' : 'numeric'}" enterkeyhint="go" maxlength="90" autocomplete="off" aria-describedby="soloFeedback" placeholder="اكتب الرقم" ${s.soloPad ? 'readonly' : ''}><button class="primary" type="submit">جرّب الرقم ←</button></div><div class="input-options"><button type="button" class="linkbtn" onclick="toggleSoloPad()" aria-pressed="${!!s.soloPad}">${s.soloPad ? 'استخدم كيبورد الجهاز' : 'لوحة أرقام اللعبة'}</button>${s.l < 0n ? '<button type="button" class="smallbtn quiet" onclick="soloKey(\'sign\')" aria-label="تبديل إشارة الرقم">±</button>' : ''}${s.mode === 'easy' && count > 1n ? '<button type="button" class="linkbtn" onclick="soloMidpoint()">جرّب المنتصف</button>' : ''}</div>${s.soloPad ? soloKeypadHTML() : ''}<div class="solo-assists"><button type="button" onclick="hintSolo()" ${s.hints >= 2 || count <= 2n ? 'disabled' : ''}>✧ تلميح <small>−8 نقاط · باقي ${2 - s.hints}</small></button><button type="button" class="quiet" onclick="revealSolo()">اكشف الرقم</button></div><p class="tiny">التلميح يحذف نصف الاحتمالات دون استهلاك محاولة.</p></form>${
+      `<div class="stats solo-stats"><div class="stat"><small>محاولات باقية</small><b>${s.max - s.attempt}</b></div><div class="stat"><small>محاولاتك</small><b>${s.attempt}</b></div><div class="stat"><small>احتمالات باقية</small><b>${fmt(count)}</b></div></div><section class="panel solo-panel"><div class="solo-heading"><span aria-hidden="true">🔐</span><div><h3>قرّب، وضيّق النطاق</h3><p class="tiny">استبعدت ${progress}% من الاحتمالات</p></div></div><div class="number-range" role="group" aria-label="النطاق المتبقي من ${fmt(s.l)} إلى ${fmt(s.h)}"><div class="range" dir="ltr"><bdi>${fmt(s.l)}</bdi><span>≤ ? ≤</span><bdi>${fmt(s.h)}</bdi></div><div class="number-track" dir="ltr" aria-hidden="true"><span style="left:${left}%;width:${width}%"></span></div><div class="range-original" dir="ltr"><bdi>${fmt(s.initialL)}</bdi><bdi>${fmt(s.initialH)}</bdi></div></div><div id="soloFeedback" class="guess-feedback ${direction}" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"><span class="feedback-arrow" aria-hidden="true">${direction === 'higher' ? '↑' : direction === 'lower' ? '↓' : '✦'}</span><div><b>${esc(s.soloMessage)}</b><small>النطاق الآن: <bdi dir="ltr">${fmt(s.l)} – ${fmt(s.h)}</bdi>${count === 1n ? ' · بقي رقم واحد!' : ''}</small></div></div><form class="solo-form" onsubmit="event.preventDefault();guessSolo()"><label for="guessInput">تخمينك</label><div class="guess-entry"><input id="guessInput" dir="ltr" type="text" inputmode="${s.soloPad ? 'none' : 'numeric'}" enterkeyhint="go" maxlength="90" autocomplete="off" aria-describedby="soloFeedback" placeholder="اكتب الرقم" ${s.soloPad ? 'readonly' : ''}><button class="primary" type="submit">جرّب الرقم ←</button></div><div class="input-options"><button type="button" class="linkbtn" onclick="toggleSoloPad()" aria-pressed="${!!s.soloPad}">${s.soloPad ? 'استخدم كيبورد الجهاز' : 'لوحة أرقام اللعبة'}</button>${s.l < 0n ? '<button type="button" class="smallbtn quiet" onclick="soloKey(\'sign\')" aria-label="تبديل إشارة الرقم">±</button>' : ''}${s.mode === 'easy' && count > 1n ? '<button type="button" class="linkbtn" onclick="soloMidpoint()">جرّب المنتصف</button>' : ''}</div>${s.soloPad ? soloKeypadHTML() : ''}<div class="solo-assists"><button type="button" onclick="hintSolo()" ${s.hints >= 2 || count <= 2n ? 'disabled' : ''}>✧ تلميح <small>−8 نقاط · باقي ${2 - s.hints}</small></button><button type="button" class="quiet" onclick="revealSolo()">اكشف الرقم</button></div><p class="tiny">التلميح يحذف نصف الاحتمالات دون استهلاك محاولة.</p></form>${
         s.history.length
           ? `<details class="history solo-history"><summary>تتبّع تخميناتك (${s.history.length})</summary><ol>${s.history
               .slice(-12)
@@ -1733,7 +1733,7 @@ function renderMindEvidence() {
     .querySelector('.panel')
     ?.insertAdjacentHTML(
       'beforeend',
-      `<div class="progressline" aria-label="تضييق الخيارات ${progress}%"><span style="width:${progress}%"></span></div><p class="note">${s.candidates.length === 1 ? 'كل الإجابات الواضحة تقود إلى هذا الخيار؛ أكّد الاسم أو تراجع لتصحيح الأدلة.' : s.q === null ? 'الخيارات الباقية تتشابه في الصفات المتاحة؛ اختر الاسم أو أضف صفة تميز الشيء في قاعدة التخمين.' : `اخترنا هذا السؤال لأنه يقسم الخيارات إلى ${yes} جوابها نعم و${s.candidates.length - yes} جوابها لا. «مو متأكد» يحفظ كل الخيارات.`}</p>${s.evidence.length ? `<details class="history"><summary>الأدلة التي ضيّقت الخيارات (${s.evidence.length})</summary><ol>${s.evidence.map((v) => `<li>${esc(questions[v.q][1])} — <b>${v.answer === 'yes' ? 'نعم' : v.answer === 'no' ? 'لا' : 'مو متأكد'}</b><small> · استبعدنا ${v.before - v.after} وبقي ${v.after}</small></li>`).join('')}</ol></details>` : ''}`,
+      `<div class="progressline" role="progressbar" aria-label="تضييق الخيارات" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div><p class="note">${s.candidates.length === 1 ? 'كل الإجابات الواضحة تقود إلى هذا الخيار؛ أكّد الاسم أو تراجع لتصحيح الأدلة.' : s.q === null ? 'الخيارات الباقية تتشابه في الصفات المتاحة؛ اختر الاسم أو أضف صفة تميز الشيء في قاعدة التخمين.' : `اخترنا هذا السؤال لأنه يقسم الخيارات إلى ${yes} جوابها نعم و${s.candidates.length - yes} جوابها لا. «مو متأكد» يحفظ كل الخيارات.`}</p>${s.evidence.length ? `<details class="history"><summary>الأدلة التي ضيّقت الخيارات (${s.evidence.length})</summary><ol>${s.evidence.map((v) => `<li>${esc(questions[v.q][1])} — <b>${v.answer === 'yes' ? 'نعم' : v.answer === 'no' ? 'لا' : 'مو متأكد'}</b><small> · استبعدنا ${v.before - v.after} وبقي ${v.after}</small></li>`).join('')}</ol></details>` : ''}`,
     );
   s.notebookVersion = (s.notebookVersion || 0) + 1;
   const version = s.notebookVersion;
@@ -1922,22 +1922,34 @@ function renderWho(msg = '') {
         .map((h, i) => `<div class="hint"><b>التلميح ${i + 1}</b>${esc(h)}</div>`)
         .join(
           '',
-        )}<form onsubmit="event.preventDefault();guessWho()"><label for="whoInput">ما هو الشيء؟</label><input id="whoInput" maxlength="50" autocomplete="off" placeholder="اكتب الاسم أو اسماً بديلاً له"><div class="actions"><button class="primary" type="submit">خمنت!</button><button type="button" onclick="whoHint()" ${s.hints === 3 ? 'disabled' : ''}>تلميح إضافي −10</button></div></form><p class="note" role="status">${msg || 'التخمين الغلط يخصم 5 نقاط؛ تكرار التخمين نفسه لا يستهلك محاولة.'}</p>${s.wrong.length ? `<div class="listchips" aria-label="التخمينات السابقة">${s.wrong.map((v) => `<span>✕ ${esc(v)}</span>`).join('')}</div>` : ''}${s.level === 'hard' ? '' : s.listOpen ? whoCandidateNotebookHTML(s) : '<div class="actions"><button onclick="whoCandidates()">شاهد قائمة الكلمات −5</button></div>'}<div class="actions"><button class="quiet" onclick="revealWho()">اكشف الجواب</button></div></section>`,
+        )}<form onsubmit="event.preventDefault();guessWho()"><label for="whoInput">ما هو الشيء؟</label><input id="whoInput" maxlength="50" autocomplete="off" placeholder="اكتب الاسم أو اسماً بديلاً له"><div class="actions"><button class="primary" type="submit">خمنت!</button><button type="button" onclick="whoHint()" ${s.hints === 3 ? 'disabled' : ''}>تلميح إضافي −10</button></div></form><p class="note" role="status">${msg || 'التخمين الغلط يخصم 5 نقاط؛ تكرار التخمين نفسه لا يستهلك محاولة.'}</p>${s.wrong.length ? `<div class="listchips" role="group" aria-label="التخمينات السابقة">${s.wrong.map((v) => `<span>✕ ${esc(v)}</span>`).join('')}</div>` : ''}${s.level === 'hard' ? '' : s.listOpen ? whoCandidateNotebookHTML(s) : '<div class="actions"><button onclick="whoCandidates()">شاهد قائمة الكلمات −5</button></div>'}<div class="actions"><button class="quiet" onclick="revealWho()">اكشف الجواب</button></div></section>`,
     ),
   );
   $('whoInput').value = s.whoDraft || '';
   renderWhoInquiries();
 }
+function whoEvidenceCandidates(s = state) {
+  return s.pool.filter(
+    (i) =>
+      (s.inquiries || []).every(
+        (entry) => items[i].tags.has(questions[entry.q][0]) === entry.yes,
+      ) &&
+      !(s.wrong || []).some((guess) =>
+        items[i].aliases.some((alias) => norm(alias) === norm(guess)),
+      ),
+  );
+}
 function whoInquiryOptions(s = state) {
+  // Paid questions should split the possibilities still supported by the public
+  // evidence; neither the hidden answer nor handwritten exclusions are consulted.
+  const pool = whoEvidenceCandidates(s);
   return questions
-    .map((q, i) => ({ i, count: s.pool.filter((item) => items[item].tags.has(q[0])).length }))
+    .map((q, i) => ({ i, count: pool.filter((item) => items[item].tags.has(q[0])).length }))
     .filter(
       (entry) =>
-        entry.count > 0 &&
-        entry.count < s.pool.length &&
-        !s.inquiries?.some((q) => q.q === entry.i),
+        entry.count > 0 && entry.count < pool.length && !s.inquiries?.some((q) => q.q === entry.i),
     )
-    .sort((a, b) => Math.abs(s.pool.length / 2 - a.count) - Math.abs(s.pool.length / 2 - b.count))
+    .sort((a, b) => Math.abs(pool.length / 2 - a.count) - Math.abs(pool.length / 2 - b.count))
     .slice(0, 8)
     .map((entry) => entry.i);
 }
@@ -1948,7 +1960,7 @@ function renderWhoInquiries() {
     .querySelector('.panel')
     ?.insertAdjacentHTML(
       'beforeend',
-      `<details class="strategy-lens" ${s.inquiries?.length ? 'open' : ''}><summary>🔎 اسأل عن صفة · −6 نقاط للسؤال</summary><p class="tiny">سؤالان كحد أقصى؛ الجواب عن الصفة المعتادة في قاموس اللعبة. السؤال لا يستهلك تخميناً.</p>${s.inquiries?.map((v) => `<div class="hint"><b>${esc(questions[v.q][1])}</b>${v.yes ? 'نعم ✓' : 'لا ✕'}</div>`).join('') || ''}${(s.inquiries?.length || 0) < 2 && options.length ? `<label for="whoQuestion">اختر صفة لفحصها</label><select id="whoQuestion">${options.map((q) => `<option value="${q}">${esc(questions[q][1])}</option>`).join('')}</select><div class="actions"><button onclick="askWhoInquiry(${s.inquiries?.length || 0})">اسأل عن الصفة −6</button></div>` : '<p class="note">انتهت أسئلة الصفات المتاحة؛ استعمل أدلتك للتخمين.</p>'}</details>`,
+      `<details class="strategy-lens" ${s.inquiries?.length ? 'open' : ''}><summary>🔎 اسأل عن صفة · −6 نقاط للسؤال</summary><p class="tiny">سؤالان كحد أقصى؛ نعرض الصفات التي تميّز الاحتمالات بعد إجاباتك السابقة. الجواب عن الصفة المعتادة في قاموس اللعبة، ولا يستهلك تخميناً.</p>${s.inquiries?.map((v) => `<div class="hint"><b>${esc(questions[v.q][1])}</b>${v.yes ? 'نعم ✓' : 'لا ✕'}</div>`).join('') || ''}${(s.inquiries?.length || 0) < 2 && options.length ? `<label for="whoQuestion">اختر صفة لفحصها</label><select id="whoQuestion">${options.map((q) => `<option value="${q}">${esc(questions[q][1])}</option>`).join('')}</select><div class="actions"><button onclick="askWhoInquiry(${s.inquiries?.length || 0})">اسأل عن الصفة −6</button></div>` : '<p class="note">انتهت أسئلة الصفات المتاحة؛ استعمل أدلتك للتخمين.</p>'}</details>`,
     );
 }
 function askWhoInquiry(count = state?.inquiries?.length || 0) {
@@ -2973,7 +2985,7 @@ function renderSecret() {
   if (s.secretRule === 'relay')
     panel?.insertAdjacentHTML(
       'afterbegin',
-      `<div class="mission-ribbon"><b>📒 تحقيق بالتناوب</b><small>صاحب الدور يكتب السؤال ويسجّل الجواب أو يخمن. يتحول الدور بعد كل سؤال؛ التراجع يعيد السؤال والسائل.</small></div><div class="question-starters" aria-label="اقتراحات سؤال">${['هل نستخدمه يوميًا؟', 'هل يوجد عادة داخل البيت؟', 'هل يمكن حمله باليد؟', 'هل يرتبط بالطبيعة؟'].map((question, index) => `<button class="smallbtn" onclick="secretStarter(${index},${s.turn},${s.questionSerial})">${question}</button>`).join('')}</div>`,
+      `<div class="mission-ribbon"><b>📒 تحقيق بالتناوب</b><small>صاحب الدور يكتب السؤال ويسجّل الجواب أو يخمن. يتحول الدور بعد كل سؤال؛ التراجع يعيد السؤال والسائل.</small></div><div class="question-starters" role="group" aria-label="اقتراحات سؤال">${['هل نستخدمه يوميًا؟', 'هل يوجد عادة داخل البيت؟', 'هل يمكن حمله باليد؟', 'هل يرتبط بالطبيعة؟'].map((question, index) => `<button class="smallbtn" onclick="secretStarter(${index},${s.turn},${s.questionSerial})">${question}</button>`).join('')}</div>`,
     );
 }
 function secretStarter(index, turn, serial) {
@@ -3401,7 +3413,8 @@ document.addEventListener(
       event.metaKey ||
       event.altKey ||
       event.repeat ||
-      /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)
+      event.isComposing ||
+      advancedEditableTarget(event.target)
     )
       return;
     if (event.key === ' ' && event.target.closest?.('button,a,summary,[role="button"]')) return;

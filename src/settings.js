@@ -82,6 +82,7 @@ function openSettings(section) {
         <h3>تقدّمك بين يديك</h3>
         <div class="settings-data-summary"><div><b>${fmt(totalRounds())}</b><small>جولات مسجّلة</small></div><div><b>${store.extra.history.length}</b><small>نتائج في السجل</small></div><div><b>${store.extra.favorites.length}</b><small>ألعاب مفضّلة</small></div></div>
         <div class="settings-backup"><b>انقل تقدّمك أو احتفظ بنسخة</b><p class="note">نسخة JSON تضم الأسماء والنقاط والاختيارات والإضافات وتقدّم اللعب الفردي. استيرادها يعرض تأكيداً قبل استبدال بياناتك الحالية.</p><div class="actions"><button class="primary" onclick="exportProgress()">⬇ نسخة احتياطية</button><button onclick="document.getElementById('importfile').click()">⬆ استيراد نسخة</button></div><input type="file" id="importfile" accept="application/json,.json" hidden onchange="importProgress(this.files[0]);this.value=''"></div>
+        <div class="settings-backup"><b>كل الألعاب في ملف HTML واحد</b><p class="note">حمّل نسخة الموقع لتلعب دون إنترنت. نقاطك واختياراتك تُنقل بشكل منفصل من زر النسخة الاحتياطية JSON أعلاه.</p><div class="actions"><button onclick="downloadStandalone()">⬇ تحميل نسخة HTML</button></div></div>
         ${settingsRow('قاعدة التخمين', `${items.length} شي · ${extra.learned.length} إضافة منك`, '<button onclick="openKnowledge()">إدارة</button>')}
         ${settingsRow('سجل الجولات', 'راجع نتائجك وألعابك الأخيرة', '<button onclick="openGameHistory()">عرض السجل</button>')}
         ${settingsRow('مساعدة اللعب والحفظ', 'الخصوصية واللعب الجماعي والاستكمال', '<button onclick="openHelp()">؟ المساعدة</button>')}
@@ -245,7 +246,8 @@ document.addEventListener('keydown', (event) => {
     $('modalback').hidden ||
     event.altKey ||
     event.ctrlKey ||
-    event.metaKey
+    event.metaKey ||
+    event.isComposing
   )
     return;
   const current = settingsSections.findIndex(([id]) => tab.id === 'settings-tab-' + id);

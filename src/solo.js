@@ -631,6 +631,7 @@ function soloConfigureRound(round) {
   value('size', 3);
   value('codelength', easy ? 3 : hard ? 5 : 4);
   value('targetDuration', 30);
+  if (state.id === 'hangman') updateHangmanAvailability();
   if ($('soloRoundConfig'))
     $('soloRoundConfig').textContent =
       `المستوى المقترح: ${soloLevelLabel(level)} · يمكنك تعديل خيارات اللعبة قبل البداية.`;

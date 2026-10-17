@@ -265,7 +265,7 @@ a {
 }
 .filter .active {
   background: var(--mint);
-  color: #132b24;
+  color: var(--bg);
   border-color: var(--mint);
 }
 .grid {
@@ -1700,7 +1700,7 @@ body[data-theme='light'] {
   --line: #cad6e7;
   --ink: #15273c;
   --muted: #536b83;
-  --mint: #128674;
+  --mint: #0b6f60;
   --orange: #925807;
   --pink: #7245b0;
   --blue: #315e9d;

@@ -4,7 +4,7 @@
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   color: var(--muted);
 }
 .collection-top b {
@@ -20,7 +20,11 @@
 .collection-question {
   margin: 14px 0 23px;
   text-align: center;
-  font-size: clamp(21px, 4vw, 30px);
+  font-size: clamp(
+    calc(21px * var(--text-scale, 1)),
+    calc(4vw * var(--text-scale, 1)),
+    calc(30px * var(--text-scale, 1))
+  );
   line-height: 1.7;
   overflow-wrap: anywhere;
 }
@@ -28,7 +32,7 @@
   display: block;
   text-align: center;
   color: var(--muted);
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   margin-top: 26px;
 }
 .fact-statement {
@@ -62,7 +66,7 @@
   position: relative;
   flex-wrap: wrap;
   padding: 16px 12px;
-  font-size: 18px;
+  font-size: calc(18px * var(--text-scale, 1));
   overflow-wrap: anywhere;
 }
 .collection-choice-num {
@@ -76,10 +80,8 @@
   flex-shrink: 0;
   color: var(--muted);
 }
-.collection-choice.flag-options {
-  padding: 12px;
-}
 .flag-options .collection-choice {
+  padding: 12px;
   flex-direction: column;
   gap: 8px;
 }
@@ -95,7 +97,7 @@
   width: min(120px, 66.6667%);
 }
 .collection-verdict {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   flex-basis: 100%;
   text-align: center;
 }
@@ -157,7 +159,7 @@
   border: 1px solid var(--mint);
   border-radius: 12px;
   margin: 0 0 20px;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   line-height: 1.8;
 }
 .collection-move-status:empty {
@@ -166,15 +168,18 @@
 .collection-review .collection-your-answer {
   color: var(--ink);
 }
-.collection-review-order {
+.collection-review ol.collection-review-order {
   display: grid;
   gap: 5px;
   padding-inline-start: 24px;
+  list-style: decimal;
 }
 .collection-review .collection-review-order li {
   display: list-item;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   overflow-wrap: anywhere;
+  padding-block: 3px;
+  border: 0;
 }
 .collection-order-number {
   flex: 0 0 27px;
@@ -189,6 +194,7 @@
 .collection-order-label {
   flex: 1;
   font-weight: 700;
+  font-size: calc(16px * var(--text-scale, 1));
   overflow-wrap: anywhere;
   min-width: 0;
   unicode-bidi: plaintext;
@@ -199,8 +205,8 @@
   gap: 6px;
 }
 .collection-order-controls button {
-  min-width: 42px;
-  min-height: 42px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 6px;
   font-size: 21px;
 }
@@ -220,7 +226,7 @@
   display: block;
 }
 .collection-review li p {
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   line-height: 1.8;
   color: var(--muted);
   margin: 6px 0;
@@ -229,18 +235,59 @@
   display: block;
   width: 100px;
 }
+.collection-breakdown {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  text-align: start;
+}
+.collection-breakdown h3 {
+  font-size: calc(18px * var(--text-scale, 1));
+}
+.collection-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.collection-breakdown-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  overflow-wrap: anywhere;
+}
+.collection-breakdown-item > span {
+  color: var(--mint);
+  font-weight: 700;
+}
+.collection-breakdown-item :is(progress, small) {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+.collection-breakdown-item progress {
+  accent-color: var(--mint);
+  height: 7px;
+}
+.collection-breakdown-item small {
+  font-size: calc(12px * var(--text-scale, 1));
+}
 @media (max-width: 480px) {
   .collection-choices {
     gap: 9px;
   }
   .collection-choice {
-    font-size: 16px;
+    font-size: calc(16px * var(--text-scale, 1));
     padding: 13px 8px;
     gap: 7px;
   }
   .collection-top {
     gap: 8px;
-    font-size: 11px;
+    font-size: calc(11px * var(--text-scale, 1));
   }
   .collection-order li {
     padding: 9px 8px;
@@ -251,13 +298,13 @@
     height: 24px;
   }
   .collection-order-label {
-    font-size: 13px;
+    font-size: calc(13px * var(--text-scale, 1));
   }
   .collection-order-controls {
     gap: 4px;
   }
   .collection-order-controls button {
-    min-width: 38px;
+    min-width: 44px;
     min-height: 44px;
   }
   .collection-feedback {

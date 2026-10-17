@@ -196,6 +196,12 @@ function startCollection(id) {
   screen = id;
   renderCollection();
   goTop();
+  collectionFocusQuestion();
+}
+function collectionFocusQuestion() {
+  const question = $('collectionQuestion');
+  question?.focus({ preventScroll: true });
+  question?.scrollIntoView({ block: 'nearest' });
 }
 function collectionFeedback(q, answer) {
   if (!state.locked) return '';
@@ -210,15 +216,15 @@ function renderCollection() {
     token = `${s.run},${s.index}`;
   let body;
   if (s.id === 'flags')
-    body = `<h3 class="collection-question">${s.flagMode === 'country' ? 'هذا علم أي دولة؟' : `أي علم يمثل ${esc(q.name)}؟`}</h3>${s.flagMode === 'country' ? `<div class="collection-flag-question">${collectionFlagSVG(q.code, 'علم الدولة المطلوب التعرف عليها')}</div>` : ''}<div class="collection-choices ${s.flagMode === 'flag' ? 'flag-options' : ''}">${q.choices.map((item, i) => `<button class="collection-choice ${s.locked && item.code === q.code ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span>${s.flagMode === 'country' ? `<b>${esc(item.name)}</b>` : `${collectionFlagSVG(item.code, `الخيار رقم ${i + 1}`)}${s.locked ? `<b>${esc(item.name)}</b>` : ''}`}${s.locked && item.code === q.code ? '<span class="collection-verdict">✓ الصحيح</span>' : ''}</button>`).join('')}</div>`;
+    body = `<h3 class="collection-question" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${s.flagMode === 'country' ? 'هذا علم أي دولة؟' : `أي علم يمثل ${esc(q.name)}؟`}</h3>${s.flagMode === 'country' ? `<div class="collection-flag-question">${collectionFlagSVG(q.code, 'علم الدولة المطلوب التعرف عليها')}</div>` : ''}<div class="collection-choices ${s.flagMode === 'flag' ? 'flag-options' : ''}">${q.choices.map((item, i) => `<button class="collection-choice ${s.locked && item.code === q.code ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span>${s.flagMode === 'country' ? `<b>${esc(item.name)}</b>` : `${collectionFlagSVG(item.code, `الخيار رقم ${i + 1}`)}${s.locked ? `<b>${esc(item.name)}</b>` : ''}`}${s.locked && item.code === q.code ? '<span class="collection-verdict">✓ الصحيح</span>' : ''}</button>`).join('')}</div>`;
   if (s.id === 'truefalse')
-    body = `<span class="collection-category">${esc(collectionFactCategories.find(([id]) => id === q.cat)?.[1] || '')} · ${q.level === 'easy' ? 'سهل' : 'متوسط'}</span><h3 class="collection-question fact-statement">${esc(q.text)}</h3><div class="collection-choices truth-options">${[true, false].map((value, i) => `<button class="collection-choice ${s.locked && value === q.truth ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span><b>${value ? '✓ صح' : '✕ خطأ'}</b>${s.locked && value === q.truth ? '<span class="collection-verdict">الجواب الصحيح</span>' : ''}</button>`).join('')}</div>`;
+    body = `<span class="collection-category">${esc(collectionFactCategories.find(([id]) => id === q.cat)?.[1] || '')} · ${q.level === 'easy' ? 'سهل' : 'متوسط'}</span><h3 class="collection-question fact-statement" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${esc(q.text)}</h3><div class="collection-choices truth-options">${[true, false].map((value, i) => `<button class="collection-choice ${s.locked && value === q.truth ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span><b>${value ? '✓ صح' : '✕ خطأ'}</b>${s.locked && value === q.truth ? '<span class="collection-verdict">الجواب الصحيح</span>' : ''}</button>`).join('')}</div>`;
   if (s.id === 'order')
-    body = `<h3 class="collection-question">${esc(q.prompt)}</h3><p class="note">الترتيب من أعلى إلى أسفل. ${s.locked ? 'انتهت المحاولة؛ راجع الحل أسفل البطاقات.' : 'حرّك البطاقات ثم أكّد ترتيبك.'}</p><ol class="collection-order" aria-label="بطاقات الترتيب">${q.arranged.map((item, i) => `<li data-order-index="${i}" class="${s.locked ? (item === q.solution[i] ? 'is-correct' : 'is-wrong') : s.selected === i ? 'is-selected' : ''}" ${!s.locked && s.selected === i ? 'aria-current="true"' : ''}><span class="collection-order-number">${i + 1}</span><span class="collection-order-label">${esc(item)}</span><div class="collection-order-controls"><button data-order-move="${i}-up" onclick="moveCollectionOrder(${i},-1,${token})" aria-label="نقل ${esc(item)} إلى أعلى" ${s.locked || i === 0 ? 'disabled' : ''}>↑</button><button data-order-move="${i}-down" onclick="moveCollectionOrder(${i},1,${token})" aria-label="نقل ${esc(item)} إلى أسفل" ${s.locked || i === q.arranged.length - 1 ? 'disabled' : ''}>↓</button></div></li>`).join('')}</ol><p class="note collection-move-status" role="status">${esc(s.orderStatus)}</p>${s.locked ? '' : `<div class="actions"><button onclick="collectionUndoOrder(${token})" ${s.orderMoves.length ? '' : 'disabled'}>↶ تراجع عن آخر حركة</button></div><button class="primary collection-confirm" onclick="submitCollectionOrder(${token})">تأكيد الترتيب ✓</button>`}`;
+    body = `<h3 class="collection-question" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${esc(q.prompt)}</h3><p class="note">الترتيب من أعلى إلى أسفل. ${s.locked ? 'انتهت المحاولة؛ راجع الحل أسفل البطاقات.' : 'حرّك البطاقات ثم أكّد ترتيبك.'}</p><ol class="collection-order" aria-label="بطاقات الترتيب">${q.arranged.map((item, i) => `<li data-order-index="${i}" class="${s.locked ? (item === q.solution[i] ? 'is-correct' : 'is-wrong') : s.selected === i ? 'is-selected' : ''}" ${!s.locked && s.selected === i ? 'aria-current="true"' : ''}><span class="collection-order-number">${i + 1}</span><span class="collection-order-label">${esc(item)}</span><div class="collection-order-controls"><button data-order-move="${i}-up" onclick="moveCollectionOrder(${i},-1,${token})" aria-label="نقل ${esc(item)} إلى أعلى" ${s.locked || i === 0 ? 'disabled' : ''}>↑</button><button data-order-move="${i}-down" onclick="moveCollectionOrder(${i},1,${token})" aria-label="نقل ${esc(item)} إلى أسفل" ${s.locked || i === q.arranged.length - 1 ? 'disabled' : ''}>↓</button></div></li>`).join('')}</ol><p class="note collection-move-status" role="status">${esc(s.orderStatus)}</p>${s.locked ? '' : `<div class="actions"><button onclick="collectionUndoOrder(${token})" ${s.orderMoves.length ? '' : 'disabled'}>↶ تراجع عن آخر حركة</button></div><button class="primary collection-confirm" onclick="submitCollectionOrder(${token})">تأكيد الترتيب ✓</button>`}`;
   setHTML(
     wrap(
       s.id,
-      `<section class="panel collection-play">${s.practice ? '<p class="collection-practice-badge">📚 مراجعة أخطائك · تدريب بلا نقاط إضافية</p>' : ''}<div class="collection-top"><span>${esc(s.name)}</span><b>السؤال ${s.index + 1} / ${s.questions.length}</b><span>${Math.round((s.credit * 100) / s.questions.length)} / 100 ${s.practice ? 'تقييم التدريب' : 'نقطة'}</span></div><progress class="collection-progress" value="${s.index + (s.locked ? 1 : 0)}" max="${s.questions.length}" aria-label="تقدم الجولة"></progress>${body}${collectionFeedback(q, answer)}${s.locked ? `<div class="actions"><button class="primary" id="collectionNext" onclick="nextCollection(${token})">${s.index + 1 === s.questions.length ? 'شوف النتيجة' : 'السؤال التالي'} ←</button></div>` : ''}<p class="tiny collection-keyboard">${s.id === 'order' ? 'لوحة المفاتيح: Tab ثم Enter للتحريك والتأكيد. الأرقام تختار بطاقة والأسهم تحركها.' : 'الأرقام لاختيار الإجابة · Enter بعد ظهور الشرح للمتابعة'}</p></section>`,
+      `<section class="panel collection-play">${s.practice ? '<p class="collection-practice-badge">📚 مراجعة أخطائك · تدريب بلا نقاط إضافية</p>' : ''}<div class="collection-top"><span>${esc(s.name)}</span><b id="collectionQuestionProgress">السؤال ${s.index + 1} / ${s.questions.length}</b><span>${Math.round((s.credit * 100) / s.questions.length)} / 100 ${s.practice ? 'تقييم التدريب' : 'نقطة'}</span></div><progress class="collection-progress" value="${s.index + (s.locked ? 1 : 0)}" max="${s.questions.length}" aria-label="تقدم الجولة"></progress>${body}${collectionFeedback(q, answer)}${s.locked ? `<div class="actions"><button class="primary" id="collectionNext" onclick="nextCollection(${token})">${s.index + 1 === s.questions.length ? 'شوف النتيجة' : 'السؤال التالي'} ←</button></div>` : ''}<p class="tiny collection-keyboard">${s.id === 'order' ? 'لوحة المفاتيح: Tab ثم Enter للتحريك والتأكيد. الأرقام تختار بطاقة والأسهم تحركها.' : 'الأرقام لاختيار الإجابة · Enter بعد ظهور الشرح للمتابعة'}</p></section>`,
     ),
   );
 }
@@ -314,7 +320,7 @@ function nextCollection(run = state?.run, index = state?.index) {
   state.orderMoves = [];
   state.orderStatus = '';
   renderCollection();
-  document.querySelector('.collection-question')?.scrollIntoView({ block: 'nearest' });
+  collectionFocusQuestion();
 }
 function finishCollection(run = state?.run) {
   if (
@@ -354,8 +360,44 @@ function finishCollection(run = state?.run) {
     .querySelector('.success')
     ?.insertAdjacentHTML(
       'beforeend',
-      `<details class="round-review collection-review"><summary>راجع إجابات ${s.practice ? 'التدريب' : 'الجولة'}</summary><ol>${s.questions.map((q, i) => `<li><b>${s.answers[i].correct ? '✓' : '↺'} ${esc(s.id === 'flags' ? q.name : s.id === 'order' ? q.prompt : q.text)}</b>${collectionAnswerReview(s, q, s.answers[i])}<p>${esc(s.id === 'flags' ? 'العلم الصحيح:' : q.reason)}</p>${s.id === 'flags' ? `<span class="collection-review-flag">${collectionFlagSVG(q.code, `علم ${q.name}`)}</span>` : s.id === 'order' ? `<ol class="collection-review-order">${q.solution.map((item) => `<li>${esc(item)}</li>`).join('')}</ol>` : `<span>الجواب: ${q.truth ? 'صح' : 'خطأ'}</span>`}</li>`).join('')}</ol></details>`,
+      `${collectionBreakdownHTML(s)}<details class="round-review collection-review"><summary>راجع إجابات ${s.practice ? 'التدريب' : 'الجولة'}</summary><ol>${s.questions.map((q, i) => `<li><b>${s.answers[i].correct ? '✓' : '↺'} ${esc(s.id === 'flags' ? q.name : s.id === 'order' ? q.prompt : q.text)}</b>${collectionAnswerReview(s, q, s.answers[i])}<p>${esc(s.id === 'flags' ? 'العلم الصحيح:' : q.reason)}</p>${s.id === 'flags' ? `<span class="collection-review-flag">${collectionFlagSVG(q.code, `علم ${q.name}`)}</span>` : s.id === 'order' ? `<ol class="collection-review-order">${q.solution.map((item) => `<li>${esc(item)}</li>`).join('')}</ol>` : `<span>الجواب: ${q.truth ? 'صح' : 'خطأ'}</span>`}</li>`).join('')}</ol></details>`,
     );
+  const heading = $('app').querySelector('.success h2');
+  heading?.setAttribute('tabindex', '-1');
+  heading?.focus({ preventScroll: true });
+}
+function collectionBreakdownHTML(s) {
+  const categories =
+      s.id === 'flags'
+        ? collectionRegions
+        : s.id === 'truefalse'
+          ? collectionFactCategories
+          : collectionOrderCategories,
+    groups = new Map();
+  s.questions.forEach((q, i) => {
+    const key = s.id === 'flags' ? q.region : q.cat,
+      answer = s.answers[i],
+      group = groups.get(key) || {
+        title: categories.find(([id]) => id === key)?.[1] || key,
+        total: 0,
+        correct: 0,
+        credit: 0,
+      };
+    group.total++;
+    if (answer.correct) group.correct++;
+    group.credit += s.id === 'order' ? answer.matches / q.solution.length : Number(answer.correct);
+    groups.set(key, group);
+  });
+  const rows = [...groups.values()],
+    weakest = [...rows].sort((a, b) => a.credit / a.total - b.credit / b.total)[0];
+  return `<section class="collection-breakdown" aria-labelledby="collectionBreakdownTitle"><h3 id="collectionBreakdownTitle">أداؤك حسب ${s.id === 'flags' ? 'القارة' : 'المجموعة'}</h3><div class="collection-breakdown-grid">${rows
+    .map((group) => {
+      const percentage = Math.round((group.credit * 100) / group.total);
+      return `<div class="collection-breakdown-item"><b>${esc(group.title)}</b><span dir="ltr">${percentage}%</span><progress value="${percentage}" max="100" aria-label="تقييم ${esc(group.title)}: ${percentage} بالمئة"></progress><small>${group.correct} من ${group.total} ${s.id === 'order' ? 'ترتيبات كاملة · النسبة تشمل البطاقات الصحيحة' : 'إجابات صحيحة'}</small></div>`;
+    })
+    .join(
+      '',
+    )}</div><p class="note">${weakest.correct === weakest.total ? 'أتقنت كل مجموعات هذه الجولة. جرّب مجموعة جديدة في جولتك القادمة.' : `ابدأ المراجعة بمجموعة «${esc(weakest.title)}»؛ ${weakest.total - weakest.correct} من ${weakest.total} ${s.id === 'order' ? 'ترتيبات تحتاج مراجعة.' : 'إجابات تحتاج مراجعة.'}`}</p></section>`;
 }
 function collectionAnswerReview(s, q, answer) {
   if (s.id === 'order')
@@ -429,6 +471,7 @@ function collectionPractice(run) {
   };
   renderCollection();
   goTop();
+  collectionFocusQuestion();
 }
 document.addEventListener('keydown', (event) => {
   if (
@@ -441,7 +484,7 @@ document.addEventListener('keydown', (event) => {
     !state ||
     state.done ||
     coreBlocked() ||
-    event.target.closest?.('input,textarea,select,[contenteditable="true"]')
+    advancedEditableTarget(event.target)
   )
     return;
   const key = latin(event.key);

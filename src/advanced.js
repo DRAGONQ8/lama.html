@@ -289,8 +289,8 @@ function renderBoard() {
   if (focused) s.boardFocus = Number(focused.dataset.boardPos);
   const body =
     s.id === 'ttt'
-      ? `<div class="ttt ${s.rule === 'misere' ? 'avoid-line' : ''}" dir="ltr" aria-label="لوحة إكس أو؛ الأرقام من اليسار إلى اليمين">${display.map((v, i) => `<button data-board-pos="${i}" class="${v ? 'p' + v : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" ${s.suggested === i ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${i})" ${v || s.waiting || s.done || s.preview ? 'disabled' : ''} aria-label="خانة ${i + 1}${v ? ' ' + (v === 1 ? 'X' : 'O') : ''}${s.suggested === i ? ' حركة مقترحة' : ''}">${v ? (v === 1 ? '×' : '○') : `<small class="board-shortcut">${i + 1}</small>`}</button>`).join('')}</div>`
-      : `<div class="connect" dir="ltr" aria-label="لوحة وصل أربعة؛ الأعمدة من اليسار إلى اليمين">${Array.from({ length: 7 }, (_, c) => `<button data-board-pos="${c}" class="drop" ${s.suggested === c ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${c})" ${s.waiting || s.done || s.preview || landing(s.board, c) < 0 ? 'disabled' : ''} aria-label="إنزال قطعة في العمود ${c + 1}${s.suggested === c ? ' حركة مقترحة' : ''}">↓ <small>${c + 1}</small></button>`).join('')}${display.map((v, i) => `<div class="disc ${v === 1 ? 'red' : v === 2 ? 'yellow' : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" aria-label="صف ${Math.floor(i / 7) + 1} عمود ${(i % 7) + 1}: ${v === 1 ? 'أحمر' : v === 2 ? 'أصفر' : 'فاضي'}">${v === 1 ? '●' : v === 2 ? '◆' : ''}</div>`).join('')}</div>`;
+      ? `<div class="ttt ${s.rule === 'misere' ? 'avoid-line' : ''}" dir="ltr" role="group" aria-label="لوحة إكس أو؛ الأرقام من اليسار إلى اليمين">${display.map((v, i) => `<button data-board-pos="${i}" class="${v ? 'p' + v : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" ${s.suggested === i ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${i})" ${v || s.waiting || s.done || s.preview ? 'disabled' : ''} aria-label="خانة ${i + 1}${v ? ' ' + (v === 1 ? 'X' : 'O') : ''}${s.suggested === i ? ' حركة مقترحة' : ''}">${v ? (v === 1 ? '×' : '○') : `<small class="board-shortcut">${i + 1}</small>`}</button>`).join('')}</div>`
+      : `<div class="connect" dir="ltr" role="group" aria-label="لوحة وصل أربعة؛ الأعمدة من اليسار إلى اليمين">${Array.from({ length: 7 }, (_, c) => `<button data-board-pos="${c}" class="drop" ${s.suggested === c ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${c})" ${s.waiting || s.done || s.preview || landing(s.board, c) < 0 ? 'disabled' : ''} aria-label="إنزال قطعة في العمود ${c + 1}${s.suggested === c ? ' حركة مقترحة' : ''}">↓ <small>${c + 1}</small></button>`).join('')}${display.map((v, i) => `<div class="disc ${v === 1 ? 'red' : v === 2 ? 'yellow' : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" role="img" aria-label="صف ${Math.floor(i / 7) + 1} عمود ${(i % 7) + 1}: ${v === 1 ? 'أحمر' : v === 2 ? 'أصفر' : 'فاضي'}">${v === 1 ? '●' : v === 2 ? '◆' : ''}</div>`).join('')}</div>`;
   setHTML(
     wrap(
       s.id,
@@ -1160,7 +1160,8 @@ function simonExpected(s = state) {
   return s.mode === 'reverse' ? [...s.sequence].reverse() : s.sequence;
 }
 function padTone(i) {
-  if (!store.sound) return;
+  const volume = store.extra?.volume ?? 70;
+  if (!store.sound || !volume) return;
   try {
     audioCtx ??= new (window.AudioContext || window.webkitAudioContext)();
     audioCtx.resume();
@@ -1169,8 +1170,9 @@ function padTone(i) {
     o.connect(g);
     g.connect(audioCtx.destination);
     o.frequency.value = [262, 330, 392, 523][i];
-    g.gain.setValueAtTime(0.06, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+    const peak = 0.06 * (volume / 100);
+    g.gain.setValueAtTime(peak, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.000001, peak / 80), audioCtx.currentTime + 0.25);
     o.start();
     o.stop(audioCtx.currentTime + 0.26);
   } catch (e) {}
@@ -1197,7 +1199,7 @@ function renderSimon() {
                   ? 'استمع للنغمات…'
                   : 'راقب الأضواء…'
                 : 'جاهز للتسلسل؟'
-        }</div><div class="sequencepad">${padColors.map((c, i) => `<button id="pad${i}" style="--pad:${c}" onclick="simonTap(${i})" ${s.phase !== 'input' ? 'disabled' : ''} aria-label="${['أخضر', 'أصفر', 'أزرق', 'وردي'][i]} رقم ${i + 1}">${['●', '▲', '■', '◆'][i]}<small>${i + 1}</small></button>`).join('')}</div><div id="seqtrace" class="sequence-trace" dir="ltr" aria-label="خطواتك الصحيحة">${
+        }</div><div class="sequencepad">${padColors.map((c, i) => `<button id="pad${i}" style="--pad:${c}" onclick="simonTap(${i})" ${s.phase !== 'input' ? 'disabled' : ''} aria-label="${['أخضر', 'أصفر', 'أزرق', 'وردي'][i]} رقم ${i + 1}">${['●', '▲', '■', '◆'][i]}<small>${i + 1}</small></button>`).join('')}</div><div id="seqtrace" class="sequence-trace" dir="ltr" role="group" aria-label="خطواتك الصحيحة">${
           s.input > 0
             ? `${simonExpected(s)
                 .slice(0, Math.min(s.input, s.sequence.length))
@@ -1216,6 +1218,8 @@ function enableSimonSound(run) {
   store.sound = true;
   save();
   soundUI();
+  if (!(store.extra?.volume ?? 70))
+    return toast('الصوت مفعّل، لكن مستواه صفر. ارفع المستوى من الإعدادات لسماع النغمات.');
   padTone(0);
   toast('هذه نغمة تجريبية للزر الأخضر 1. ابدأ عرض التسلسل عندما تكون جاهزاً.');
 }
@@ -1228,8 +1232,8 @@ function playSimon() {
   )
     return;
   const s = state;
-  if (s.cue === 'audio' && !store.sound)
-    return toast('فعّل الصوت واختبر النغمة قبل تحدي الاستماع.');
+  if (s.cue === 'audio' && (!store.sound || !(store.extra?.volume ?? 70)))
+    return toast('فعّل الصوت وارفع مستواه من الإعدادات، ثم اختبر النغمة قبل تحدي الاستماع.');
   const token = ++s.playToken;
   s.phase = 'show';
   s.input = 0;
@@ -1823,7 +1827,7 @@ function sudokuGroupProgress(s = state) {
         ),
       ],
     ];
-  return `<div class="sudoku-group-progress" aria-label="تقدم مجموعات الخانة المحددة">${groups
+  return `<div class="sudoku-group-progress" role="group" aria-label="تقدم مجموعات الخانة المحددة">${groups
     .map(([label, cells]) => {
       const filled = cells.filter(Boolean),
         conflict = new Set(filled).size !== filled.length,
@@ -2459,7 +2463,7 @@ function renderQuiz() {
   if (!q) return;
   const question =
     s.id === 'color'
-      ? `<p class="quiz-rule ${q.rule === 'word' ? 'rule-word' : ''} center">${q.rule === 'shape' ? '🔷 اتبع رمز السؤال' : q.rule === 'word' ? '📖 اختر معنى الكلمة' : '🎨 اختر لون الحروف'}${s.colorMode === 'mixed' ? ' · انتبه: القاعدة تتبدّل' : ''}</p><div class="inkword" style="color:${inkColors[q.ink][1]}">${q.text}</div>${q.rule === 'shape' ? `<div class="shape-stimulus" aria-label="رمز السؤال ${colorSymbols[q.shape]}">${colorSymbols[q.shape]}</div><div class="shape-legend">${q.choices.map((v) => `<span>${colorSymbols[v]} = ${inkColors[v][0]}</span>`).join('')}</div>` : ''}`
+      ? `<p class="quiz-rule ${q.rule === 'word' ? 'rule-word' : ''} center">${q.rule === 'shape' ? '🔷 اتبع رمز السؤال' : q.rule === 'word' ? '📖 اختر معنى الكلمة' : '🎨 اختر لون الحروف'}${s.colorMode === 'mixed' ? ' · انتبه: القاعدة تتبدّل' : ''}</p><div class="inkword" style="color:${inkColors[q.ink][1]}">${q.text}</div>${q.rule === 'shape' ? `<div class="shape-stimulus" role="img" aria-label="رمز السؤال ${colorSymbols[q.shape]}">${colorSymbols[q.shape]}</div><div class="shape-legend">${q.choices.map((v) => `<span>${colorSymbols[v]} = ${inkColors[v][0]}</span>`).join('')}</div>` : ''}`
       : s.id === 'pattern'
         ? `<p class="tiny center">${Number.isInteger(q.gap) ? 'ما العدد الناقص داخل السلسلة؟' : 'ما العدد التالي؟'}</p><div class="chain" dir="ltr" style="margin:26px 0">${q.seq.map((n) => `<span class="${n === null ? 'missing' : ''}">${n === null ? '?' : n}</span>`).join('')}${Number.isInteger(q.gap) ? '' : '<span class="missing">?</span>'}</div>`
         : `<div class="quizquestion" dir="ltr">${q.text}${q.missingOperand ? '' : ' = ?'}</div>`;
@@ -2817,7 +2821,7 @@ function revealWordPrefix(run) {
   renderWord();
 }
 function wordSlotsHTML(s = state) {
-  return `<div class="word-slots" aria-label="ترتيب إجابتك">${
+  return `<div class="word-slots" role="group" aria-label="ترتيب إجابتك">${
     Array.from(s.wordDraft)
       .map(
         (char, i) =>
@@ -3677,10 +3681,14 @@ function startSpy() {
   s.startingPlayer = s.asker;
   s.target = null;
   s.questionDraft = '';
+  s.answerDraft = '';
+  s.candidateQuery = '';
+  s.candidateListOpen = false;
   s.guessDraft = '';
   s.questionHistory = [];
   s.ballotNotes = [];
   s.onPause = () => {
+    if (s.stage === 'active') rememberSpyDiscussionDrafts(s);
     if (s.stage === 'voting') {
       s.ballotDraft = {
         reason: $('spyreason')?.value || '',
@@ -3772,21 +3780,59 @@ function renderSpy() {
         ['وقت النقاش', secondsLeft(s), 'gametime'],
       ]) +
         spyProgress() +
-        `<section class="panel center"><div class="resulticon">🕶️</div><h2>اسألوا اللي تختارونه</h2><p class="pill spy-round-category">${esc(themeLabel + regionLabel)}</p><p class="spy-start-note">${s.startMode === 'manual' ? 'اختاروا البداية بينكم بدون الموقع. تقدرون تكملون الأسئلة شفهياً، وتسجيل الأسماء اختياري.' : `🎲 البداية العشوائية: <b>${esc(s.players[s.startingPlayer])}</b>. بعدها رتّبوا الأدوار مثل ما تحبون.`}</p><div class="hintpanel spy-question-panel"><div class="fields"><div class="field"><label for="spyasker">من يسأل؟</label><select id="spyasker" onchange="setSpyAsker(Number(this.value))"><option value="-1" ${s.asker === null ? 'selected' : ''}>اختاروا السائل</option>${s.players.map((name, i) => `<option value="${i}" ${i === s.asker ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></div><div class="field"><label for="spytarget">من تبي تسأل؟</label><select id="spytarget" onchange="setSpyTarget(Number(this.value))"><option value="-1" ${s.target === null ? 'selected' : ''}>اختاروا أي لاعب</option>${s.players.map((name, i) => (i === s.asker ? '' : `<option value="${i}" ${i === s.target ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select></div></div><p class="spy-suggested-question">💡 ${esc(s.questionOrder[s.questionIndex % s.questionOrder.length])}</p><label for="spyquestion">سؤالك الخاص، اختياري</label><input id="spyquestion" maxlength="180" autocomplete="off" value="${esc(s.questionDraft)}" oninput="state.questionDraft=this.value" placeholder="اكتب سؤالكم أو استخدموا الاقتراح"><div class="actions"><button onclick="rotateSpyPrompt()">اقتراح ثاني</button><button class="primary" onclick="nextSpyPrompt()">سجّل السؤال والإجابة تمت</button></div><p class="tiny">الاقتراح للمساعدة؛ اسألوا سؤالكم بحرية. اختاروا السائل والمجيب فقط إذا تبون تسجيل السؤال.</p></div><p class="note">لا تذكرون الإجابة أو حروفها. ${s.spyCount === 2 ? 'لازم أعلى اسمين بالأصوات يكونون الجاسوسين؛ التعادل مع لاعب ثالث ينقذهما.' : 'صاحب أعلى الأصوات منفرداً يُتهم؛ التعادل ينقذ الجاسوس.'} بعد التصويت نكشف الجاسوس، ثم له محاولة لتخمين ${terms.noun}.</p>${spyQuestionLog(s)}${s.showCandidates ? spyCandidatesHTML(s) : '<p class="note spy-candidates-hidden">قائمة الاحتمالات مخفية؛ التخمين يكون بالكتابة.</p>'}<div class="actions"><button class="primary" onclick="startSpyVote()">جاهزون للتصويت ←</button></div></section>`,
+        `<section class="panel center"><div class="resulticon">🕶️</div><h2>اسألوا اللي تختارونه</h2><p class="pill spy-round-category">${esc(themeLabel + regionLabel)}</p><p class="spy-start-note">${s.startMode === 'manual' ? 'اختاروا البداية بينكم بدون الموقع. تقدرون تكملون الأسئلة شفهياً، وتسجيل الأسماء اختياري.' : `🎲 البداية العشوائية: <b>${esc(s.players[s.startingPlayer])}</b>. بعدها رتّبوا الأدوار مثل ما تحبون.`}</p><div class="hintpanel spy-question-panel"><div class="fields"><div class="field"><label for="spyasker">من يسأل؟</label><select id="spyasker" onchange="setSpyAsker(Number(this.value))"><option value="-1" ${s.asker === null ? 'selected' : ''}>اختاروا السائل</option>${s.players.map((name, i) => `<option value="${i}" ${i === s.asker ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></div><div class="field"><label for="spytarget">من تبي تسأل؟</label><select id="spytarget" onchange="setSpyTarget(Number(this.value))"><option value="-1" ${s.target === null ? 'selected' : ''}>اختاروا أي لاعب</option>${s.players.map((name, i) => (i === s.asker ? '' : `<option value="${i}" ${i === s.target ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select></div></div><p class="spy-suggested-question">💡 ${esc(s.questionOrder[s.questionIndex % s.questionOrder.length])}</p><label for="spyquestion">سؤالك الخاص، اختياري</label><input id="spyquestion" maxlength="180" autocomplete="off" value="${esc(s.questionDraft)}" oninput="updateSpyDiscussionDraft(this.value,'questionDraft',${s.run})" placeholder="اكتب سؤالكم أو استخدموا الاقتراح"><label for="spyanswer">جواب المجيب أو ملاحظة علنية، اختياري</label><input id="spyanswer" maxlength="240" autocomplete="off" value="${esc(s.answerDraft || '')}" oninput="updateSpyDiscussionDraft(this.value,'answerDraft',${s.run})" placeholder="اكتبوا ملخص الإجابة لمراجعتها عند التصويت" aria-describedby="spyanswerhelp"><p class="tiny" id="spyanswerhelp">السجل ظاهر للجميع. لا تكتبوا الكلمة السرية أو الأدوار فيه.</p><div class="actions"><button onclick="rotateSpyPrompt()">اقتراح ثاني</button><button class="primary" onclick="nextSpyPrompt()">سجّل السؤال والجواب</button></div><p class="tiny">الاقتراح للمساعدة؛ اسألوا سؤالكم بحرية. اختاروا السائل والمجيب لتسجيل السؤال؛ كتابة الجواب اختيارية.</p></div><p class="note">لا تذكرون الإجابة أو حروفها. ${s.spyCount === 2 ? 'لازم أعلى اسمين بالأصوات يكونون الجاسوسين؛ التعادل مع لاعب ثالث ينقذهما.' : 'صاحب أعلى الأصوات منفرداً يُتهم؛ التعادل ينقذ الجاسوس.'} بعد التصويت نكشف الجاسوس، ثم له محاولة لتخمين ${terms.noun}.</p>${spyQuestionLog(s)}${s.showCandidates ? spyCandidatesHTML(s) : '<p class="note spy-candidates-hidden">قائمة الاحتمالات مخفية؛ التخمين يكون بالكتابة.</p>'}<div class="actions"><button class="primary" onclick="startSpyVote()">جاهزون للتصويت ←</button></div></section>`,
     ),
   );
 }
 function spyCandidatesHTML(s = state) {
-  return `<details class="history spy-candidates"><summary>${spyTerms(s).possible} (${s.locationPool.length})</summary><label for="spycandidatesearch">ابحث عن كلمة بسرعة</label><input id="spycandidatesearch" type="search" maxlength="80" autocomplete="off" placeholder="اكتب الكلمة هنا…" oninput="filterSpyCandidates(this.value)"><p class="tiny" id="spycandidatecount" role="status">${s.locationPool.length} نتيجة</p><div class="listchips" id="spycandidatelist">${s.locationPool.map((word) => `<span>${esc(word)}</span>`).join('')}</div></details>`;
+  const matches = spyCandidateMatches(s.candidateQuery || '', s);
+  return `<details class="history spy-candidates" ${s.candidateListOpen ? 'open' : ''}><summary>${spyTerms(s).possible} (${s.locationPool.length})</summary><label for="spycandidatesearch">ابحث عن كلمة بسرعة</label><input id="spycandidatesearch" type="search" maxlength="80" autocomplete="off" value="${esc(s.candidateQuery || '')}" placeholder="اكتب الكلمة هنا…" oninput="filterSpyCandidates(this.value,${s.run})"><p class="tiny" id="spycandidatecount" role="status">${matches.length} نتيجة من ${s.locationPool.length}</p><div class="listchips" id="spycandidatelist">${spyCandidateChipsHTML(matches)}</div></details>`;
 }
-function filterSpyCandidates(value) {
-  if (screen !== 'spy' || state.stage !== 'active' || !$('spycandidatelist')) return;
-  const query = spyGuessKey(value),
-    matches = state.locationPool.filter((word) => !query || spyGuessKey(word).includes(query));
-  $('spycandidatelist').innerHTML =
+function spyCandidateMatches(value, s = state) {
+  const query = spyGuessKey(value);
+  return s.locationPool.filter((word) => !query || spyGuessKey(word).includes(query));
+}
+function spyCandidateChipsHTML(matches) {
+  return (
     matches.map((word) => `<span>${esc(word)}</span>`).join('') ||
-    '<p class="note">ما لقينا كلمة تطابق بحثك. جرّب حروف أقل.</p>';
+    '<p class="note">ما لقينا كلمة تطابق بحثك. جرّب حروف أقل.</p>'
+  );
+}
+function filterSpyCandidates(value, run) {
+  if (
+    screen !== 'spy' ||
+    state.stage !== 'active' ||
+    state.done ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run) ||
+    !$('spycandidatelist')
+  )
+    return;
+  state.candidateQuery = String(value).slice(0, 80);
+  state.candidateListOpen = !!$('app').querySelector('.spy-candidates')?.open;
+  const matches = spyCandidateMatches(state.candidateQuery);
+  $('spycandidatelist').innerHTML = spyCandidateChipsHTML(matches);
   $('spycandidatecount').textContent = `${matches.length} نتيجة من ${state.locationPool.length}`;
+}
+function updateSpyDiscussionDraft(value, key, run) {
+  if (
+    screen !== 'spy' ||
+    state.stage !== 'active' ||
+    state.done ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run) ||
+    !['questionDraft', 'answerDraft'].includes(key)
+  )
+    return;
+  state[key] = String(value).slice(0, key === 'questionDraft' ? 180 : 240);
+}
+function rememberSpyDiscussionDrafts(s = state) {
+  if (state !== s || screen !== 'spy' || s.stage !== 'active') return;
+  if ($('spyquestion')) s.questionDraft = $('spyquestion').value.slice(0, 180);
+  if ($('spyanswer')) s.answerDraft = $('spyanswer').value.slice(0, 240);
+  if ($('spycandidatesearch')) s.candidateQuery = $('spycandidatesearch').value.slice(0, 80);
+  const candidates = $('app').querySelector('.spy-candidates');
+  if (candidates) s.candidateListOpen = candidates.open;
 }
 function setSpyAsker(index) {
   const s = state;
@@ -3800,6 +3846,7 @@ function setSpyAsker(index) {
   )
     return;
   if (secondsLeft(s) === 0) return startSpyVote();
+  rememberSpyDiscussionDrafts(s);
   s.asker = index === -1 ? null : index;
   if (s.asker === s.target) s.target = null;
   renderSpy();
@@ -3817,15 +3864,17 @@ function setSpyTarget(index) {
   )
     return;
   if (secondsLeft(s) === 0) return startSpyVote();
+  rememberSpyDiscussionDrafts(s);
   s.target = index === -1 ? null : index;
   renderSpy();
 }
 function spyQuestionLog(s = state) {
-  return `<details class="history"><summary>سجل النقاش (${s.questionHistory?.length || 0} أسئلة)</summary>${(s.questionHistory || []).map((q) => `<p><b>${esc(s.players[q.asker])} ← ${esc(s.players[q.target])}</b>: ${esc(q.text)}</p>`).join('') || '<p class="note">تقدرون تلعبون شفهياً؛ سجّلوا الأسئلة اللي تبون ترجعون لها.</p>'}</details>`;
+  return `<details class="history spy-discussion-log"><summary>سجل النقاش (${s.questionHistory?.length || 0} أسئلة)</summary>${(s.questionHistory || []).map((q) => `<div class="spy-discussion-entry"><p><b>${esc(s.players[q.asker])} ← ${esc(s.players[q.target])}</b>: ${esc(q.text)}</p>${q.answer ? `<p class="spy-discussion-answer"><b>الجواب / الملاحظة:</b> ${esc(q.answer)}</p>` : ''}</div>`).join('') || '<p class="note">تقدرون تلعبون شفهياً؛ سجّلوا الأسئلة اللي تبون ترجعون لها.</p>'}</details>`;
 }
 function rotateSpyPrompt() {
   if (screen !== 'spy' || state.stage !== 'active' || advancedBlocked()) return;
   if (secondsLeft() === 0) return startSpyVote();
+  rememberSpyDiscussionDrafts();
   state.questionIndex++;
   renderSpy();
 }
@@ -3833,6 +3882,7 @@ function nextSpyPrompt() {
   if (screen !== 'spy' || state.stage !== 'active' || advancedBlocked()) return;
   if (secondsLeft() === 0) return startSpyVote();
   const s = state;
+  rememberSpyDiscussionDrafts(s);
   if (!Number.isInteger(s.asker) || !Number.isInteger(s.target) || s.asker === s.target)
     return toast('اختاروا السائل واللاعب اللي سألتوه لتسجيل السؤال.');
   s.questionHistory.push({
@@ -3840,11 +3890,13 @@ function nextSpyPrompt() {
     target: s.target,
     text:
       (s.questionDraft || '').trim() || s.questionOrder[s.questionIndex % s.questionOrder.length],
+    ...((s.answerDraft || '').trim() ? { answer: s.answerDraft.trim() } : {}),
   });
   s.questionIndex++;
   s.asker = null;
   s.target = null;
   s.questionDraft = '';
+  s.answerDraft = '';
   renderSpy();
 }
 function spyGuessHandoff() {
@@ -3881,7 +3933,7 @@ function spyGuess() {
     wrap(
       'spy',
       spyProgress() +
-        `<section class="panel center spy-guess-panel"><div class="resulticon">💬</div><h2>${s.spyCount === 2 ? 'تخمين الجاسوسين' : 'تخمين الجاسوس'}</h2><p class="note">${spyNames(s)}، شنو ${terms.noun}؟ لكم محاولة واحدة. التخمين الصحيح يعطي كل جاسوس 20 نقطة، والخطأ يعطي كل لاعب من البقية 20 نقطة.</p><form onsubmit="event.preventDefault();submitSpyGuess(${s.run})"><label for="spyguess">${s.showCandidates ? 'اكتب الكلمة أو ابحث واضغط على نتيجتها' : 'اكتب تخمينك بدون تلميحات'}</label><input id="spyguess" type="${s.showCandidates ? 'search' : 'text'}" maxlength="80" autocomplete="off" value="${esc(s.guessDraft)}" placeholder="اكتب ${terms.noun} هنا…" oninput="updateSpyGuess(this.value)" aria-describedby="spyguesshelp${s.showCandidates ? ' spyguesscount' : ''}"><p id="spyguesshelp" class="tiny">الاختيار ما يعتمد إلا لما تضغط «اعتمد التخمين».</p>${s.showCandidates ? '<p id="spyguesscount" class="tiny" role="status"></p><div class="spy-word-results" id="spyguessresults" aria-label="نتائج البحث عن الكلمة"></div>' : ''}<div class="actions"><button type="button" onclick="cancelSpyGuess()">إخفاء وتمرير الجهاز</button><button class="primary" type="submit">اعتمد التخمين</button></div></form></section>`,
+        `<section class="panel center spy-guess-panel"><div class="resulticon">💬</div><h2>${s.spyCount === 2 ? 'تخمين الجاسوسين' : 'تخمين الجاسوس'}</h2><p class="note">${spyNames(s)}، شنو ${terms.noun}؟ لكم محاولة واحدة. التخمين الصحيح يعطي كل جاسوس 20 نقطة، والخطأ يعطي كل لاعب من البقية 20 نقطة.</p><form onsubmit="event.preventDefault();submitSpyGuess(${s.run})"><label for="spyguess">${s.showCandidates ? 'اكتب الكلمة أو ابحث واضغط على نتيجتها' : 'اكتب تخمينك بدون تلميحات'}</label><input id="spyguess" type="${s.showCandidates ? 'search' : 'text'}" maxlength="80" autocomplete="off" value="${esc(s.guessDraft)}" placeholder="اكتب ${terms.noun} هنا…" oninput="updateSpyGuess(this.value)" aria-describedby="spyguesshelp${s.showCandidates ? ' spyguesscount' : ''}"><p id="spyguesshelp" class="tiny">الاختيار ما يعتمد إلا لما تضغط «اعتمد التخمين».</p>${s.showCandidates ? '<p id="spyguesscount" class="tiny" role="status"></p><div class="spy-word-results" id="spyguessresults" role="group" aria-label="نتائج البحث عن الكلمة"></div>' : ''}<div class="actions"><button type="button" onclick="cancelSpyGuess()">إخفاء وتمرير الجهاز</button><button class="primary" type="submit">اعتمد التخمين</button></div></form></section>`,
     ),
   );
   if (s.showCandidates) updateSpyGuess(s.guessDraft);
@@ -4066,7 +4118,7 @@ function spyNames(s = state) {
   return (s.spies || [s.spy]).map((index) => esc(s.players[index])).join(' و ');
 }
 function spyVoteSummary(s = state) {
-  return `<div class="spy-vote-chart" aria-label="نتائج الأصوات">${s.players.map((name, i) => `<div class="${isSpy(i, s) ? 'is-spy' : ''}"><span>${esc(name)} ${isSpy(i, s) ? '🕶️' : ''}</span><meter min="0" max="${s.players.length}" value="${s.counts?.[i] || 0}" aria-label="أصوات ${esc(name)}"></meter><b>${s.counts?.[i] || 0}</b></div>`).join('')}</div>`;
+  return `<div class="spy-vote-chart" role="group" aria-label="نتائج الأصوات">${s.players.map((name, i) => `<div class="${isSpy(i, s) ? 'is-spy' : ''}"><span>${esc(name)} ${isSpy(i, s) ? '🕶️' : ''}</span><meter min="0" max="${s.players.length}" value="${s.counts?.[i] || 0}" aria-label="أصوات ${esc(name)}"></meter><b>${s.counts?.[i] || 0}</b></div>`).join('')}</div>`;
 }
 function renderSpyVoteResult() {
   const s = state;

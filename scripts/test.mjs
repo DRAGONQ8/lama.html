@@ -46,6 +46,14 @@ const suites = [
   'lab-words-v12',
   'party-v12',
   'platform-v12',
+  'core-v13',
+  'arcade-v13',
+  'words-lab-v13',
+  'party-v13',
+  'collection-v13',
+  'platform-v13',
+  'offline-v13',
+  'accessibility-v13',
 ];
 const failures = [];
 for (const name of suites) {

@@ -52,7 +52,25 @@
   min-height: 44px;
 }
 .topactions .iconbtn {
-  min-height: 42px;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+}
+.top {
+  flex-wrap: wrap;
+}
+.topactions {
+  margin-inline-start: auto;
+  flex-wrap: wrap;
+}
+body[data-theme='light'] .playtools .focus-toggle[aria-pressed='true'],
+body[data-theme='light'] .journey-banner :is(.current, .complete),
+body[data-theme='light'] :is(.warm, .rose) {
+  color: #fff;
+}
+body[data-theme='light'] .lab-tools small {
+  color: var(--muted);
+  opacity: 1;
 }
 .panel {
   border-radius: 22px;

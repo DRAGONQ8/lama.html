@@ -27,11 +27,12 @@ function togglePlayFocus() {
 }
 function playEditable(element) {
   return (
-    !!element?.matches?.(
+    element?.isContentEditable ||
+    (!!element?.matches?.(
       'textarea,input:not([type="checkbox"]):not([type="range"]):not([type="button"]):not([type="submit"])',
     ) &&
-    !element.readOnly &&
-    !element.disabled
+      !element.readOnly &&
+      !element.disabled)
   );
 }
 let playViewportHeight = innerHeight;
@@ -81,7 +82,7 @@ document.addEventListener('input', (event) => {
   }
 });
 document.addEventListener('keydown', (event) => {
-  if (event.ctrlKey || event.metaKey || event.altKey || coreBlocked()) return;
+  if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing || coreBlocked()) return;
   if (
     screen === 'solo' &&
     !state.done &&

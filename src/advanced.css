@@ -50,6 +50,23 @@
 .spy-question-panel {
   text-align: start;
 }
+.spy-question-panel label {
+  display: block;
+  margin-block: 12px 8px;
+}
+.spy-discussion-entry + .spy-discussion-entry {
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.spy-discussion-entry p {
+  overflow-wrap: anywhere;
+}
+.spy-discussion-answer {
+  border-inline-start: 3px solid var(--mint);
+  padding-inline-start: 12px;
+  color: var(--muted);
+}
 .spy-question-panel .fields {
   margin-top: 0;
 }

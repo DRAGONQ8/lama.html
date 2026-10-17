@@ -299,7 +299,7 @@ function labFinish(title, text) {
     );
 }
 function labToolbar() {
-  return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labRedo" onclick="labRedo()" ${state.future?.length ? '' : 'disabled'}>↷ إعادة</button><button id="labHint" onclick="labHint()">✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
+  return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labRedo" onclick="labRedo()" ${state.future?.length ? '' : 'disabled'}>↷ إعادة</button><button id="labHint" onclick="labHint()" ${state.pipeTest ? 'disabled' : ''}>✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
 }
 // The optional lens compares legal moves using visible board data only.
 // It never reads generated answers, spends hints, or changes the live board.
@@ -392,7 +392,7 @@ function labMoveLensData(s = state) {
   return {
     kind: 'pipes',
     label: direction === 1 ? 'دوّر مع الساعة' : 'دوّر عكس الساعة',
-    blocked: !!s.pipeLocked[i] || board[i] === s.board[i],
+    blocked: !!s.pipeTest || !!s.pipeLocked[i] || board[i] === s.board[i],
     locked: !!s.pipeLocked[i],
     before: { leaks: before.leaks, connected: before.connected.size },
     after: { leaks: after.leaks, connected: after.connected.size },
@@ -419,7 +419,7 @@ function labMoveLensHTML() {
       .map(([, , , , name]) => name)
       .join(
         '، ',
-      )}، ${labBitCount(BigInt(data.leaking))} فتحات غير موصولة">${labPipeSVG(data.mask, data.connected, labPipeIsSource(s.selected, s), data.leaking)}</div><p>${data.locked ? 'القطعة مثبتة. فك التثبيت لمتابعة تجربة اتجاهها.' : 'المعاينة تخص دوراناً واحداً. قد تحتاج زيادة مؤقتة في التسريب لبناء الشبكة الصحيحة.'}</p>`;
+      )}، ${labBitCount(BigInt(data.leaking))} فتحات غير موصولة">${labPipeSVG(data.mask, data.connected, labPipeIsSource(s.selected, s), data.leaking)}</div><p>${s.pipeTest ? 'اختبار التدفق مفتوح. أغلقه قبل تنفيذ أي تدوير؛ المعاينة لا تغيّر الاختبار.' : data.locked ? 'القطعة مثبتة. فك التثبيت لمتابعة تجربة اتجاهها.' : 'المعاينة تخص دوراناً واحداً. قد تحتاج زيادة مؤقتة في التسريب لبناء الشبكة الصحيحة.'}</p>`;
   }
   return `<div class="lab-lens-content"><p>اضغط أي خانة لاختيارها للمعاينة، ثم نفّذ الحركة من الزر أدناه. أغلق العدسة للعودة للعب مباشرة.</p><b>${coordinate}</b><span class="lab-lens-action">${data.label}</span>${details}<button id="labLensApply" onclick="labApplyLensMove()" ${data.blocked ? 'disabled' : ''}>${data.kind === 'lights' && s.mode === 'plan' ? data.label : 'نفّذ الحركة المعاينة'}</button><small class="lab-lens-note">المعاينة لا تغيّر اللوحة ولا تستهلك تلميحاً.</small></div>`;
 }
@@ -487,7 +487,12 @@ function renderLab() {
   if (scroll && horizontalScroll !== undefined) scroll.scrollLeft = horizontalScroll;
   if (focusCell)
     $('labBoard')?.querySelector(`[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
-  else if (focusID) $(focusID)?.focus({ preventScroll: true });
+  else if (focusID) {
+    const control = $(focusID);
+    if (control && !control.disabled) control.focus({ preventScroll: true });
+    else
+      $('labBoard')?.querySelector(`[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
+  }
 }
 function labRuleHTML(s = state) {
   const message = {
@@ -823,7 +828,7 @@ function labNonogramHTML() {
     )
     .join(
       '',
-    )}</div><div class="lab-line-tools"><button onclick="labCompleteLine('row')">× شطب بقية الصف</button><button onclick="labCompleteLine('column')">× شطب بقية العمود</button></div><p class="lab-board-status" role="status">${analysis.conflicts ? `! ${analysis.conflicts} خطوط تتعارض مع علاماتك؛ راجع الأرقام الحمراء.` : '✓ الأرقام الخضراء مكتملة · ! الأرقام الحمراء تتعارض مع علاماتك'}</p><div class="lab-scroll"><div id="labBoard" class="lab-nonogram ${s.brushOn ? 'lab-brushing' : ''}" style="--lab-n:${n}" role="group" aria-label="لوحة المنطق"><div class="lab-clue-corner" aria-hidden="true">▦</div>${s.colClues
+    )}</div><div class="lab-line-tools"><button id="labCompleteRow" onclick="labCompleteLine('row')">× شطب بقية الصف</button><button id="labCompleteColumn" onclick="labCompleteLine('column')">× شطب بقية العمود</button></div><p class="lab-board-status" role="status">${analysis.conflicts ? `! ${analysis.conflicts} خطوط تتعارض مع علاماتك؛ راجع الأرقام الحمراء.` : '✓ الأرقام الخضراء مكتملة · ! الأرقام الحمراء تتعارض مع علاماتك'}</p><div class="lab-scroll"><div id="labBoard" class="lab-nonogram ${s.brushOn ? 'lab-brushing' : ''}" style="--lab-n:${n}" role="group" aria-label="لوحة المنطق"><div class="lab-clue-corner" aria-hidden="true">▦</div>${s.colClues
     .map(
       (clues, c) =>
         `<div data-lab-axis="column" data-lab-line="${c}" class="lab-clue lab-col-clue ${s.selected % n === c ? 'lab-clue-selected' : ''} ${analysis.columns[c].conflict ? 'lab-clue-conflict' : ''} ${
@@ -1117,7 +1122,7 @@ function labPatternContentHTML() {
           .map((pattern, k) => {
             const index = page * 8 + k,
               selected = valid && pattern.every((v, j) => v === pending.pattern[j]);
-            return `<button class="lab-pattern-choice ${selected ? 'lab-pattern-picked' : ''}" data-pattern="${index}" aria-pressed="${!!selected}" aria-label="معاينة ترتيب ${index + 1}: ${pattern.map((v) => (v ? 'معبأ' : 'فارغ')).join('، ')}" onclick="labPreviewPattern('${data.axis}',${data.line},${index},'${s.board.join('')}')"><span class="lab-pattern-cells" style="--lab-n:${s.size}" aria-hidden="true">${pattern.map((v) => `<i class="${v ? 'lab-pattern-fill' : ''}">${v ? '' : '×'}</i>`).join('')}</span><small>ترتيب ${index + 1}${selected ? ' · محدد' : ''}</small></button>`;
+            return `<button id="labPatternChoice-${index}" class="lab-pattern-choice ${selected ? 'lab-pattern-picked' : ''}" data-pattern="${index}" aria-pressed="${!!selected}" aria-label="معاينة ترتيب ${index + 1}: ${pattern.map((v) => (v ? 'معبأ' : 'فارغ')).join('، ')}" onclick="labPreviewPattern('${data.axis}',${data.line},${index},'${s.board.join('')}')"><span class="lab-pattern-cells" style="--lab-n:${s.size}" aria-hidden="true">${pattern.map((v) => `<i class="${v ? 'lab-pattern-fill' : ''}">${v ? '' : '×'}</i>`).join('')}</span><small>ترتيب ${index + 1}${selected ? ' · محدد' : ''}</small></button>`;
           })
           .join('')}</div>`
   }${pages > 1 ? `<div class="lab-pattern-pages"><button id="labPatternPrev" onclick="labPatternPage(-1)" ${page ? '' : 'disabled'}>السابق</button><span dir="ltr">${page + 1} / ${pages}</span><button id="labPatternNext" onclick="labPatternPage(1)" ${page < pages - 1 ? '' : 'disabled'}>التالي</button></div>` : ''}${impact ? `<div class="lab-pattern-preview" role="status"><b>${impact.changes} خانات تتغير عند التطبيق</b><p>${impact.conflicts.length ? `! هذا الترتيب يتعارض مع ${data.axis === 'row' ? 'الأعمدة' : 'الصفوف'} ${impact.conflicts.map((line) => line + 1).join('، ')} وفق العلامات الحالية.` : '✓ جميع الخطوط المتقاطعة ما زالت تسمح بترتيب بعد هذه الفرضية.'}</p><button id="labPatternApply" onclick="labApplyPattern()" ${impact.changes ? '' : 'disabled'}>طبّق فرضيتي</button></div>` : '<p class="note center">اختر ترتيباً للمعاينة أولاً؛ اختيار البطاقة لا يغيّر اللوحة.</p>'}<p class="note center">هذه احتمالات من المعطيات المرئية؛ التوافق المحلي لا يثبت صحة الحل. كل خانة تتغير تحسب حركة، ويمكن التراجع عن المجموعة بخطوة واحدة.</p>`;
@@ -1790,7 +1795,7 @@ function labPipesTap(i, override = null, commit = false) {
   if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
   if (!commit && labPreviewTap(i, override ? (override === -1 ? 'counter' : 'clockwise') : null))
     return;
-  if (!commit && state.pipeTest) {
+  if (state.pipeTest) {
     labSelect(i);
     return;
   }
@@ -1823,6 +1828,10 @@ function labRotateSelected(direction) {
 }
 function labHint() {
   if (!labReady()) return;
+  if (state.id === 'pipes' && state.pipeTest) {
+    state.message = 'أغلق اختبار التدفق قبل تطبيق تلميح؛ اللوحة والاختبار محفوظان.';
+    return renderLab();
+  }
   const s = state;
   if (s.id === 'nonogram') {
     const analysis = labNonogramAnalysis(s),

@@ -1,6 +1,6 @@
 {
   "name": "lamma-universe",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "private": true,
   "description": "Arabic offline party and brain games in a single HTML file",
   "type": "module",
@@ -11,6 +11,7 @@
     "format": "prettier --write src scripts tests package.json README.md .github/workflows/test.yml"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "playwright": "^1.56.1",
     "prettier": "^3.9.10"
   }

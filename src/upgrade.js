@@ -321,7 +321,7 @@ function appendSetupBlueprint(id) {
 }
 function openHelp() {
   openModal(
-    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 12 · ${games.length} لعبة عربية في ملف واحد.</p>${[
+    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 13 · ${games.length} لعبة عربية في ملف واحد.</p>${[
       [
         'هل تحتاج إنترنت أو حسابًا؟',
         'افتح ملف HTML في متصفح حديث. الألعاب والمحتوى تعمل دون إنترنت أو حساب؛ حفظ النتائج مرتبط بهذا المتصفح.',

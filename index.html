@@ -9,9 +9,9 @@
     <meta name="theme-color" content="#0b1020" />
     <meta
       name="description"
-      content="لَمّة 12: 37 لعبة عربية دون إنترنت. صوّتوا ثم اكشفوا الجاسوس ثم خمنوا الكلمة، مع بحث سريع وأسئلة بحرية وتحسينات للألعاب."
+      content="لَمّة 13: 37 لعبة عربية دون إنترنت. تدريب أوضح، ألغاز بمساعدات منطقية، ألعاب جماعية أكثر سلاسة، وتحكم مريح باللمس ولوحة المفاتيح."
     />
-    <title>لَمّة 12 — العبوا على كيفكم</title>
+    <title>لَمّة 13 — كل جولة أفضل</title>
     <style>
       :root {
   color-scheme: dark;
@@ -280,7 +280,7 @@ a {
 }
 .filter .active {
   background: var(--mint);
-  color: #132b24;
+  color: var(--bg);
   border-color: var(--mint);
 }
 .grid {
@@ -1715,7 +1715,7 @@ body[data-theme='light'] {
   --line: #cad6e7;
   --ink: #15273c;
   --muted: #536b83;
-  --mint: #128674;
+  --mint: #0b6f60;
   --orange: #925807;
   --pink: #7245b0;
   --blue: #315e9d;
@@ -3622,6 +3622,23 @@ body:has(.play) .toast {
 .spy-question-panel {
   text-align: start;
 }
+.spy-question-panel label {
+  display: block;
+  margin-block: 12px 8px;
+}
+.spy-discussion-entry + .spy-discussion-entry {
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.spy-discussion-entry p {
+  overflow-wrap: anywhere;
+}
+.spy-discussion-answer {
+  border-inline-start: 3px solid var(--mint);
+  padding-inline-start: 12px;
+  color: var(--muted);
+}
 .spy-question-panel .fields {
   margin-top: 0;
 }
@@ -4772,6 +4789,15 @@ body.reduced-motion .tile-merged {
 #snakeTurnPlan {
   min-height: 24px;
   unicode-bidi: plaintext;
+}
+.maze-navigation {
+  max-width: 560px;
+  margin: 10px auto;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  line-height: 1.9;
 }
 
 .words-status {
@@ -6192,6 +6218,22 @@ body[data-theme='light'] .target-cell.decoy {
 }
 .party-focus-card small {
   color: var(--muted);
+}
+.party-focus-card:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 4px;
+}
+.party-round-archive {
+  margin-top: 18px;
+  text-align: start;
+}
+.party-round-archive > .note {
+  margin-top: 16px;
+}
+.party-ballot-review small {
+  margin-top: 6px;
+  color: var(--muted);
+  line-height: 1.8;
 }
 .party-flow {
   display: flex;
@@ -7632,7 +7674,7 @@ body[data-theme='light'] .target-cell.decoy {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   color: var(--muted);
 }
 .collection-top b {
@@ -7648,7 +7690,11 @@ body[data-theme='light'] .target-cell.decoy {
 .collection-question {
   margin: 14px 0 23px;
   text-align: center;
-  font-size: clamp(21px, 4vw, 30px);
+  font-size: clamp(
+    calc(21px * var(--text-scale, 1)),
+    calc(4vw * var(--text-scale, 1)),
+    calc(30px * var(--text-scale, 1))
+  );
   line-height: 1.7;
   overflow-wrap: anywhere;
 }
@@ -7656,7 +7702,7 @@ body[data-theme='light'] .target-cell.decoy {
   display: block;
   text-align: center;
   color: var(--muted);
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   margin-top: 26px;
 }
 .fact-statement {
@@ -7690,7 +7736,7 @@ body[data-theme='light'] .target-cell.decoy {
   position: relative;
   flex-wrap: wrap;
   padding: 16px 12px;
-  font-size: 18px;
+  font-size: calc(18px * var(--text-scale, 1));
   overflow-wrap: anywhere;
 }
 .collection-choice-num {
@@ -7704,10 +7750,8 @@ body[data-theme='light'] .target-cell.decoy {
   flex-shrink: 0;
   color: var(--muted);
 }
-.collection-choice.flag-options {
-  padding: 12px;
-}
 .flag-options .collection-choice {
+  padding: 12px;
   flex-direction: column;
   gap: 8px;
 }
@@ -7723,7 +7767,7 @@ body[data-theme='light'] .target-cell.decoy {
   width: min(120px, 66.6667%);
 }
 .collection-verdict {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   flex-basis: 100%;
   text-align: center;
 }
@@ -7785,7 +7829,7 @@ body[data-theme='light'] .target-cell.decoy {
   border: 1px solid var(--mint);
   border-radius: 12px;
   margin: 0 0 20px;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   line-height: 1.8;
 }
 .collection-move-status:empty {
@@ -7794,15 +7838,18 @@ body[data-theme='light'] .target-cell.decoy {
 .collection-review .collection-your-answer {
   color: var(--ink);
 }
-.collection-review-order {
+.collection-review ol.collection-review-order {
   display: grid;
   gap: 5px;
   padding-inline-start: 24px;
+  list-style: decimal;
 }
 .collection-review .collection-review-order li {
   display: list-item;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   overflow-wrap: anywhere;
+  padding-block: 3px;
+  border: 0;
 }
 .collection-order-number {
   flex: 0 0 27px;
@@ -7817,6 +7864,7 @@ body[data-theme='light'] .target-cell.decoy {
 .collection-order-label {
   flex: 1;
   font-weight: 700;
+  font-size: calc(16px * var(--text-scale, 1));
   overflow-wrap: anywhere;
   min-width: 0;
   unicode-bidi: plaintext;
@@ -7827,8 +7875,8 @@ body[data-theme='light'] .target-cell.decoy {
   gap: 6px;
 }
 .collection-order-controls button {
-  min-width: 42px;
-  min-height: 42px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 6px;
   font-size: 21px;
 }
@@ -7848,7 +7896,7 @@ body[data-theme='light'] .target-cell.decoy {
   display: block;
 }
 .collection-review li p {
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   line-height: 1.8;
   color: var(--muted);
   margin: 6px 0;
@@ -7857,18 +7905,59 @@ body[data-theme='light'] .target-cell.decoy {
   display: block;
   width: 100px;
 }
+.collection-breakdown {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  text-align: start;
+}
+.collection-breakdown h3 {
+  font-size: calc(18px * var(--text-scale, 1));
+}
+.collection-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.collection-breakdown-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  overflow-wrap: anywhere;
+}
+.collection-breakdown-item > span {
+  color: var(--mint);
+  font-weight: 700;
+}
+.collection-breakdown-item :is(progress, small) {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+.collection-breakdown-item progress {
+  accent-color: var(--mint);
+  height: 7px;
+}
+.collection-breakdown-item small {
+  font-size: calc(12px * var(--text-scale, 1));
+}
 @media (max-width: 480px) {
   .collection-choices {
     gap: 9px;
   }
   .collection-choice {
-    font-size: 16px;
+    font-size: calc(16px * var(--text-scale, 1));
     padding: 13px 8px;
     gap: 7px;
   }
   .collection-top {
     gap: 8px;
-    font-size: 11px;
+    font-size: calc(11px * var(--text-scale, 1));
   }
   .collection-order li {
     padding: 9px 8px;
@@ -7879,13 +7968,13 @@ body[data-theme='light'] .target-cell.decoy {
     height: 24px;
   }
   .collection-order-label {
-    font-size: 13px;
+    font-size: calc(13px * var(--text-scale, 1));
   }
   .collection-order-controls {
     gap: 4px;
   }
   .collection-order-controls button {
-    min-width: 38px;
+    min-width: 44px;
     min-height: 44px;
   }
   .collection-feedback {
@@ -10016,6 +10105,10 @@ body.keyboard-open .toast {
   }
 }
 
+.gamecard:hover {
+  /* Keep catalogue targets and return anchors in the same position. */
+  transform: none;
+}
 .random-launches {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -10124,7 +10217,25 @@ body.keyboard-open .toast {
   min-height: 44px;
 }
 .topactions .iconbtn {
-  min-height: 42px;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+}
+.top {
+  flex-wrap: wrap;
+}
+.topactions {
+  margin-inline-start: auto;
+  flex-wrap: wrap;
+}
+body[data-theme='light'] .playtools .focus-toggle[aria-pressed='true'],
+body[data-theme='light'] .journey-banner :is(.current, .complete),
+body[data-theme='light'] :is(.warm, .rose) {
+  color: #fff;
+}
+body[data-theme='light'] .lab-tools small {
+  color: var(--muted);
+  opacity: 1;
 }
 .panel {
   border-radius: 22px;
@@ -10369,6 +10480,7 @@ body.keyboard-open .toast {
   min-width: 0;
   padding: 18px;
   text-align: start;
+  background: var(--raised);
 }
 .latest-links > button > span {
   font-size: 26px;
@@ -11201,7 +11313,7 @@ body.high-contrast[data-theme='light'] {
       <header class="top">
         <button class="brand" onclick="home('top')" aria-label="لمة، الرئيسية">
           <span class="brandmark">✦</span
-          ><span class="brandtext">لَمّة<small>عالم التحدّيات · 12.0</small></span>
+          ><span class="brandtext">لَمّة<small>عالم التحدّيات · 13.0</small></span>
         </button>
         <div class="topactions">
           <button
@@ -11254,7 +11366,34 @@ body.high-contrast[data-theme='light'] {
       ><div class="noscript">تحتاج اللعبة إلى تشغيل JavaScript في المتصفح حتى تعمل.</div></noscript
     >
     <script>
-      // Source: src/core.js
+      // Source: src/offline.js
+'use strict';
+// Capture the untouched shell before loading names, roles, settings or live boards.
+// Downloading a game must never serialize the current screen or private round.
+const standaloneSource = '<!doctype html>\n' + document.documentElement.outerHTML;
+function downloadStandalone() {
+  let url;
+  try {
+    const file = new Blob([standaloneSource], { type: 'text/html;charset=utf-8' });
+    url = URL.createObjectURL(file);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'lamma_universe.html';
+    document.body.append(link);
+    link.click();
+    link.remove();
+    // Let mobile browsers finish accepting the download before releasing it.
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    toast('تم تجهيز ملف اللعبة. لنقل نقاطك صدّر نسخة التقدّم JSON أيضًا.');
+    return true;
+  } catch (error) {
+    if (url) URL.revokeObjectURL(url);
+    toast('تعذّر تنزيل الملف في هذا المتصفح. افتح الموقع في متصفح يدعم التنزيل.');
+    return false;
+  }
+}
+
+// Source: src/core.js
 'use strict';
 const $ = (id) => document.getElementById(id);
 const esc = (s) =>
@@ -11875,7 +12014,7 @@ function renderFinder(msg = '') {
       coaching = `<p class="note center" role="status">${count === 1n ? 'بقي رقم واحد مؤكد داخل النطاق.' : `من هذا النطاق نحتاج إلى ${limit(s.l, s.h)} تخمينات إضافية كحد أقصى، منها التخمين المعروض.`}${progress !== null ? ` استبعدنا ${progress}% من الاحتمالات.` : ''}</p>`;
     panel?.insertAdjacentHTML(
       'afterbegin',
-      `${progress !== null ? `<div class="progressline" aria-label="استبعاد الاحتمالات ${progress}%"><span style="width:${progress}%"></span></div>` : ''}${coaching}`,
+      `${progress !== null ? `<div class="progressline" role="progressbar" aria-label="استبعاد الاحتمالات" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>` : ''}${coaching}`,
     );
     if (s.guess === s.h)
       $('app').querySelector('button[onclick="finderAnswer(\'higher\')"]').disabled = true;
@@ -12014,7 +12153,7 @@ function renderSolo(msg = '') {
   setHTML(
     wrap(
       'solo',
-      `<div class="stats solo-stats"><div class="stat"><small>محاولات باقية</small><b>${s.max - s.attempt}</b></div><div class="stat"><small>محاولاتك</small><b>${s.attempt}</b></div><div class="stat"><small>احتمالات باقية</small><b>${fmt(count)}</b></div></div><section class="panel solo-panel"><div class="solo-heading"><span aria-hidden="true">🔐</span><div><h3>قرّب، وضيّق النطاق</h3><p class="tiny">استبعدت ${progress}% من الاحتمالات</p></div></div><div class="number-range" aria-label="النطاق المتبقي من ${fmt(s.l)} إلى ${fmt(s.h)}"><div class="range" dir="ltr"><bdi>${fmt(s.l)}</bdi><span>≤ ? ≤</span><bdi>${fmt(s.h)}</bdi></div><div class="number-track" dir="ltr" aria-hidden="true"><span style="left:${left}%;width:${width}%"></span></div><div class="range-original" dir="ltr"><bdi>${fmt(s.initialL)}</bdi><bdi>${fmt(s.initialH)}</bdi></div></div><div id="soloFeedback" class="guess-feedback ${direction}" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"><span class="feedback-arrow" aria-hidden="true">${direction === 'higher' ? '↑' : direction === 'lower' ? '↓' : '✦'}</span><div><b>${esc(s.soloMessage)}</b><small>النطاق الآن: <bdi dir="ltr">${fmt(s.l)} – ${fmt(s.h)}</bdi>${count === 1n ? ' · بقي رقم واحد!' : ''}</small></div></div><form class="solo-form" onsubmit="event.preventDefault();guessSolo()"><label for="guessInput">تخمينك</label><div class="guess-entry"><input id="guessInput" dir="ltr" type="text" inputmode="${s.soloPad ? 'none' : 'numeric'}" enterkeyhint="go" maxlength="90" autocomplete="off" aria-describedby="soloFeedback" placeholder="اكتب الرقم" ${s.soloPad ? 'readonly' : ''}><button class="primary" type="submit">جرّب الرقم ←</button></div><div class="input-options"><button type="button" class="linkbtn" onclick="toggleSoloPad()" aria-pressed="${!!s.soloPad}">${s.soloPad ? 'استخدم كيبورد الجهاز' : 'لوحة أرقام اللعبة'}</button>${s.l < 0n ? '<button type="button" class="smallbtn quiet" onclick="soloKey(\'sign\')" aria-label="تبديل إشارة الرقم">±</button>' : ''}${s.mode === 'easy' && count > 1n ? '<button type="button" class="linkbtn" onclick="soloMidpoint()">جرّب المنتصف</button>' : ''}</div>${s.soloPad ? soloKeypadHTML() : ''}<div class="solo-assists"><button type="button" onclick="hintSolo()" ${s.hints >= 2 || count <= 2n ? 'disabled' : ''}>✧ تلميح <small>−8 نقاط · باقي ${2 - s.hints}</small></button><button type="button" class="quiet" onclick="revealSolo()">اكشف الرقم</button></div><p class="tiny">التلميح يحذف نصف الاحتمالات دون استهلاك محاولة.</p></form>${
+      `<div class="stats solo-stats"><div class="stat"><small>محاولات باقية</small><b>${s.max - s.attempt}</b></div><div class="stat"><small>محاولاتك</small><b>${s.attempt}</b></div><div class="stat"><small>احتمالات باقية</small><b>${fmt(count)}</b></div></div><section class="panel solo-panel"><div class="solo-heading"><span aria-hidden="true">🔐</span><div><h3>قرّب، وضيّق النطاق</h3><p class="tiny">استبعدت ${progress}% من الاحتمالات</p></div></div><div class="number-range" role="group" aria-label="النطاق المتبقي من ${fmt(s.l)} إلى ${fmt(s.h)}"><div class="range" dir="ltr"><bdi>${fmt(s.l)}</bdi><span>≤ ? ≤</span><bdi>${fmt(s.h)}</bdi></div><div class="number-track" dir="ltr" aria-hidden="true"><span style="left:${left}%;width:${width}%"></span></div><div class="range-original" dir="ltr"><bdi>${fmt(s.initialL)}</bdi><bdi>${fmt(s.initialH)}</bdi></div></div><div id="soloFeedback" class="guess-feedback ${direction}" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"><span class="feedback-arrow" aria-hidden="true">${direction === 'higher' ? '↑' : direction === 'lower' ? '↓' : '✦'}</span><div><b>${esc(s.soloMessage)}</b><small>النطاق الآن: <bdi dir="ltr">${fmt(s.l)} – ${fmt(s.h)}</bdi>${count === 1n ? ' · بقي رقم واحد!' : ''}</small></div></div><form class="solo-form" onsubmit="event.preventDefault();guessSolo()"><label for="guessInput">تخمينك</label><div class="guess-entry"><input id="guessInput" dir="ltr" type="text" inputmode="${s.soloPad ? 'none' : 'numeric'}" enterkeyhint="go" maxlength="90" autocomplete="off" aria-describedby="soloFeedback" placeholder="اكتب الرقم" ${s.soloPad ? 'readonly' : ''}><button class="primary" type="submit">جرّب الرقم ←</button></div><div class="input-options"><button type="button" class="linkbtn" onclick="toggleSoloPad()" aria-pressed="${!!s.soloPad}">${s.soloPad ? 'استخدم كيبورد الجهاز' : 'لوحة أرقام اللعبة'}</button>${s.l < 0n ? '<button type="button" class="smallbtn quiet" onclick="soloKey(\'sign\')" aria-label="تبديل إشارة الرقم">±</button>' : ''}${s.mode === 'easy' && count > 1n ? '<button type="button" class="linkbtn" onclick="soloMidpoint()">جرّب المنتصف</button>' : ''}</div>${s.soloPad ? soloKeypadHTML() : ''}<div class="solo-assists"><button type="button" onclick="hintSolo()" ${s.hints >= 2 || count <= 2n ? 'disabled' : ''}>✧ تلميح <small>−8 نقاط · باقي ${2 - s.hints}</small></button><button type="button" class="quiet" onclick="revealSolo()">اكشف الرقم</button></div><p class="tiny">التلميح يحذف نصف الاحتمالات دون استهلاك محاولة.</p></form>${
         s.history.length
           ? `<details class="history solo-history"><summary>تتبّع تخميناتك (${s.history.length})</summary><ol>${s.history
               .slice(-12)
@@ -12990,7 +13129,7 @@ function renderMindEvidence() {
     .querySelector('.panel')
     ?.insertAdjacentHTML(
       'beforeend',
-      `<div class="progressline" aria-label="تضييق الخيارات ${progress}%"><span style="width:${progress}%"></span></div><p class="note">${s.candidates.length === 1 ? 'كل الإجابات الواضحة تقود إلى هذا الخيار؛ أكّد الاسم أو تراجع لتصحيح الأدلة.' : s.q === null ? 'الخيارات الباقية تتشابه في الصفات المتاحة؛ اختر الاسم أو أضف صفة تميز الشيء في قاعدة التخمين.' : `اخترنا هذا السؤال لأنه يقسم الخيارات إلى ${yes} جوابها نعم و${s.candidates.length - yes} جوابها لا. «مو متأكد» يحفظ كل الخيارات.`}</p>${s.evidence.length ? `<details class="history"><summary>الأدلة التي ضيّقت الخيارات (${s.evidence.length})</summary><ol>${s.evidence.map((v) => `<li>${esc(questions[v.q][1])} — <b>${v.answer === 'yes' ? 'نعم' : v.answer === 'no' ? 'لا' : 'مو متأكد'}</b><small> · استبعدنا ${v.before - v.after} وبقي ${v.after}</small></li>`).join('')}</ol></details>` : ''}`,
+      `<div class="progressline" role="progressbar" aria-label="تضييق الخيارات" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div><p class="note">${s.candidates.length === 1 ? 'كل الإجابات الواضحة تقود إلى هذا الخيار؛ أكّد الاسم أو تراجع لتصحيح الأدلة.' : s.q === null ? 'الخيارات الباقية تتشابه في الصفات المتاحة؛ اختر الاسم أو أضف صفة تميز الشيء في قاعدة التخمين.' : `اخترنا هذا السؤال لأنه يقسم الخيارات إلى ${yes} جوابها نعم و${s.candidates.length - yes} جوابها لا. «مو متأكد» يحفظ كل الخيارات.`}</p>${s.evidence.length ? `<details class="history"><summary>الأدلة التي ضيّقت الخيارات (${s.evidence.length})</summary><ol>${s.evidence.map((v) => `<li>${esc(questions[v.q][1])} — <b>${v.answer === 'yes' ? 'نعم' : v.answer === 'no' ? 'لا' : 'مو متأكد'}</b><small> · استبعدنا ${v.before - v.after} وبقي ${v.after}</small></li>`).join('')}</ol></details>` : ''}`,
     );
   s.notebookVersion = (s.notebookVersion || 0) + 1;
   const version = s.notebookVersion;
@@ -13179,22 +13318,34 @@ function renderWho(msg = '') {
         .map((h, i) => `<div class="hint"><b>التلميح ${i + 1}</b>${esc(h)}</div>`)
         .join(
           '',
-        )}<form onsubmit="event.preventDefault();guessWho()"><label for="whoInput">ما هو الشيء؟</label><input id="whoInput" maxlength="50" autocomplete="off" placeholder="اكتب الاسم أو اسماً بديلاً له"><div class="actions"><button class="primary" type="submit">خمنت!</button><button type="button" onclick="whoHint()" ${s.hints === 3 ? 'disabled' : ''}>تلميح إضافي −10</button></div></form><p class="note" role="status">${msg || 'التخمين الغلط يخصم 5 نقاط؛ تكرار التخمين نفسه لا يستهلك محاولة.'}</p>${s.wrong.length ? `<div class="listchips" aria-label="التخمينات السابقة">${s.wrong.map((v) => `<span>✕ ${esc(v)}</span>`).join('')}</div>` : ''}${s.level === 'hard' ? '' : s.listOpen ? whoCandidateNotebookHTML(s) : '<div class="actions"><button onclick="whoCandidates()">شاهد قائمة الكلمات −5</button></div>'}<div class="actions"><button class="quiet" onclick="revealWho()">اكشف الجواب</button></div></section>`,
+        )}<form onsubmit="event.preventDefault();guessWho()"><label for="whoInput">ما هو الشيء؟</label><input id="whoInput" maxlength="50" autocomplete="off" placeholder="اكتب الاسم أو اسماً بديلاً له"><div class="actions"><button class="primary" type="submit">خمنت!</button><button type="button" onclick="whoHint()" ${s.hints === 3 ? 'disabled' : ''}>تلميح إضافي −10</button></div></form><p class="note" role="status">${msg || 'التخمين الغلط يخصم 5 نقاط؛ تكرار التخمين نفسه لا يستهلك محاولة.'}</p>${s.wrong.length ? `<div class="listchips" role="group" aria-label="التخمينات السابقة">${s.wrong.map((v) => `<span>✕ ${esc(v)}</span>`).join('')}</div>` : ''}${s.level === 'hard' ? '' : s.listOpen ? whoCandidateNotebookHTML(s) : '<div class="actions"><button onclick="whoCandidates()">شاهد قائمة الكلمات −5</button></div>'}<div class="actions"><button class="quiet" onclick="revealWho()">اكشف الجواب</button></div></section>`,
     ),
   );
   $('whoInput').value = s.whoDraft || '';
   renderWhoInquiries();
 }
+function whoEvidenceCandidates(s = state) {
+  return s.pool.filter(
+    (i) =>
+      (s.inquiries || []).every(
+        (entry) => items[i].tags.has(questions[entry.q][0]) === entry.yes,
+      ) &&
+      !(s.wrong || []).some((guess) =>
+        items[i].aliases.some((alias) => norm(alias) === norm(guess)),
+      ),
+  );
+}
 function whoInquiryOptions(s = state) {
+  // Paid questions should split the possibilities still supported by the public
+  // evidence; neither the hidden answer nor handwritten exclusions are consulted.
+  const pool = whoEvidenceCandidates(s);
   return questions
-    .map((q, i) => ({ i, count: s.pool.filter((item) => items[item].tags.has(q[0])).length }))
+    .map((q, i) => ({ i, count: pool.filter((item) => items[item].tags.has(q[0])).length }))
     .filter(
       (entry) =>
-        entry.count > 0 &&
-        entry.count < s.pool.length &&
-        !s.inquiries?.some((q) => q.q === entry.i),
+        entry.count > 0 && entry.count < pool.length && !s.inquiries?.some((q) => q.q === entry.i),
     )
-    .sort((a, b) => Math.abs(s.pool.length / 2 - a.count) - Math.abs(s.pool.length / 2 - b.count))
+    .sort((a, b) => Math.abs(pool.length / 2 - a.count) - Math.abs(pool.length / 2 - b.count))
     .slice(0, 8)
     .map((entry) => entry.i);
 }
@@ -13205,7 +13356,7 @@ function renderWhoInquiries() {
     .querySelector('.panel')
     ?.insertAdjacentHTML(
       'beforeend',
-      `<details class="strategy-lens" ${s.inquiries?.length ? 'open' : ''}><summary>🔎 اسأل عن صفة · −6 نقاط للسؤال</summary><p class="tiny">سؤالان كحد أقصى؛ الجواب عن الصفة المعتادة في قاموس اللعبة. السؤال لا يستهلك تخميناً.</p>${s.inquiries?.map((v) => `<div class="hint"><b>${esc(questions[v.q][1])}</b>${v.yes ? 'نعم ✓' : 'لا ✕'}</div>`).join('') || ''}${(s.inquiries?.length || 0) < 2 && options.length ? `<label for="whoQuestion">اختر صفة لفحصها</label><select id="whoQuestion">${options.map((q) => `<option value="${q}">${esc(questions[q][1])}</option>`).join('')}</select><div class="actions"><button onclick="askWhoInquiry(${s.inquiries?.length || 0})">اسأل عن الصفة −6</button></div>` : '<p class="note">انتهت أسئلة الصفات المتاحة؛ استعمل أدلتك للتخمين.</p>'}</details>`,
+      `<details class="strategy-lens" ${s.inquiries?.length ? 'open' : ''}><summary>🔎 اسأل عن صفة · −6 نقاط للسؤال</summary><p class="tiny">سؤالان كحد أقصى؛ نعرض الصفات التي تميّز الاحتمالات بعد إجاباتك السابقة. الجواب عن الصفة المعتادة في قاموس اللعبة، ولا يستهلك تخميناً.</p>${s.inquiries?.map((v) => `<div class="hint"><b>${esc(questions[v.q][1])}</b>${v.yes ? 'نعم ✓' : 'لا ✕'}</div>`).join('') || ''}${(s.inquiries?.length || 0) < 2 && options.length ? `<label for="whoQuestion">اختر صفة لفحصها</label><select id="whoQuestion">${options.map((q) => `<option value="${q}">${esc(questions[q][1])}</option>`).join('')}</select><div class="actions"><button onclick="askWhoInquiry(${s.inquiries?.length || 0})">اسأل عن الصفة −6</button></div>` : '<p class="note">انتهت أسئلة الصفات المتاحة؛ استعمل أدلتك للتخمين.</p>'}</details>`,
     );
 }
 function askWhoInquiry(count = state?.inquiries?.length || 0) {
@@ -14230,7 +14381,7 @@ function renderSecret() {
   if (s.secretRule === 'relay')
     panel?.insertAdjacentHTML(
       'afterbegin',
-      `<div class="mission-ribbon"><b>📒 تحقيق بالتناوب</b><small>صاحب الدور يكتب السؤال ويسجّل الجواب أو يخمن. يتحول الدور بعد كل سؤال؛ التراجع يعيد السؤال والسائل.</small></div><div class="question-starters" aria-label="اقتراحات سؤال">${['هل نستخدمه يوميًا؟', 'هل يوجد عادة داخل البيت؟', 'هل يمكن حمله باليد؟', 'هل يرتبط بالطبيعة؟'].map((question, index) => `<button class="smallbtn" onclick="secretStarter(${index},${s.turn},${s.questionSerial})">${question}</button>`).join('')}</div>`,
+      `<div class="mission-ribbon"><b>📒 تحقيق بالتناوب</b><small>صاحب الدور يكتب السؤال ويسجّل الجواب أو يخمن. يتحول الدور بعد كل سؤال؛ التراجع يعيد السؤال والسائل.</small></div><div class="question-starters" role="group" aria-label="اقتراحات سؤال">${['هل نستخدمه يوميًا؟', 'هل يوجد عادة داخل البيت؟', 'هل يمكن حمله باليد؟', 'هل يرتبط بالطبيعة؟'].map((question, index) => `<button class="smallbtn" onclick="secretStarter(${index},${s.turn},${s.questionSerial})">${question}</button>`).join('')}</div>`,
     );
 }
 function secretStarter(index, turn, serial) {
@@ -14658,7 +14809,8 @@ document.addEventListener(
       event.metaKey ||
       event.altKey ||
       event.repeat ||
-      /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)
+      event.isComposing ||
+      advancedEditableTarget(event.target)
     )
       return;
     if (event.key === ' ' && event.target.closest?.('button,a,summary,[role="button"]')) return;
@@ -16713,6 +16865,44 @@ function resumeClock() {
     }
   }
 }
+function overlayControls(container) {
+  if (!container) return [];
+  const order = (element) =>
+    !element.hasAttribute('tabindex') &&
+    element.isContentEditable &&
+    !element.parentElement?.isContentEditable
+      ? 0
+      : element.tabIndex;
+  return [
+    ...container.querySelectorAll(
+      'button,input:not([type="hidden"]),select,textarea,a[href],summary,[tabindex],[contenteditable]:not([contenteditable="false" i])',
+    ),
+  ]
+    .filter((element) => {
+      if (
+        element.matches(':disabled') ||
+        order(element) < 0 ||
+        element.closest('[hidden],[inert]') ||
+        !element.getClientRects().length ||
+        ['hidden', 'collapse'].includes(getComputedStyle(element).visibility)
+      )
+        return false;
+      // Descendants of a closed disclosure can still report layout boxes.
+      // Only its first summary participates in keyboard navigation.
+      for (
+        let parent = element.parentElement;
+        parent && parent !== container;
+        parent = parent.parentElement
+      )
+        if (
+          parent.matches('details:not([open])') &&
+          !parent.querySelector(':scope > summary')?.contains(element)
+        )
+          return false;
+      return true;
+    })
+    .sort((a, b) => (order(a) || Infinity) - (order(b) || Infinity));
+}
 function openModal(html) {
   if ($('modalback').hidden) previousFocus = document.activeElement;
   if (
@@ -16730,9 +16920,7 @@ function openModal(html) {
   $('modalback').hidden = false;
   updateOverlayLock();
   $('modal').scrollTop = 0;
-  $('modal')
-    .querySelector('button:not(:disabled),input:not([hidden]),select,textarea,[tabindex="0"]')
-    ?.focus();
+  (overlayControls($('modal'))[0] || $('modal')).focus();
 }
 function closeModal(discard = false) {
   if (!$('modalback').hidden) {
@@ -16782,9 +16970,7 @@ document.addEventListener(
     }
     if (e.key === 'Tab') {
       e.stopImmediatePropagation();
-      const controls = [
-        ...container.querySelectorAll('button,input,select,textarea,a[href],[tabindex="0"]'),
-      ].filter((v) => !v.disabled && v.getClientRects().length && v.tabIndex >= 0);
+      const controls = overlayControls(container);
       if (!controls.length) {
         e.preventDefault();
         container.focus();
@@ -16826,6 +17012,7 @@ function showPause() {
   const div = document.createElement('div');
   div.id = 'pausecover';
   div.className = 'pausecover';
+  div.tabIndex = -1;
   div.setAttribute('role', 'dialog');
   div.setAttribute('aria-modal', 'true');
   div.setAttribute('aria-labelledby', 'pausetitle');
@@ -16838,10 +17025,7 @@ function showPause() {
 function resumeGame() {
   removePause();
   resumeClock();
-  if (!$('modalback').hidden)
-    $('modal')
-      .querySelector('button:not(:disabled),input:not([hidden]),select,textarea,[tabindex="0"]')
-      ?.focus();
+  if (!$('modalback').hidden) (overlayControls($('modal'))[0] || $('modal')).focus();
   else restorePlayFocus(pauseFocus);
 }
 document.addEventListener('visibilitychange', () => {
@@ -18309,8 +18493,8 @@ function renderBoard() {
   if (focused) s.boardFocus = Number(focused.dataset.boardPos);
   const body =
     s.id === 'ttt'
-      ? `<div class="ttt ${s.rule === 'misere' ? 'avoid-line' : ''}" dir="ltr" aria-label="لوحة إكس أو؛ الأرقام من اليسار إلى اليمين">${display.map((v, i) => `<button data-board-pos="${i}" class="${v ? 'p' + v : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" ${s.suggested === i ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${i})" ${v || s.waiting || s.done || s.preview ? 'disabled' : ''} aria-label="خانة ${i + 1}${v ? ' ' + (v === 1 ? 'X' : 'O') : ''}${s.suggested === i ? ' حركة مقترحة' : ''}">${v ? (v === 1 ? '×' : '○') : `<small class="board-shortcut">${i + 1}</small>`}</button>`).join('')}</div>`
-      : `<div class="connect" dir="ltr" aria-label="لوحة وصل أربعة؛ الأعمدة من اليسار إلى اليمين">${Array.from({ length: 7 }, (_, c) => `<button data-board-pos="${c}" class="drop" ${s.suggested === c ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${c})" ${s.waiting || s.done || s.preview || landing(s.board, c) < 0 ? 'disabled' : ''} aria-label="إنزال قطعة في العمود ${c + 1}${s.suggested === c ? ' حركة مقترحة' : ''}">↓ <small>${c + 1}</small></button>`).join('')}${display.map((v, i) => `<div class="disc ${v === 1 ? 'red' : v === 2 ? 'yellow' : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" aria-label="صف ${Math.floor(i / 7) + 1} عمود ${(i % 7) + 1}: ${v === 1 ? 'أحمر' : v === 2 ? 'أصفر' : 'فاضي'}">${v === 1 ? '●' : v === 2 ? '◆' : ''}</div>`).join('')}</div>`;
+      ? `<div class="ttt ${s.rule === 'misere' ? 'avoid-line' : ''}" dir="ltr" role="group" aria-label="لوحة إكس أو؛ الأرقام من اليسار إلى اليمين">${display.map((v, i) => `<button data-board-pos="${i}" class="${v ? 'p' + v : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" ${s.suggested === i ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${i})" ${v || s.waiting || s.done || s.preview ? 'disabled' : ''} aria-label="خانة ${i + 1}${v ? ' ' + (v === 1 ? 'X' : 'O') : ''}${s.suggested === i ? ' حركة مقترحة' : ''}">${v ? (v === 1 ? '×' : '○') : `<small class="board-shortcut">${i + 1}</small>`}</button>`).join('')}</div>`
+      : `<div class="connect" dir="ltr" role="group" aria-label="لوحة وصل أربعة؛ الأعمدة من اليسار إلى اليمين">${Array.from({ length: 7 }, (_, c) => `<button data-board-pos="${c}" class="drop" ${s.suggested === c ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${c})" ${s.waiting || s.done || s.preview || landing(s.board, c) < 0 ? 'disabled' : ''} aria-label="إنزال قطعة في العمود ${c + 1}${s.suggested === c ? ' حركة مقترحة' : ''}">↓ <small>${c + 1}</small></button>`).join('')}${display.map((v, i) => `<div class="disc ${v === 1 ? 'red' : v === 2 ? 'yellow' : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" role="img" aria-label="صف ${Math.floor(i / 7) + 1} عمود ${(i % 7) + 1}: ${v === 1 ? 'أحمر' : v === 2 ? 'أصفر' : 'فاضي'}">${v === 1 ? '●' : v === 2 ? '◆' : ''}</div>`).join('')}</div>`;
   setHTML(
     wrap(
       s.id,
@@ -19180,7 +19364,8 @@ function simonExpected(s = state) {
   return s.mode === 'reverse' ? [...s.sequence].reverse() : s.sequence;
 }
 function padTone(i) {
-  if (!store.sound) return;
+  const volume = store.extra?.volume ?? 70;
+  if (!store.sound || !volume) return;
   try {
     audioCtx ??= new (window.AudioContext || window.webkitAudioContext)();
     audioCtx.resume();
@@ -19189,8 +19374,9 @@ function padTone(i) {
     o.connect(g);
     g.connect(audioCtx.destination);
     o.frequency.value = [262, 330, 392, 523][i];
-    g.gain.setValueAtTime(0.06, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+    const peak = 0.06 * (volume / 100);
+    g.gain.setValueAtTime(peak, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.000001, peak / 80), audioCtx.currentTime + 0.25);
     o.start();
     o.stop(audioCtx.currentTime + 0.26);
   } catch (e) {}
@@ -19217,7 +19403,7 @@ function renderSimon() {
                   ? 'استمع للنغمات…'
                   : 'راقب الأضواء…'
                 : 'جاهز للتسلسل؟'
-        }</div><div class="sequencepad">${padColors.map((c, i) => `<button id="pad${i}" style="--pad:${c}" onclick="simonTap(${i})" ${s.phase !== 'input' ? 'disabled' : ''} aria-label="${['أخضر', 'أصفر', 'أزرق', 'وردي'][i]} رقم ${i + 1}">${['●', '▲', '■', '◆'][i]}<small>${i + 1}</small></button>`).join('')}</div><div id="seqtrace" class="sequence-trace" dir="ltr" aria-label="خطواتك الصحيحة">${
+        }</div><div class="sequencepad">${padColors.map((c, i) => `<button id="pad${i}" style="--pad:${c}" onclick="simonTap(${i})" ${s.phase !== 'input' ? 'disabled' : ''} aria-label="${['أخضر', 'أصفر', 'أزرق', 'وردي'][i]} رقم ${i + 1}">${['●', '▲', '■', '◆'][i]}<small>${i + 1}</small></button>`).join('')}</div><div id="seqtrace" class="sequence-trace" dir="ltr" role="group" aria-label="خطواتك الصحيحة">${
           s.input > 0
             ? `${simonExpected(s)
                 .slice(0, Math.min(s.input, s.sequence.length))
@@ -19236,6 +19422,8 @@ function enableSimonSound(run) {
   store.sound = true;
   save();
   soundUI();
+  if (!(store.extra?.volume ?? 70))
+    return toast('الصوت مفعّل، لكن مستواه صفر. ارفع المستوى من الإعدادات لسماع النغمات.');
   padTone(0);
   toast('هذه نغمة تجريبية للزر الأخضر 1. ابدأ عرض التسلسل عندما تكون جاهزاً.');
 }
@@ -19248,8 +19436,8 @@ function playSimon() {
   )
     return;
   const s = state;
-  if (s.cue === 'audio' && !store.sound)
-    return toast('فعّل الصوت واختبر النغمة قبل تحدي الاستماع.');
+  if (s.cue === 'audio' && (!store.sound || !(store.extra?.volume ?? 70)))
+    return toast('فعّل الصوت وارفع مستواه من الإعدادات، ثم اختبر النغمة قبل تحدي الاستماع.');
   const token = ++s.playToken;
   s.phase = 'show';
   s.input = 0;
@@ -19843,7 +20031,7 @@ function sudokuGroupProgress(s = state) {
         ),
       ],
     ];
-  return `<div class="sudoku-group-progress" aria-label="تقدم مجموعات الخانة المحددة">${groups
+  return `<div class="sudoku-group-progress" role="group" aria-label="تقدم مجموعات الخانة المحددة">${groups
     .map(([label, cells]) => {
       const filled = cells.filter(Boolean),
         conflict = new Set(filled).size !== filled.length,
@@ -20479,7 +20667,7 @@ function renderQuiz() {
   if (!q) return;
   const question =
     s.id === 'color'
-      ? `<p class="quiz-rule ${q.rule === 'word' ? 'rule-word' : ''} center">${q.rule === 'shape' ? '🔷 اتبع رمز السؤال' : q.rule === 'word' ? '📖 اختر معنى الكلمة' : '🎨 اختر لون الحروف'}${s.colorMode === 'mixed' ? ' · انتبه: القاعدة تتبدّل' : ''}</p><div class="inkword" style="color:${inkColors[q.ink][1]}">${q.text}</div>${q.rule === 'shape' ? `<div class="shape-stimulus" aria-label="رمز السؤال ${colorSymbols[q.shape]}">${colorSymbols[q.shape]}</div><div class="shape-legend">${q.choices.map((v) => `<span>${colorSymbols[v]} = ${inkColors[v][0]}</span>`).join('')}</div>` : ''}`
+      ? `<p class="quiz-rule ${q.rule === 'word' ? 'rule-word' : ''} center">${q.rule === 'shape' ? '🔷 اتبع رمز السؤال' : q.rule === 'word' ? '📖 اختر معنى الكلمة' : '🎨 اختر لون الحروف'}${s.colorMode === 'mixed' ? ' · انتبه: القاعدة تتبدّل' : ''}</p><div class="inkword" style="color:${inkColors[q.ink][1]}">${q.text}</div>${q.rule === 'shape' ? `<div class="shape-stimulus" role="img" aria-label="رمز السؤال ${colorSymbols[q.shape]}">${colorSymbols[q.shape]}</div><div class="shape-legend">${q.choices.map((v) => `<span>${colorSymbols[v]} = ${inkColors[v][0]}</span>`).join('')}</div>` : ''}`
       : s.id === 'pattern'
         ? `<p class="tiny center">${Number.isInteger(q.gap) ? 'ما العدد الناقص داخل السلسلة؟' : 'ما العدد التالي؟'}</p><div class="chain" dir="ltr" style="margin:26px 0">${q.seq.map((n) => `<span class="${n === null ? 'missing' : ''}">${n === null ? '?' : n}</span>`).join('')}${Number.isInteger(q.gap) ? '' : '<span class="missing">?</span>'}</div>`
         : `<div class="quizquestion" dir="ltr">${q.text}${q.missingOperand ? '' : ' = ?'}</div>`;
@@ -20837,7 +21025,7 @@ function revealWordPrefix(run) {
   renderWord();
 }
 function wordSlotsHTML(s = state) {
-  return `<div class="word-slots" aria-label="ترتيب إجابتك">${
+  return `<div class="word-slots" role="group" aria-label="ترتيب إجابتك">${
     Array.from(s.wordDraft)
       .map(
         (char, i) =>
@@ -21697,10 +21885,14 @@ function startSpy() {
   s.startingPlayer = s.asker;
   s.target = null;
   s.questionDraft = '';
+  s.answerDraft = '';
+  s.candidateQuery = '';
+  s.candidateListOpen = false;
   s.guessDraft = '';
   s.questionHistory = [];
   s.ballotNotes = [];
   s.onPause = () => {
+    if (s.stage === 'active') rememberSpyDiscussionDrafts(s);
     if (s.stage === 'voting') {
       s.ballotDraft = {
         reason: $('spyreason')?.value || '',
@@ -21792,21 +21984,59 @@ function renderSpy() {
         ['وقت النقاش', secondsLeft(s), 'gametime'],
       ]) +
         spyProgress() +
-        `<section class="panel center"><div class="resulticon">🕶️</div><h2>اسألوا اللي تختارونه</h2><p class="pill spy-round-category">${esc(themeLabel + regionLabel)}</p><p class="spy-start-note">${s.startMode === 'manual' ? 'اختاروا البداية بينكم بدون الموقع. تقدرون تكملون الأسئلة شفهياً، وتسجيل الأسماء اختياري.' : `🎲 البداية العشوائية: <b>${esc(s.players[s.startingPlayer])}</b>. بعدها رتّبوا الأدوار مثل ما تحبون.`}</p><div class="hintpanel spy-question-panel"><div class="fields"><div class="field"><label for="spyasker">من يسأل؟</label><select id="spyasker" onchange="setSpyAsker(Number(this.value))"><option value="-1" ${s.asker === null ? 'selected' : ''}>اختاروا السائل</option>${s.players.map((name, i) => `<option value="${i}" ${i === s.asker ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></div><div class="field"><label for="spytarget">من تبي تسأل؟</label><select id="spytarget" onchange="setSpyTarget(Number(this.value))"><option value="-1" ${s.target === null ? 'selected' : ''}>اختاروا أي لاعب</option>${s.players.map((name, i) => (i === s.asker ? '' : `<option value="${i}" ${i === s.target ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select></div></div><p class="spy-suggested-question">💡 ${esc(s.questionOrder[s.questionIndex % s.questionOrder.length])}</p><label for="spyquestion">سؤالك الخاص، اختياري</label><input id="spyquestion" maxlength="180" autocomplete="off" value="${esc(s.questionDraft)}" oninput="state.questionDraft=this.value" placeholder="اكتب سؤالكم أو استخدموا الاقتراح"><div class="actions"><button onclick="rotateSpyPrompt()">اقتراح ثاني</button><button class="primary" onclick="nextSpyPrompt()">سجّل السؤال والإجابة تمت</button></div><p class="tiny">الاقتراح للمساعدة؛ اسألوا سؤالكم بحرية. اختاروا السائل والمجيب فقط إذا تبون تسجيل السؤال.</p></div><p class="note">لا تذكرون الإجابة أو حروفها. ${s.spyCount === 2 ? 'لازم أعلى اسمين بالأصوات يكونون الجاسوسين؛ التعادل مع لاعب ثالث ينقذهما.' : 'صاحب أعلى الأصوات منفرداً يُتهم؛ التعادل ينقذ الجاسوس.'} بعد التصويت نكشف الجاسوس، ثم له محاولة لتخمين ${terms.noun}.</p>${spyQuestionLog(s)}${s.showCandidates ? spyCandidatesHTML(s) : '<p class="note spy-candidates-hidden">قائمة الاحتمالات مخفية؛ التخمين يكون بالكتابة.</p>'}<div class="actions"><button class="primary" onclick="startSpyVote()">جاهزون للتصويت ←</button></div></section>`,
+        `<section class="panel center"><div class="resulticon">🕶️</div><h2>اسألوا اللي تختارونه</h2><p class="pill spy-round-category">${esc(themeLabel + regionLabel)}</p><p class="spy-start-note">${s.startMode === 'manual' ? 'اختاروا البداية بينكم بدون الموقع. تقدرون تكملون الأسئلة شفهياً، وتسجيل الأسماء اختياري.' : `🎲 البداية العشوائية: <b>${esc(s.players[s.startingPlayer])}</b>. بعدها رتّبوا الأدوار مثل ما تحبون.`}</p><div class="hintpanel spy-question-panel"><div class="fields"><div class="field"><label for="spyasker">من يسأل؟</label><select id="spyasker" onchange="setSpyAsker(Number(this.value))"><option value="-1" ${s.asker === null ? 'selected' : ''}>اختاروا السائل</option>${s.players.map((name, i) => `<option value="${i}" ${i === s.asker ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></div><div class="field"><label for="spytarget">من تبي تسأل؟</label><select id="spytarget" onchange="setSpyTarget(Number(this.value))"><option value="-1" ${s.target === null ? 'selected' : ''}>اختاروا أي لاعب</option>${s.players.map((name, i) => (i === s.asker ? '' : `<option value="${i}" ${i === s.target ? 'selected' : ''}>${esc(name)}</option>`)).join('')}</select></div></div><p class="spy-suggested-question">💡 ${esc(s.questionOrder[s.questionIndex % s.questionOrder.length])}</p><label for="spyquestion">سؤالك الخاص، اختياري</label><input id="spyquestion" maxlength="180" autocomplete="off" value="${esc(s.questionDraft)}" oninput="updateSpyDiscussionDraft(this.value,'questionDraft',${s.run})" placeholder="اكتب سؤالكم أو استخدموا الاقتراح"><label for="spyanswer">جواب المجيب أو ملاحظة علنية، اختياري</label><input id="spyanswer" maxlength="240" autocomplete="off" value="${esc(s.answerDraft || '')}" oninput="updateSpyDiscussionDraft(this.value,'answerDraft',${s.run})" placeholder="اكتبوا ملخص الإجابة لمراجعتها عند التصويت" aria-describedby="spyanswerhelp"><p class="tiny" id="spyanswerhelp">السجل ظاهر للجميع. لا تكتبوا الكلمة السرية أو الأدوار فيه.</p><div class="actions"><button onclick="rotateSpyPrompt()">اقتراح ثاني</button><button class="primary" onclick="nextSpyPrompt()">سجّل السؤال والجواب</button></div><p class="tiny">الاقتراح للمساعدة؛ اسألوا سؤالكم بحرية. اختاروا السائل والمجيب لتسجيل السؤال؛ كتابة الجواب اختيارية.</p></div><p class="note">لا تذكرون الإجابة أو حروفها. ${s.spyCount === 2 ? 'لازم أعلى اسمين بالأصوات يكونون الجاسوسين؛ التعادل مع لاعب ثالث ينقذهما.' : 'صاحب أعلى الأصوات منفرداً يُتهم؛ التعادل ينقذ الجاسوس.'} بعد التصويت نكشف الجاسوس، ثم له محاولة لتخمين ${terms.noun}.</p>${spyQuestionLog(s)}${s.showCandidates ? spyCandidatesHTML(s) : '<p class="note spy-candidates-hidden">قائمة الاحتمالات مخفية؛ التخمين يكون بالكتابة.</p>'}<div class="actions"><button class="primary" onclick="startSpyVote()">جاهزون للتصويت ←</button></div></section>`,
     ),
   );
 }
 function spyCandidatesHTML(s = state) {
-  return `<details class="history spy-candidates"><summary>${spyTerms(s).possible} (${s.locationPool.length})</summary><label for="spycandidatesearch">ابحث عن كلمة بسرعة</label><input id="spycandidatesearch" type="search" maxlength="80" autocomplete="off" placeholder="اكتب الكلمة هنا…" oninput="filterSpyCandidates(this.value)"><p class="tiny" id="spycandidatecount" role="status">${s.locationPool.length} نتيجة</p><div class="listchips" id="spycandidatelist">${s.locationPool.map((word) => `<span>${esc(word)}</span>`).join('')}</div></details>`;
+  const matches = spyCandidateMatches(s.candidateQuery || '', s);
+  return `<details class="history spy-candidates" ${s.candidateListOpen ? 'open' : ''}><summary>${spyTerms(s).possible} (${s.locationPool.length})</summary><label for="spycandidatesearch">ابحث عن كلمة بسرعة</label><input id="spycandidatesearch" type="search" maxlength="80" autocomplete="off" value="${esc(s.candidateQuery || '')}" placeholder="اكتب الكلمة هنا…" oninput="filterSpyCandidates(this.value,${s.run})"><p class="tiny" id="spycandidatecount" role="status">${matches.length} نتيجة من ${s.locationPool.length}</p><div class="listchips" id="spycandidatelist">${spyCandidateChipsHTML(matches)}</div></details>`;
 }
-function filterSpyCandidates(value) {
-  if (screen !== 'spy' || state.stage !== 'active' || !$('spycandidatelist')) return;
-  const query = spyGuessKey(value),
-    matches = state.locationPool.filter((word) => !query || spyGuessKey(word).includes(query));
-  $('spycandidatelist').innerHTML =
+function spyCandidateMatches(value, s = state) {
+  const query = spyGuessKey(value);
+  return s.locationPool.filter((word) => !query || spyGuessKey(word).includes(query));
+}
+function spyCandidateChipsHTML(matches) {
+  return (
     matches.map((word) => `<span>${esc(word)}</span>`).join('') ||
-    '<p class="note">ما لقينا كلمة تطابق بحثك. جرّب حروف أقل.</p>';
+    '<p class="note">ما لقينا كلمة تطابق بحثك. جرّب حروف أقل.</p>'
+  );
+}
+function filterSpyCandidates(value, run) {
+  if (
+    screen !== 'spy' ||
+    state.stage !== 'active' ||
+    state.done ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run) ||
+    !$('spycandidatelist')
+  )
+    return;
+  state.candidateQuery = String(value).slice(0, 80);
+  state.candidateListOpen = !!$('app').querySelector('.spy-candidates')?.open;
+  const matches = spyCandidateMatches(state.candidateQuery);
+  $('spycandidatelist').innerHTML = spyCandidateChipsHTML(matches);
   $('spycandidatecount').textContent = `${matches.length} نتيجة من ${state.locationPool.length}`;
+}
+function updateSpyDiscussionDraft(value, key, run) {
+  if (
+    screen !== 'spy' ||
+    state.stage !== 'active' ||
+    state.done ||
+    advancedBlocked() ||
+    !advancedCurrentRun(run) ||
+    !['questionDraft', 'answerDraft'].includes(key)
+  )
+    return;
+  state[key] = String(value).slice(0, key === 'questionDraft' ? 180 : 240);
+}
+function rememberSpyDiscussionDrafts(s = state) {
+  if (state !== s || screen !== 'spy' || s.stage !== 'active') return;
+  if ($('spyquestion')) s.questionDraft = $('spyquestion').value.slice(0, 180);
+  if ($('spyanswer')) s.answerDraft = $('spyanswer').value.slice(0, 240);
+  if ($('spycandidatesearch')) s.candidateQuery = $('spycandidatesearch').value.slice(0, 80);
+  const candidates = $('app').querySelector('.spy-candidates');
+  if (candidates) s.candidateListOpen = candidates.open;
 }
 function setSpyAsker(index) {
   const s = state;
@@ -21820,6 +22050,7 @@ function setSpyAsker(index) {
   )
     return;
   if (secondsLeft(s) === 0) return startSpyVote();
+  rememberSpyDiscussionDrafts(s);
   s.asker = index === -1 ? null : index;
   if (s.asker === s.target) s.target = null;
   renderSpy();
@@ -21837,15 +22068,17 @@ function setSpyTarget(index) {
   )
     return;
   if (secondsLeft(s) === 0) return startSpyVote();
+  rememberSpyDiscussionDrafts(s);
   s.target = index === -1 ? null : index;
   renderSpy();
 }
 function spyQuestionLog(s = state) {
-  return `<details class="history"><summary>سجل النقاش (${s.questionHistory?.length || 0} أسئلة)</summary>${(s.questionHistory || []).map((q) => `<p><b>${esc(s.players[q.asker])} ← ${esc(s.players[q.target])}</b>: ${esc(q.text)}</p>`).join('') || '<p class="note">تقدرون تلعبون شفهياً؛ سجّلوا الأسئلة اللي تبون ترجعون لها.</p>'}</details>`;
+  return `<details class="history spy-discussion-log"><summary>سجل النقاش (${s.questionHistory?.length || 0} أسئلة)</summary>${(s.questionHistory || []).map((q) => `<div class="spy-discussion-entry"><p><b>${esc(s.players[q.asker])} ← ${esc(s.players[q.target])}</b>: ${esc(q.text)}</p>${q.answer ? `<p class="spy-discussion-answer"><b>الجواب / الملاحظة:</b> ${esc(q.answer)}</p>` : ''}</div>`).join('') || '<p class="note">تقدرون تلعبون شفهياً؛ سجّلوا الأسئلة اللي تبون ترجعون لها.</p>'}</details>`;
 }
 function rotateSpyPrompt() {
   if (screen !== 'spy' || state.stage !== 'active' || advancedBlocked()) return;
   if (secondsLeft() === 0) return startSpyVote();
+  rememberSpyDiscussionDrafts();
   state.questionIndex++;
   renderSpy();
 }
@@ -21853,6 +22086,7 @@ function nextSpyPrompt() {
   if (screen !== 'spy' || state.stage !== 'active' || advancedBlocked()) return;
   if (secondsLeft() === 0) return startSpyVote();
   const s = state;
+  rememberSpyDiscussionDrafts(s);
   if (!Number.isInteger(s.asker) || !Number.isInteger(s.target) || s.asker === s.target)
     return toast('اختاروا السائل واللاعب اللي سألتوه لتسجيل السؤال.');
   s.questionHistory.push({
@@ -21860,11 +22094,13 @@ function nextSpyPrompt() {
     target: s.target,
     text:
       (s.questionDraft || '').trim() || s.questionOrder[s.questionIndex % s.questionOrder.length],
+    ...((s.answerDraft || '').trim() ? { answer: s.answerDraft.trim() } : {}),
   });
   s.questionIndex++;
   s.asker = null;
   s.target = null;
   s.questionDraft = '';
+  s.answerDraft = '';
   renderSpy();
 }
 function spyGuessHandoff() {
@@ -21901,7 +22137,7 @@ function spyGuess() {
     wrap(
       'spy',
       spyProgress() +
-        `<section class="panel center spy-guess-panel"><div class="resulticon">💬</div><h2>${s.spyCount === 2 ? 'تخمين الجاسوسين' : 'تخمين الجاسوس'}</h2><p class="note">${spyNames(s)}، شنو ${terms.noun}؟ لكم محاولة واحدة. التخمين الصحيح يعطي كل جاسوس 20 نقطة، والخطأ يعطي كل لاعب من البقية 20 نقطة.</p><form onsubmit="event.preventDefault();submitSpyGuess(${s.run})"><label for="spyguess">${s.showCandidates ? 'اكتب الكلمة أو ابحث واضغط على نتيجتها' : 'اكتب تخمينك بدون تلميحات'}</label><input id="spyguess" type="${s.showCandidates ? 'search' : 'text'}" maxlength="80" autocomplete="off" value="${esc(s.guessDraft)}" placeholder="اكتب ${terms.noun} هنا…" oninput="updateSpyGuess(this.value)" aria-describedby="spyguesshelp${s.showCandidates ? ' spyguesscount' : ''}"><p id="spyguesshelp" class="tiny">الاختيار ما يعتمد إلا لما تضغط «اعتمد التخمين».</p>${s.showCandidates ? '<p id="spyguesscount" class="tiny" role="status"></p><div class="spy-word-results" id="spyguessresults" aria-label="نتائج البحث عن الكلمة"></div>' : ''}<div class="actions"><button type="button" onclick="cancelSpyGuess()">إخفاء وتمرير الجهاز</button><button class="primary" type="submit">اعتمد التخمين</button></div></form></section>`,
+        `<section class="panel center spy-guess-panel"><div class="resulticon">💬</div><h2>${s.spyCount === 2 ? 'تخمين الجاسوسين' : 'تخمين الجاسوس'}</h2><p class="note">${spyNames(s)}، شنو ${terms.noun}؟ لكم محاولة واحدة. التخمين الصحيح يعطي كل جاسوس 20 نقطة، والخطأ يعطي كل لاعب من البقية 20 نقطة.</p><form onsubmit="event.preventDefault();submitSpyGuess(${s.run})"><label for="spyguess">${s.showCandidates ? 'اكتب الكلمة أو ابحث واضغط على نتيجتها' : 'اكتب تخمينك بدون تلميحات'}</label><input id="spyguess" type="${s.showCandidates ? 'search' : 'text'}" maxlength="80" autocomplete="off" value="${esc(s.guessDraft)}" placeholder="اكتب ${terms.noun} هنا…" oninput="updateSpyGuess(this.value)" aria-describedby="spyguesshelp${s.showCandidates ? ' spyguesscount' : ''}"><p id="spyguesshelp" class="tiny">الاختيار ما يعتمد إلا لما تضغط «اعتمد التخمين».</p>${s.showCandidates ? '<p id="spyguesscount" class="tiny" role="status"></p><div class="spy-word-results" id="spyguessresults" role="group" aria-label="نتائج البحث عن الكلمة"></div>' : ''}<div class="actions"><button type="button" onclick="cancelSpyGuess()">إخفاء وتمرير الجهاز</button><button class="primary" type="submit">اعتمد التخمين</button></div></form></section>`,
     ),
   );
   if (s.showCandidates) updateSpyGuess(s.guessDraft);
@@ -22086,7 +22322,7 @@ function spyNames(s = state) {
   return (s.spies || [s.spy]).map((index) => esc(s.players[index])).join(' و ');
 }
 function spyVoteSummary(s = state) {
-  return `<div class="spy-vote-chart" aria-label="نتائج الأصوات">${s.players.map((name, i) => `<div class="${isSpy(i, s) ? 'is-spy' : ''}"><span>${esc(name)} ${isSpy(i, s) ? '🕶️' : ''}</span><meter min="0" max="${s.players.length}" value="${s.counts?.[i] || 0}" aria-label="أصوات ${esc(name)}"></meter><b>${s.counts?.[i] || 0}</b></div>`).join('')}</div>`;
+  return `<div class="spy-vote-chart" role="group" aria-label="نتائج الأصوات">${s.players.map((name, i) => `<div class="${isSpy(i, s) ? 'is-spy' : ''}"><span>${esc(name)} ${isSpy(i, s) ? '🕶️' : ''}</span><meter min="0" max="${s.players.length}" value="${s.counts?.[i] || 0}" aria-label="أصوات ${esc(name)}"></meter><b>${s.counts?.[i] || 0}</b></div>`).join('')}</div>`;
 }
 function renderSpyVoteResult() {
   const s = state;
@@ -22827,7 +23063,7 @@ setup = function (id, internal = false) {
   setHTML(
     wrap(
       id,
-      `<section class="panel">${body}${id === 'snake' ? '<div class="field arcade-extra-field"><label for="arcadeDrive">أسلوب اللعب</label><select id="arcadeDrive"><option value="live">مباشر · الثعبان يتحرك باستمرار</option><option value="step">تدريب · خطوة مع كل ضغطة</option></select><p class="note">التدريب يتيح التفكير قبل كل خطوة: نقطتان لكل فاكهة، حتى 50 نقطة. السرعة تؤثر في اللعب المباشر فقط.</p></div>' : id === 'merge' ? '<div class="hintpanel">جديد: عاين أثر أي اتجاه قبل تحريكه. المعاينة لا تولّد قطعة ولا تستهلك تراجعاً.</div>' : id === 'mines' ? '<div class="hintpanel">المساعد المنطقي يشرح خانة مضمونة باستخدام الأرقام المكشوفة فقط. لديك 3 مساعدات؛ كل استنتاج ناجح يخصم 8 نقاط.</div>' : '<div class="hintpanel">المس خانة مجاورة للتحرك إليها، أو اختر نجمة على اللوحة لتوجيه أحد تلميحاتك إليها.</div>'}<div class="actions"><button class="primary" onclick="startArcade('${id}')">ابدأ التحدّي ←</button></div></section>`,
+      `<section class="panel">${body}${id === 'snake' ? '<div class="field arcade-extra-field"><label for="arcadeDrive">أسلوب اللعب</label><select id="arcadeDrive"><option value="live">مباشر · الثعبان يتحرك باستمرار</option><option value="step">تدريب · خطوة مع كل ضغطة</option></select><p class="note">التدريب يتيح التفكير قبل كل خطوة: نقطتان لكل فاكهة، حتى 50 نقطة. السرعة تؤثر في اللعب المباشر فقط.</p></div>' : id === 'merge' ? '<div class="hintpanel">جديد: عاين أثر أي اتجاه قبل تحريكه. المعاينة لا تولّد قطعة ولا تستهلك تراجعاً.</div>' : id === 'mines' ? '<div class="hintpanel">المساعد المنطقي يشرح خانة مضمونة باستخدام الأرقام المكشوفة وإجمالي الألغام المعلن، دون قراءة الخانات المخفية. لديك 3 مساعدات؛ كل استنتاج ناجح يخصم 8 نقاط.</div>' : '<div class="hintpanel">المس خانة مجاورة للتحرك إليها، أو اختر نجمة على اللوحة لتوجيه أحد تلميحاتك إليها.</div>'}<div class="actions"><button class="primary" onclick="startArcade('${id}')">ابدأ التحدّي ←</button></div></section>`,
     ),
   );
   goTop();
@@ -23975,7 +24211,15 @@ function renderMines() {
     previousBoard = document.querySelector('.mines-scroll'),
     scrollLeft = previousBoard?.scrollLeft || 0,
     scrollTop = previousBoard?.scrollTop || 0,
-    restoreFocus = !!document.activeElement?.closest('.mine-cell');
+    active = document.activeElement,
+    focus =
+      $('app').contains(active) && active.matches('button,input,select,textarea,summary')
+        ? {
+            cell: !!active.closest('.mine-cell'),
+            id: active.id,
+            action: active.getAttribute('onclick'),
+          }
+        : null;
   setHTML(
     wrap(
       'mines',
@@ -23984,7 +24228,7 @@ function renderMines() {
         ['خانات آمنة', s.revealed.size + ' / ' + (s.board.length - s.mineCount), 'mineProgress'],
         ['الوقت', arcadeTimeText(s.clockRunning ? arcadeSeconds(s) : 0), 'arcadeTime'],
       ]) +
-        `<section class="panel arcade-panel">${mineSurveyHTML(s)}<div class="mine-mode"><button class="${!s.flagMode && !s.questionMode && !s.scanMode && !s.inspectMode ? 'primary' : ''}" onclick="mineMode(false)" aria-pressed="${!s.flagMode && !s.questionMode && !s.scanMode && !s.inspectMode}">🔍 كشف الخانات</button><button class="${s.flagMode ? 'warm' : ''}" onclick="mineMode(true)" aria-pressed="${s.flagMode}">⚑ وضع الأعلام</button><button class="${s.questionMode ? 'warm' : ''}" onclick="mineMode('question')" aria-pressed="${!!s.questionMode}">؟ علامة شك</button><button class="${s.inspectMode ? 'warm' : ''}" onclick="mineMode('inspect')" aria-pressed="${!!s.inspectMode}">◉ تحديد آمن</button></div><div class="mine-zoom"><label for="mineZoom">حجم الخانات</label><select id="mineZoom" onchange="mineZoom(this.value)"><option value="1" ${s.mineScale === 1 ? 'selected' : ''}>عادي</option><option value="1.25" ${s.mineScale === 1.25 ? 'selected' : ''}>تكبير 125٪</option><option value="1.5" ${s.mineScale === 1.5 ? 'selected' : ''}>تكبير 150٪</option></select></div>${minesBoardHTML(s)}<div class="mine-inspection"><p id="mineSelectionInfo" class="note center" role="status"></p>${s.inspectMode ? '<div class="actions"><button class="primary" onclick="mineTap(state.selected,true)">اكشف المحددة</button><button onclick="mineFlag(state.selected)">⚑ ضع / أزل علماً</button><button onclick="mineQuestion(state.selected)">؟ ضع / أزل شكاً</button></div>' : ''}</div><div class="arcade-status" id="mineStatus" role="status">${s.feedback}</div><div class="actions">${s.pendingChord ? `<button class="warm" onclick="mineConfirmChord()">افتح ${s.pendingChord.cells.length} جيران بعد التأكد</button>` : ''}<button id="mineHintButton" onclick="mineHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ استنتاج منطقي (${3 - s.hints})</button>${s.deduction ? '<button class="primary" onclick="mineApplyHint()">نفّذ الاستنتاج</button>' : ''}</div><p class="note center">${s.inspectMode ? 'التحديد الآمن: المس أي خانة لمعاينة معلوماتها الظاهرة، ثم اختر كشفها أو تعليمها. اللمس وحده لا يكشف شيئاً.' : s.questionMode ? 'وضع الشك: اضغط خانة مغلقة لتدوين ؟ أو إزالتها؛ لا تحمي الخانة من الكشف.' : s.flagMode ? 'وضع الأعلام: اضغط خانة مغلقة لوضع علم أو إزالته.' : 'اضغط للكشف. اضغط رقماً مكشوفاً لفتح الجيران بعد وضع أعلامه.'}<br>ضغط مطول أو الفأرة اليمنى أو F للأعلام · Q للشك · الأسهم للتنقل · Enter للكشف.<br>المساعد يستخدم الأرقام المكشوفة، وكل استنتاج ناجح يخصم 8 نقاط.</p>${arcadeToolbar('mines')}</section>`,
+        `<section class="panel arcade-panel">${mineSurveyHTML(s)}<div class="mine-mode"><button class="${!s.flagMode && !s.questionMode && !s.scanMode && !s.inspectMode ? 'primary' : ''}" onclick="mineMode(false)" aria-pressed="${!s.flagMode && !s.questionMode && !s.scanMode && !s.inspectMode}">🔍 كشف الخانات</button><button class="${s.flagMode ? 'warm' : ''}" onclick="mineMode(true)" aria-pressed="${s.flagMode}">⚑ وضع الأعلام</button><button class="${s.questionMode ? 'warm' : ''}" onclick="mineMode('question')" aria-pressed="${!!s.questionMode}">؟ علامة شك</button><button class="${s.inspectMode ? 'warm' : ''}" onclick="mineMode('inspect')" aria-pressed="${!!s.inspectMode}">◉ تحديد آمن</button></div><div class="mine-zoom"><label for="mineZoom">حجم الخانات</label><select id="mineZoom" onchange="mineZoom(this.value)"><option value="1" ${s.mineScale === 1 ? 'selected' : ''}>عادي</option><option value="1.25" ${s.mineScale === 1.25 ? 'selected' : ''}>تكبير 125٪</option><option value="1.5" ${s.mineScale === 1.5 ? 'selected' : ''}>تكبير 150٪</option></select></div>${minesBoardHTML(s)}<div class="mine-inspection"><p id="mineSelectionInfo" class="note center" role="status"></p>${s.inspectMode ? '<div class="actions"><button class="primary" onclick="mineTap(state.selected,true)">اكشف المحددة</button><button onclick="mineFlag(state.selected)">⚑ ضع / أزل علماً</button><button onclick="mineQuestion(state.selected)">؟ ضع / أزل شكاً</button></div>' : ''}</div><div class="arcade-status" id="mineStatus" role="status">${s.feedback}</div><div class="actions">${s.pendingChord ? `<button class="warm" onclick="mineConfirmChord()">افتح ${s.pendingChord.cells.length} جيران بعد التأكد</button>` : ''}<button id="mineHintButton" onclick="mineHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ استنتاج منطقي (${3 - s.hints})</button>${s.deduction ? '<button class="primary" onclick="mineApplyHint()">نفّذ الاستنتاج</button>' : ''}</div><p class="note center">${s.inspectMode ? 'التحديد الآمن: المس أي خانة لمعاينة معلوماتها الظاهرة، ثم اختر كشفها أو تعليمها. اللمس وحده لا يكشف شيئاً.' : s.questionMode ? 'وضع الشك: اضغط خانة مغلقة لتدوين ؟ أو إزالتها؛ لا تحمي الخانة من الكشف.' : s.flagMode ? 'وضع الأعلام: اضغط خانة مغلقة لوضع علم أو إزالته.' : 'اضغط للكشف. اضغط رقماً مكشوفاً لفتح الجيران بعد وضع أعلامه.'}<br>ضغط مطول أو الفأرة اليمنى أو F للأعلام · Q للشك · الأسهم للتنقل · Enter للكشف.<br>المساعد يستخدم الأرقام المكشوفة وإجمالي الألغام المعلن؛ الأعلام لا تُعد دليلاً، وكل استنتاج ناجح يخصم 8 نقاط.</p>${arcadeToolbar('mines')}</section>`,
     ),
   );
   const board = document.querySelector('.mines-scroll');
@@ -23992,10 +24236,19 @@ function renderMines() {
   board.scrollTop = scrollTop;
   mineTouchControls(board, s);
   mineSelectionUI();
-  if (restoreFocus)
-    document
-      .querySelector(`.mine-cell[data-index="${s.selected}"]`)
-      ?.focus({ preventScroll: true });
+  if (focus) {
+    // Keep keyboard activation on its control; losing it to BODY makes the next
+    // Enter press reveal a square instead of activating the original button.
+    const target = focus.cell
+      ? document.querySelector(`.mine-cell[data-index="${s.selected}"]`)
+      : (focus.id && $(focus.id)) ||
+        (focus.action &&
+          [...$('app').querySelectorAll('[onclick]')].find(
+            (element) => element.getAttribute('onclick') === focus.action,
+          ));
+    const fallback = $('app').querySelector('[onclick="mineMode(\'inspect\')"]');
+    (target && !target.disabled ? target : fallback)?.focus({ preventScroll: true });
+  }
 }
 function mineTouchControls(board, round) {
   let press = null;
@@ -24185,71 +24438,94 @@ function mineReveal(i) {
   }
   return true;
 }
-// Deductions ignore player flags and never inspect hidden mine positions.
+// Constraints use revealed clues and the public mine total, never hidden values
+// or player flags as evidence. A bounded subset closure also keeps intermediate
+// deductions, so two individually inconclusive comparisons can form a proof.
 function mineDeduction(s = state) {
   const safe = new Map(),
     mines = new Map(),
-    originals = [];
+    rules = [],
+    signatures = new Map(),
+    maxRules = 512,
+    maxComparisons = 160000;
+  let invalid = false,
+    comparisons = 0;
+  const add = (rule) => {
+    if (!Number.isInteger(rule.count) || rule.count < 0 || rule.count > rule.cells.length) {
+      invalid = true;
+      return false;
+    }
+    if (!rule.cells.length) return false;
+    const cells = [...rule.cells].sort((a, b) => a - b),
+      signature = cells.join(',');
+    if (signatures.has(signature)) {
+      if (signatures.get(signature) !== rule.count) invalid = true;
+      return false;
+    }
+    if (rules.length >= maxRules) return false;
+    signatures.set(signature, rule.count);
+    rules.push({ ...rule, cells, cellSet: new Set(cells) });
+    return true;
+  };
   for (const i of s.revealed) {
     if (s.board[i] < 0) continue;
     const cells = mineNeighbours(i, s.size).filter((j) => !s.revealed.has(j));
-    if (s.board[i] > cells.length) return null;
-    if (cells.length) originals.push({ cells, count: s.board[i], clues: [i] });
+    add({ cells, count: s.board[i], clues: [i], total: false });
   }
+  if (Number.isInteger(s.mineCount) && s.mineCount >= 0 && s.mineCount <= s.board.length)
+    add({
+      cells: Array.from({ length: s.board.length }, (_, i) => i).filter((i) => !s.revealed.has(i)),
+      count: s.mineCount,
+      clues: [],
+      total: true,
+    });
   const infer = (rule) => {
-    if (!rule.cells.length || (rule.count !== 0 && rule.count !== rule.cells.length)) return false;
+    if (rule.count !== 0 && rule.count !== rule.cells.length) return;
     const target = rule.count === 0 ? safe : mines;
-    let changed = false;
-    for (const i of rule.cells)
-      if (!target.has(i)) {
-        target.set(i, rule.clues);
-        changed = true;
-      }
-    return changed;
+    for (const i of rule.cells) if (!target.has(i)) target.set(i, rule);
   };
-  for (let pass = 0; pass < s.board.length; pass++) {
-    const rules = originals.map((rule) => ({
-      cells: rule.cells.filter((i) => !safe.has(i) && !mines.has(i)),
-      count: rule.count - rule.cells.filter((i) => mines.has(i)).length,
-      clues: [
-        ...new Set([
-          ...rule.clues,
-          ...rule.cells.flatMap((i) => safe.get(i) || mines.get(i) || []),
-        ]),
-      ],
-    }));
-    if (rules.some((rule) => rule.count < 0 || rule.count > rule.cells.length)) return null;
-    let changed = false;
-    for (const rule of rules) changed = infer(rule) || changed;
-    for (const a of rules)
-      for (const b of rules) {
-        if (a.cells.length >= b.cells.length || !a.cells.every((i) => b.cells.includes(i)))
-          continue;
+  for (let pass = 0; pass < 12; pass++) {
+    if (invalid) return null;
+    const count = rules.length;
+    for (const rule of rules) infer(rule);
+    for (let ai = 0; ai < count && comparisons < maxComparisons; ai++)
+      for (let bi = 0; bi < count && comparisons < maxComparisons; bi++) {
+        comparisons++;
+        const a = rules[ai],
+          b = rules[bi];
+        if (a.cells.length >= b.cells.length || !a.cells.every((i) => b.cellSet.has(i))) continue;
         const difference = {
-          cells: b.cells.filter((i) => !a.cells.includes(i)),
+          cells: b.cells.filter((i) => !a.cellSet.has(i)),
           count: b.count - a.count,
           clues: [...new Set([...a.clues, ...b.clues])],
+          total: a.total || b.total,
         };
-        if (difference.count < 0 || difference.count > difference.cells.length) return null;
-        changed = infer(difference) || changed;
+        add(difference);
+        infer(difference);
       }
+    if (invalid || [...safe.keys()].some((i) => mines.has(i))) return null;
     const candidate =
-      [...safe].find(([i]) => !s.revealed.has(i)) || [...mines].find(([i]) => !s.flags.has(i));
+      [...safe].find(([i]) => !s.revealed.has(i)) || [...mines].find(([i]) => !s.flags?.has(i));
     if (candidate) {
-      const [index, clues] = candidate,
+      const [index, proof] = candidate,
+        clues = proof.clues,
         kind = safe.has(index) ? 'safe' : 'mine',
         location = `الصف ${Math.floor(index / s.size) + 1}، العمود ${(index % s.size) + 1}`,
         evidence = clues
           .map((i) => `(${Math.floor(i / s.size) + 1}، ${(i % s.size) + 1})`)
-          .join(' و');
+          .join(' و'),
+        reasoning = proof.total
+          ? `إجمالي الحقل المعلن (${s.mineCount} ألغام)${clues.length ? ` مع الأرقام في ${evidence}` : ''}`
+          : `${clues.length > 1 ? 'مقارنة الأرقام' : 'الرقم'} في ${evidence}`;
       return {
         index,
         kind,
         clues,
-        explanation: `${location}: ${kind === 'safe' ? 'خانة آمنة مضمونة' : 'لغم مؤكد'}. ${clues.length > 1 ? 'مقارنة الأرقام' : 'الرقم'} في ${evidence} ${kind === 'safe' ? 'يستبعد وجود لغم هنا' : 'يفرض وجود لغم هنا'}. الأرقام الداعمة مميزة بالبنفسجي.`,
+        total: proof.total,
+        explanation: `${location}: ${kind === 'safe' ? 'خانة آمنة مضمونة' : 'لغم مؤكد'}. ${reasoning} ${kind === 'safe' ? 'يستبعد وجود لغم هنا' : 'يفرض وجود لغم هنا'}.${clues.length ? ' الأرقام الداعمة مميزة بالبنفسجي.' : ''}`,
       };
     }
-    if (!changed) break;
+    if (rules.length === count || comparisons >= maxComparisons) break;
   }
   return null;
 }
@@ -24260,7 +24536,7 @@ function mineHint() {
   const deduction = s.generated ? mineDeduction(s) : null;
   if (!deduction) {
     s.feedback = s.generated
-      ? 'لا يوجد استنتاج مضمون من الأرقام المكشوفة الآن. لم نستهلك مساعدة؛ جرّب كشف منطقة أخرى.'
+      ? 'لم يجد المساعد استنتاجاً مضموناً من المعلومات الظاهرة الآن. لم نستهلك مساعدة؛ راجع الأرقام أو استكشف منطقة أخرى.'
       : 'اكشف خانتك الأولى الآمنة، ثم اطلب استنتاجاً من الأرقام.';
     $('mineStatus').textContent = s.feedback;
     return;
@@ -24572,8 +24848,24 @@ function mazeMark() {
       Array.from({ length: 12 }, (_, i) => i + 1).find((number) => !used.has(number)),
     );
   }
+  state.markerEvents ||= [];
+  state.markerEvents.push({
+    step: state.moves,
+    index: state.position,
+    number: state.markers.get(state.position) || null,
+  });
   mazeExplorationUI();
+  mazeNavigationUI();
   mazeDraw();
+}
+function mazeMarkersAt(step, s = state) {
+  const markers = new Map();
+  for (const event of s.markerEvents || []) {
+    if (event.step > step) break;
+    if (event.number === null) markers.delete(event.index);
+    else markers.set(event.index, event.number);
+  }
+  return markers;
 }
 function mazeExplorationUI() {
   const s = state,
@@ -24603,6 +24895,7 @@ function startMaze() {
   s.hintTarget = null;
   s.trail = new Set([s.position]);
   s.markers = new Map();
+  s.markerEvents = [];
   s.mazeScale = 1;
   s.seen = new Set();
   s.gates = new Map();
@@ -24638,7 +24931,7 @@ function renderMaze() {
         ['الخطوات', s.moves, 'mazeMoves'],
         ['الوقت', arcadeTimeText(arcadeSeconds(s)), 'arcadeTime'],
       ]) +
-        `<section class="panel arcade-panel"><div class="maze-view-controls"><label for="mazeZoom">حجم الخريطة</label><select id="mazeZoom" onchange="mazeZoom(this.value)"><option value="1">الخريطة كاملة</option><option value="1.5">تكبير 150٪</option><option value="2">تكبير 200٪</option></select><button onclick="mazeCenterView()">⌖ موقعي</button></div><div id="mazeViewport" class="maze-viewport"><canvas id="mazeCanvas" width="620" height="620" role="img" aria-label="متاهة. موقعك هو الدائرة الزرقاء. اجمع النجوم الصفراء ثم اتجه إلى المخرج الأخضر. يمكنك لمس خانة مجاورة للتحرك أو نجمة لتحديد هدف التلميح."></canvas></div><p class="note center" id="mazeViewNote">اسحب على الخريطة للتحرك، أو المس خانة مجاورة. كبّرها لتسهيل رؤية الممرات الصغيرة.</p><div class="arcade-status" id="mazeStatus" role="status">${s.mode === 'keys' ? 'ابحث عن المفتاح 1 لفتح بوابته ثم تابع للمفتاح 2.' : s.stars.size ? 'اجمع النجوم قبل الوصول إلى المخرج.' : 'البوابة مفتوحة. اتجه إلى المخرج الأخضر!'}</div>${arcadeDirections('mazeMove')}<p class="note center" id="mazeExplored" role="status"></p><div class="actions"><button id="mazeMarkButton" onclick="mazeMark()" aria-pressed="false">⚑ علّم هذا المكان</button></div><div class="actions"><button id="mazeHintButton" onclick="mazeHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ تلميح (${3 - s.hints} متبقية)</button><button id="mazeTravelButton" onclick="mazeToggleTravel()" aria-pressed="${s.travel === 'corridor'}">${s.travel === 'corridor' ? 'حتى التقاطع' : 'خطوة بخطوة'}</button><button onclick="mazeClearTrail()">امسح آثار خطواتي</button></div>${arcadeToolbar('maze')}<p class="note center">الأزرق: أنت · الأصفر: ${s.mode === 'courier' ? 'محطة طرد مرقمة' : s.mode === 'keys' ? 'مفتاح' : 'نجمة'} · الأخضر: ${s.mode === 'courier' ? 'القاعدة' : 'المخرج'}<br>${s.vision === 'lantern' ? 'المصباح يكشف الممرات القريبة؛ الخريطة المكتشفة تبقى ظاهرة. التلميح يضيء الطريق المطلوب. <br>' : ''}المس خانة مجاورة للحركة، أو ${s.mode === 'courier' ? 'محطة الطرد الحالية' : s.mode === 'keys' ? 'مفتاحاً' : 'نجمة'} لتوجيه التلميح إليه · M لوضع علامة · الأسهم أو WASD · Shift مع الاتجاه للمشي حتى التقاطع.<br>المسار المثالي لهذه الجولة: ${s.parMoves} خطوة. كل خانة تتحركها تُحسب، حتى مع التحرك التلقائي. كل تلميح يخصم 8 نقاط.</p></section>`,
+        `<section class="panel arcade-panel"><div class="maze-view-controls"><label for="mazeZoom">حجم الخريطة</label><select id="mazeZoom" onchange="mazeZoom(this.value)"><option value="1">الخريطة كاملة</option><option value="1.5">تكبير 150٪</option><option value="2">تكبير 200٪</option></select><button onclick="mazeCenterView()">⌖ موقعي</button></div><div id="mazeViewport" class="maze-viewport"><canvas id="mazeCanvas" width="620" height="620" role="img" aria-label="متاهة. موقعك هو الدائرة الزرقاء. اجمع النجوم الصفراء ثم اتجه إلى المخرج الأخضر. يمكنك لمس خانة مجاورة للتحرك أو نجمة لتحديد هدف التلميح."></canvas></div><p class="note center" id="mazeViewNote">اسحب على الخريطة للتحرك، أو المس خانة مجاورة. كبّرها لتسهيل رؤية الممرات الصغيرة.</p><div class="arcade-status" id="mazeStatus" role="status">${s.mode === 'keys' ? 'ابحث عن المفتاح 1 لفتح بوابته ثم تابع للمفتاح 2.' : s.stars.size ? 'اجمع النجوم قبل الوصول إلى المخرج.' : 'البوابة مفتوحة. اتجه إلى المخرج الأخضر!'}</div>${arcadeDirections('mazeMove')}<p class="note center maze-navigation" id="mazeNavigation" role="status" aria-live="polite" aria-atomic="true"></p><p class="note center" id="mazeExplored" role="status"></p><div class="actions"><button id="mazeMarkButton" onclick="mazeMark()" aria-pressed="false">⚑ علّم هذا المكان</button></div><div class="actions"><button id="mazeHintButton" onclick="mazeHint()" ${s.hints >= 3 ? 'disabled' : ''}>✦ تلميح (${3 - s.hints} متبقية)</button><button id="mazeTravelButton" onclick="mazeToggleTravel()" aria-pressed="${s.travel === 'corridor'}">${s.travel === 'corridor' ? 'حتى التقاطع' : 'خطوة بخطوة'}</button><button onclick="mazeClearTrail()">امسح آثار خطواتي</button></div>${arcadeToolbar('maze')}<p class="note center">الأزرق: أنت · الأصفر: ${s.mode === 'courier' ? 'محطة طرد مرقمة' : s.mode === 'keys' ? 'مفتاح' : 'نجمة'} · الأخضر: ${s.mode === 'courier' ? 'القاعدة' : 'المخرج'}<br>${s.vision === 'lantern' ? 'المصباح يكشف الممرات القريبة؛ الخريطة المكتشفة تبقى ظاهرة. التلميح يضيء الطريق المطلوب. <br>' : ''}المس خانة مجاورة للحركة، أو ${s.mode === 'courier' ? 'محطة الطرد الحالية' : s.mode === 'keys' ? 'مفتاحاً' : 'نجمة'} لتوجيه التلميح إليه · M لوضع علامة · الأسهم أو WASD · Shift مع الاتجاه للمشي حتى التقاطع.<br>المسار المثالي لهذه الجولة: ${s.parMoves} خطوة. كل خانة تتحركها تُحسب، حتى مع التحرك التلقائي. كل تلميح يخصم 8 نقاط.</p></section>`,
     ),
   );
   mazeDraw();
@@ -24656,7 +24949,16 @@ function renderMaze() {
       'ساعي المتاهة: تحرك إلى المحطات المرقمة 1 ثم 2 ثم 3. عد إلى القاعدة الخضراء بعد كل طرد. لونك برتقالي عندما تحمل طرداً.',
     );
     $('mazeStatus').textContent = 'اذهب للمحطة 1 ثم ارجع للقاعدة. الطرود تُستلم وتُسلّم بالترتيب.';
-  }
+  } else if (s.mode === 'keys')
+    $('mazeCanvas').setAttribute(
+      'aria-label',
+      'رحلة المفاتيح: موقعك هو الدائرة الزرقاء. اجمع المفتاحين المرقمين لفتح بوابتيهما، ثم اتجه للمخرج الأخضر. وصف التنقل يبين موقعك والممرات المفتوحة.',
+    );
+  else if (s.mode === 'exit')
+    $('mazeCanvas').setAttribute(
+      'aria-label',
+      'متاهة الوصول: موقعك هو الدائرة الزرقاء. اتبع الممرات حتى المخرج الأخضر. وصف التنقل يبين موقعك والممرات المفتوحة.',
+    );
   arcadeSwipe(
     $('mazeCanvas'),
     (dir) => {
@@ -24737,13 +25039,19 @@ function mazeCenterView(follow = false) {
 function mazeNavigationUI() {
   const s = state,
     location = `الصف ${Math.floor(s.position / s.width) + 1}، العمود ${(s.position % s.width) + 1}`,
-    names = { up: 'أعلى', down: 'أسفل', left: 'يسار', right: 'يمين' };
+    names = { up: 'أعلى', down: 'أسفل', left: 'يسار', right: 'يمين' },
+    open = [],
+    gates = [];
   for (const [dir, [dx, dy]] of Object.entries(arcadeDelta)) {
     const x = (s.position % s.width) + dx,
       y = Math.floor(s.position / s.width) + dy,
       cell = y * s.width + x,
       wall = x < 0 || y < 0 || x >= s.width || y >= s.width || !!s.grid[cell],
       button = document.querySelector(`.arcade-directions .dir-${dir}`);
+    if (!wall) {
+      if (s.gates?.has(cell)) gates.push(`${names[dir]} بوابة ${s.gates.get(cell).number}`);
+      else open.push(names[dir]);
+    }
     if (!button) continue;
     button.disabled = wall;
     button.setAttribute(
@@ -24751,10 +25059,17 @@ function mazeNavigationUI() {
       `${names[dir]}${wall ? '، جدار' : s.gates?.has(cell) ? '، بوابة مغلقة' : '، ممر مفتوح'}`,
     );
   }
-  $('mazeCanvas')?.setAttribute(
-    'aria-description',
-    `موقعك: ${location}. الأزرار المتاحة تقود إلى الممرات؛ الأزرار المغلقة أمامها جدار.`,
-  );
+  const description =
+    `موقعك: ${location}. الممرات المفتوحة: ${open.join('، ') || 'لا يوجد'}.` +
+    (gates.length ? ` بوابات مغلقة: ${gates.join('، ')}.` : '') +
+    (s.markers?.has(s.position) ? ` أنت عند العلامة ${s.markers.get(s.position)}.` : '') +
+    (s.mode === 'courier'
+      ? ` ${s.parcel !== null ? 'تحمل طرداً؛ عد للقاعدة.' : `الهدف استلام الطرد ${s.delivered + 1}.`}`
+      : s.mode === 'exit'
+        ? ' هدفك الوصول للمخرج الأخضر.'
+        : ` بقي ${s.stars.size} ${s.mode === 'keys' ? 'مفاتيح' : 'نجوم'}؛ ${s.stars.size ? 'اجمعها ثم اتجه للمخرج.' : 'اتجه للمخرج.'}`);
+  $('mazeCanvas')?.setAttribute('aria-description', description);
+  if ($('mazeNavigation')) $('mazeNavigation').textContent = description;
 }
 function mazeTap(event) {
   if (!arcadeReady('maze')) return;
@@ -24902,6 +25217,7 @@ function mazeDraw(canvasID = 'mazeCanvas', reviewAt = null) {
             position: state.route[reviewAt],
             stars: new Set(state.originalStars.filter((i) => !visited.has(i))),
             trail: visited,
+            markers: mazeMarkersAt(reviewAt, state),
             hintPath: [],
             hintTarget: null,
             vision: 'map',
@@ -25258,7 +25574,9 @@ setup = function (id, internal = false) {
   if (id === 'trivia')
     body = `<p class="muted">اختبر معلوماتك، واقرأ سبب الإجابة بعد كل سؤال. الأسئلة لا تتكرر في الجولة.</p><div class="fields"><div class="field"><label for="triviaCategory">الموضوع</label><select id="triviaCategory" onchange="updateTriviaAvailability()"><option value="all">كل المواضيع</option>${triviaCategories.map((c) => `<option value="${c[0]}">${c[1]}</option>`).join('')}</select></div><div class="field"><label for="triviaLevel">المستوى</label><select id="triviaLevel" onchange="updateTriviaAvailability()"><option value="all">كل المستويات</option><option value="easy">سهل</option><option value="normal">متوسط</option><option value="hard">صعب</option></select></div><div class="field"><label for="triviaMode">طريقة اللعب</label><select id="triviaMode" onchange="updateTriviaAvailability()"><option value="classic">معرفة · الإجابات الصحيحة</option><option value="strategy">رهان المعرفة · اختر ثقتك قبل الجواب</option><option value="facts">تحقق من الخبر · حقيقتان بين أربع عبارات</option></select></div><div class="field"><label for="triviaCount">عدد الأسئلة</label><select id="triviaCount"><option value="10">10 أسئلة</option><option value="20">20 سؤالاً</option></select></div><div class="field"><label for="triviaTimer">وقت كل سؤال</label><select id="triviaTimer"><option value="30">30 ثانية</option><option value="15">15 ثانية · تحدي سريع</option><option value="0">بدون مؤقت</option></select></div>${playerField('سجّل النتيجة باسم')}</div><p class="note" id="triviaAvailable"></p><div class="hintpanel">في رهان المعرفة: جواب عادي صحيح +10، وواثق صحيح +15 أو خاطئ −5. مساعدتا نصف الخيارات لكل جولة؛ استخدام المساعدة يخفض مكافأة السؤال 3 نقاط. النتيجة من 100. المؤقت يتوقف أثناء قراءة الشرح. استخدم الأرقام 1–4 للاختيار، وEnter للسؤال التالي. في التحقق من الخبر اختر عبارتين ثم أكد؛ كل حقيقة صحيحة مختارة +5، ولا تُحسب إجابة كاملة إلا باختيار الحقيقتين. المؤقت ينهي السؤال دون نقاط إن لم تؤكد.</div>`;
   if (id === 'hangman')
-    body = `<p class="muted">اكشف الحروف، واستفد من الفئة والوصف. الكلمات لا تتكرر، وكل خطأ أو تلميح يقلل مكافأة الكلمة.</p><div class="fields"><div class="field"><label for="hangCategory">فئة الكلمات</label><select id="hangCategory"><option value="all">كل الفئات</option>${wordsCategories.map((c) => `<option value="${c[0]}">${c[1]}</option>`).join('')}</select></div><div class="field"><label for="hangLevel">المستوى</label><select id="hangLevel"><option value="easy">مريح · 8 أخطاء و3 تلميحات</option><option value="normal" selected>متوسط · 6 أخطاء وتلميحان</option><option value="hard">خبير · 5 أخطاء وتلميح واحد، بلا وصف</option></select></div><div class="field"><label for="hangMode">طريقة اللعب</label><select id="hangMode"><option value="classic">كلمات مستقلة · أكمل الجولة براحتك</option><option value="rescue">رحلة الإنقاذ · 3 دروع وسلاسل مكافأة</option><option value="mission">مهمات العبارة · حل لغز من كلمتين أو أكثر</option></select></div><div class="field"><label for="hangCount">طول الجولة</label><select id="hangCount"><option value="1">كلمة واحدة</option><option value="5" selected>5 كلمات</option><option value="10">10 كلمات</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">أ، إ، آ تُحسب مثل ا. ة تختلف عن ه، وى تختلف عن ي. كل كلمة مكتملة تمنح حتى 20 نقطة؛ الخطأ −2 والتلميح −3. تقدر تستخدم لوحة المفاتيح العربية أو تخمّن الكلمة كاملة؛ التخمين الكامل الخاطئ يستهلك خطأين. في رحلة الإنقاذ: خسارة كلمة تسحب درعاً؛ كلمة بلا أخطاء أو تلميحات تعيد درعاً حتى 3، وكل سلسلة نجاح تضيف مكافأة حتى 8 نقاط. دفتر المحقق يستبعد الكلمات اعتماداً على الحروف التي جربتها فقط. مهمة العبارة تبدأ بلغز دلالي، وتحافظ على حدود الكلمات؛ مكافأتها حتى 30 نقطة. دليلان إضافيان: −2 لكل دليل؛ كشف حرف: −3.</div>`;
+    body = `<p class="muted">اكشف الحروف، واستفد من الفئة والوصف. الكلمات لا تتكرر، وكل خطأ أو تلميح يقلل مكافأة الكلمة.</p><div class="fields"><div class="field"><label for="hangCategory">فئة الكلمات</label><select id="hangCategory" onchange="updateHangmanAvailability()"><option value="all">كل الفئات</option>${wordsCategories.map((c) => `<option value="${c[0]}">${c[1]}</option>`).join('')}</select></div><div class="field"><label for="hangLevel">المستوى</label><select id="hangLevel" onchange="updateHangmanAvailability()"><option value="easy">مريح · 8 أخطاء و3 تلميحات</option><option value="normal" selected>متوسط · 6 أخطاء وتلميحان</option><option value="hard">خبير · 5 أخطاء وتلميح واحد، بلا وصف</option></select></div><div class="field"><label for="hangMode">طريقة اللعب</label><select id="hangMode" onchange="updateHangmanAvailability()"><option value="classic">كلمات مستقلة · أكمل الجولة براحتك</option><option value="rescue">رحلة الإنقاذ · 3 دروع وسلاسل مكافأة</option><option value="mission">مهمات العبارة · حل لغز من كلمتين أو أكثر</option></select></div><div class="field"><label for="hangCount">طول الجولة</label><select id="hangCount" onchange="updateHangmanAvailability()"><option value="1">كلمة واحدة</option><option value="5" selected>5 كلمات</option><option value="10">10 كلمات</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">أ، إ، آ تُحسب مثل ا. ة تختلف عن ه، وى تختلف عن ي. كل كلمة مكتملة تمنح حتى 20 نقطة؛ الخطأ −2 والتلميح −3. تقدر تستخدم لوحة المفاتيح العربية أو تخمّن الكلمة كاملة؛ التخمين الكامل الخاطئ يستهلك خطأين. في رحلة الإنقاذ: خسارة كلمة تسحب درعاً؛ كلمة بلا أخطاء أو تلميحات تعيد درعاً حتى 3، وكل سلسلة نجاح تضيف مكافأة حتى 8 نقاط. دفتر المحقق يستبعد الكلمات اعتماداً على الحروف التي جربتها فقط. مهمة العبارة تبدأ بلغز دلالي، وتحافظ على حدود الكلمات؛ مكافأتها حتى 30 نقطة. دليلان إضافيان: −2 لكل دليل؛ كشف حرف: −3.</div>`;
+  if (id === 'hangman')
+    body += '<p class="note" id="hangAvailable" role="status" aria-live="polite"></p>';
   if (id === 'wordguess')
     body = `<p class="muted">لديك 6 محاولات للوصول إلى كلمة عربية. الأخضر: حرف في مكانه. الأصفر: حرف موجود في مكان آخر. الرمادي: الحرف غير موجود، أو تكراره زائد.</p><div class="fields"><div class="field"><label for="wordguessLength">طول الكلمة</label><select id="wordguessLength"><option value="4">4 حروف · بداية خفيفة</option><option value="5" selected>5 حروف · التحدي الكامل</option></select></div><div class="field"><label for="wordguessMode">طريقة التخمين</label><select id="wordguessMode"><option value="classic">حر · جرّب أي كلمة</option><option value="focus">استنتاج · التزم بالحروف المكتشفة</option><option value="lab">مختبر الفرضيات · قارن خطتين توافقان الأدلة</option></select></div>${playerField('سجّل النتيجة باسم')}</div><div class="hintpanel">تُقبل الكلمات الموجودة في القاموس المحلي. أ، إ، آ تُحسب مثل ا؛ ة وه حرفان مختلفان. في الاستنتاج حافظ على الأخضر، وانقل الأصفر إلى موضع جديد، واستبعد الرمادي والتكرارات الزائدة. التلميح يكشف الفئة ويخصم 10 نقاط. اضغط حرفاً في صف التخمين لتعدّله. دفتر الاحتمالات يرشّح الكلمات من الأدلة فقط؛ عرضها يخصم 15 نقطة مرة واحدة. في المختبر قارن فرضيتين قانونيتين: محاكاة مجموعات الألوان الممكنة من الأدلة فقط، لا قراءة للحل؛ مقارنتان بحد أقصى، −8 لكل مقارنة، دون استهلاك محاولة.</div>`;
   if (id === 'target')
@@ -25266,10 +25584,11 @@ setup = function (id, internal = false) {
   setHTML(
     wrap(
       id,
-      `<section class="panel">${body}<div class="actions"><button class="primary" onclick="startWordsGame('${id}')">ابدأ اللعبة ←</button></div></section>`,
+      `<section class="panel">${body}<div class="actions"><button id="wordsStart" class="primary" onclick="startWordsGame('${id}')">ابدأ اللعبة ←</button></div></section>`,
     ),
   );
   if (id === 'trivia') updateTriviaAvailability();
+  if (id === 'hangman') updateHangmanAvailability();
   goTop();
 };
 function wordsBlocked(id) {
@@ -25626,23 +25945,66 @@ function startTriviaPractice(run) {
   $('triviaPracticeTitle')?.focus({ preventScroll: true });
   wordsRevealFeedback('triviaPracticeTitle');
 }
+function wordsSetPracticeHTML(container, html) {
+  const active = document.activeElement,
+    inside = container.contains(active),
+    id = inside ? active.id : '',
+    letter = inside ? active.dataset.wordKey : '',
+    choice =
+      inside && active.matches('.trivia-choice')
+        ? [...container.querySelectorAll('.trivia-choice')].indexOf(active)
+        : -1,
+    selection = inside && active.tagName === 'INPUT' ? active.selectionStart : null;
+  container.innerHTML = html;
+  if (!inside) return;
+  let control = id
+    ? $(id)
+    : letter
+      ? [...container.querySelectorAll('[data-word-key]')].find(
+          (key) => key.dataset.wordKey === letter && !key.disabled,
+        )
+      : choice >= 0
+        ? container.querySelectorAll('.trivia-choice')[choice]
+        : null;
+  if (!control || control.disabled)
+    control =
+      container.querySelector('[data-practice-next]') ||
+      container.querySelector('.letter-key:not(:disabled)') ||
+      container.querySelector('.primary:not(:disabled)') ||
+      container.querySelector('h3');
+  control?.focus({ preventScroll: true });
+  if (selection !== null && control?.tagName === 'INPUT')
+    control.setSelectionRange(
+      Math.min(selection, control.value.length),
+      Math.min(selection, control.value.length),
+    );
+}
 function renderTriviaPractice() {
   const practice = state.practice,
     container = $('triviaPractice');
   if (!container || !practice) return;
   container.hidden = false;
   if (practice.index >= practice.questions.length) {
-    container.innerHTML = `<h3 id="triviaPracticeTitle" tabindex="-1">✓ اكتملت المراجعة</h3><p role="status">استرجعت ${practice.correct} من ${practice.questions.length} إجابات. ${practice.correct === practice.questions.length ? 'ثبتنا المعلومات!' : 'راجع الشرح، ثم اختبر نفسك مرة ثانية.'}</p><p class="note">هذه مراجعة للتعلم؛ نتيجة الجولة المسجلة تبقى كما هي.</p><button onclick="startTriviaPractice(${state.run})">↻ راجع مرة ثانية</button>`;
+    wordsSetPracticeHTML(
+      container,
+      `<h3 id="triviaPracticeTitle" tabindex="-1">✓ اكتملت المراجعة</h3><p role="status">استرجعت ${practice.correct} من ${practice.questions.length} إجابات. ${practice.correct === practice.questions.length ? 'ثبتنا المعلومات!' : 'راجع الشرح، ثم اختبر نفسك مرة ثانية.'}</p><p class="note">هذه مراجعة للتعلم؛ نتيجة الجولة المسجلة تبقى كما هي.</p><button onclick="startTriviaPractice(${state.run})">↻ راجع مرة ثانية</button>`,
+    );
     return;
   }
   const q = practice.questions[practice.index],
     locked = practice.choice !== null;
   if (q.statements) {
     const selected = practice.evidenceSelected || [];
-    container.innerHTML = `<div class="words-status"><h3 id="triviaPracticeTitle" tabindex="-1">📰 استرجع الحقيقتين</h3><span class="pill">${practice.index + 1} / ${practice.questions.length} · مراجعة بلا نقاط</span></div><p class="trivia-question">${esc(q.question)}</p>${triviaFactChoicesHTML(q, selected, locked, (i) => `toggleTriviaPracticeFact(${i},${state.run},${practice.serial},${practice.index})`)}${locked ? `<div class="trivia-explanation" role="status"><b>${practice.factCorrect ? 'تذكرتهما! ✓' : 'هذه أسباب الإجابات الصحيحة'}</b>${triviaFactExplanationHTML(q)}</div><button class="primary" onclick="nextTriviaPractice(${state.run},${practice.serial},${practice.index})">التالي ←</button>` : `<p class="note">${selected.length} / 2 مختارة</p><button class="primary" onclick="submitTriviaPracticeFacts(${state.run},${practice.serial},${practice.index})" ${selected.length === 2 ? '' : 'disabled'}>أكد الاختيار</button>`}`;
+    wordsSetPracticeHTML(
+      container,
+      `<div class="words-status"><h3 id="triviaPracticeTitle" tabindex="-1">📰 استرجع الحقيقتين</h3><span class="pill">${practice.index + 1} / ${practice.questions.length} · مراجعة بلا نقاط</span></div><p class="trivia-question">${esc(q.question)}</p>${triviaFactChoicesHTML(q, selected, locked, (i) => `toggleTriviaPracticeFact(${i},${state.run},${practice.serial},${practice.index})`)}${locked ? `<div class="trivia-explanation" role="status"><b>${practice.factCorrect ? 'تذكرتهما! ✓' : 'هذه أسباب الإجابات الصحيحة'}</b>${triviaFactExplanationHTML(q)}</div><button data-practice-next class="primary" onclick="nextTriviaPractice(${state.run},${practice.serial},${practice.index})">التالي ←</button>` : `<p class="note">${selected.length} / 2 مختارة · الأرقام 1–4 للاختيار، وEnter للتأكيد.</p><button class="primary" onclick="submitTriviaPracticeFacts(${state.run},${practice.serial},${practice.index})" ${selected.length === 2 ? '' : 'disabled'}>أكد الاختيار</button>`}`,
+    );
     return;
   }
-  container.innerHTML = `<div class="words-status"><h3 id="triviaPracticeTitle" tabindex="-1">🧠 اختبر ما تعلمته</h3><span class="pill">${practice.index + 1} / ${practice.questions.length}</span><span class="pill">مراجعة بدون نقاط أو مؤقت</span></div><p class="trivia-question">${esc(q.question)}</p><div class="trivia-choices">${q.choices.map((choice, i) => `<button class="trivia-choice ${locked ? (choice === q.answer ? 'correct' : i === practice.choice ? 'incorrect' : 'faded') : ''}" onclick="answerTriviaPractice(${i},${state.run},${practice.serial},${practice.index})" ${locked ? 'disabled' : ''}><span class="choice-number">${i + 1}</span><span>${esc(choice)}</span></button>`).join('')}</div>${locked ? `<div class="trivia-explanation" role="status"><b>${q.choices[practice.choice] === q.answer ? 'تذكرتها! ✓' : 'الصحيح: ' + esc(q.answer)}</b><p>${esc(q.explanation)}</p></div><div class="actions"><button class="primary" onclick="nextTriviaPractice(${state.run},${practice.serial},${practice.index})">${practice.index + 1 === practice.questions.length ? 'أنهِ المراجعة' : 'التالي'} ←</button></div>` : '<p class="note center">حاول تتذكر الإجابة قبل الرجوع إلى الشرح.</p>'}`;
+  wordsSetPracticeHTML(
+    container,
+    `<div class="words-status"><h3 id="triviaPracticeTitle" tabindex="-1">🧠 اختبر ما تعلمته</h3><span class="pill">${practice.index + 1} / ${practice.questions.length}</span><span class="pill">مراجعة بدون نقاط أو مؤقت</span></div><p class="trivia-question">${esc(q.question)}</p><div class="trivia-choices">${q.choices.map((choice, i) => `<button class="trivia-choice ${locked ? (choice === q.answer ? 'correct' : i === practice.choice ? 'incorrect' : 'faded') : ''}" onclick="answerTriviaPractice(${i},${state.run},${practice.serial},${practice.index})" ${locked ? 'disabled' : ''}><span class="choice-number">${i + 1}</span><span>${esc(choice)}</span></button>`).join('')}</div>${locked ? `<div class="trivia-explanation" role="status"><b>${q.choices[practice.choice] === q.answer ? 'تذكرتها! ✓' : 'الصحيح: ' + esc(q.answer)}</b><p>${esc(q.explanation)}</p></div><div class="actions"><button data-practice-next class="primary" onclick="nextTriviaPractice(${state.run},${practice.serial},${practice.index})">${practice.index + 1 === practice.questions.length ? 'أنهِ المراجعة' : 'التالي'} ←</button></div>` : '<p class="note center">الأرقام 1–4 للاختيار وEnter للمتابعة. حاول تتذكر الإجابة قبل الرجوع إلى الشرح.</p>'}`,
+  );
 }
 function toggleTriviaPracticeFact(choice, run, serial, index) {
   if (triviaPracticeBlocked(run, serial, index)) return;
@@ -25770,8 +26132,8 @@ function wordsRestoreLetterFocus(letter) {
       .querySelector('.hangman-panel .actions .primary, .wordguess-panel .actions .primary')
       ?.focus({ preventScroll: true });
 }
-function startHangman(name) {
-  const cat = $('hangCategory').value,
+function hangmanSetupOptions() {
+  const cat = $('hangCategory')?.value || 'all',
     mode = ['rescue', 'mission'].includes($('hangMode')?.value) ? $('hangMode').value : 'classic',
     count = wordsReadOption('hangCount', [1, 5, 10], 5),
     level = ['easy', 'normal', 'hard'].includes($('hangLevel')?.value)
@@ -25787,6 +26149,21 @@ function startHangman(name) {
           ? w.key.length >= (mode === 'mission' ? 12 : 5)
           : true,
     );
+  return { cat, mode, count, level, pool };
+}
+function updateHangmanAvailability() {
+  if (screen !== 'setup' || state?.id !== 'hangman') return;
+  const { mode, count, pool } = hangmanSetupOptions(),
+    actual = Math.min(count, pool.length),
+    label = mode === 'mission' ? 'مهمات' : 'كلمات';
+  if ($('hangAvailable'))
+    $('hangAvailable').textContent = pool.length
+      ? `${pool.length} ${label} متاحة. جولتك: ${actual} من ${count} مطلوبة، دون تكرار. ${mode === 'mission' ? 'كل مهمة حتى 30 نقطة.' : mode === 'rescue' ? 'كل كلمة حتى 20 نقطة، ومكافأة سلسلة حتى 8؛ تنتهي الرحلة عند نفاد الدروع.' : 'كل كلمة حتى 20 نقطة.'}`
+      : 'لا توجد كلمات توافق الفئة والمستوى وطريقة اللعب. غيّر أحد الخيارات لبدء الجولة.';
+  if ($('wordsStart')) $('wordsStart').disabled = !pool.length;
+}
+function startHangman(name) {
+  const { mode, count, level, pool } = hangmanSetupOptions();
   if (!pool.length) return toast('لا توجد كلمات في هذه الفئة. اختر فئة أخرى.');
   state = {
     id: 'hangman',
@@ -25918,7 +26295,7 @@ function renderHangman() {
   setHTML(
     wrap(
       'hangman',
-      `<section class="panel hangman-panel"><div class="words-status"><span class="pill">${s.mode === 'mission' ? 'المهمة' : 'الكلمة'} ${s.index + 1} / ${s.queue.length}</span><span class="pill">${esc(category)}</span><span class="pill">✓ ${s.wins} كلمات</span><span class="pill">💎 ${s.total} نقطة</span>${s.mode === 'rescue' ? `<span class="pill">🛡 ${s.shields} / 3 دروع</span><span class="pill">سلسلة الإنقاذ: ${s.rescueStreak}</span>` : ''}<b class="${maxMisses - s.misses <= 2 ? 'danger-text' : ''}">${maxMisses - s.misses} أخطاء متبقية</b><span class="pill">${Array.from(item.key).filter((l) => s.guessed.includes(l)).length} / ${item.key.length} حروف مكشوفة</span></div><div class="hangman-layout">${hangmanDrawing(s.misses, maxMisses)}<div><p class="hangman-clue">${s.mode !== 'mission' && s.level === 'hard' && !s.over ? `تحدي خبير · ${item.key.length} حروف، والفئة دليلك` : esc(item.hint)}</p>${hangmanWordHTML(s)}${s.over ? `<div class="trivia-explanation" id="hangmanOutcome" role="status"><b>${s.won ? 'أحسنت! الكلمة: ' + esc(item.word) : 'الكلمة هي: ' + esc(item.word)}</b><p>${s.won ? `+${s.wordPoints} نقطة · ${s.misses} أخطاء و${s.hints} تلميحات${s.missionCueCost ? ` · أدلة دلالية −${s.missionCueCost}` : ''}${s.rescueBonus ? ` · مكافأة السلسلة +${s.rescueBonus}` : ''}` : 'الكلمة التالية فرصة جديدة.'}</p>${s.level === 'hard' ? `<p>${esc(item.hint)}</p>` : ''}</div>` : `<p class="note">الحروف المجربة: ${s.guessed.length ? s.guessed.map(esc).join('، ') : 'لم تجرب أي حرف بعد'}</p><p class="hangman-feedback" id="hangmanFeedback" role="status">${esc(s.feedback || '')}</p>`}</div></div>${hangmanMissionCluesHTML(s)}${!s.over ? `<form class="words-native hangman-native" onsubmit="event.preventDefault();submitHangmanWord(${s.run},${s.index})"><label for="hangmanInput">عرفت الكلمة؟ اكتبها كاملة</label><div><input id="hangmanInput" maxlength="${s.mode === 'mission' ? 64 : 32}" value="${esc(s.wordDraft || '')}" placeholder="${s.mode === 'mission' ? 'اكتب العبارة مع المسافات أو بدونها' : item.key.length + ' حروف…'}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="hangmanFeedback" onfocus="this.closest('.hangman-panel').classList.add('hangman-typing')" onblur="this.closest('.hangman-panel').classList.remove('hangman-typing')" oninput="if(!event.isComposing)readHangmanDraft(this.value,${s.run},${s.index})" oncompositionend="readHangmanDraft(this.value,${s.run},${s.index})"><button class="primary" type="submit">خمن الكلمة ↵</button></div><small class="note">اختياري · التخمين الخاطئ يستهلك خطأين</small></form>${wordsKeyboard('guessHangman', s.guessed, statuses)}${hangmanNotebook(s)}` : ''}<div class="actions">${s.over ? `<button class="primary" onclick="nextHangman(${s.run},${s.index})">${s.index + 1 === s.queue.length ? 'اعرض النتيجة' : 'الكلمة التالية'} ←</button>` : `<button onclick="hintHangman(${s.run},${s.index})" ${s.hints >= maxHints ? 'disabled' : ''}>💡 اكشف حرفاً (${maxHints - s.hints} متبقي) · −3</button>`}</div></section>`,
+      `<section class="panel hangman-panel"><div class="words-status"><span class="pill">${s.mode === 'mission' ? 'المهمة' : 'الكلمة'} ${s.index + 1} / ${s.queue.length}</span><span class="pill">${esc(category)}</span><span class="pill">✓ ${s.wins} كلمات</span><span class="pill">💎 ${s.total} نقطة</span>${s.mode === 'rescue' ? `<span class="pill">🛡 ${s.shields} / 3 دروع</span><span class="pill">سلسلة الإنقاذ: ${s.rescueStreak}</span>` : ''}<b class="${maxMisses - s.misses <= 2 ? 'danger-text' : ''}">${maxMisses - s.misses} أخطاء متبقية</b><span class="pill">${Array.from(item.key).filter((l) => s.guessed.includes(l)).length} / ${item.key.length} حروف مكشوفة</span></div><div class="hangman-layout">${hangmanDrawing(s.misses, maxMisses)}<div><p class="hangman-clue">${s.mode !== 'mission' && s.level === 'hard' && !s.over ? `تحدي خبير · ${item.key.length} حروف، والفئة دليلك` : esc(item.hint)}</p>${hangmanWordHTML(s)}${s.over ? `<div class="trivia-explanation" id="hangmanOutcome" role="status"><b>${s.won ? 'أحسنت! الكلمة: ' + esc(item.word) : 'الكلمة هي: ' + esc(item.word)}</b><p>${s.won ? `+${s.wordPoints} نقطة · ${s.misses} أخطاء و${s.hints} تلميحات${s.missionCueCost ? ` · أدلة دلالية −${s.missionCueCost}` : ''}${s.rescueBonus ? ` · مكافأة السلسلة +${s.rescueBonus}` : ''}` : 'الكلمة التالية فرصة جديدة.'}</p>${s.level === 'hard' ? `<p>${esc(item.hint)}</p>` : ''}</div>` : `<p class="note">الحروف المجربة: ${s.guessed.length ? s.guessed.map(esc).join('، ') : 'لم تجرب أي حرف بعد'}</p><p class="hangman-feedback" id="hangmanFeedback" role="status">${esc(s.feedback || '')}</p>`}</div></div>${hangmanMissionCluesHTML(s)}${!s.over ? `<form class="words-native hangman-native" onsubmit="event.preventDefault();submitHangmanWord(${s.run},${s.index})"><label for="hangmanInput">عرفت الكلمة؟ اكتبها كاملة</label><div><input id="hangmanInput" maxlength="${s.mode === 'mission' ? 64 : 32}" value="${esc(s.wordDraft || '')}" placeholder="${s.mode === 'mission' ? 'اكتب العبارة مع المسافات أو بدونها' : item.key.length + ' حروف…'}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="hangmanFeedback" onfocus="this.closest('.hangman-panel').classList.add('hangman-typing')" onblur="this.closest('.hangman-panel').classList.remove('hangman-typing')" oninput="if(!event.isComposing)readHangmanDraft(this.value,${s.run},${s.index})" oncompositionend="readHangmanDraft(this.value,${s.run},${s.index})"><button class="primary" type="submit" onpointerdown="if(event.isPrimary&&event.button===0)event.preventDefault()">خمن الكلمة ↵</button></div><small class="note">اختياري · التخمين الخاطئ يستهلك خطأين</small></form>${wordsKeyboard('guessHangman', s.guessed, statuses)}${hangmanNotebook(s)}` : ''}<div class="actions">${s.over ? `<button class="primary" onclick="nextHangman(${s.run},${s.index})">${s.index + 1 === s.queue.length ? 'اعرض النتيجة' : 'الكلمة التالية'} ←</button>` : `<button onclick="hintHangman(${s.run},${s.index})" ${s.hints >= maxHints ? 'disabled' : ''}>💡 اكشف حرفاً (${maxHints - s.hints} متبقي) · −3</button>`}</div></section>`,
     ),
   );
   wordsRestoreLetterFocus(focusedLetter);
@@ -26106,6 +26483,7 @@ function startHangmanPractice(run) {
     draft: '',
   };
   renderHangmanPractice();
+  $('hangmanPracticeTitle')?.focus({ preventScroll: true });
   wordsRevealFeedback('hangmanPracticeTitle');
 }
 function renderHangmanPractice() {
@@ -26115,11 +26493,17 @@ function renderHangmanPractice() {
   if (!p || !container) return;
   container.hidden = false;
   if (p.index === p.items.length) {
-    container.innerHTML = `<h3 id="hangmanPracticeTitle" tabindex="-1">✓ استرجعت كلمات الجولة</h3><p role="status">اكتشفت ${p.items.length} كلمات. نتيجة الجولة المسجلة بقيت كما هي.</p><button onclick="startHangmanPractice(${s.run})">↻ تمرن مرة أخرى</button>`;
+    wordsSetPracticeHTML(
+      container,
+      `<h3 id="hangmanPracticeTitle" tabindex="-1">✓ استرجعت كلمات الجولة</h3><p role="status">اكتشفت ${p.items.length} كلمات. نتيجة الجولة المسجلة بقيت كما هي.</p><button onclick="startHangmanPractice(${s.run})">↻ تمرن مرة أخرى</button>`,
+    );
     return;
   }
   const item = p.items[p.index];
-  container.innerHTML = `<div class="words-status"><h3 id="hangmanPracticeTitle" tabindex="-1">🕵 تدريب ${p.index + 1} / ${p.items.length}</h3><span class="pill">بلا نقاط أو حد للأخطاء</span></div><p class="hangman-clue">${esc(item.hint)}</p>${hangmanWordHTML({ item, mode: item.display ? 'mission' : 'classic', guessed: p.guessed, over: p.solved })}<p role="status" class="hangman-feedback">${esc(p.feedback || 'استرجع الحروف، أو اكتب الكلمة كاملة.')}</p>${p.solved ? `<button class="primary" onclick="nextHangmanPractice(${s.run},${p.index},${p.serial})">${p.index + 1 === p.items.length ? 'أنهِ التدريب' : 'الكلمة التالية'} ←</button>` : `<form class="words-native" onsubmit="event.preventDefault();answerHangmanPracticeWord(document.getElementById('hangmanPracticeInput').value,${s.run},${p.index},${p.serial})"><label for="hangmanPracticeInput">الكلمة كاملة</label><div><input id="hangmanPracticeInput" maxlength="32" autocomplete="off" value="${esc(p.draft || '')}" oninput="if(!hangmanPracticeBlocked(${s.run},${p.serial},${p.index}))state.hangPractice.draft=this.value"><button class="primary">تحقق ↵</button></div></form><div class="arabic-keyboard">${arabicKeyboard.map((letter) => `<button class="letter-key ${p.guessed.includes(letter) ? (item.key.includes(letter) ? 'correct' : 'absent') : ''}" onclick="guessHangmanPractice('${letter}',${s.run},${p.index},${p.serial})" ${p.guessed.includes(letter) ? 'disabled' : ''}>${letter}</button>`).join('')}</div>`}`;
+  wordsSetPracticeHTML(
+    container,
+    `<div class="words-status"><h3 id="hangmanPracticeTitle" tabindex="-1">🕵 تدريب ${p.index + 1} / ${p.items.length}</h3><span class="pill">بلا نقاط أو حد للأخطاء</span></div><p class="hangman-clue">${esc(item.hint)}</p>${hangmanWordHTML({ item, mode: item.display ? 'mission' : 'classic', guessed: p.guessed, over: p.solved })}<p role="status" class="hangman-feedback">${esc(p.feedback || 'استرجع الحروف بلوحة المفاتيح أو الأزرار، أو اكتب الكلمة كاملة. Enter يتابع بعد الحل.')}</p>${p.solved ? `<button data-practice-next class="primary" onclick="nextHangmanPractice(${s.run},${p.index},${p.serial})">${p.index + 1 === p.items.length ? 'أنهِ التدريب' : 'الكلمة التالية'} ←</button>` : `<form class="words-native" onsubmit="event.preventDefault();answerHangmanPracticeWord(document.getElementById('hangmanPracticeInput').value,${s.run},${p.index},${p.serial})"><label for="hangmanPracticeInput">الكلمة كاملة</label><div><input id="hangmanPracticeInput" maxlength="64" autocomplete="off" value="${esc(p.draft || '')}" oninput="if(!hangmanPracticeBlocked(${s.run},${p.serial},${p.index}))state.hangPractice.draft=this.value"><button class="primary">تحقق ↵</button></div></form><div class="arabic-keyboard">${arabicKeyboard.map((letter) => `<button data-word-key="${letter}" class="letter-key ${p.guessed.includes(letter) ? (item.key.includes(letter) ? 'correct' : 'absent') : ''}" onclick="guessHangmanPractice('${letter}',${s.run},${p.index},${p.serial})" ${p.guessed.includes(letter) ? 'disabled' : ''}>${letter}</button>`).join('')}</div>`}`,
+  );
 }
 function guessHangmanPractice(raw, run, index, serial) {
   if (hangmanPracticeBlocked(run, serial, index)) return;
@@ -26361,12 +26745,13 @@ function chooseWordguessHypothesis(slot, run, turn, serial) {
   state.entryCursor = null;
   state.feedback = 'اخترت فرضية للمحاولة؛ تأكيد التخمين هو الذي يكشف الألوان الحقيقية.';
   renderWordguess();
+  $('wordguessInput')?.focus({ preventScroll: true });
   wordsRevealFeedback('wordguessMessage');
 }
 function wordguessLabHTML(s) {
   if (s.mode !== 'lab' || s.over) return '';
   const analysis = s.labAnalysis;
-  return `<section class="wordguess-lab"><div class="words-status"><h3>🔬 مختبر الفرضيات</h3><span class="pill">${2 - s.labUses} مقارنات متبقية</span></div><p class="note">اختبر كلمتين توافقان الأدلة. نحاكي الألوان الممكنة ضد جميع الاحتمالات المتوافقة، ونقارن مقدار المعلومات؛ لا نقرأ الكلمة السرية.</p><form onsubmit="event.preventDefault();compareWordguessHypotheses(${s.run},${s.attempts.length})"><div class="wordguess-hypothesis-fields">${[0, 1].map((slot) => `<label for="wordguessHypothesis${slot}">الفرضية ${slot === 0 ? 'أ' : 'ب'}<input id="wordguessHypothesis${slot}" value="${esc(s.hypothesisDrafts[slot])}" maxlength="32" autocomplete="off" spellcheck="false" oninput="if(!event.isComposing)readWordguessHypothesis(${slot},this.value,${s.run},${s.attempts.length})" oncompositionend="readWordguessHypothesis(${slot},this.value,${s.run},${s.attempts.length})" placeholder="كلمة من ${s.size} حروف"></label>`).join('')}</div><button class="primary" ${s.labUses >= 2 ? 'disabled' : ''}>قارن الفرضيتين · −8 · دون محاولة</button></form>${analysis ? `<div class="wordguess-hypothesis-results" role="status"><p class="note">تحليل قبل المحاولة ${analysis.turn + 1} · ${analysis.reports[0].candidates} احتمالاً. ${analysis.turn !== s.attempts.length ? 'هذه قراءة للأدلة السابقة؛ أعد المقارنة بعد أدلتك الجديدة.' : 'يمكنك اختيار فرضية ثم تأكيدها في صف التخمين.'}</p><div>${analysis.reports.map((report, slot) => `<article><b>${esc(report.word)}</b><dl><div><dt>نتائج ألوان ممكنة</dt><dd>${report.patterns}</dd></div><div><dt>أكبر مجموعة متبقية</dt><dd>${report.worst}</dd></div><div><dt>متوسط الاحتمالات بعد المحاولة</dt><dd>${report.expected.toFixed(1)}</dd></div></dl><button onclick="chooseWordguessHypothesis(${slot},${s.run},${analysis.turn},${analysis.serial})" ${analysis.turn !== s.attempts.length ? 'disabled' : ''}>ضعها في صف التخمين</button></article>`).join('')}</div></div>` : ''}</section>`;
+  return `<section class="wordguess-lab"><div class="words-status"><h3>🔬 مختبر الفرضيات</h3><span class="pill">${2 - s.labUses} مقارنات متبقية</span></div><p class="note">اختبر كلمتين توافقان الأدلة. نحاكي الألوان الممكنة ضد جميع الاحتمالات المتوافقة، ونقارن مقدار المعلومات؛ لا نقرأ الكلمة السرية.</p><form onsubmit="event.preventDefault();compareWordguessHypotheses(${s.run},${s.attempts.length})"><div class="wordguess-hypothesis-fields">${[0, 1].map((slot) => `<label for="wordguessHypothesis${slot}">الفرضية ${slot === 0 ? 'أ' : 'ب'}<input id="wordguessHypothesis${slot}" value="${esc(s.hypothesisDrafts[slot])}" maxlength="32" autocomplete="off" spellcheck="false" oninput="if(!event.isComposing)readWordguessHypothesis(${slot},this.value,${s.run},${s.attempts.length})" oncompositionend="readWordguessHypothesis(${slot},this.value,${s.run},${s.attempts.length})" placeholder="كلمة من ${s.size} حروف"></label>`).join('')}</div><button id="wordguessCompare" class="primary" ${s.labUses >= 2 ? 'disabled' : ''}>قارن الفرضيتين · −8 · دون محاولة</button></form>${analysis ? `<div class="wordguess-hypothesis-results" role="status"><p class="note">تحليل قبل المحاولة ${analysis.turn + 1} · ${analysis.reports[0].candidates} احتمالاً. ${analysis.turn !== s.attempts.length ? 'هذه قراءة للأدلة السابقة؛ أعد المقارنة بعد أدلتك الجديدة.' : 'يمكنك اختيار فرضية ثم تأكيدها في صف التخمين.'}</p><div>${analysis.reports.map((report, slot) => `<article><b>${esc(report.word)}</b><dl><div><dt>نتائج ألوان ممكنة</dt><dd>${report.patterns}</dd></div><div><dt>أكبر مجموعة متبقية</dt><dd>${report.worst}</dd></div><div><dt>متوسط الاحتمالات بعد المحاولة</dt><dd>${report.expected.toFixed(1)}</dd></div></dl><button id="wordguessHypothesisChoice${slot}" data-hypothesis-choice onclick="chooseWordguessHypothesis(${slot},${s.run},${analysis.turn},${analysis.serial})" ${analysis.turn !== s.attempts.length ? 'disabled' : ''}>ضعها في صف التخمين</button></article>`).join('')}</div></div>` : ''}</section>`;
 }
 function wordguessNotebook(s) {
   if (!s.attempts.length) return '';
@@ -26389,9 +26774,9 @@ function wordguessNotebook(s) {
                 `<button class="chip" onclick="chooseWordguessCandidate('${word}',${s.run},${s.attempts.length})" ${s.over ? 'disabled' : ''}>${esc(word)}</button>`,
             )
             .join('') || '<span class="note">لا توجد نتائج؛ جرّب حروفاً أخرى أو امسح البحث.</span>'
-        }</div>${pages > 1 ? `<div class="wordguess-candidate-pages"><button onclick="pageWordguessCandidates(-1,${s.run},${s.attempts.length})" ${page ? '' : 'disabled'}>السابق</button><span>${page + 1} / ${pages}</span><button onclick="pageWordguessCandidates(1,${s.run},${s.attempts.length})" ${page < pages - 1 ? '' : 'disabled'}>التالي</button></div>` : ''}</div>`
+        }</div>${pages > 1 ? `<div class="wordguess-candidate-pages"><button id="wordguessCandidatesPrev" onclick="pageWordguessCandidates(-1,${s.run},${s.attempts.length})" ${page ? '' : 'disabled'}>السابق</button><span>${page + 1} / ${pages}</span><button id="wordguessCandidatesNext" onclick="pageWordguessCandidates(1,${s.run},${s.attempts.length})" ${page < pages - 1 ? '' : 'disabled'}>التالي</button></div>` : ''}</div>`
       : !s.over
-        ? `<button onclick="showWordguessCandidates(${s.run})">🕵 اعرض الاحتمالات · −15 مرة واحدة</button>`
+        ? `<button id="wordguessCandidatesShow" onclick="showWordguessCandidates(${s.run})">🕵 اعرض الاحتمالات · −15 مرة واحدة</button>`
         : ''
   }</details>`;
 }
@@ -26465,7 +26850,8 @@ function showWordguessCandidates(run) {
   state.helperPenalty += 15;
   state.notesOpen = true;
   renderWordguess();
-  wordsRevealFeedback('wordguessMessage');
+  $('wordguessCandidateSearch')?.focus({ preventScroll: true });
+  wordsRevealFeedback('wordguessCandidateSearch');
 }
 function chooseWordguessCandidate(word, run, turn) {
   if (
@@ -26481,6 +26867,7 @@ function chooseWordguessCandidate(word, run, turn) {
   state.entryCursor = null;
   state.feedback = 'وضعنا الاحتمال في صف التخمين؛ اضغط تحقق عندما تختاره.';
   renderWordguess();
+  $('wordguessInput')?.focus({ preventScroll: true });
   wordsRevealFeedback('wordguessMessage');
 }
 function selectWordguessCell(index, run, turn) {
@@ -26515,6 +26902,9 @@ function rememberWordguessNotebook(notebook) {
 function renderWordguess() {
   const s = state,
     focusedLetter = wordsRememberLetterFocus(),
+    restoreHelper = document.activeElement?.closest('.wordguess-panel')
+      ? document.activeElement.id
+      : '',
     restoreInput = document.activeElement?.id === 'wordguessInput',
     restoreCell = document.activeElement?.matches('.wordguess-row.current button')
       ? [...document.activeElement.parentElement.children].indexOf(document.activeElement)
@@ -26528,14 +26918,14 @@ function renderWordguess() {
         (_, i) => {
           const editable = row === s.attempts.length && !s.over,
             tag = editable ? 'button' : 'span';
-          return `<${tag} class="wordguess-cell ${attempt ? attempt.marks[i] : letters[i] ? 'filled' : ''} ${editable && s.entryCursor === i ? 'selected' : ''}" ${editable ? `type="button" onclick="selectWordguessCell(${i},${s.run},${s.attempts.length})"` : ''} aria-label="الخانة ${i + 1}: ${letters[i] ? esc(letters[i]) + ' ' + (attempt ? { correct: 'في مكانه', present: 'في مكان آخر', absent: 'غير موجود' }[attempt.marks[i]] : 'اضغط للتعديل') : 'خانة فارغة'}">${esc(letters[i] || '')}</${tag}>`;
+          return `<${tag} class="wordguess-cell ${attempt ? attempt.marks[i] : letters[i] ? 'filled' : ''} ${editable && s.entryCursor === i ? 'selected' : ''}" ${editable ? `type="button" onclick="selectWordguessCell(${i},${s.run},${s.attempts.length})"` : 'role="img"'} aria-label="الخانة ${i + 1}: ${letters[i] ? esc(letters[i]) + ' ' + (attempt ? { correct: 'في مكانه', present: 'في مكان آخر', absent: 'غير موجود' }[attempt.marks[i]] : 'اضغط للتعديل') : 'خانة فارغة'}">${esc(letters[i] || '')}</${tag}>`;
         },
       ).join('')}</div>`;
     }).join('');
   setHTML(
     wrap(
       'wordguess',
-      `<section class="panel wordguess-panel ${restoreInput ? 'wordguess-typing' : ''}"><div class="words-status"><span class="pill">${s.size} حروف</span><span class="pill">${s.attempts.length} / 6 محاولات</span>${s.helperPenalty || s.hinted ? `<span class="pill">مساعدات: −${s.helperPenalty + (s.hinted ? 10 : 0)}</span>` : ''}${['focus', 'lab'].includes(s.mode) ? `<span class="pill">${s.mode === 'lab' ? '🔬 مختبر الفرضيات' : '🧩 وضع الاستنتاج'}</span>` : ''}${s.hinted ? `<span class="pill">الفئة: ${esc(cat)}</span>` : ''}</div><div class="wordguess-board" role="group" aria-label="محاولات تخمين الكلمة">${rows}</div>${wordguessNotebook(s)}<div class="wordguess-legend"><span><i class="correct"></i>حرف ومكان صحيح</span><span><i class="present"></i>موجود بمكان آخر</span><span><i class="absent"></i>غير موجود أو زائد</span></div>${wordguessLabHTML(s)}${s.over ? `<div class="trivia-explanation center" id="wordguessOutcome" role="status"><b>${s.won ? 'أحسنت! الكلمة هي' : 'الكلمة كانت'}: ${esc(s.item.word)}</b><p>${esc(s.item.hint)}</p></div><div class="actions"><button class="primary" onclick="finishWordguess(${s.run})">اعرض النتيجة ←</button></div>` : `<p class="wordguess-feedback" id="wordguessMessage" role="status">${esc(s.feedback || `اكتب كلمة من ${s.size} حروف؛ تخمينك التالي يبدأ من اليمين.`)}</p><form class="wordguess-native" onsubmit="event.preventDefault();submitWordguess(${s.run},${s.attempts.length})"><label class="sr" for="wordguessInput">اكتب كلمة عربية من ${s.size} حروف</label><input id="wordguessInput" value="${esc(s.entry)}" placeholder="اكتب كلمة من ${s.size} حروف…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="wordguessMessage" onfocus="this.closest('.wordguess-panel').classList.add('wordguess-typing')" onblur="this.closest('.wordguess-panel').classList.remove('wordguess-typing')" oninput="if(!event.isComposing)readWordguessDraft(this.value,${s.run},${s.attempts.length})" oncompositionend="readWordguessDraft(this.value,${s.run},${s.attempts.length})"><button class="primary" type="button" onclick="submitWordguess(${s.run},${s.attempts.length})">تحقق ↵</button></form>${wordsKeyboard('typeWordguess', [], s.keyStates)}<div class="actions wordguess-controls"><button onclick="typeWordguess('backspace',${s.run},${s.attempts.length})" aria-label="حذف الحرف المحدد أو آخر حرف">⌫ حذف</button><button onclick="typeWordguess('clear',${s.run},${s.attempts.length})">امسح التخمين</button><button onclick="hintWordguess(${s.run},${s.attempts.length})" ${s.hinted ? 'disabled' : ''}>💡 الفئة · −10</button></div>`}</section>`,
+      `<section class="panel wordguess-panel ${restoreInput ? 'wordguess-typing' : ''}"><div class="words-status"><span class="pill">${s.size} حروف</span><span class="pill">${s.attempts.length} / 6 محاولات</span>${s.helperPenalty || s.hinted ? `<span class="pill">مساعدات: −${s.helperPenalty + (s.hinted ? 10 : 0)}</span>` : ''}${['focus', 'lab'].includes(s.mode) ? `<span class="pill">${s.mode === 'lab' ? '🔬 مختبر الفرضيات' : '🧩 وضع الاستنتاج'}</span>` : ''}${s.hinted ? `<span class="pill">الفئة: ${esc(cat)}</span>` : ''}</div><div class="wordguess-board" role="group" aria-label="محاولات تخمين الكلمة">${rows}</div>${wordguessNotebook(s)}<div class="wordguess-legend"><span><i class="correct"></i>حرف ومكان صحيح</span><span><i class="present"></i>موجود بمكان آخر</span><span><i class="absent"></i>غير موجود أو زائد</span></div>${wordguessLabHTML(s)}${s.over ? `<div class="trivia-explanation center" id="wordguessOutcome" role="status"><b>${s.won ? 'أحسنت! الكلمة هي' : 'الكلمة كانت'}: ${esc(s.item.word)}</b><p>${esc(s.item.hint)}</p></div><div class="actions"><button class="primary" onclick="finishWordguess(${s.run})">اعرض النتيجة ←</button></div>` : `<p class="wordguess-feedback" id="wordguessMessage" role="status">${esc(s.feedback || `اكتب كلمة من ${s.size} حروف؛ تخمينك التالي يبدأ من اليمين.`)}</p><form class="wordguess-native" onsubmit="event.preventDefault();submitWordguess(${s.run},${s.attempts.length})"><label class="sr" for="wordguessInput">اكتب كلمة عربية من ${s.size} حروف</label><input id="wordguessInput" value="${esc(s.entry)}" placeholder="اكتب كلمة من ${s.size} حروف…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="wordguessMessage" onfocus="this.closest('.wordguess-panel').classList.add('wordguess-typing')" onblur="this.closest('.wordguess-panel').classList.remove('wordguess-typing')" oninput="if(!event.isComposing)readWordguessDraft(this.value,${s.run},${s.attempts.length})" oncompositionend="readWordguessDraft(this.value,${s.run},${s.attempts.length})"><button class="primary" type="button" onpointerdown="if(event.isPrimary&&event.button===0)event.preventDefault()" onclick="submitWordguess(${s.run},${s.attempts.length})">تحقق ↵</button></form>${wordsKeyboard('typeWordguess', [], s.keyStates)}<div class="actions wordguess-controls"><button onclick="typeWordguess('backspace',${s.run},${s.attempts.length})" aria-label="حذف الحرف المحدد أو آخر حرف">⌫ حذف</button><button onclick="typeWordguess('clear',${s.run},${s.attempts.length})">امسح التخمين</button><button id="wordguessHint" onclick="hintWordguess(${s.run},${s.attempts.length})" ${s.hinted ? 'disabled' : ''}>💡 الفئة · −10</button></div>`}</section>`,
     ),
   );
   if (restoreInput && !s.over) {
@@ -26545,6 +26935,14 @@ function renderWordguess() {
     document
       .querySelector('.wordguess-row.current')
       ?.children[s.entryCursor ?? restoreCell]?.focus({ preventScroll: true });
+  } else if (restoreHelper && !s.over) {
+    const helper = $(restoreHelper);
+    if (helper && !helper.disabled) helper.focus({ preventScroll: true });
+    else if (restoreHelper === 'wordguessCompare')
+      document.querySelector('[data-hypothesis-choice]')?.focus({ preventScroll: true });
+    else if (restoreHelper === 'wordguessHint') $('wordguessInput')?.focus({ preventScroll: true });
+    else if (restoreHelper.startsWith('wordguessCandidates'))
+      $('wordguessCandidateSearch')?.focus({ preventScroll: true });
   } else wordsRestoreLetterFocus(focusedLetter);
 }
 function readWordguessDraft(raw, run, turn) {
@@ -27180,7 +27578,60 @@ function finishTarget() {
       `<section class="panel target-review"><h3>🎯 اقرأ أداءك</h3>${targetGoalsHTML(s)}<div class="chips"><span class="chip">الدقة: ${accuracy}%</span>${reactions.length ? `<span class="chip">أسرع إصابة: ${Math.round(reactions[0])} ملّي ثانية</span><span class="chip">الاستجابة الوسطية: ${Math.round(median)} ملّي ثانية</span>` : ''}${['sequence', 'memory'].includes(s.mode) ? `<span class="chip">مسارات كاملة: ${s.completedPaths}</span>` : ''}${s.mode === 'intercept' && s.interceptErrors.length ? `<span class="chip">متوسط بُعد التصويب عن المركز: ${Math.round(s.interceptErrors.reduce((sum, value) => sum + value, 0) / s.interceptErrors.length)} بكسل</span>` : ''}</div>${reactions.length ? `<div class="target-reaction-bars" aria-label="توزيع أزمنة الاستجابة بالملّي ثانية">${buckets.map(([label, count]) => `<div><span>${label} ملّي ثانية</span><b>${count} إصابات</b><meter min="0" max="${reactions.length}" value="${count}" aria-label="${count} إصابات في ${label} ملّي ثانية"></meter></div>`).join('')}</div>` : ''}<p class="note">${s.mode === 'intercept' ? 'راقب اتجاه الأثر؛ إصابة داخل الدائرة كافية، والهدف يرتد عند الحدود. المؤشر يتحرك بالأسهم ويمكن إعادته للوسط بـHome.' : s.wrong > s.misses ? 'خفف الضغطات العشوائية؛ إصابة مؤكدة أفضل من سلسلة أخطاء.' : s.misses > s.hits ? 'ابدأ بالمستوى المريح حتى تقل الأهداف التي تفوتك، ثم ارفع السرعة.' : 'ركز على استمرار السلسلة؛ السرعة تزيد مع كل خمس إصابات.'}</p></section>`,
     );
 }
+function wordsPracticeKeydown(event) {
+  if (
+    !state?.done ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.altKey ||
+    event.isComposing ||
+    event.repeat ||
+    advancedEditableTarget(event.target)
+  )
+    return false;
+  const trivia = event.target.closest?.('#triviaPractice'),
+    hangman = event.target.closest?.('#hangmanPractice');
+  if (!trivia && !hangman) return false;
+  if (['Enter', ' '].includes(event.key) && event.target.closest?.('button,a,summary'))
+    return false;
+  if (trivia && !triviaPracticeBlocked(state.run)) {
+    const p = state.practice;
+    if (!p || !p.questions[p.index]) return false;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (p.choice !== null) nextTriviaPractice(state.run, p.serial, p.index);
+      else if (p.questions[p.index].statements)
+        submitTriviaPracticeFacts(state.run, p.serial, p.index);
+      return true;
+    }
+    if (p.choice === null && /^[1-4]$/.test(latin(event.key))) {
+      event.preventDefault();
+      const choice = Number(latin(event.key)) - 1;
+      if (p.questions[p.index].statements)
+        toggleTriviaPracticeFact(choice, state.run, p.serial, p.index);
+      else answerTriviaPractice(choice, state.run, p.serial, p.index);
+      return true;
+    }
+  }
+  if (hangman && !hangmanPracticeBlocked(state.run)) {
+    const p = state.hangPractice;
+    if (!p || !p.items[p.index]) return false;
+    if (p.solved && event.key === 'Enter') {
+      event.preventDefault();
+      nextHangmanPractice(state.run, p.index, p.serial);
+      return true;
+    }
+    const letter = wordsNormalizeKey(event.key);
+    if (!p.solved && arabicKeyboard.includes(letter)) {
+      event.preventDefault();
+      guessHangmanPractice(letter, state.run, p.index, p.serial);
+      return true;
+    }
+  }
+  return false;
+}
 document.addEventListener('keydown', (event) => {
+  if (wordsPracticeKeydown(event)) return;
   if (
     !wordsGameIds.has(screen) ||
     wordsBlocked(screen) ||
@@ -28713,7 +29164,7 @@ setup = function (id, internal = false) {
     )}${partyChoice('partyTeamTactic', 'تكتيك النقاط', [
       ['classic', 'النقاط الأساسية'],
       ['streak', 'سلسلة الفريق · كل 3 صح متتالٍ +5'],
-    ])}</div><div class="party-explainer"><b>🎬 تحديات أقرب للحياة</b><p>48 موقفاً حركياً جديداً و24 بطاقة كلمات ممنوعة. قائد التمثيل يؤدي المشهد كاملًا؛ يكفي أن يصف الفريق الفعل بوضوح. مراقب من الخصم يسجّل المخالفة، والتراجع يصلح ضغطة غير مقصودة.</p></div>`;
+    ])}</div><div class="party-explainer"><b>🎬 تحديات أقرب للحياة</b><p>${partyMimeScenes.length} موقفاً حركياً و${new Set([...tabooDeck, ...partyExtraTaboo].map((card) => partyTeamCardKey('taboo', card))).size} بطاقة كلمات ممنوعة بأهداف مختلفة. قائد التمثيل يؤدي المشهد كاملًا؛ يكفي أن يصف الفريق الفعل بوضوح. مراقب من الخصم يسجّل المخالفة، والتراجع يصلح ضغطة غير مقصودة.</p></div>`;
   if (id === 'teamcup')
     body += `<div class="fields">${partyChoice('partyTeamFormat', 'من يقود الدور؟', [
       ['captain', 'قائد واحد'],
@@ -28817,6 +29268,19 @@ function partyDraftTeams(mode) {
 function partyStrength(name) {
   const score = store.scores[name];
   return score?.rounds ? score.points / score.rounds : 0;
+}
+function partyTeamCardKey(mode, card) {
+  return norm(
+    mode === 'trivia' ? card?.question || '' : Array.isArray(card) ? card[0] : card || '',
+  );
+}
+function partyTeamDeck(mode, cards) {
+  const unique = new Map();
+  for (const card of cards) {
+    const key = partyTeamCardKey(mode, card);
+    if (key && !unique.has(key)) unique.set(key, card);
+  }
+  return shuffle([...unique.values()]);
 }
 function partyTeamsHTML(teams, names = ['الفريق الأول', 'الفريق الثاني'], scores = null) {
   return `<div class="party-teams">${teams.map((members, i) => `<div class="party-team party-team-${i}"><div class="party-team-title"><b>${i ? '🐉' : '🦅'} ${esc(names[i])}</b>${scores ? `<strong>${scores[i]}</strong>` : `<span>${members.length} لاعبين</span>`}</div><div class="party-members">${members.map((n) => `<span>${esc(n)}</span>`).join('')}</div></div>`).join('')}</div>`;
@@ -28966,6 +29430,19 @@ function partyPassToken() {
 function partyAcceptPass(token) {
   return token === undefined || String(token) === String(state?.privatePass);
 }
+function partyRenderWithFocus(render, fallback = '') {
+  const active = document.activeElement,
+    action = active?.closest('#app button[onclick]')?.getAttribute('onclick');
+  render();
+  const replacement = action
+    ? [...document.querySelectorAll('#app button[onclick]')].find(
+        (button) => button.getAttribute('onclick') === action && !button.disabled,
+      )
+    : null;
+  (replacement || (fallback ? document.querySelector(fallback) : null))?.focus({
+    preventScroll: true,
+  });
+}
 function partyHidePrivate() {
   const s = state;
   if (!partyGameIDs.has(s?.id) || partyBlocked(s.id)) return false;
@@ -29065,15 +29542,16 @@ function startPartyGame(id) {
       teamTactic,
       teamFormat,
       decks: {
-        mime: shuffle(
+        mime: partyTeamDeck(
+          'mime',
           mimeDeck === 'scenes'
             ? partyMimeScenes
             : mimeDeck === 'objects'
               ? items.map((v) => v.name)
               : [...items.map((v) => v.name), ...partyMimeScenes],
         ),
-        taboo: shuffle([...tabooDeck, ...partyExtraTaboo]),
-        trivia: shuffle(triviaBank),
+        taboo: partyTeamDeck('taboo', [...tabooDeck, ...partyExtraTaboo]),
+        trivia: partyTeamDeck('trivia', triviaBank),
       },
       deckIndex: { mime: 0, taboo: 0, trivia: 0 },
       cardToken: 0,
@@ -29221,7 +29699,7 @@ function teamCupRelayResume(token = partyPassToken()) {
   s.stageToken = ++partyActionSerial;
   if (s.mode !== 'trivia') {
     const boosted = s.boostActive;
-    teamCupNextCard();
+    teamCupNextCard(norm(s.relayRetiredCard));
     s.boostActive = boosted;
   } else s.cardToken = ++partyActionSerial;
   s.hiddenCard = false;
@@ -29238,17 +29716,23 @@ function teamCupRelayHTML(s, ready = false) {
 function partySeconds(s = state) {
   return Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000));
 }
-function teamCupNextCard() {
+function teamCupNextCard(avoidTarget = '') {
   const s = state,
     mode = s.mode;
-  if (s.deckIndex[mode] >= s.decks[mode].length) {
-    const last = s.card;
-    s.decks[mode] = shuffle(s.decks[mode]);
-    if (s.decks[mode].length > 1 && s.decks[mode][0] === last)
-      [s.decks[mode][0], s.decks[mode][1]] = [s.decks[mode][1], s.decks[mode][0]];
-    s.deckIndex[mode] = 0;
+  // A relay retires the old secret, including equivalent spellings of its target.
+  // Limit retries even if a custom or future deck contains only one distinct answer.
+  for (let draw = 0; draw <= s.decks[mode].length; draw++) {
+    if (s.deckIndex[mode] >= s.decks[mode].length) {
+      const last = partyTeamCardKey(mode, s.card);
+      s.decks[mode] = shuffle(s.decks[mode]);
+      const different = s.decks[mode].findIndex((card) => partyTeamCardKey(mode, card) !== last);
+      if (different > 0)
+        [s.decks[mode][0], s.decks[mode][different]] = [s.decks[mode][different], s.decks[mode][0]];
+      s.deckIndex[mode] = 0;
+    }
+    s.card = s.decks[mode][s.deckIndex[mode]++];
+    if (!avoidTarget || partyTeamCardKey(mode, s.card) !== avoidTarget) break;
   }
-  s.card = s.decks[mode][s.deckIndex[mode]++];
   s.cardToken = ++partyActionSerial;
   s.feedback = null;
   s.boostActive = false;
@@ -29500,6 +29984,47 @@ function finishTeamCup() {
   );
 }
 
+// Match complete words and phrases with common Arabic prefixes and possessives.
+// Keep original endings: «كتابة» is not «كتاب» + the possessive «ه».
+function partyContainsSecret(text, pair = state?.pair || []) {
+  const words = (value) =>
+      String(value)
+        .replace(/[\u064B-\u065F\u0670ـ]/gu, '')
+        .replace(/[أإآ]/gu, 'ا')
+        .replace(/ى/gu, 'ي')
+        .toLowerCase()
+        .match(/[\p{L}\p{N}]+/gu) || [],
+    tokens = words(text),
+    suffixes = '(?:كما|هما|كم|كن|هم|هن|نا|ها|ي|ك|ه)';
+  return pair.some((secret) => {
+    const phrase = words(secret).map((part, offset) => {
+      const base = norm(part),
+        stem = part.endsWith('ة') ? base.slice(0, -1) + 'ت' : base;
+      return {
+        base,
+        attached:
+          offset === 0 ? new RegExp(`^(?:و|ف)?(?:(?:ب|ك)?(?:ال)?|لل|ل)${base}(?:ا)?$`, 'u') : null,
+        possessed: new RegExp(
+          `^${offset === 0 ? '(?:و|ف)?(?:ب|ك|ل)?' : ''}${stem}${suffixes}$`,
+          'u',
+        ),
+      };
+    });
+    if (!phrase.length) return false;
+    return tokens.some((_, start) =>
+      phrase.every((part, offset) => {
+        const token = tokens[start + offset];
+        if (!token) return false;
+        if (norm(token) === part.base) return true;
+        const canonical = token.replace(/ة/gu, 'ه');
+        if (part.attached?.test(canonical)) return true;
+        // A possessive cannot end in ة or carry the definite article.
+        return !token.endsWith('ة') && part.possessed.test(canonical);
+      }),
+    );
+  });
+}
+
 // Undercover: equal-looking secret cards, private ballots and one fair runoff.
 function undercoverChooseRoles(s) {
   s.roleCounts ||= s.players.map(() => 0);
@@ -29564,6 +30089,7 @@ function undercoverRound() {
     voteChoice: null,
     voteCandidates: s.players.map((_, i) => i),
     runoff: false,
+    revealed: false,
     stage: 'reveal-handoff',
     endAt: 0,
   });
@@ -29759,9 +30285,7 @@ function undercoverRecordInquiry(token = partyCardToken()) {
     !answer
   )
     return toast('اختاروا شخصاً آخر واكتبوا السؤال والرد أولاً.');
-  if (
-    s.pair.some((word) => norm(question).includes(norm(word)) || norm(answer).includes(norm(word)))
-  )
+  if (partyContainsSecret(question, s.pair) || partyContainsSecret(answer, s.pair))
     return toast('السؤال أو الرد يتضمن كلمة سرية؛ صفوها دون تسميتها.');
   s.questions.push({ asker, target, question, answer });
   undercoverSkipInquiry(token);
@@ -29811,11 +30335,10 @@ function undercoverNextClue(token = partyCardToken()) {
   const s = state,
     cycle = Math.floor(s.clueIndex / s.players.length),
     player = undercoverCurrentClue(s),
-    text = (s.clueDraft || '').trim().replace(/\s+/gu, ' '),
-    word = s.hidden.includes(player) ? s.pair[1] : s.pair[0];
+    text = (s.clueDraft || '').trim().replace(/\s+/gu, ' ');
   if (!Number.isInteger(player)) return toast('اختاروا صاحب التلميح أولاً.');
-  if (text && norm(text).includes(norm(word))) {
-    toast('هذا التلميح يحتوي كلمتك؛ اختر وصفاً آخر كي لا تكشفها.');
+  if (text && partyContainsSecret(text, s.pair)) {
+    toast('التلميح يتضمن كلمة سرية؛ اختاروا وصفاً آخر دون تسمية أي كلمة.');
     return $('undercoverClue')?.focus();
   }
   s.clues.push({ player, cycle, text });
@@ -29893,7 +30416,7 @@ function undercoverAccuse(token = partyCardToken()) {
   if (!Number.isInteger(target) || target < -1 || target >= s.players.length || target === player)
     return toast('اختاروا شخصاً آخر أو امتنعوا.');
   if (target >= 0 && !reason) return toast('دوّن دليلك قبل ترشيح شخص للدفاع.');
-  if (reason && s.pair.some((word) => norm(reason).includes(norm(word))))
+  if (reason && partyContainsSecret(reason, s.pair))
     return toast('اشرح الدليل دون ذكر أي كلمة سرية.');
   s.accusations.push({ player, target, reason: target >= 0 ? reason : '' });
   s.accusationIndex++;
@@ -29922,7 +30445,7 @@ function undercoverDefend(skip = false, token = partyCardToken()) {
     player = s.defenseCandidates[s.defenseIndex],
     text = s.defenseDraft.trim().replace(/\s+/gu, ' ');
   if (!skip && !text) return toast('اكتب دفاعاً قصيراً أو اختر عدم التعليق.');
-  if (!skip && s.pair.some((word) => norm(text).includes(norm(word))))
+  if (!skip && partyContainsSecret(text, s.pair))
     return toast('وضّح تلميحك دون قول الكلمة السرية.');
   s.defenses.push({ player, text: skip ? '' : text });
   s.defenseIndex++;
@@ -29990,13 +30513,13 @@ function undercoverChoose(i, token = partyCardToken()) {
     return;
   if (token !== undefined && String(token) !== String(state.voteToken)) return;
   state.voteChoice = i;
-  renderUndercoverVote();
+  partyRenderWithFocus(renderUndercoverVote);
 }
 function undercoverConfidence(value, token = partyCardToken()) {
   if (!partyStage('undercover', 'vote-view') || ![1, 2, 3].includes(value)) return;
   if (token !== undefined && String(token) !== String(state.voteToken)) return;
   state.confidence = value;
-  renderUndercoverVote();
+  partyRenderWithFocus(renderUndercoverVote);
 }
 function undercoverReasonUpdate() {
   if (!partyStage('undercover', 'vote-view')) return;
@@ -30065,11 +30588,23 @@ function undercoverRunoff() {
   });
   renderUndercoverVoteHandoff();
 }
+function undercoverBallotsHTML(s, ballots, label) {
+  if (!s.revealed || ballots?.votes?.length !== s.players.length) return '';
+  return `<details class="history party-ballot-review"><summary>${esc(label)}</summary><div class="party-timeline">${s.players
+    .map((name, player) => {
+      const target = ballots.votes[player],
+        confidence = ['احتمال', 'أرجّح', 'واثق'][(ballots.confidence?.[player] || 2) - 1],
+        reason = ballots.reasons?.[player];
+      return `<div><p><b>${esc(name)}</b> ← ${target < 0 ? 'امتناع' : esc(s.players[target])}<small>الثقة: ${confidence}${reason ? ` · ${esc(reason)}` : ''}</small></p></div>`;
+    })
+    .join('')}</div></details>`;
+}
 function finishUndercoverRound(eliminated) {
   if (!partyStage('undercover', 'vote-view') || state.votes.length !== state.players.length) return;
   const s = state,
     normalWin = eliminated !== null && s.hidden.includes(eliminated);
   s.stage = 'round-result';
+  s.revealed = true;
   s.stageToken = ++partyActionSerial;
   s.roundPoints = s.players.map((name, i) => {
     const points = s.hidden.includes(i)
@@ -30082,6 +30617,7 @@ function finishUndercoverRound(eliminated) {
     return points;
   });
   s.history.push({
+    revealed: true,
     pair: [...s.pair],
     hidden: [...s.hidden],
     eliminated,
@@ -30106,7 +30642,7 @@ function finishUndercoverRound(eliminated) {
           [s.votes.filter((vote) => vote >= 0).length, 'أصوات مسجّلة'],
           [s.votes.filter((vote) => s.hidden.includes(vote)).length, 'أصوات كشفت الدخيل'],
         ],
-      )}<div class="party-word-reveal"><div><small>الكلمة الأصلية</small><b>${esc(s.pair[0])}</b></div><div><small>الكلمة الدخيلة</small><b>${esc(s.pair[1])}</b></div></div><p class="note">الفريق الدخيل: ${s.hidden.map((i) => esc(s.players[i])).join(' · ')}</p><div class="party-vote-results">${s.players.map((n, i) => `<div><span>${s.hidden.includes(i) ? '🥸' : '👤'} ${esc(n)}</span><span>${s.tally[i]} أصوات</span><b>+${s.roundPoints[i]}</b></div>`).join('')}</div><details class="history"><summary>الأصوات بعد إقفال الجولة</summary><div class="party-timeline">${s.players.map((n, i) => `<div><p>${esc(n)} ← ${s.votes[i] < 0 ? 'امتناع' : esc(s.players[s.votes[i]])}</p></div>`).join('')}</div></details>${undercoverClueTrail(s)}${undercoverCourtTrail(s)}${undercoverRoundReview(s)}<div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="undercoverAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'جولة بكلمات جديدة'} ←</button></div></section>${partySessionScore(s)}`,
+      )}<div class="party-word-reveal"><div><small>الكلمة الأصلية</small><b>${esc(s.pair[0])}</b></div><div><small>الكلمة الدخيلة</small><b>${esc(s.pair[1])}</b></div></div><p class="note">الفريق الدخيل: ${s.hidden.map((i) => esc(s.players[i])).join(' · ')}</p><div class="party-vote-results">${s.players.map((n, i) => `<div><span>${s.hidden.includes(i) ? '🥸' : '👤'} ${esc(n)}</span><span>${s.tally[i]} أصوات</span><b>+${s.roundPoints[i]}</b></div>`).join('')}</div>${undercoverBallotsHTML(s, { votes: s.votes, confidence: s.voteConfidence, reasons: s.voteReasons }, 'الأصوات النهائية بعد إقفال الجولة')}${s.firstBallots ? undercoverBallotsHTML(s, s.firstBallots, 'التصويت الأول قبل الإعادة · للمراجعة فقط') : ''}${undercoverClueTrail(s)}${undercoverCourtTrail(s)}${undercoverRoundReview(s)}<div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="undercoverAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'جولة بكلمات جديدة'} ←</button></div></section>${partySessionScore(s)}`,
     ),
   );
 }
@@ -30115,15 +30651,22 @@ function undercoverRoundReview(s) {
     .map((confidence, player) => ({ confidence, player, target: s.votes[player] }))
     .filter((vote) => vote.confidence === 3 && vote.target >= 0);
   const right = decisive.filter((vote) => s.hidden.includes(vote.target)).length;
-  return `<div class="party-debrief"><h3>🧭 ماذا أقنعكم؟</h3><p>${decisive.length ? `${right} / ${decisive.length} من الأصوات الواثقة أشارت إلى كلمة دخيلة.` : 'لم تُسجّل أصوات واثقة؛ قارنوا التلميحات قبل رفع الثقة.'} التلميح المختلف دليل محتمل؛ المعلومة الدقيقة في الاستجواب تساعدكم على التحقق.</p><div class="party-reasons">${s.players.map((name, i) => `<p><b>${esc(name)}</b><span>${['احتمال', 'أرجّح', 'واثق'][(s.voteConfidence[i] || 2) - 1]} · ${s.votes[i] < 0 ? 'امتنع' : s.hidden.includes(s.votes[i]) ? '✓ أشار للدخيل' : 'لم يشر للدخيل'}</span>${s.voteReasons[i] ? `<small>${esc(s.voteReasons[i])}</small>` : ''}</p>`).join('')}</div>${s.runoff ? '<p class="note">حُفظت الأصوات الأولى للمراجعة؛ النقاط حُسبت من التصويت النهائي فقط.</p>' : ''}</div>`;
+  return `<div class="party-debrief"><h3>🧭 ماذا أقنعكم؟</h3><p>${decisive.length ? `${right} / ${decisive.length} من الأصوات الواثقة أشارت إلى كلمة دخيلة.` : 'لم تُسجّل أصوات واثقة؛ قارنوا التلميحات قبل رفع الثقة.'} التلميح المختلف دليل محتمل؛ المعلومة الدقيقة في الاستجواب تساعدكم على التحقق.</p><div class="party-reasons">${s.players.map((name, i) => `<p><b>${esc(name)}</b><span>${['احتمال', 'أرجّح', 'واثق'][(s.voteConfidence[i] || 2) - 1]} · ${s.votes[i] < 0 ? 'امتنع' : s.hidden.includes(s.votes[i]) ? '✓ أشار للدخيل' : 'لم يشر للدخيل'}</span>${s.voteReasons[i] ? `<small>${esc(s.voteReasons[i])}</small>` : ''}</p>`).join('')}</div>${s.runoff ? '<p class="note">راجعوا التصويت الأول أعلاه وقارنوه بالقرار النهائي؛ النقاط حُسبت من التصويت النهائي فقط.</p>' : ''}</div>`;
 }
 function undercoverSessionReview(s) {
+  if (!s.done) return '';
   const found = s.history.filter((round) => round.normalWin).length;
   return `<div class="party-debrief"><h3>🔍 سجل التحقيقات</h3>${partyMetrics([
     [found, 'جولات كشفت الدخيل'],
     [s.history.reduce((sum, round) => sum + round.questions.length, 0), 'أسئلة متبادلة'],
     [s.history.reduce((sum, round) => sum + round.clues.length, 0), 'تلميحات مسجّلة'],
-  ])}<div class="party-timeline">${s.history.map((round, i) => `<div><span>${i + 1}</span><p><b>${esc(round.pair[0])} / ${esc(round.pair[1])}</b><small>${round.normalWin ? 'كُشف الدخيل' : 'نجا الدخيل'} · ${round.questions.length} أسئلة${s.court ? ` · ${round.defenses?.length || 0} دفوع` : ''}</small></p><strong>${round.normalWin ? '🔍' : '🥸'}</strong></div>`).join('')}</div>${s.court ? s.history.map((round, i) => `<div class="party-court-archive"><p class="party-kicker">ملف الجولة ${i + 1}</p>${undercoverCourtTrail({ ...round, players: s.players })}</div>`).join('') : ''}</div>`;
+  ])}<div class="party-timeline">${s.history.map((round, i) => `<div><span>${i + 1}</span><p><b>${esc(round.pair[0])} / ${esc(round.pair[1])}</b><small>${round.normalWin ? 'كُشف الدخيل' : 'نجا الدخيل'} · ${round.questions.length} أسئلة${s.court ? ` · ${round.defenses?.length || 0} دفوع` : ''}</small></p><strong>${round.normalWin ? '🔍' : '🥸'}</strong></div>`).join('')}</div>${s.history
+    .filter((round) => round.revealed)
+    .map((round, i) => {
+      const archived = { ...round, players: s.players };
+      return `<details class="history party-round-archive"><summary>ملف الجولة ${i + 1} · ${esc(round.pair[0])} / ${esc(round.pair[1])}</summary><p class="note">الفريق الدخيل: ${round.hidden.map((player) => esc(s.players[player])).join(' · ')}. ${round.eliminated === null ? 'لم يُحسم شخص واحد في التصويت.' : `اختارت اللمّة ${esc(s.players[round.eliminated])}.`}</p>${undercoverClueTrail(archived)}${undercoverCourtTrail(archived)}${undercoverBallotsHTML(archived, round, 'الأصوات النهائية')}${round.firstBallots ? undercoverBallotsHTML(archived, round.firstBallots, 'التصويت الأول قبل الإعادة · للمراجعة فقط') : ''}</details>`;
+    })
+    .join('')}</div>`;
 }
 function undercoverAdvance(token = partyStageToken()) {
   if (!partyStage('undercover', 'round-result') || !partyAcceptStage(token)) return;
@@ -30443,7 +30986,7 @@ function renderCreativeGallery() {
   setHTML(
     partyWrap(
       'improv',
-      `<section class="panel"><p class="party-kicker">الردود بلا أسماء · الموقف ${s.round + 1}</p><h3 class="party-question">${esc(s.prompt)}</h3>${creativeBrief(s)}${creativeGalleryHTML(s)}<p class="note center">اقرؤوا جميع الردود معاً. التصويت سري، ولكل شخص صوت واحد لرد غير رده.</p><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="creativeStartVoting()">ابدأ التصويت</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryToggle()">${s.galleryFocus ? 'اعرضوا كل الأفكار' : '🎤 اعرضوا فكرة واحدة كل مرة'}</button></div></section>`,
+      `<section class="panel"><p class="party-kicker">الردود بلا أسماء · الموقف ${s.round + 1}</p><h3 class="party-question">${esc(s.prompt)}</h3>${creativeBrief(s)}${creativeGalleryHTML(s)}<p class="note center">اقرؤوا جميع الردود معاً. ${s.creativeBallot === 'ranked' ? 'في التصويت السري اختاروا رداً أول +5، ورداً آخر للتقدير +2؛ لا تختاروا ردكم.' : 'التصويت سري، ولكل شخص صوت واحد لرد غير رده.'}</p><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="creativeStartVoting()">ابدأ التصويت</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryToggle()">${s.galleryFocus ? 'اعرضوا كل الأفكار' : '🎤 اعرضوا فكرة واحدة كل مرة'}</button></div></section>`,
     ),
   );
 }
@@ -30451,12 +30994,12 @@ function creativeGalleryHTML(s) {
   if (!s.galleryFocus)
     return s.creativeMode === 'chain' ? creativeStoryHTML(s) : partyCreativeCards(s);
   const entry = s.entries[s.galleryIndex];
-  return `<div class="party-focus-card" aria-live="polite"><span class="party-entry-number">${s.galleryIndex + 1}</span><p>${esc(entry.text)}</p><small>الفكرة ${s.galleryIndex + 1} / ${s.entries.length} · بلا أسماء</small></div><div class="actions"><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(-1)" ${s.galleryIndex === 0 ? 'disabled' : ''}>الفكرة السابقة</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(1)" ${s.galleryIndex === s.entries.length - 1 ? 'disabled' : ''}>الفكرة التالية</button></div>`;
+  return `<div class="party-focus-card" tabindex="-1" aria-live="polite"><span class="party-entry-number">${s.galleryIndex + 1}</span><p>${esc(entry.text)}</p><small>الفكرة ${s.galleryIndex + 1} / ${s.entries.length} · بلا أسماء</small></div><div class="actions"><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(-1)" ${s.galleryIndex === 0 ? 'disabled' : ''}>الفكرة السابقة</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(1)" ${s.galleryIndex === s.entries.length - 1 ? 'disabled' : ''}>الفكرة التالية</button></div>`;
 }
 function creativeGalleryToggle(token = partyStageToken()) {
   if (!partyStage('improv', 'gallery') || !partyAcceptStage(token)) return;
   state.galleryFocus = !state.galleryFocus;
-  renderCreativeGallery();
+  partyRenderWithFocus(renderCreativeGallery);
 }
 function creativeGalleryMove(direction, token = partyStageToken()) {
   if (
@@ -30470,7 +31013,7 @@ function creativeGalleryMove(direction, token = partyStageToken()) {
     0,
     Math.min(state.entries.length - 1, state.galleryIndex + direction),
   );
-  renderCreativeGallery();
+  partyRenderWithFocus(renderCreativeGallery, '.party-focus-card');
 }
 function creativeStartVoting(token = partyStageToken()) {
   if (!partyStage('improv', 'gallery') || !partyAcceptStage(token)) return;
@@ -30514,7 +31057,7 @@ function creativeChoose(i, token = partyCardToken()) {
   if (token !== undefined && String(token) !== String(state.voteToken)) return;
   state.voteChoice = i;
   if (state.secondChoice === i) state.secondChoice = null;
-  renderCreativeVote();
+  partyRenderWithFocus(renderCreativeVote);
 }
 function creativeAppreciationHTML(s) {
   if (s.creativeBallot !== 'ranked') return '';
@@ -30532,7 +31075,7 @@ function creativeChooseSecond(i, token = partyCardToken()) {
     return;
   if (token !== undefined && String(token) !== String(state.voteToken)) return;
   state.secondChoice = i;
-  renderCreativeVote();
+  partyRenderWithFocus(renderCreativeVote);
 }
 function creativeConfirmVote(token = partyCardToken()) {
   if (!partyStage('improv', 'creative-vote-view') || state.voteChoice === null) return;
@@ -30961,7 +31504,7 @@ function labFinish(title, text) {
     );
 }
 function labToolbar() {
-  return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labRedo" onclick="labRedo()" ${state.future?.length ? '' : 'disabled'}>↷ إعادة</button><button id="labHint" onclick="labHint()">✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
+  return `<div class="lab-tools"><button id="labUndo" onclick="labUndo()" ${state.history.length ? '' : 'disabled'}>↶ تراجع</button><button id="labRedo" onclick="labRedo()" ${state.future?.length ? '' : 'disabled'}>↷ إعادة</button><button id="labHint" onclick="labHint()" ${state.pipeTest ? 'disabled' : ''}>✦ تلميح <small>−8</small></button><button id="labReset" onclick="labReset()">↺ البداية</button></div><div id="labMessage" class="lab-message" role="status" aria-live="polite">${esc(state.message || 'فكّر براحتك؛ لا يوجد حد للوقت.')}</div>`;
 }
 // The optional lens compares legal moves using visible board data only.
 // It never reads generated answers, spends hints, or changes the live board.
@@ -31054,7 +31597,7 @@ function labMoveLensData(s = state) {
   return {
     kind: 'pipes',
     label: direction === 1 ? 'دوّر مع الساعة' : 'دوّر عكس الساعة',
-    blocked: !!s.pipeLocked[i] || board[i] === s.board[i],
+    blocked: !!s.pipeTest || !!s.pipeLocked[i] || board[i] === s.board[i],
     locked: !!s.pipeLocked[i],
     before: { leaks: before.leaks, connected: before.connected.size },
     after: { leaks: after.leaks, connected: after.connected.size },
@@ -31081,7 +31624,7 @@ function labMoveLensHTML() {
       .map(([, , , , name]) => name)
       .join(
         '، ',
-      )}، ${labBitCount(BigInt(data.leaking))} فتحات غير موصولة">${labPipeSVG(data.mask, data.connected, labPipeIsSource(s.selected, s), data.leaking)}</div><p>${data.locked ? 'القطعة مثبتة. فك التثبيت لمتابعة تجربة اتجاهها.' : 'المعاينة تخص دوراناً واحداً. قد تحتاج زيادة مؤقتة في التسريب لبناء الشبكة الصحيحة.'}</p>`;
+      )}، ${labBitCount(BigInt(data.leaking))} فتحات غير موصولة">${labPipeSVG(data.mask, data.connected, labPipeIsSource(s.selected, s), data.leaking)}</div><p>${s.pipeTest ? 'اختبار التدفق مفتوح. أغلقه قبل تنفيذ أي تدوير؛ المعاينة لا تغيّر الاختبار.' : data.locked ? 'القطعة مثبتة. فك التثبيت لمتابعة تجربة اتجاهها.' : 'المعاينة تخص دوراناً واحداً. قد تحتاج زيادة مؤقتة في التسريب لبناء الشبكة الصحيحة.'}</p>`;
   }
   return `<div class="lab-lens-content"><p>اضغط أي خانة لاختيارها للمعاينة، ثم نفّذ الحركة من الزر أدناه. أغلق العدسة للعودة للعب مباشرة.</p><b>${coordinate}</b><span class="lab-lens-action">${data.label}</span>${details}<button id="labLensApply" onclick="labApplyLensMove()" ${data.blocked ? 'disabled' : ''}>${data.kind === 'lights' && s.mode === 'plan' ? data.label : 'نفّذ الحركة المعاينة'}</button><small class="lab-lens-note">المعاينة لا تغيّر اللوحة ولا تستهلك تلميحاً.</small></div>`;
 }
@@ -31149,7 +31692,12 @@ function renderLab() {
   if (scroll && horizontalScroll !== undefined) scroll.scrollLeft = horizontalScroll;
   if (focusCell)
     $('labBoard')?.querySelector(`[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
-  else if (focusID) $(focusID)?.focus({ preventScroll: true });
+  else if (focusID) {
+    const control = $(focusID);
+    if (control && !control.disabled) control.focus({ preventScroll: true });
+    else
+      $('labBoard')?.querySelector(`[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
+  }
 }
 function labRuleHTML(s = state) {
   const message = {
@@ -31485,7 +32033,7 @@ function labNonogramHTML() {
     )
     .join(
       '',
-    )}</div><div class="lab-line-tools"><button onclick="labCompleteLine('row')">× شطب بقية الصف</button><button onclick="labCompleteLine('column')">× شطب بقية العمود</button></div><p class="lab-board-status" role="status">${analysis.conflicts ? `! ${analysis.conflicts} خطوط تتعارض مع علاماتك؛ راجع الأرقام الحمراء.` : '✓ الأرقام الخضراء مكتملة · ! الأرقام الحمراء تتعارض مع علاماتك'}</p><div class="lab-scroll"><div id="labBoard" class="lab-nonogram ${s.brushOn ? 'lab-brushing' : ''}" style="--lab-n:${n}" role="group" aria-label="لوحة المنطق"><div class="lab-clue-corner" aria-hidden="true">▦</div>${s.colClues
+    )}</div><div class="lab-line-tools"><button id="labCompleteRow" onclick="labCompleteLine('row')">× شطب بقية الصف</button><button id="labCompleteColumn" onclick="labCompleteLine('column')">× شطب بقية العمود</button></div><p class="lab-board-status" role="status">${analysis.conflicts ? `! ${analysis.conflicts} خطوط تتعارض مع علاماتك؛ راجع الأرقام الحمراء.` : '✓ الأرقام الخضراء مكتملة · ! الأرقام الحمراء تتعارض مع علاماتك'}</p><div class="lab-scroll"><div id="labBoard" class="lab-nonogram ${s.brushOn ? 'lab-brushing' : ''}" style="--lab-n:${n}" role="group" aria-label="لوحة المنطق"><div class="lab-clue-corner" aria-hidden="true">▦</div>${s.colClues
     .map(
       (clues, c) =>
         `<div data-lab-axis="column" data-lab-line="${c}" class="lab-clue lab-col-clue ${s.selected % n === c ? 'lab-clue-selected' : ''} ${analysis.columns[c].conflict ? 'lab-clue-conflict' : ''} ${
@@ -31779,7 +32327,7 @@ function labPatternContentHTML() {
           .map((pattern, k) => {
             const index = page * 8 + k,
               selected = valid && pattern.every((v, j) => v === pending.pattern[j]);
-            return `<button class="lab-pattern-choice ${selected ? 'lab-pattern-picked' : ''}" data-pattern="${index}" aria-pressed="${!!selected}" aria-label="معاينة ترتيب ${index + 1}: ${pattern.map((v) => (v ? 'معبأ' : 'فارغ')).join('، ')}" onclick="labPreviewPattern('${data.axis}',${data.line},${index},'${s.board.join('')}')"><span class="lab-pattern-cells" style="--lab-n:${s.size}" aria-hidden="true">${pattern.map((v) => `<i class="${v ? 'lab-pattern-fill' : ''}">${v ? '' : '×'}</i>`).join('')}</span><small>ترتيب ${index + 1}${selected ? ' · محدد' : ''}</small></button>`;
+            return `<button id="labPatternChoice-${index}" class="lab-pattern-choice ${selected ? 'lab-pattern-picked' : ''}" data-pattern="${index}" aria-pressed="${!!selected}" aria-label="معاينة ترتيب ${index + 1}: ${pattern.map((v) => (v ? 'معبأ' : 'فارغ')).join('، ')}" onclick="labPreviewPattern('${data.axis}',${data.line},${index},'${s.board.join('')}')"><span class="lab-pattern-cells" style="--lab-n:${s.size}" aria-hidden="true">${pattern.map((v) => `<i class="${v ? 'lab-pattern-fill' : ''}">${v ? '' : '×'}</i>`).join('')}</span><small>ترتيب ${index + 1}${selected ? ' · محدد' : ''}</small></button>`;
           })
           .join('')}</div>`
   }${pages > 1 ? `<div class="lab-pattern-pages"><button id="labPatternPrev" onclick="labPatternPage(-1)" ${page ? '' : 'disabled'}>السابق</button><span dir="ltr">${page + 1} / ${pages}</span><button id="labPatternNext" onclick="labPatternPage(1)" ${page < pages - 1 ? '' : 'disabled'}>التالي</button></div>` : ''}${impact ? `<div class="lab-pattern-preview" role="status"><b>${impact.changes} خانات تتغير عند التطبيق</b><p>${impact.conflicts.length ? `! هذا الترتيب يتعارض مع ${data.axis === 'row' ? 'الأعمدة' : 'الصفوف'} ${impact.conflicts.map((line) => line + 1).join('، ')} وفق العلامات الحالية.` : '✓ جميع الخطوط المتقاطعة ما زالت تسمح بترتيب بعد هذه الفرضية.'}</p><button id="labPatternApply" onclick="labApplyPattern()" ${impact.changes ? '' : 'disabled'}>طبّق فرضيتي</button></div>` : '<p class="note center">اختر ترتيباً للمعاينة أولاً؛ اختيار البطاقة لا يغيّر اللوحة.</p>'}<p class="note center">هذه احتمالات من المعطيات المرئية؛ التوافق المحلي لا يثبت صحة الحل. كل خانة تتغير تحسب حركة، ويمكن التراجع عن المجموعة بخطوة واحدة.</p>`;
@@ -32452,7 +33000,7 @@ function labPipesTap(i, override = null, commit = false) {
   if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
   if (!commit && labPreviewTap(i, override ? (override === -1 ? 'counter' : 'clockwise') : null))
     return;
-  if (!commit && state.pipeTest) {
+  if (state.pipeTest) {
     labSelect(i);
     return;
   }
@@ -32485,6 +33033,10 @@ function labRotateSelected(direction) {
 }
 function labHint() {
   if (!labReady()) return;
+  if (state.id === 'pipes' && state.pipeTest) {
+    state.message = 'أغلق اختبار التدفق قبل تطبيق تلميح؛ اللوحة والاختبار محفوظان.';
+    return renderLab();
+  }
   const s = state;
   if (s.id === 'nonogram') {
     const analysis = labNonogramAnalysis(s),
@@ -32841,6 +33393,12 @@ function startCollection(id) {
   screen = id;
   renderCollection();
   goTop();
+  collectionFocusQuestion();
+}
+function collectionFocusQuestion() {
+  const question = $('collectionQuestion');
+  question?.focus({ preventScroll: true });
+  question?.scrollIntoView({ block: 'nearest' });
 }
 function collectionFeedback(q, answer) {
   if (!state.locked) return '';
@@ -32855,15 +33413,15 @@ function renderCollection() {
     token = `${s.run},${s.index}`;
   let body;
   if (s.id === 'flags')
-    body = `<h3 class="collection-question">${s.flagMode === 'country' ? 'هذا علم أي دولة؟' : `أي علم يمثل ${esc(q.name)}؟`}</h3>${s.flagMode === 'country' ? `<div class="collection-flag-question">${collectionFlagSVG(q.code, 'علم الدولة المطلوب التعرف عليها')}</div>` : ''}<div class="collection-choices ${s.flagMode === 'flag' ? 'flag-options' : ''}">${q.choices.map((item, i) => `<button class="collection-choice ${s.locked && item.code === q.code ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span>${s.flagMode === 'country' ? `<b>${esc(item.name)}</b>` : `${collectionFlagSVG(item.code, `الخيار رقم ${i + 1}`)}${s.locked ? `<b>${esc(item.name)}</b>` : ''}`}${s.locked && item.code === q.code ? '<span class="collection-verdict">✓ الصحيح</span>' : ''}</button>`).join('')}</div>`;
+    body = `<h3 class="collection-question" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${s.flagMode === 'country' ? 'هذا علم أي دولة؟' : `أي علم يمثل ${esc(q.name)}؟`}</h3>${s.flagMode === 'country' ? `<div class="collection-flag-question">${collectionFlagSVG(q.code, 'علم الدولة المطلوب التعرف عليها')}</div>` : ''}<div class="collection-choices ${s.flagMode === 'flag' ? 'flag-options' : ''}">${q.choices.map((item, i) => `<button class="collection-choice ${s.locked && item.code === q.code ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span>${s.flagMode === 'country' ? `<b>${esc(item.name)}</b>` : `${collectionFlagSVG(item.code, `الخيار رقم ${i + 1}`)}${s.locked ? `<b>${esc(item.name)}</b>` : ''}`}${s.locked && item.code === q.code ? '<span class="collection-verdict">✓ الصحيح</span>' : ''}</button>`).join('')}</div>`;
   if (s.id === 'truefalse')
-    body = `<span class="collection-category">${esc(collectionFactCategories.find(([id]) => id === q.cat)?.[1] || '')} · ${q.level === 'easy' ? 'سهل' : 'متوسط'}</span><h3 class="collection-question fact-statement">${esc(q.text)}</h3><div class="collection-choices truth-options">${[true, false].map((value, i) => `<button class="collection-choice ${s.locked && value === q.truth ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span><b>${value ? '✓ صح' : '✕ خطأ'}</b>${s.locked && value === q.truth ? '<span class="collection-verdict">الجواب الصحيح</span>' : ''}</button>`).join('')}</div>`;
+    body = `<span class="collection-category">${esc(collectionFactCategories.find(([id]) => id === q.cat)?.[1] || '')} · ${q.level === 'easy' ? 'سهل' : 'متوسط'}</span><h3 class="collection-question fact-statement" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${esc(q.text)}</h3><div class="collection-choices truth-options">${[true, false].map((value, i) => `<button class="collection-choice ${s.locked && value === q.truth ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span><b>${value ? '✓ صح' : '✕ خطأ'}</b>${s.locked && value === q.truth ? '<span class="collection-verdict">الجواب الصحيح</span>' : ''}</button>`).join('')}</div>`;
   if (s.id === 'order')
-    body = `<h3 class="collection-question">${esc(q.prompt)}</h3><p class="note">الترتيب من أعلى إلى أسفل. ${s.locked ? 'انتهت المحاولة؛ راجع الحل أسفل البطاقات.' : 'حرّك البطاقات ثم أكّد ترتيبك.'}</p><ol class="collection-order" aria-label="بطاقات الترتيب">${q.arranged.map((item, i) => `<li data-order-index="${i}" class="${s.locked ? (item === q.solution[i] ? 'is-correct' : 'is-wrong') : s.selected === i ? 'is-selected' : ''}" ${!s.locked && s.selected === i ? 'aria-current="true"' : ''}><span class="collection-order-number">${i + 1}</span><span class="collection-order-label">${esc(item)}</span><div class="collection-order-controls"><button data-order-move="${i}-up" onclick="moveCollectionOrder(${i},-1,${token})" aria-label="نقل ${esc(item)} إلى أعلى" ${s.locked || i === 0 ? 'disabled' : ''}>↑</button><button data-order-move="${i}-down" onclick="moveCollectionOrder(${i},1,${token})" aria-label="نقل ${esc(item)} إلى أسفل" ${s.locked || i === q.arranged.length - 1 ? 'disabled' : ''}>↓</button></div></li>`).join('')}</ol><p class="note collection-move-status" role="status">${esc(s.orderStatus)}</p>${s.locked ? '' : `<div class="actions"><button onclick="collectionUndoOrder(${token})" ${s.orderMoves.length ? '' : 'disabled'}>↶ تراجع عن آخر حركة</button></div><button class="primary collection-confirm" onclick="submitCollectionOrder(${token})">تأكيد الترتيب ✓</button>`}`;
+    body = `<h3 class="collection-question" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${esc(q.prompt)}</h3><p class="note">الترتيب من أعلى إلى أسفل. ${s.locked ? 'انتهت المحاولة؛ راجع الحل أسفل البطاقات.' : 'حرّك البطاقات ثم أكّد ترتيبك.'}</p><ol class="collection-order" aria-label="بطاقات الترتيب">${q.arranged.map((item, i) => `<li data-order-index="${i}" class="${s.locked ? (item === q.solution[i] ? 'is-correct' : 'is-wrong') : s.selected === i ? 'is-selected' : ''}" ${!s.locked && s.selected === i ? 'aria-current="true"' : ''}><span class="collection-order-number">${i + 1}</span><span class="collection-order-label">${esc(item)}</span><div class="collection-order-controls"><button data-order-move="${i}-up" onclick="moveCollectionOrder(${i},-1,${token})" aria-label="نقل ${esc(item)} إلى أعلى" ${s.locked || i === 0 ? 'disabled' : ''}>↑</button><button data-order-move="${i}-down" onclick="moveCollectionOrder(${i},1,${token})" aria-label="نقل ${esc(item)} إلى أسفل" ${s.locked || i === q.arranged.length - 1 ? 'disabled' : ''}>↓</button></div></li>`).join('')}</ol><p class="note collection-move-status" role="status">${esc(s.orderStatus)}</p>${s.locked ? '' : `<div class="actions"><button onclick="collectionUndoOrder(${token})" ${s.orderMoves.length ? '' : 'disabled'}>↶ تراجع عن آخر حركة</button></div><button class="primary collection-confirm" onclick="submitCollectionOrder(${token})">تأكيد الترتيب ✓</button>`}`;
   setHTML(
     wrap(
       s.id,
-      `<section class="panel collection-play">${s.practice ? '<p class="collection-practice-badge">📚 مراجعة أخطائك · تدريب بلا نقاط إضافية</p>' : ''}<div class="collection-top"><span>${esc(s.name)}</span><b>السؤال ${s.index + 1} / ${s.questions.length}</b><span>${Math.round((s.credit * 100) / s.questions.length)} / 100 ${s.practice ? 'تقييم التدريب' : 'نقطة'}</span></div><progress class="collection-progress" value="${s.index + (s.locked ? 1 : 0)}" max="${s.questions.length}" aria-label="تقدم الجولة"></progress>${body}${collectionFeedback(q, answer)}${s.locked ? `<div class="actions"><button class="primary" id="collectionNext" onclick="nextCollection(${token})">${s.index + 1 === s.questions.length ? 'شوف النتيجة' : 'السؤال التالي'} ←</button></div>` : ''}<p class="tiny collection-keyboard">${s.id === 'order' ? 'لوحة المفاتيح: Tab ثم Enter للتحريك والتأكيد. الأرقام تختار بطاقة والأسهم تحركها.' : 'الأرقام لاختيار الإجابة · Enter بعد ظهور الشرح للمتابعة'}</p></section>`,
+      `<section class="panel collection-play">${s.practice ? '<p class="collection-practice-badge">📚 مراجعة أخطائك · تدريب بلا نقاط إضافية</p>' : ''}<div class="collection-top"><span>${esc(s.name)}</span><b id="collectionQuestionProgress">السؤال ${s.index + 1} / ${s.questions.length}</b><span>${Math.round((s.credit * 100) / s.questions.length)} / 100 ${s.practice ? 'تقييم التدريب' : 'نقطة'}</span></div><progress class="collection-progress" value="${s.index + (s.locked ? 1 : 0)}" max="${s.questions.length}" aria-label="تقدم الجولة"></progress>${body}${collectionFeedback(q, answer)}${s.locked ? `<div class="actions"><button class="primary" id="collectionNext" onclick="nextCollection(${token})">${s.index + 1 === s.questions.length ? 'شوف النتيجة' : 'السؤال التالي'} ←</button></div>` : ''}<p class="tiny collection-keyboard">${s.id === 'order' ? 'لوحة المفاتيح: Tab ثم Enter للتحريك والتأكيد. الأرقام تختار بطاقة والأسهم تحركها.' : 'الأرقام لاختيار الإجابة · Enter بعد ظهور الشرح للمتابعة'}</p></section>`,
     ),
   );
 }
@@ -32959,7 +33517,7 @@ function nextCollection(run = state?.run, index = state?.index) {
   state.orderMoves = [];
   state.orderStatus = '';
   renderCollection();
-  document.querySelector('.collection-question')?.scrollIntoView({ block: 'nearest' });
+  collectionFocusQuestion();
 }
 function finishCollection(run = state?.run) {
   if (
@@ -32999,8 +33557,44 @@ function finishCollection(run = state?.run) {
     .querySelector('.success')
     ?.insertAdjacentHTML(
       'beforeend',
-      `<details class="round-review collection-review"><summary>راجع إجابات ${s.practice ? 'التدريب' : 'الجولة'}</summary><ol>${s.questions.map((q, i) => `<li><b>${s.answers[i].correct ? '✓' : '↺'} ${esc(s.id === 'flags' ? q.name : s.id === 'order' ? q.prompt : q.text)}</b>${collectionAnswerReview(s, q, s.answers[i])}<p>${esc(s.id === 'flags' ? 'العلم الصحيح:' : q.reason)}</p>${s.id === 'flags' ? `<span class="collection-review-flag">${collectionFlagSVG(q.code, `علم ${q.name}`)}</span>` : s.id === 'order' ? `<ol class="collection-review-order">${q.solution.map((item) => `<li>${esc(item)}</li>`).join('')}</ol>` : `<span>الجواب: ${q.truth ? 'صح' : 'خطأ'}</span>`}</li>`).join('')}</ol></details>`,
+      `${collectionBreakdownHTML(s)}<details class="round-review collection-review"><summary>راجع إجابات ${s.practice ? 'التدريب' : 'الجولة'}</summary><ol>${s.questions.map((q, i) => `<li><b>${s.answers[i].correct ? '✓' : '↺'} ${esc(s.id === 'flags' ? q.name : s.id === 'order' ? q.prompt : q.text)}</b>${collectionAnswerReview(s, q, s.answers[i])}<p>${esc(s.id === 'flags' ? 'العلم الصحيح:' : q.reason)}</p>${s.id === 'flags' ? `<span class="collection-review-flag">${collectionFlagSVG(q.code, `علم ${q.name}`)}</span>` : s.id === 'order' ? `<ol class="collection-review-order">${q.solution.map((item) => `<li>${esc(item)}</li>`).join('')}</ol>` : `<span>الجواب: ${q.truth ? 'صح' : 'خطأ'}</span>`}</li>`).join('')}</ol></details>`,
     );
+  const heading = $('app').querySelector('.success h2');
+  heading?.setAttribute('tabindex', '-1');
+  heading?.focus({ preventScroll: true });
+}
+function collectionBreakdownHTML(s) {
+  const categories =
+      s.id === 'flags'
+        ? collectionRegions
+        : s.id === 'truefalse'
+          ? collectionFactCategories
+          : collectionOrderCategories,
+    groups = new Map();
+  s.questions.forEach((q, i) => {
+    const key = s.id === 'flags' ? q.region : q.cat,
+      answer = s.answers[i],
+      group = groups.get(key) || {
+        title: categories.find(([id]) => id === key)?.[1] || key,
+        total: 0,
+        correct: 0,
+        credit: 0,
+      };
+    group.total++;
+    if (answer.correct) group.correct++;
+    group.credit += s.id === 'order' ? answer.matches / q.solution.length : Number(answer.correct);
+    groups.set(key, group);
+  });
+  const rows = [...groups.values()],
+    weakest = [...rows].sort((a, b) => a.credit / a.total - b.credit / b.total)[0];
+  return `<section class="collection-breakdown" aria-labelledby="collectionBreakdownTitle"><h3 id="collectionBreakdownTitle">أداؤك حسب ${s.id === 'flags' ? 'القارة' : 'المجموعة'}</h3><div class="collection-breakdown-grid">${rows
+    .map((group) => {
+      const percentage = Math.round((group.credit * 100) / group.total);
+      return `<div class="collection-breakdown-item"><b>${esc(group.title)}</b><span dir="ltr">${percentage}%</span><progress value="${percentage}" max="100" aria-label="تقييم ${esc(group.title)}: ${percentage} بالمئة"></progress><small>${group.correct} من ${group.total} ${s.id === 'order' ? 'ترتيبات كاملة · النسبة تشمل البطاقات الصحيحة' : 'إجابات صحيحة'}</small></div>`;
+    })
+    .join(
+      '',
+    )}</div><p class="note">${weakest.correct === weakest.total ? 'أتقنت كل مجموعات هذه الجولة. جرّب مجموعة جديدة في جولتك القادمة.' : `ابدأ المراجعة بمجموعة «${esc(weakest.title)}»؛ ${weakest.total - weakest.correct} من ${weakest.total} ${s.id === 'order' ? 'ترتيبات تحتاج مراجعة.' : 'إجابات تحتاج مراجعة.'}`}</p></section>`;
 }
 function collectionAnswerReview(s, q, answer) {
   if (s.id === 'order')
@@ -33074,6 +33668,7 @@ function collectionPractice(run) {
   };
   renderCollection();
   goTop();
+  collectionFocusQuestion();
 }
 document.addEventListener('keydown', (event) => {
   if (
@@ -33086,7 +33681,7 @@ document.addEventListener('keydown', (event) => {
     !state ||
     state.done ||
     coreBlocked() ||
-    event.target.closest?.('input,textarea,select,[contenteditable="true"]')
+    advancedEditableTarget(event.target)
   )
     return;
   const key = latin(event.key);
@@ -34228,6 +34823,8 @@ function continueRoute() {
   const config = experienceRoutes.find((v) => v.id === saved?.id);
   if (!config) return;
   closeModal(true);
+  tourney = null;
+  dailyRun = null;
   activeRoute = { config, id: config.games[saved.at], at: saved.at, finished: false };
   setup(activeRoute.id, true);
   // Curated starting settings; players can still choose their own challenge.
@@ -34236,6 +34833,7 @@ function continueRoute() {
   if ($('arcadeSize')) $('arcadeSize').value = '7';
   if ($('hangCount')) $('hangCount').value = '1';
   if ($('quizcount')) $('quizcount').value = '5';
+  if (activeRoute.id === 'hangman') updateHangmanAvailability();
 }
 const experienceSetup = setup;
 setup = function (id, internal = false) {
@@ -34311,7 +34909,8 @@ document.addEventListener('keydown', (event) => {
     event.metaKey ||
     event.altKey ||
     event.repeat ||
-    /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)
+    event.isComposing ||
+    advancedEditableTarget(event.target)
   )
     return;
   if (event.key === '/') {
@@ -34644,7 +35243,7 @@ function appendSetupBlueprint(id) {
 }
 function openHelp() {
   openModal(
-    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 12 · ${games.length} لعبة عربية في ملف واحد.</p>${[
+    `<div class="modalhead"><h2 id="modaltitle">؟ مساعدة لَمّة</h2><button onclick="closeModal()" aria-label="إغلاق">✕</button></div><p class="muted">لَمّة 13 · ${games.length} لعبة عربية في ملف واحد.</p>${[
       [
         'هل تحتاج إنترنت أو حسابًا؟',
         'افتح ملف HTML في متصفح حديث. الألعاب والمحتوى تعمل دون إنترنت أو حساب؛ حفظ النتائج مرتبط بهذا المتصفح.',
@@ -34830,11 +35429,12 @@ function togglePlayFocus() {
 }
 function playEditable(element) {
   return (
-    !!element?.matches?.(
+    element?.isContentEditable ||
+    (!!element?.matches?.(
       'textarea,input:not([type="checkbox"]):not([type="range"]):not([type="button"]):not([type="submit"])',
     ) &&
-    !element.readOnly &&
-    !element.disabled
+      !element.readOnly &&
+      !element.disabled)
   );
 }
 let playViewportHeight = innerHeight;
@@ -34884,7 +35484,7 @@ document.addEventListener('input', (event) => {
   }
 });
 document.addEventListener('keydown', (event) => {
-  if (event.ctrlKey || event.metaKey || event.altKey || coreBlocked()) return;
+  if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing || coreBlocked()) return;
   if (
     screen === 'solo' &&
     !state.done &&
@@ -34962,7 +35562,20 @@ let navigationHomePoint = null,
   navigationRandomMode = null,
   navigationPair = null;
 const navigationRandomBags = new Map();
+let navigationRenderedView = null;
 const navigationHasHome = () => !!$('catalog') && !!$('gamesheading');
+function navigationFocusView(previousView) {
+  const view = `${screen}:${state?.id || ''}:${state?.done ? 'done' : 'active'}`;
+  navigationRenderedView = view;
+  if (previousView === null || previousView === view || !$('modalback').hidden || $('pausecover'))
+    return;
+  const heading =
+    $('app').querySelector('.success h2') ||
+    $('app').querySelector('.solo-head h1,.playhead h2,h1,h2') ||
+    $('app');
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+}
 function navigationDescribe(element) {
   if (!element?.isConnected || !document.querySelector('.shell')?.contains(element)) return null;
   return {
@@ -35100,7 +35713,9 @@ setHTML = function (html) {
     navigationHistory('home');
   }
   navigationRestoreToken++;
+  const previousView = navigationRenderedView;
   const outcome = navigationSetHTML(html);
+  navigationFocusView(previousView);
   if (screen !== 'home')
     navigationRecordPlay(
       state?.id || document.querySelector('.play[data-game]')?.dataset.game,
@@ -35341,7 +35956,7 @@ function renderHome() {
     games.some((g) => g[0] === id),
   );
   setHTML(
-    `<section class="lobby-hero edition-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 12 · العبوا على كيفكم</span><h1>تحدّيك اليوم.<br><em>خطوتك لباجر.</em></h1><p>${games.length} لعبة عربية لجمعتكم ووقتكم الخاص. صوّتوا، اكشفوا الجاسوس، ثم خلّوه يخمّن الكلمة. اسألوا من تختارون، وابحثوا عن الكلمة بسرعة، وجرّبوا تحدّيات محسّنة على مستواكم.</p><div class="actions"><button class="primary" onclick="openSoloHub()">✦ ابدأ جلستك الفردية</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><button class="linkbtn" onclick="chooseSoloLobby()">كل الألعاب الفردية ↓</button></div></div><div class="lobby-art edition-art" aria-hidden="true"><div class="edition-orbit"></div><div class="edition-card edition-card-back"><span>◈</span><small>فكّر بطريقتك</small></div><div class="edition-card edition-card-front"><div class="edition-card-top"><span>✦</span><small>تحدٍّ على مستواك</small></div><div class="edition-board"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="edition-card-bottom"><b>كل محاولة، خطوة.</b><span>↗</span></div></div><span class="edition-seal">${games.length}<small>لعبة عربية</small></span><span class="edition-spark">✧</span></div></section>${latestGamesHTML()}${audienceChoicesHTML()}${randomPickButtonsHTML()}<div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openGameHistory()"><span class="summary-icon">↺</span><span><small>جولاتك ونتائجك</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${soloHomeHTML()}${snapshotHTML()}${routeResumeHTML()}${quickLaunchHTML()}<details class="discover-drawer"><summary><span>🗺️ مسارات ومنافسات</span><small>ثلاث محطات لك، أو بطولة للربع</small><b>اكتشف أكثر +</b></summary><div class="discovery-content"><div class="discovery-actions"><button onclick="openLounge()">👥 صالة اللمّة</button><button onclick="openTournament()">🏆 نبدأ بطولة</button><button onclick="openGameHistory()">↺ سجل الجولات</button></div>${routeCardsHTML()}</div></details><div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نلعب اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
+    `<section class="lobby-hero edition-hero"><div class="lobby-copy"><span class="release-chip"><span></span>لَمّة 13 · كل جولة أفضل</span><h1>تحدّيك اليوم.<br><em>خطوتك لباجر.</em></h1><p>${games.length} لعبة عربية لجمعتكم ووقتكم الخاص. تدرّبوا على أخطائكم، حلّوا الألغاز خطوة بخطوة، واجمعوا الربع لجولة جديدة. تحكم أوضح باللمس ولوحة المفاتيح، ومراجعة تساعدكم تتحسنون.</p><div class="actions"><button class="primary" onclick="openSoloHub()">✦ ابدأ جلستك الفردية</button><button class="lobby-party" onclick="openLounge()">👥 نجمع الربع</button></div><div class="lobby-details"><span>◉ بدون إنترنت</span><span>1–12 لاعب</span><button class="linkbtn" onclick="chooseSoloLobby()">كل الألعاب الفردية ↓</button></div></div><div class="lobby-art edition-art" aria-hidden="true"><div class="edition-orbit"></div><div class="edition-card edition-card-back"><span>◈</span><small>فكّر بطريقتك</small></div><div class="edition-card edition-card-front"><div class="edition-card-top"><span>✦</span><small>تحدٍّ على مستواك</small></div><div class="edition-board"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="edition-card-bottom"><b>كل محاولة، خطوة.</b><span>↗</span></div></div><span class="edition-seal">${games.length}<small>لعبة عربية</small></span><span class="edition-spark">✧</span></div></section>${latestGamesHTML()}${audienceChoicesHTML()}${randomPickButtonsHTML()}<div class="lobby-summary"><button onclick="openProfile()"><span class="summary-icon">✦</span><span><small>مستواك ${level()}</small><b>${250 - (totalPoints() % 250)} نقطة للمستوى التالي</b><span class="mini-progress" style="--progress:${(totalPoints() % 250) / 2.5}%"></span></span><span>←</span></button><button onclick="openGameHistory()"><span class="summary-icon">↺</span><span><small>جولاتك ونتائجك</small><b>${fmt(totalPoints())} <small>نقطة · ${totalRounds()} جولة</small></b></span><span>←</span></button><button onclick="openDaily()"><span class="summary-icon">☀</span><span><small>تحديات اليوم</small><b>${dailyCompleted()} من 3 مكتملة</b></span><span>←</span></button></div>${soloHomeHTML()}${snapshotHTML()}${routeResumeHTML()}${quickLaunchHTML()}<details class="discover-drawer"><summary><span>🗺️ مسارات ومنافسات</span><small>ثلاث محطات لك، أو بطولة للربع</small><b>اكتشف أكثر +</b></summary><div class="discovery-content"><div class="discovery-actions"><button onclick="openLounge()">👥 صالة اللمّة</button><button onclick="openTournament()">🏆 نبدأ بطولة</button><button onclick="openGameHistory()">↺ سجل الجولات</button></div>${routeCardsHTML()}</div></details><div class="sectionhead" id="gamesheading"><div><span class="world-label">${worlds.length - 1} عوالم · ${games.length} لعبة</span><h2>وين نلعب اليوم؟</h2></div><button class="quiet smallbtn" onclick="openGuide()">؟ دليل اللعب</button></div><nav class="worldtabs" aria-label="عوالم الألعاب">${worlds.map((w) => `<button class="worldtab ${world === w[0] ? 'active' : ''}" onclick="setWorld('${w[0]}')" aria-pressed="${world === w[0]}"><span>${w[1]}</span>${w[2]}<small>${w[0] === 'all' ? games.length : games.filter((g) => gameWorld[g[0]] === w[0]).length}</small></button>`).join('')}</nav><div class="catalogbar"><nav class="filter" aria-label="طريقة اللعب">${[
       ['all', 'الكل'],
       ['solo', 'بمفردك'],
       ['duo', 'شخصان'],
@@ -35369,11 +35984,11 @@ function renderHome() {
       )}</select><button class="linkbtn" onclick="clearFilters()">إعادة الفلاتر ↺</button></div></div><div class="grid" id="catalog"></div><section class="home-guide"><div><span class="guide-icon">👥</span><h3>جهاز واحد، لمّة كاملة</h3><p>أضف الأسماء، مرّر الجهاز، والعبوا بالتناوب. الكلمات والتصويت تبقى سرية أثناء الأدوار.</p></div><div><span class="guide-icon">⚙</span><h3>إعدادات واضحة</h3><p>خصص المظهر وحجم الخط والتباين والصوت. رتّب اختيارات الألعاب، وخذ نسخة احتياطية من تقدمك في أي وقت.</p></div><div><span class="guide-icon">💾</span><h3>نتائجك معك</h3><p>سجل الجولات والنقاط والألغاز محفوظة هنا. صدّر نسخة احتياطية من الإعدادات لنقل تقدمك.</p></div></section>`,
   );
   renderCatalog();
-  $('foot').textContent = `لَمّة 12.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
+  $('foot').textContent = `لَمّة 13.0 · ${games.length} لعبة · على جهاز واحد · بدون إنترنت`;
 }
 
 function latestGamesHTML() {
-  return `<section class="latest-games" aria-label="جديد لمة 12"><div><span class="world-label">جديد هاللمّة ✦</span><h2>صوّتوا، اكشفوا، ثم خمّنوا</h2><p class="note">جاسوس بخطوات واضحة، وأسئلة على كيفكم، ومراجعة تساعدك تتطوّر.</p></div><div class="latest-links"><button onclick="setup('spy')"><span>🕶️</span><b>منو الجاسوس؟</b><small>تصويت ثم كشف الجاسوس ثم تخمين · بحث سريع</small><em>جهّزوا الجولة ←</em></button><button onclick="setup('flags')"><span>🏁</span><b>من العلم؟</b><small>دول مشهورة والخليج، وقارة تختارها</small><em>اكتشف الدول ←</em></button><button onclick="setup('truefalse')"><span>⚖️</span><b>صح أو خطأ</b><small>اختبر معلوماتك، واعرف تفسير كل إجابة</small><em>جرّب معلوماتك ←</em></button><button onclick="setup('order')"><span>↕️</span><b>رتّبها</b><small>تسلسلات وأحجام وخطوات، باللمس أو الأسهم</small><em>ابدأ الترتيب ←</em></button></div></section>`;
+  return `<section class="latest-games" aria-label="جديد لمة 13"><div><span class="world-label">جديد هاللمّة ✦</span><h2>صوّتوا، اكشفوا، ثم خمّنوا</h2><p class="note">جاسوس بخطوات واضحة، وأسئلة على كيفكم، ومراجعة تساعدك تتطوّر.</p></div><div class="latest-links"><button onclick="setup('spy')"><span>🕶️</span><b>منو الجاسوس؟</b><small>تصويت ثم كشف الجاسوس ثم تخمين · بحث سريع</small><em>جهّزوا الجولة ←</em></button><button onclick="setup('flags')"><span>🏁</span><b>من العلم؟</b><small>دول مشهورة والخليج، وقارة تختارها</small><em>اكتشف الدول ←</em></button><button onclick="setup('truefalse')"><span>⚖️</span><b>صح أو خطأ</b><small>اختبر معلوماتك، واعرف تفسير كل إجابة</small><em>جرّب معلوماتك ←</em></button><button onclick="setup('order')"><span>↕️</span><b>رتّبها</b><small>تسلسلات وأحجام وخطوات، باللمس أو الأسهم</small><em>ابدأ الترتيب ←</em></button></div></section>`;
 }
 
 // Source: src/settings.js
@@ -35461,6 +36076,7 @@ function openSettings(section) {
         <h3>تقدّمك بين يديك</h3>
         <div class="settings-data-summary"><div><b>${fmt(totalRounds())}</b><small>جولات مسجّلة</small></div><div><b>${store.extra.history.length}</b><small>نتائج في السجل</small></div><div><b>${store.extra.favorites.length}</b><small>ألعاب مفضّلة</small></div></div>
         <div class="settings-backup"><b>انقل تقدّمك أو احتفظ بنسخة</b><p class="note">نسخة JSON تضم الأسماء والنقاط والاختيارات والإضافات وتقدّم اللعب الفردي. استيرادها يعرض تأكيداً قبل استبدال بياناتك الحالية.</p><div class="actions"><button class="primary" onclick="exportProgress()">⬇ نسخة احتياطية</button><button onclick="document.getElementById('importfile').click()">⬆ استيراد نسخة</button></div><input type="file" id="importfile" accept="application/json,.json" hidden onchange="importProgress(this.files[0]);this.value=''"></div>
+        <div class="settings-backup"><b>كل الألعاب في ملف HTML واحد</b><p class="note">حمّل نسخة الموقع لتلعب دون إنترنت. نقاطك واختياراتك تُنقل بشكل منفصل من زر النسخة الاحتياطية JSON أعلاه.</p><div class="actions"><button onclick="downloadStandalone()">⬇ تحميل نسخة HTML</button></div></div>
         ${settingsRow('قاعدة التخمين', `${items.length} شي · ${extra.learned.length} إضافة منك`, '<button onclick="openKnowledge()">إدارة</button>')}
         ${settingsRow('سجل الجولات', 'راجع نتائجك وألعابك الأخيرة', '<button onclick="openGameHistory()">عرض السجل</button>')}
         ${settingsRow('مساعدة اللعب والحفظ', 'الخصوصية واللعب الجماعي والاستكمال', '<button onclick="openHelp()">؟ المساعدة</button>')}
@@ -35624,7 +36240,8 @@ document.addEventListener('keydown', (event) => {
     $('modalback').hidden ||
     event.altKey ||
     event.ctrlKey ||
-    event.metaKey
+    event.metaKey ||
+    event.isComposing
   )
     return;
   const current = settingsSections.findIndex(([id]) => tab.id === 'settings-tab-' + id);
@@ -36277,6 +36894,7 @@ function soloConfigureRound(round) {
   value('size', 3);
   value('codelength', easy ? 3 : hard ? 5 : 4);
   value('targetDuration', 30);
+  if (state.id === 'hangman') updateHangmanAvailability();
   if ($('soloRoundConfig'))
     $('soloRoundConfig').textContent =
       `المستوى المقترح: ${soloLevelLabel(level)} · يمكنك تعديل خيارات اللعبة قبل البداية.`;

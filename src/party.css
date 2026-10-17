@@ -316,6 +316,22 @@
 .party-focus-card small {
   color: var(--muted);
 }
+.party-focus-card:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 4px;
+}
+.party-round-archive {
+  margin-top: 18px;
+  text-align: start;
+}
+.party-round-archive > .note {
+  margin-top: 16px;
+}
+.party-ballot-review small {
+  margin-top: 6px;
+  color: var(--muted);
+  line-height: 1.8;
+}
 .party-flow {
   display: flex;
   gap: 6px;

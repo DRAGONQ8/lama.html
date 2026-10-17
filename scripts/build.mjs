@@ -5,6 +5,7 @@ import vm from 'node:vm';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const scripts = [
+  'offline',
   'core',
   'content',
   'platform',
@@ -55,21 +56,21 @@ const js = normalizeArabic(
     .map((code, i) => `// Source: src/${scripts[i]}.js\n${code}`)
     .join('\n'),
 );
+if (/<\/script\s*[^>]*>/i.test(js)) {
+  throw new Error('Source scripts must not close the standalone HTML script element.');
+}
 new vm.Script(js, { filename: 'lamma_universe.html' });
-const css = (
-  await Promise.all(
-    styles.map((name) =>
-      read(`src/${name}.css`).catch((error) => {
-        if (error.code === 'ENOENT' && name !== 'styles') return '';
-        throw error;
-      }),
-    ),
-  )
-).join('\n');
+const css = (await Promise.all(styles.map((name) => read(`src/${name}.css`)))).join('\n');
+const template = await read('src/template.html');
+for (const marker of ['/* BUILD_STYLES */', '/* BUILD_SCRIPTS */']) {
+  if (template.split(marker).length !== 2)
+    throw new Error(`Template must contain exactly one ${marker} placeholder.`);
+}
+if (/<\/style\s*[^>]*>/i.test(css)) {
+  throw new Error('Source styles must not close the standalone HTML style element.');
+}
 const html = normalizeArabic(
-  (await read('src/template.html'))
-    .replace('/* BUILD_STYLES */', () => css)
-    .replace('/* BUILD_SCRIPTS */', () => js),
+  template.replace('/* BUILD_STYLES */', () => css).replace('/* BUILD_SCRIPTS */', () => js),
 );
 if (/<script[^>]+src=|<link[^>]+stylesheet|https?:\/\//i.test(html)) {
   throw new Error('Standalone output must not require external resources.');

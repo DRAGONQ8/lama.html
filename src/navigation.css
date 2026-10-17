@@ -1,3 +1,7 @@
+.gamecard:hover {
+  /* Keep catalogue targets and return anchors in the same position. */
+  transform: none;
+}
 .random-launches {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

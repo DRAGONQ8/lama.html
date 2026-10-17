@@ -1042,6 +1042,44 @@ function resumeClock() {
     }
   }
 }
+function overlayControls(container) {
+  if (!container) return [];
+  const order = (element) =>
+    !element.hasAttribute('tabindex') &&
+    element.isContentEditable &&
+    !element.parentElement?.isContentEditable
+      ? 0
+      : element.tabIndex;
+  return [
+    ...container.querySelectorAll(
+      'button,input:not([type="hidden"]),select,textarea,a[href],summary,[tabindex],[contenteditable]:not([contenteditable="false" i])',
+    ),
+  ]
+    .filter((element) => {
+      if (
+        element.matches(':disabled') ||
+        order(element) < 0 ||
+        element.closest('[hidden],[inert]') ||
+        !element.getClientRects().length ||
+        ['hidden', 'collapse'].includes(getComputedStyle(element).visibility)
+      )
+        return false;
+      // Descendants of a closed disclosure can still report layout boxes.
+      // Only its first summary participates in keyboard navigation.
+      for (
+        let parent = element.parentElement;
+        parent && parent !== container;
+        parent = parent.parentElement
+      )
+        if (
+          parent.matches('details:not([open])') &&
+          !parent.querySelector(':scope > summary')?.contains(element)
+        )
+          return false;
+      return true;
+    })
+    .sort((a, b) => (order(a) || Infinity) - (order(b) || Infinity));
+}
 function openModal(html) {
   if ($('modalback').hidden) previousFocus = document.activeElement;
   if (
@@ -1059,9 +1097,7 @@ function openModal(html) {
   $('modalback').hidden = false;
   updateOverlayLock();
   $('modal').scrollTop = 0;
-  $('modal')
-    .querySelector('button:not(:disabled),input:not([hidden]),select,textarea,[tabindex="0"]')
-    ?.focus();
+  (overlayControls($('modal'))[0] || $('modal')).focus();
 }
 function closeModal(discard = false) {
   if (!$('modalback').hidden) {
@@ -1111,9 +1147,7 @@ document.addEventListener(
     }
     if (e.key === 'Tab') {
       e.stopImmediatePropagation();
-      const controls = [
-        ...container.querySelectorAll('button,input,select,textarea,a[href],[tabindex="0"]'),
-      ].filter((v) => !v.disabled && v.getClientRects().length && v.tabIndex >= 0);
+      const controls = overlayControls(container);
       if (!controls.length) {
         e.preventDefault();
         container.focus();
@@ -1155,6 +1189,7 @@ function showPause() {
   const div = document.createElement('div');
   div.id = 'pausecover';
   div.className = 'pausecover';
+  div.tabIndex = -1;
   div.setAttribute('role', 'dialog');
   div.setAttribute('aria-modal', 'true');
   div.setAttribute('aria-labelledby', 'pausetitle');
@@ -1167,10 +1202,7 @@ function showPause() {
 function resumeGame() {
   removePause();
   resumeClock();
-  if (!$('modalback').hidden)
-    $('modal')
-      .querySelector('button:not(:disabled),input:not([hidden]),select,textarea,[tabindex="0"]')
-      ?.focus();
+  if (!$('modalback').hidden) (overlayControls($('modal'))[0] || $('modal')).focus();
   else restorePlayFocus(pauseFocus);
 }
 document.addEventListener('visibilitychange', () => {

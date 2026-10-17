@@ -6,7 +6,20 @@ let navigationHomePoint = null,
   navigationRandomMode = null,
   navigationPair = null;
 const navigationRandomBags = new Map();
+let navigationRenderedView = null;
 const navigationHasHome = () => !!$('catalog') && !!$('gamesheading');
+function navigationFocusView(previousView) {
+  const view = `${screen}:${state?.id || ''}:${state?.done ? 'done' : 'active'}`;
+  navigationRenderedView = view;
+  if (previousView === null || previousView === view || !$('modalback').hidden || $('pausecover'))
+    return;
+  const heading =
+    $('app').querySelector('.success h2') ||
+    $('app').querySelector('.solo-head h1,.playhead h2,h1,h2') ||
+    $('app');
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+}
 function navigationDescribe(element) {
   if (!element?.isConnected || !document.querySelector('.shell')?.contains(element)) return null;
   return {
@@ -144,7 +157,9 @@ setHTML = function (html) {
     navigationHistory('home');
   }
   navigationRestoreToken++;
+  const previousView = navigationRenderedView;
   const outcome = navigationSetHTML(html);
+  navigationFocusView(previousView);
   if (screen !== 'home')
     navigationRecordPlay(
       state?.id || document.querySelector('.play[data-game]')?.dataset.game,

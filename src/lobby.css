@@ -24,6 +24,7 @@
   min-width: 0;
   padding: 18px;
   text-align: start;
+  background: var(--raised);
 }
 .latest-links > button > span {
   font-size: 26px;

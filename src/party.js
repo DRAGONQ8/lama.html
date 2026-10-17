@@ -719,7 +719,7 @@ setup = function (id, internal = false) {
     )}${partyChoice('partyTeamTactic', 'تكتيك النقاط', [
       ['classic', 'النقاط الأساسية'],
       ['streak', 'سلسلة الفريق · كل 3 صح متتالٍ +5'],
-    ])}</div><div class="party-explainer"><b>🎬 تحديات أقرب للحياة</b><p>48 موقفاً حركياً جديداً و24 بطاقة كلمات ممنوعة. قائد التمثيل يؤدي المشهد كاملًا؛ يكفي أن يصف الفريق الفعل بوضوح. مراقب من الخصم يسجّل المخالفة، والتراجع يصلح ضغطة غير مقصودة.</p></div>`;
+    ])}</div><div class="party-explainer"><b>🎬 تحديات أقرب للحياة</b><p>${partyMimeScenes.length} موقفاً حركياً و${new Set([...tabooDeck, ...partyExtraTaboo].map((card) => partyTeamCardKey('taboo', card))).size} بطاقة كلمات ممنوعة بأهداف مختلفة. قائد التمثيل يؤدي المشهد كاملًا؛ يكفي أن يصف الفريق الفعل بوضوح. مراقب من الخصم يسجّل المخالفة، والتراجع يصلح ضغطة غير مقصودة.</p></div>`;
   if (id === 'teamcup')
     body += `<div class="fields">${partyChoice('partyTeamFormat', 'من يقود الدور؟', [
       ['captain', 'قائد واحد'],
@@ -823,6 +823,19 @@ function partyDraftTeams(mode) {
 function partyStrength(name) {
   const score = store.scores[name];
   return score?.rounds ? score.points / score.rounds : 0;
+}
+function partyTeamCardKey(mode, card) {
+  return norm(
+    mode === 'trivia' ? card?.question || '' : Array.isArray(card) ? card[0] : card || '',
+  );
+}
+function partyTeamDeck(mode, cards) {
+  const unique = new Map();
+  for (const card of cards) {
+    const key = partyTeamCardKey(mode, card);
+    if (key && !unique.has(key)) unique.set(key, card);
+  }
+  return shuffle([...unique.values()]);
 }
 function partyTeamsHTML(teams, names = ['الفريق الأول', 'الفريق الثاني'], scores = null) {
   return `<div class="party-teams">${teams.map((members, i) => `<div class="party-team party-team-${i}"><div class="party-team-title"><b>${i ? '🐉' : '🦅'} ${esc(names[i])}</b>${scores ? `<strong>${scores[i]}</strong>` : `<span>${members.length} لاعبين</span>`}</div><div class="party-members">${members.map((n) => `<span>${esc(n)}</span>`).join('')}</div></div>`).join('')}</div>`;
@@ -972,6 +985,19 @@ function partyPassToken() {
 function partyAcceptPass(token) {
   return token === undefined || String(token) === String(state?.privatePass);
 }
+function partyRenderWithFocus(render, fallback = '') {
+  const active = document.activeElement,
+    action = active?.closest('#app button[onclick]')?.getAttribute('onclick');
+  render();
+  const replacement = action
+    ? [...document.querySelectorAll('#app button[onclick]')].find(
+        (button) => button.getAttribute('onclick') === action && !button.disabled,
+      )
+    : null;
+  (replacement || (fallback ? document.querySelector(fallback) : null))?.focus({
+    preventScroll: true,
+  });
+}
 function partyHidePrivate() {
   const s = state;
   if (!partyGameIDs.has(s?.id) || partyBlocked(s.id)) return false;
@@ -1071,15 +1097,16 @@ function startPartyGame(id) {
       teamTactic,
       teamFormat,
       decks: {
-        mime: shuffle(
+        mime: partyTeamDeck(
+          'mime',
           mimeDeck === 'scenes'
             ? partyMimeScenes
             : mimeDeck === 'objects'
               ? items.map((v) => v.name)
               : [...items.map((v) => v.name), ...partyMimeScenes],
         ),
-        taboo: shuffle([...tabooDeck, ...partyExtraTaboo]),
-        trivia: shuffle(triviaBank),
+        taboo: partyTeamDeck('taboo', [...tabooDeck, ...partyExtraTaboo]),
+        trivia: partyTeamDeck('trivia', triviaBank),
       },
       deckIndex: { mime: 0, taboo: 0, trivia: 0 },
       cardToken: 0,
@@ -1227,7 +1254,7 @@ function teamCupRelayResume(token = partyPassToken()) {
   s.stageToken = ++partyActionSerial;
   if (s.mode !== 'trivia') {
     const boosted = s.boostActive;
-    teamCupNextCard();
+    teamCupNextCard(norm(s.relayRetiredCard));
     s.boostActive = boosted;
   } else s.cardToken = ++partyActionSerial;
   s.hiddenCard = false;
@@ -1244,17 +1271,23 @@ function teamCupRelayHTML(s, ready = false) {
 function partySeconds(s = state) {
   return Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000));
 }
-function teamCupNextCard() {
+function teamCupNextCard(avoidTarget = '') {
   const s = state,
     mode = s.mode;
-  if (s.deckIndex[mode] >= s.decks[mode].length) {
-    const last = s.card;
-    s.decks[mode] = shuffle(s.decks[mode]);
-    if (s.decks[mode].length > 1 && s.decks[mode][0] === last)
-      [s.decks[mode][0], s.decks[mode][1]] = [s.decks[mode][1], s.decks[mode][0]];
-    s.deckIndex[mode] = 0;
+  // A relay retires the old secret, including equivalent spellings of its target.
+  // Limit retries even if a custom or future deck contains only one distinct answer.
+  for (let draw = 0; draw <= s.decks[mode].length; draw++) {
+    if (s.deckIndex[mode] >= s.decks[mode].length) {
+      const last = partyTeamCardKey(mode, s.card);
+      s.decks[mode] = shuffle(s.decks[mode]);
+      const different = s.decks[mode].findIndex((card) => partyTeamCardKey(mode, card) !== last);
+      if (different > 0)
+        [s.decks[mode][0], s.decks[mode][different]] = [s.decks[mode][different], s.decks[mode][0]];
+      s.deckIndex[mode] = 0;
+    }
+    s.card = s.decks[mode][s.deckIndex[mode]++];
+    if (!avoidTarget || partyTeamCardKey(mode, s.card) !== avoidTarget) break;
   }
-  s.card = s.decks[mode][s.deckIndex[mode]++];
   s.cardToken = ++partyActionSerial;
   s.feedback = null;
   s.boostActive = false;
@@ -1506,6 +1539,47 @@ function finishTeamCup() {
   );
 }
 
+// Match complete words and phrases with common Arabic prefixes and possessives.
+// Keep original endings: «كتابة» is not «كتاب» + the possessive «ه».
+function partyContainsSecret(text, pair = state?.pair || []) {
+  const words = (value) =>
+      String(value)
+        .replace(/[\u064B-\u065F\u0670ـ]/gu, '')
+        .replace(/[أإآ]/gu, 'ا')
+        .replace(/ى/gu, 'ي')
+        .toLowerCase()
+        .match(/[\p{L}\p{N}]+/gu) || [],
+    tokens = words(text),
+    suffixes = '(?:كما|هما|كم|كن|هم|هن|نا|ها|ي|ك|ه)';
+  return pair.some((secret) => {
+    const phrase = words(secret).map((part, offset) => {
+      const base = norm(part),
+        stem = part.endsWith('ة') ? base.slice(0, -1) + 'ت' : base;
+      return {
+        base,
+        attached:
+          offset === 0 ? new RegExp(`^(?:و|ف)?(?:(?:ب|ك)?(?:ال)?|لل|ل)${base}(?:ا)?$`, 'u') : null,
+        possessed: new RegExp(
+          `^${offset === 0 ? '(?:و|ف)?(?:ب|ك|ل)?' : ''}${stem}${suffixes}$`,
+          'u',
+        ),
+      };
+    });
+    if (!phrase.length) return false;
+    return tokens.some((_, start) =>
+      phrase.every((part, offset) => {
+        const token = tokens[start + offset];
+        if (!token) return false;
+        if (norm(token) === part.base) return true;
+        const canonical = token.replace(/ة/gu, 'ه');
+        if (part.attached?.test(canonical)) return true;
+        // A possessive cannot end in ة or carry the definite article.
+        return !token.endsWith('ة') && part.possessed.test(canonical);
+      }),
+    );
+  });
+}
+
 // Undercover: equal-looking secret cards, private ballots and one fair runoff.
 function undercoverChooseRoles(s) {
   s.roleCounts ||= s.players.map(() => 0);
@@ -1570,6 +1644,7 @@ function undercoverRound() {
     voteChoice: null,
     voteCandidates: s.players.map((_, i) => i),
     runoff: false,
+    revealed: false,
     stage: 'reveal-handoff',
     endAt: 0,
   });
@@ -1765,9 +1840,7 @@ function undercoverRecordInquiry(token = partyCardToken()) {
     !answer
   )
     return toast('اختاروا شخصاً آخر واكتبوا السؤال والرد أولاً.');
-  if (
-    s.pair.some((word) => norm(question).includes(norm(word)) || norm(answer).includes(norm(word)))
-  )
+  if (partyContainsSecret(question, s.pair) || partyContainsSecret(answer, s.pair))
     return toast('السؤال أو الرد يتضمن كلمة سرية؛ صفوها دون تسميتها.');
   s.questions.push({ asker, target, question, answer });
   undercoverSkipInquiry(token);
@@ -1817,11 +1890,10 @@ function undercoverNextClue(token = partyCardToken()) {
   const s = state,
     cycle = Math.floor(s.clueIndex / s.players.length),
     player = undercoverCurrentClue(s),
-    text = (s.clueDraft || '').trim().replace(/\s+/gu, ' '),
-    word = s.hidden.includes(player) ? s.pair[1] : s.pair[0];
+    text = (s.clueDraft || '').trim().replace(/\s+/gu, ' ');
   if (!Number.isInteger(player)) return toast('اختاروا صاحب التلميح أولاً.');
-  if (text && norm(text).includes(norm(word))) {
-    toast('هذا التلميح يحتوي كلمتك؛ اختر وصفاً آخر كي لا تكشفها.');
+  if (text && partyContainsSecret(text, s.pair)) {
+    toast('التلميح يتضمن كلمة سرية؛ اختاروا وصفاً آخر دون تسمية أي كلمة.');
     return $('undercoverClue')?.focus();
   }
   s.clues.push({ player, cycle, text });
@@ -1899,7 +1971,7 @@ function undercoverAccuse(token = partyCardToken()) {
   if (!Number.isInteger(target) || target < -1 || target >= s.players.length || target === player)
     return toast('اختاروا شخصاً آخر أو امتنعوا.');
   if (target >= 0 && !reason) return toast('دوّن دليلك قبل ترشيح شخص للدفاع.');
-  if (reason && s.pair.some((word) => norm(reason).includes(norm(word))))
+  if (reason && partyContainsSecret(reason, s.pair))
     return toast('اشرح الدليل دون ذكر أي كلمة سرية.');
   s.accusations.push({ player, target, reason: target >= 0 ? reason : '' });
   s.accusationIndex++;
@@ -1928,7 +2000,7 @@ function undercoverDefend(skip = false, token = partyCardToken()) {
     player = s.defenseCandidates[s.defenseIndex],
     text = s.defenseDraft.trim().replace(/\s+/gu, ' ');
   if (!skip && !text) return toast('اكتب دفاعاً قصيراً أو اختر عدم التعليق.');
-  if (!skip && s.pair.some((word) => norm(text).includes(norm(word))))
+  if (!skip && partyContainsSecret(text, s.pair))
     return toast('وضّح تلميحك دون قول الكلمة السرية.');
   s.defenses.push({ player, text: skip ? '' : text });
   s.defenseIndex++;
@@ -1996,13 +2068,13 @@ function undercoverChoose(i, token = partyCardToken()) {
     return;
   if (token !== undefined && String(token) !== String(state.voteToken)) return;
   state.voteChoice = i;
-  renderUndercoverVote();
+  partyRenderWithFocus(renderUndercoverVote);
 }
 function undercoverConfidence(value, token = partyCardToken()) {
   if (!partyStage('undercover', 'vote-view') || ![1, 2, 3].includes(value)) return;
   if (token !== undefined && String(token) !== String(state.voteToken)) return;
   state.confidence = value;
-  renderUndercoverVote();
+  partyRenderWithFocus(renderUndercoverVote);
 }
 function undercoverReasonUpdate() {
   if (!partyStage('undercover', 'vote-view')) return;
@@ -2071,11 +2143,23 @@ function undercoverRunoff() {
   });
   renderUndercoverVoteHandoff();
 }
+function undercoverBallotsHTML(s, ballots, label) {
+  if (!s.revealed || ballots?.votes?.length !== s.players.length) return '';
+  return `<details class="history party-ballot-review"><summary>${esc(label)}</summary><div class="party-timeline">${s.players
+    .map((name, player) => {
+      const target = ballots.votes[player],
+        confidence = ['احتمال', 'أرجّح', 'واثق'][(ballots.confidence?.[player] || 2) - 1],
+        reason = ballots.reasons?.[player];
+      return `<div><p><b>${esc(name)}</b> ← ${target < 0 ? 'امتناع' : esc(s.players[target])}<small>الثقة: ${confidence}${reason ? ` · ${esc(reason)}` : ''}</small></p></div>`;
+    })
+    .join('')}</div></details>`;
+}
 function finishUndercoverRound(eliminated) {
   if (!partyStage('undercover', 'vote-view') || state.votes.length !== state.players.length) return;
   const s = state,
     normalWin = eliminated !== null && s.hidden.includes(eliminated);
   s.stage = 'round-result';
+  s.revealed = true;
   s.stageToken = ++partyActionSerial;
   s.roundPoints = s.players.map((name, i) => {
     const points = s.hidden.includes(i)
@@ -2088,6 +2172,7 @@ function finishUndercoverRound(eliminated) {
     return points;
   });
   s.history.push({
+    revealed: true,
     pair: [...s.pair],
     hidden: [...s.hidden],
     eliminated,
@@ -2112,7 +2197,7 @@ function finishUndercoverRound(eliminated) {
           [s.votes.filter((vote) => vote >= 0).length, 'أصوات مسجّلة'],
           [s.votes.filter((vote) => s.hidden.includes(vote)).length, 'أصوات كشفت الدخيل'],
         ],
-      )}<div class="party-word-reveal"><div><small>الكلمة الأصلية</small><b>${esc(s.pair[0])}</b></div><div><small>الكلمة الدخيلة</small><b>${esc(s.pair[1])}</b></div></div><p class="note">الفريق الدخيل: ${s.hidden.map((i) => esc(s.players[i])).join(' · ')}</p><div class="party-vote-results">${s.players.map((n, i) => `<div><span>${s.hidden.includes(i) ? '🥸' : '👤'} ${esc(n)}</span><span>${s.tally[i]} أصوات</span><b>+${s.roundPoints[i]}</b></div>`).join('')}</div><details class="history"><summary>الأصوات بعد إقفال الجولة</summary><div class="party-timeline">${s.players.map((n, i) => `<div><p>${esc(n)} ← ${s.votes[i] < 0 ? 'امتناع' : esc(s.players[s.votes[i]])}</p></div>`).join('')}</div></details>${undercoverClueTrail(s)}${undercoverCourtTrail(s)}${undercoverRoundReview(s)}<div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="undercoverAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'جولة بكلمات جديدة'} ←</button></div></section>${partySessionScore(s)}`,
+      )}<div class="party-word-reveal"><div><small>الكلمة الأصلية</small><b>${esc(s.pair[0])}</b></div><div><small>الكلمة الدخيلة</small><b>${esc(s.pair[1])}</b></div></div><p class="note">الفريق الدخيل: ${s.hidden.map((i) => esc(s.players[i])).join(' · ')}</p><div class="party-vote-results">${s.players.map((n, i) => `<div><span>${s.hidden.includes(i) ? '🥸' : '👤'} ${esc(n)}</span><span>${s.tally[i]} أصوات</span><b>+${s.roundPoints[i]}</b></div>`).join('')}</div>${undercoverBallotsHTML(s, { votes: s.votes, confidence: s.voteConfidence, reasons: s.voteReasons }, 'الأصوات النهائية بعد إقفال الجولة')}${s.firstBallots ? undercoverBallotsHTML(s, s.firstBallots, 'التصويت الأول قبل الإعادة · للمراجعة فقط') : ''}${undercoverClueTrail(s)}${undercoverCourtTrail(s)}${undercoverRoundReview(s)}<div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="undercoverAdvance()">${s.round + 1 === s.rounds ? 'نتيجة الجلسة' : 'جولة بكلمات جديدة'} ←</button></div></section>${partySessionScore(s)}`,
     ),
   );
 }
@@ -2121,15 +2206,22 @@ function undercoverRoundReview(s) {
     .map((confidence, player) => ({ confidence, player, target: s.votes[player] }))
     .filter((vote) => vote.confidence === 3 && vote.target >= 0);
   const right = decisive.filter((vote) => s.hidden.includes(vote.target)).length;
-  return `<div class="party-debrief"><h3>🧭 ماذا أقنعكم؟</h3><p>${decisive.length ? `${right} / ${decisive.length} من الأصوات الواثقة أشارت إلى كلمة دخيلة.` : 'لم تُسجّل أصوات واثقة؛ قارنوا التلميحات قبل رفع الثقة.'} التلميح المختلف دليل محتمل؛ المعلومة الدقيقة في الاستجواب تساعدكم على التحقق.</p><div class="party-reasons">${s.players.map((name, i) => `<p><b>${esc(name)}</b><span>${['احتمال', 'أرجّح', 'واثق'][(s.voteConfidence[i] || 2) - 1]} · ${s.votes[i] < 0 ? 'امتنع' : s.hidden.includes(s.votes[i]) ? '✓ أشار للدخيل' : 'لم يشر للدخيل'}</span>${s.voteReasons[i] ? `<small>${esc(s.voteReasons[i])}</small>` : ''}</p>`).join('')}</div>${s.runoff ? '<p class="note">حُفظت الأصوات الأولى للمراجعة؛ النقاط حُسبت من التصويت النهائي فقط.</p>' : ''}</div>`;
+  return `<div class="party-debrief"><h3>🧭 ماذا أقنعكم؟</h3><p>${decisive.length ? `${right} / ${decisive.length} من الأصوات الواثقة أشارت إلى كلمة دخيلة.` : 'لم تُسجّل أصوات واثقة؛ قارنوا التلميحات قبل رفع الثقة.'} التلميح المختلف دليل محتمل؛ المعلومة الدقيقة في الاستجواب تساعدكم على التحقق.</p><div class="party-reasons">${s.players.map((name, i) => `<p><b>${esc(name)}</b><span>${['احتمال', 'أرجّح', 'واثق'][(s.voteConfidence[i] || 2) - 1]} · ${s.votes[i] < 0 ? 'امتنع' : s.hidden.includes(s.votes[i]) ? '✓ أشار للدخيل' : 'لم يشر للدخيل'}</span>${s.voteReasons[i] ? `<small>${esc(s.voteReasons[i])}</small>` : ''}</p>`).join('')}</div>${s.runoff ? '<p class="note">راجعوا التصويت الأول أعلاه وقارنوه بالقرار النهائي؛ النقاط حُسبت من التصويت النهائي فقط.</p>' : ''}</div>`;
 }
 function undercoverSessionReview(s) {
+  if (!s.done) return '';
   const found = s.history.filter((round) => round.normalWin).length;
   return `<div class="party-debrief"><h3>🔍 سجل التحقيقات</h3>${partyMetrics([
     [found, 'جولات كشفت الدخيل'],
     [s.history.reduce((sum, round) => sum + round.questions.length, 0), 'أسئلة متبادلة'],
     [s.history.reduce((sum, round) => sum + round.clues.length, 0), 'تلميحات مسجّلة'],
-  ])}<div class="party-timeline">${s.history.map((round, i) => `<div><span>${i + 1}</span><p><b>${esc(round.pair[0])} / ${esc(round.pair[1])}</b><small>${round.normalWin ? 'كُشف الدخيل' : 'نجا الدخيل'} · ${round.questions.length} أسئلة${s.court ? ` · ${round.defenses?.length || 0} دفوع` : ''}</small></p><strong>${round.normalWin ? '🔍' : '🥸'}</strong></div>`).join('')}</div>${s.court ? s.history.map((round, i) => `<div class="party-court-archive"><p class="party-kicker">ملف الجولة ${i + 1}</p>${undercoverCourtTrail({ ...round, players: s.players })}</div>`).join('') : ''}</div>`;
+  ])}<div class="party-timeline">${s.history.map((round, i) => `<div><span>${i + 1}</span><p><b>${esc(round.pair[0])} / ${esc(round.pair[1])}</b><small>${round.normalWin ? 'كُشف الدخيل' : 'نجا الدخيل'} · ${round.questions.length} أسئلة${s.court ? ` · ${round.defenses?.length || 0} دفوع` : ''}</small></p><strong>${round.normalWin ? '🔍' : '🥸'}</strong></div>`).join('')}</div>${s.history
+    .filter((round) => round.revealed)
+    .map((round, i) => {
+      const archived = { ...round, players: s.players };
+      return `<details class="history party-round-archive"><summary>ملف الجولة ${i + 1} · ${esc(round.pair[0])} / ${esc(round.pair[1])}</summary><p class="note">الفريق الدخيل: ${round.hidden.map((player) => esc(s.players[player])).join(' · ')}. ${round.eliminated === null ? 'لم يُحسم شخص واحد في التصويت.' : `اختارت اللمّة ${esc(s.players[round.eliminated])}.`}</p>${undercoverClueTrail(archived)}${undercoverCourtTrail(archived)}${undercoverBallotsHTML(archived, round, 'الأصوات النهائية')}${round.firstBallots ? undercoverBallotsHTML(archived, round.firstBallots, 'التصويت الأول قبل الإعادة · للمراجعة فقط') : ''}</details>`;
+    })
+    .join('')}</div>`;
 }
 function undercoverAdvance(token = partyStageToken()) {
   if (!partyStage('undercover', 'round-result') || !partyAcceptStage(token)) return;
@@ -2449,7 +2541,7 @@ function renderCreativeGallery() {
   setHTML(
     partyWrap(
       'improv',
-      `<section class="panel"><p class="party-kicker">الردود بلا أسماء · الموقف ${s.round + 1}</p><h3 class="party-question">${esc(s.prompt)}</h3>${creativeBrief(s)}${creativeGalleryHTML(s)}<p class="note center">اقرؤوا جميع الردود معاً. التصويت سري، ولكل شخص صوت واحد لرد غير رده.</p><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="creativeStartVoting()">ابدأ التصويت</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryToggle()">${s.galleryFocus ? 'اعرضوا كل الأفكار' : '🎤 اعرضوا فكرة واحدة كل مرة'}</button></div></section>`,
+      `<section class="panel"><p class="party-kicker">الردود بلا أسماء · الموقف ${s.round + 1}</p><h3 class="party-question">${esc(s.prompt)}</h3>${creativeBrief(s)}${creativeGalleryHTML(s)}<p class="note center">اقرؤوا جميع الردود معاً. ${s.creativeBallot === 'ranked' ? 'في التصويت السري اختاروا رداً أول +5، ورداً آخر للتقدير +2؛ لا تختاروا ردكم.' : 'التصويت سري، ولكل شخص صوت واحد لرد غير رده.'}</p><div class="actions"><button class="primary" data-party-stage="${s.stageToken}" onclick="creativeStartVoting()">ابدأ التصويت</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryToggle()">${s.galleryFocus ? 'اعرضوا كل الأفكار' : '🎤 اعرضوا فكرة واحدة كل مرة'}</button></div></section>`,
     ),
   );
 }
@@ -2457,12 +2549,12 @@ function creativeGalleryHTML(s) {
   if (!s.galleryFocus)
     return s.creativeMode === 'chain' ? creativeStoryHTML(s) : partyCreativeCards(s);
   const entry = s.entries[s.galleryIndex];
-  return `<div class="party-focus-card" aria-live="polite"><span class="party-entry-number">${s.galleryIndex + 1}</span><p>${esc(entry.text)}</p><small>الفكرة ${s.galleryIndex + 1} / ${s.entries.length} · بلا أسماء</small></div><div class="actions"><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(-1)" ${s.galleryIndex === 0 ? 'disabled' : ''}>الفكرة السابقة</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(1)" ${s.galleryIndex === s.entries.length - 1 ? 'disabled' : ''}>الفكرة التالية</button></div>`;
+  return `<div class="party-focus-card" tabindex="-1" aria-live="polite"><span class="party-entry-number">${s.galleryIndex + 1}</span><p>${esc(entry.text)}</p><small>الفكرة ${s.galleryIndex + 1} / ${s.entries.length} · بلا أسماء</small></div><div class="actions"><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(-1)" ${s.galleryIndex === 0 ? 'disabled' : ''}>الفكرة السابقة</button><button data-party-stage="${s.stageToken}" onclick="creativeGalleryMove(1)" ${s.galleryIndex === s.entries.length - 1 ? 'disabled' : ''}>الفكرة التالية</button></div>`;
 }
 function creativeGalleryToggle(token = partyStageToken()) {
   if (!partyStage('improv', 'gallery') || !partyAcceptStage(token)) return;
   state.galleryFocus = !state.galleryFocus;
-  renderCreativeGallery();
+  partyRenderWithFocus(renderCreativeGallery);
 }
 function creativeGalleryMove(direction, token = partyStageToken()) {
   if (
@@ -2476,7 +2568,7 @@ function creativeGalleryMove(direction, token = partyStageToken()) {
     0,
     Math.min(state.entries.length - 1, state.galleryIndex + direction),
   );
-  renderCreativeGallery();
+  partyRenderWithFocus(renderCreativeGallery, '.party-focus-card');
 }
 function creativeStartVoting(token = partyStageToken()) {
   if (!partyStage('improv', 'gallery') || !partyAcceptStage(token)) return;
@@ -2520,7 +2612,7 @@ function creativeChoose(i, token = partyCardToken()) {
   if (token !== undefined && String(token) !== String(state.voteToken)) return;
   state.voteChoice = i;
   if (state.secondChoice === i) state.secondChoice = null;
-  renderCreativeVote();
+  partyRenderWithFocus(renderCreativeVote);
 }
 function creativeAppreciationHTML(s) {
   if (s.creativeBallot !== 'ranked') return '';
@@ -2538,7 +2630,7 @@ function creativeChooseSecond(i, token = partyCardToken()) {
     return;
   if (token !== undefined && String(token) !== String(state.voteToken)) return;
   state.secondChoice = i;
-  renderCreativeVote();
+  partyRenderWithFocus(renderCreativeVote);
 }
 function creativeConfirmVote(token = partyCardToken()) {
   if (!partyStage('improv', 'creative-vote-view') || state.voteChoice === null) return;
