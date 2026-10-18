@@ -33,6 +33,7 @@ const browser = await chromium.launch({
 });
 let passed = 0;
 async function check(name, test) {
+  if (process.env.PLATFORM_V14_CHECK && !name.includes(process.env.PLATFORM_V14_CHECK)) return;
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage(),
     errors = [];
@@ -181,6 +182,21 @@ try {
           .locator('#gamesheading')
           .evaluate((el) => el.getBoundingClientRect().top < innerHeight),
       );
+      for (const width of [320, 390]) {
+        await page.setViewportSize({ width, height: 844 });
+        for (const font of ['Arial, sans-serif', 'serif', 'monospace']) {
+          await page.evaluate((font) => {
+            document.body.style.fontFamily = font;
+            home('top');
+          }, font);
+          const layout = await page.evaluate(() => ({
+            bottom: document.querySelector('.lobby-hero').getBoundingClientRect().bottom,
+            width: document.documentElement.scrollWidth,
+          }));
+          assert.ok(layout.bottom < 650, `${width}px ${font}: hero reaches ${layout.bottom}px`);
+          assert.ok(layout.width <= width + 1, `${width}px ${font}: page overflow`);
+        }
+      }
     },
   );
   await check(

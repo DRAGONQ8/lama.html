@@ -286,6 +286,11 @@ body[data-theme='light'] .edition-orbit::before {
   }
   .edition-hero .actions {
     gap: 8px;
+    margin-top: 18px;
+  }
+  .edition-hero .lobby-details {
+    margin-top: 14px;
+    gap: 8px 12px;
   }
   .edition-hero .actions button {
     font-size: 12px;

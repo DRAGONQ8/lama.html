@@ -259,7 +259,9 @@ try {
           first,
           second: document.querySelector('.sudoku-group-progress').textContent,
           blanks,
-          digits: [...document.querySelectorAll('.numberpad small')].map((n) => n.textContent),
+          digits: [...document.querySelectorAll('.numberpad small')].map((n) =>
+            n.textContent.replace(/\s/g, ''),
+          ),
         };
       });
       assert.match(result.first, /الصف فيه تكرار/);
