@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { chromium } from 'playwright';
+import AxeBuilder from '@axe-core/playwright';
 
 // Use the source files directly so this suite also works before a release build.
 const read = (path) => readFile(new URL('../' + path, import.meta.url), 'utf8');
@@ -419,6 +420,51 @@ try {
         }
     },
   );
+  await check('Opened Lab tools pass all default Axe rules in both mobile themes', async (page) => {
+    const output = new URL('../test-results/lab-v14/', import.meta.url),
+      report = { screens: 0, rulesDisabled: [], violations: [] };
+    await mkdir(output, { recursive: true });
+    for (const theme of ['dark', 'light'])
+      for (const id of ['nonogram', 'lights', 'pipes']) {
+        await page.evaluate(
+          ({ theme, id }) => {
+            store.extra.theme = theme;
+            applySettings();
+            setup(id);
+            startLab(id);
+            if (id === 'nonogram') labToggleLineMap();
+            else if (id === 'lights') {
+              labMode('plan');
+              labLightsTap(0);
+              labLightsTap(1);
+              labUndoPlan();
+            } else {
+              labTogglePipeOrientations();
+              labSelect(state.board.findIndex((mask) => [1, 2, 4, 8].includes(mask)));
+            }
+          },
+          { theme, id },
+        );
+        const label = `${theme}-${id}`,
+          audit = await new AxeBuilder({ page }).analyze();
+        await writeFile(new URL(`suite-${label}.json`, output), JSON.stringify(audit, null, 2));
+        report.screens++;
+        for (const violation of audit.violations)
+          report.violations.push({
+            label,
+            rule: violation.id,
+            impact: violation.impact,
+            nodes: violation.nodes.map(({ target, html, failureSummary }) => ({
+              target,
+              html,
+              failureSummary,
+            })),
+          });
+      }
+    await writeFile(new URL('suite-summary.json', output), JSON.stringify(report, null, 2));
+    assert.equal(report.screens, 6);
+    assert.deepEqual(report.violations, [], 'See test-results/lab-v14/suite-summary.json');
+  });
   console.log(`\n${passed} lab V14 browser checks passed.`);
 } finally {
   await browser.close();

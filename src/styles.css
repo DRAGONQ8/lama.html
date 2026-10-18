@@ -789,7 +789,7 @@ a {
   .names {
     grid-template-columns: 1fr;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 23px;
   }
   .spot {
@@ -1104,8 +1104,9 @@ button:active {
 .play {
   max-width: 800px;
 }
-.playhead h2 {
+.playhead h1 {
   font-size: 26px;
+  line-height: 1.5;
 }
 .playhead .tileicon {
   background: color-mix(in srgb, var(--tile), #192539 75%);
@@ -1919,7 +1920,7 @@ body[data-theme='light'] .toast {
     padding: 6px 12px;
     font-size: 12px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 23px;
   }
   .playhead {
@@ -2517,7 +2518,7 @@ body.overlay-open {
   gap: 16px;
   margin-bottom: 25px;
 }
-.playhead h2 {
+.playhead h1 {
   font-size: 31px;
 }
 .playhead .tileicon {
@@ -3050,7 +3051,7 @@ body[data-theme='light'] .sequencepad button small {
   .play {
     margin-top: 20px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 28px;
   }
 }
@@ -3203,7 +3204,7 @@ body[data-theme='light'] .sequencepad button small {
   .playhead {
     gap: 10px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 23px;
   }
   .playhead .tileicon {
@@ -3463,7 +3464,7 @@ body[data-theme='light'] .sequencepad button small {
   .recent-games button b {
     font-size: 11px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 20px;
   }
   .playtools button {

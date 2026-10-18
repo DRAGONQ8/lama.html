@@ -371,7 +371,7 @@ body.keyboard-open .toast {
   .playhead > .tileicon {
     display: none;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 17px;
   }
   .playhead p {

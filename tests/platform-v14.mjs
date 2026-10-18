@@ -266,6 +266,7 @@ try {
           return found;
         });
         assert.deepEqual(reversed, [], `${id}: reversed numeric progress`);
+        assert.equal(await page.locator('#app h1').count(), 1, `${id}: main game heading`);
         await page.evaluate(() => home());
       }
       await page.evaluate(() => {

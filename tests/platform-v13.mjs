@@ -188,9 +188,9 @@ try {
       await page.locator('.cardstart[onclick="setup(\'memory\')"]').focus();
       await page.keyboard.press('Enter');
       assert.equal(await page.evaluate(() => screen), 'setup');
-      assert.equal(await page.evaluate(() => document.activeElement.matches('.playhead h2')), true);
+      assert.equal(await page.evaluate(() => document.activeElement.matches('.playhead h1')), true);
       await page.locator('button[onclick="startMemory()"]').click();
-      assert.equal(await page.evaluate(() => document.activeElement.matches('.playhead h2')), true);
+      assert.equal(await page.evaluate(() => document.activeElement.matches('.playhead h1')), true);
       const first = page.locator('.memcard:not(:disabled)').first();
       await first.focus();
       const index = await first.getAttribute('data-memory-index');

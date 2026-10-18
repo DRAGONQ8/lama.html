@@ -1967,12 +1967,10 @@ function labPipeOrientationContentHTML() {
   )
     .map(
       (option) =>
-        `<button id="labOrientation-${option.mask}" class="lab-orientation ${option.live ? 'lab-connected' : ''}" onclick="labApplyPipeOrientation(${option.mask},'${s.board.join(',')}')" ${blocked || !option.turns ? 'disabled' : ''} aria-label="اتجاه الفتحات ${labPipeDirections
+        `<button id="labOrientation-${option.mask}" class="lab-orientation ${option.live ? 'lab-connected' : ''}" onclick="labApplyPipeOrientation(${option.mask},'${s.board.join(',')}')" ${blocked || !option.turns ? 'disabled' : ''} aria-describedby="labOrientationDirections-${option.mask}"><span class="lab-orientation-diagram" aria-hidden="true">${labPipeSVG(option.mask, option.live, labPipeIsSource(s.selected, s), option.leaking)}</span><b>${option.turns ? (option.turns === 1 ? 'طبّق · حركة واحدة' : 'طبّق · حركتان') : 'الاتجاه الحالي'}</b><small>! ${option.leaks} فتحات · ● ${option.connected} متصلة</small><span id="labOrientationDirections-${option.mask}" hidden>اتجاه الفتحات ${labPipeDirections
           .filter(([, , bit]) => option.mask & bit)
           .map(([, , , , name]) => name)
-          .join(
-            '، ',
-          )}: ${option.leaks} فتحات غير موصولة، ${option.connected} قطع متصلة، ${option.turns ? option.turns + ' حركة للتطبيق' : 'الاتجاه الحالي'}"><span class="lab-orientation-diagram" aria-hidden="true">${labPipeSVG(option.mask, option.live, labPipeIsSource(s.selected, s), option.leaking)}</span><b>${option.turns ? (option.turns === 1 ? 'طبّق · حركة واحدة' : 'طبّق · حركتان') : 'الاتجاه الحالي'}</b><small>! ${option.leaks} فتحات · ● ${option.connected} متصلة</small></button>`,
+          .join('، ')}. الأعداد تعرض الفتحات غير الموصولة والقطع المتصلة بالمصدر.</span></button>`,
     )
     .join(
       '',

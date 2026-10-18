@@ -156,6 +156,8 @@ try {
     assert.equal(await page.evaluate(() => document.activeElement.id), 'triviaNext');
     await page.keyboard.press('Enter');
     assert.equal(await page.evaluate(() => state.index), 1);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'triviaQuestion');
+    await page.keyboard.press('Tab');
     assert.equal(
       await page.evaluate(() => document.activeElement.classList.contains('trivia-choice')),
       true,

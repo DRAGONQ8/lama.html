@@ -375,7 +375,7 @@ body.playing .dock {
     gap: 9px;
     border-radius: 16px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 19px;
   }
   .playhead .tileicon {

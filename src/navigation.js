@@ -15,7 +15,7 @@ function navigationFocusView(previousView) {
     return;
   const heading =
     $('app').querySelector('.success h2') ||
-    $('app').querySelector('.solo-head h1,.playhead h2,h1,h2') ||
+    $('app').querySelector('.solo-head h1,.playhead h1,h1,h2') ||
     $('app');
   heading.tabIndex = -1;
   heading.focus({ preventScroll: true });
@@ -410,7 +410,7 @@ function chooseRandomGame(mode) {
   bag.remaining = bag.remaining.filter((value) => value !== id);
   bag.seen.add(id);
   bag.last = id;
-  const heading = $('app').querySelector('.playhead h2');
+  const heading = $('app').querySelector('.playhead h1');
   if (heading) {
     heading.tabIndex = -1;
     heading.focus({ preventScroll: true });

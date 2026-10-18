@@ -804,7 +804,7 @@ a {
   .names {
     grid-template-columns: 1fr;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 23px;
   }
   .spot {
@@ -1119,8 +1119,9 @@ button:active {
 .play {
   max-width: 800px;
 }
-.playhead h2 {
+.playhead h1 {
   font-size: 26px;
+  line-height: 1.5;
 }
 .playhead .tileicon {
   background: color-mix(in srgb, var(--tile), #192539 75%);
@@ -1934,7 +1935,7 @@ body[data-theme='light'] .toast {
     padding: 6px 12px;
     font-size: 12px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 23px;
   }
   .playhead {
@@ -2532,7 +2533,7 @@ body.overlay-open {
   gap: 16px;
   margin-bottom: 25px;
 }
-.playhead h2 {
+.playhead h1 {
   font-size: 31px;
 }
 .playhead .tileicon {
@@ -3065,7 +3066,7 @@ body[data-theme='light'] .sequencepad button small {
   .play {
     margin-top: 20px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 28px;
   }
 }
@@ -3218,7 +3219,7 @@ body[data-theme='light'] .sequencepad button small {
   .playhead {
     gap: 10px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 23px;
   }
   .playhead .tileicon {
@@ -3478,7 +3479,7 @@ body[data-theme='light'] .sequencepad button small {
   .recent-games button b {
     font-size: 11px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 20px;
   }
   .playtools button {
@@ -9595,7 +9596,7 @@ body.playing .dock {
     gap: 9px;
     border-radius: 16px;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 19px;
   }
   .playhead .tileicon {
@@ -10010,7 +10011,7 @@ body.keyboard-open .toast {
   .playhead > .tileicon {
     display: none;
   }
-  .playhead h2 {
+  .playhead h1 {
     font-size: 17px;
   }
   .playhead p {
@@ -17090,7 +17091,7 @@ function favorite(id) {
 function wrap(id, body) {
   const g = games.find((g) => g[0] === id);
   const active = state && !state.done && screen !== 'setup' && screen !== 'tour-handoff';
-  return `<div class="play" data-game="${id}"><div class="playhead"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span><div><h2>${g[2]}</h2><p>${modeLabel(id)}</p></div><div class="playtools"><button class="quiet" onclick="openGuide('${id}')" aria-label="طريقة لعب ${esc(g[2])}">؟</button>${active ? '<button class="quiet" onclick="showPause()" aria-label="إيقاف اللعبة مؤقتاً">⏸</button>' : ''}<button class="quiet" onclick="home()" aria-label="العودة لعالم الألعاب">←</button></div></div>${tourney?.active ? `<div class="sessionbanner">🏆 البطولة · ${esc(player())} · التحدّي <bdi dir="ltr">${Math.floor(tourney.turn / tourney.players.length) + 1} / ${tourney.queue.length}</bdi></div>` : dailyRun ? `<div class="sessionbanner">☀ تحدّي اليوم · أفضل نتيجة محفوظة · ${dayKey()}</div>` : ''}${body}</div>`;
+  return `<div class="play" data-game="${id}"><div class="playhead"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span><div><h1>${g[2]}</h1><p>${modeLabel(id)}</p></div><div class="playtools"><button class="quiet" onclick="openGuide('${id}')" aria-label="طريقة لعب ${esc(g[2])}">؟</button>${active ? '<button class="quiet" onclick="showPause()" aria-label="إيقاف اللعبة مؤقتاً">⏸</button>' : ''}<button class="quiet" onclick="home()" aria-label="العودة لعالم الألعاب">←</button></div></div>${tourney?.active ? `<div class="sessionbanner">🏆 البطولة · ${esc(player())} · التحدّي <bdi dir="ltr">${Math.floor(tourney.turn / tourney.players.length) + 1} / ${tourney.queue.length}</bdi></div>` : dailyRun ? `<div class="sessionbanner">☀ تحدّي اليوم · أفضل نتيجة محفوظة · ${dayKey()}</div>` : ''}${body}</div>`;
 }
 function playerField(label = 'النقاط تنحسب حق منو؟') {
   if (tourney?.active)
@@ -33681,12 +33682,10 @@ function labPipeOrientationContentHTML() {
   )
     .map(
       (option) =>
-        `<button id="labOrientation-${option.mask}" class="lab-orientation ${option.live ? 'lab-connected' : ''}" onclick="labApplyPipeOrientation(${option.mask},'${s.board.join(',')}')" ${blocked || !option.turns ? 'disabled' : ''} aria-label="اتجاه الفتحات ${labPipeDirections
+        `<button id="labOrientation-${option.mask}" class="lab-orientation ${option.live ? 'lab-connected' : ''}" onclick="labApplyPipeOrientation(${option.mask},'${s.board.join(',')}')" ${blocked || !option.turns ? 'disabled' : ''} aria-describedby="labOrientationDirections-${option.mask}"><span class="lab-orientation-diagram" aria-hidden="true">${labPipeSVG(option.mask, option.live, labPipeIsSource(s.selected, s), option.leaking)}</span><b>${option.turns ? (option.turns === 1 ? 'طبّق · حركة واحدة' : 'طبّق · حركتان') : 'الاتجاه الحالي'}</b><small>! ${option.leaks} فتحات · ● ${option.connected} متصلة</small><span id="labOrientationDirections-${option.mask}" hidden>اتجاه الفتحات ${labPipeDirections
           .filter(([, , bit]) => option.mask & bit)
           .map(([, , , , name]) => name)
-          .join(
-            '، ',
-          )}: ${option.leaks} فتحات غير موصولة، ${option.connected} قطع متصلة، ${option.turns ? option.turns + ' حركة للتطبيق' : 'الاتجاه الحالي'}"><span class="lab-orientation-diagram" aria-hidden="true">${labPipeSVG(option.mask, option.live, labPipeIsSource(s.selected, s), option.leaking)}</span><b>${option.turns ? (option.turns === 1 ? 'طبّق · حركة واحدة' : 'طبّق · حركتان') : 'الاتجاه الحالي'}</b><small>! ${option.leaks} فتحات · ● ${option.connected} متصلة</small></button>`,
+          .join('، ')}. الأعداد تعرض الفتحات غير الموصولة والقطع المتصلة بالمصدر.</span></button>`,
     )
     .join(
       '',
@@ -36344,7 +36343,7 @@ function navigationFocusView(previousView) {
     return;
   const heading =
     $('app').querySelector('.success h2') ||
-    $('app').querySelector('.solo-head h1,.playhead h2,h1,h2') ||
+    $('app').querySelector('.solo-head h1,.playhead h1,h1,h2') ||
     $('app');
   heading.tabIndex = -1;
   heading.focus({ preventScroll: true });
@@ -36739,7 +36738,7 @@ function chooseRandomGame(mode) {
   bag.remaining = bag.remaining.filter((value) => value !== id);
   bag.seen.add(id);
   bag.last = id;
-  const heading = $('app').querySelector('.playhead h2');
+  const heading = $('app').querySelector('.playhead h1');
   if (heading) {
     heading.tabIndex = -1;
     heading.focus({ preventScroll: true });
