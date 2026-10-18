@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -54,10 +55,26 @@ const suites = [
   'platform-v13',
   'offline-v13',
   'accessibility-v13',
+  'core-v14',
+  'advanced-v14',
+  'arcade-v14',
+  'words-collection-v14',
+  'party-v14',
+  'lab-v14',
+  'platform-v14',
 ];
 const failures = [];
-for (const name of suites) {
-  const code = await new Promise((resolve, reject) => {
+const logDirectory = new URL('../test-results/suites/', import.meta.url);
+await mkdir(logDirectory, { recursive: true });
+const requestedWorkers = Number(process.env.LAMMA_TEST_WORKERS || 2);
+if (!Number.isInteger(requestedWorkers) || requestedWorkers < 1 || requestedWorkers > 4)
+  throw new Error('LAMMA_TEST_WORKERS must be an integer from 1 to 4.');
+let next = 0,
+  completed = 0;
+async function runSuite(name) {
+  const started = Date.now();
+  let output = '';
+  const code = await new Promise((resolve) => {
     const child = spawn(
       process.execPath,
       [
@@ -66,7 +83,7 @@ for (const name of suites) {
       ],
       {
         cwd: root,
-        stdio: 'inherit',
+        stdio: ['ignore', 'pipe', 'pipe'],
         env: {
           ...process.env,
           LAMMA_TEST_HTML:
@@ -75,11 +92,34 @@ for (const name of suites) {
         },
       },
     );
-    child.on('error', reject);
-    child.on('exit', (exitCode) => resolve(exitCode ?? 1));
+    const collect = (chunk) => {
+      output += chunk;
+    };
+    child.stdout.setEncoding('utf8').on('data', collect);
+    child.stderr.setEncoding('utf8').on('data', collect);
+    child.once('error', (error) => {
+      output += error.stack + '\n';
+      resolve(1);
+    });
+    child.once('close', (exitCode) => resolve(exitCode ?? 1));
   });
-  if (code !== 0) failures.push(name);
+  await writeFile(new URL(`${name}.log`, logDirectory), output);
+  completed++;
+  console.log(
+    `${code ? '✗' : '✓'} ${completed}/${suites.length} ${name} (${((Date.now() - started) / 1000).toFixed(1)}s)`,
+  );
+  if (code !== 0) {
+    failures.push(name);
+    console.error(output);
+  }
 }
-console.log(`\n${suites.length - failures.length}/${suites.length} browser suites passed.`);
+await Promise.all(
+  Array.from({ length: Math.min(requestedWorkers, suites.length) }, async () => {
+    while (next < suites.length) await runSuite(suites[next++]);
+  }),
+);
+console.log(
+  `\n${suites.length - failures.length}/${suites.length} browser suites passed. Logs: test-results/suites/`,
+);
 if (failures.length) console.error(`Failed suites: ${failures.join(', ')}`);
 process.exitCode = failures.length ? 1 : 0;

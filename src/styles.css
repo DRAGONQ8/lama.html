@@ -530,8 +530,8 @@ a {
   font-weight: bold;
   color: var(--mint);
   overflow-wrap: anywhere;
-  direction: ltr;
-  unicode-bidi: isolate;
+  direction: inherit;
+  unicode-bidi: plaintext;
 }
 .listchips {
   display: flex;
@@ -1794,10 +1794,6 @@ body[data-theme='light'] .toast {
 .digit {
   direction: ltr;
   unicode-bidi: isolate;
-}
-.resultnum {
-  direction: inherit;
-  unicode-bidi: plaintext;
 }
 @media (max-width: 980px) {
   .grid {

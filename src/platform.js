@@ -894,16 +894,6 @@ function isSolo(g) {
 function isGroup(g) {
   return groupGameIds.has(g[0]) && !['finder', 'mind', 'ttt', 'connect'].includes(g[0]);
 }
-function filteredGames() {
-  return games.filter(
-    (g) =>
-      (world === 'all' || gameWorld[g[0]] === world) &&
-      (filter === 'all' ||
-        (filter === 'solo' ? isSolo(g) : filter === 'duo' ? duoGameIds.has(g[0]) : isGroup(g))) &&
-      (!onlyFavorites || store.extra.favorites.includes(g[0])) &&
-      (!searchQuery || norm(g[2] + ' ' + g[3] + ' ' + g[4]).includes(norm(searchQuery))),
-  );
-}
 function recordRecent(id) {
   store.extra.recent = [
     { id, at: Date.now() },
@@ -973,15 +963,10 @@ function favorite(id) {
   save();
   renderCatalog();
 }
-function randomGame() {
-  const list = filteredGames();
-  if (!list.length) return toast('غيّر الفلاتر عشان نلقى لعبة.');
-  setup(list[randInt(list.length)][0]);
-}
 function wrap(id, body) {
   const g = games.find((g) => g[0] === id);
   const active = state && !state.done && screen !== 'setup' && screen !== 'tour-handoff';
-  return `<div class="play" data-game="${id}"><div class="playhead"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span><div><h2>${g[2]}</h2><p>${modeLabel(id)}</p></div><div class="playtools"><button class="quiet" onclick="openGuide('${id}')" aria-label="طريقة لعب ${esc(g[2])}">؟</button>${active ? '<button class="quiet" onclick="showPause()" aria-label="إيقاف اللعبة مؤقتاً">⏸</button>' : ''}<button class="quiet" onclick="home()" aria-label="العودة لعالم الألعاب">←</button></div></div>${tourney?.active ? `<div class="sessionbanner">🏆 البطولة · ${esc(player())} · التحدّي ${Math.floor(tourney.turn / tourney.players.length) + 1} / ${tourney.queue.length}</div>` : dailyRun ? `<div class="sessionbanner">☀ تحدّي اليوم · أفضل نتيجة محفوظة · ${dayKey()}</div>` : ''}${body}</div>`;
+  return `<div class="play" data-game="${id}"><div class="playhead"><span class="tileicon" style="--tile:${g[5]}">${g[1]}</span><div><h2>${g[2]}</h2><p>${modeLabel(id)}</p></div><div class="playtools"><button class="quiet" onclick="openGuide('${id}')" aria-label="طريقة لعب ${esc(g[2])}">؟</button>${active ? '<button class="quiet" onclick="showPause()" aria-label="إيقاف اللعبة مؤقتاً">⏸</button>' : ''}<button class="quiet" onclick="home()" aria-label="العودة لعالم الألعاب">←</button></div></div>${tourney?.active ? `<div class="sessionbanner">🏆 البطولة · ${esc(player())} · التحدّي <bdi dir="ltr">${Math.floor(tourney.turn / tourney.players.length) + 1} / ${tourney.queue.length}</bdi></div>` : dailyRun ? `<div class="sessionbanner">☀ تحدّي اليوم · أفضل نتيجة محفوظة · ${dayKey()}</div>` : ''}${body}</div>`;
 }
 function playerField(label = 'النقاط تنحسب حق منو؟') {
   if (tourney?.active)
@@ -1338,6 +1323,10 @@ function applySettings() {
         : 'light'
       : store.extra.theme;
   document.body.dataset.themeChoice = store.extra.theme;
+  document.documentElement.style.colorScheme = document.body.dataset.theme;
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor)
+    themeColor.content = getComputedStyle(document.body).getPropertyValue('--bg').trim();
   document.body.dataset.textScale = String(store.extra.textScale);
   document.body.style.setProperty('--text-scale', String(store.extra.textScale / 100));
   document.body.classList.toggle('high-contrast', store.extra.contrast);
@@ -1353,12 +1342,6 @@ function applySettings() {
   st.textContent = !reduceMotion
     ? ''
     : 'html, .reduced-motion *, .reduced-motion *:before, .reduced-motion *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}';
-}
-function toggleTheme() {
-  store.extra.theme = store.extra.theme === 'dark' ? 'light' : 'dark';
-  applySettings();
-  save();
-  openSettings();
 }
 function toggleMotion() {
   store.extra.motion = !store.extra.motion;
@@ -1550,7 +1533,7 @@ function result(id, title, text, points = 0, detail = '') {
   setHTML(
     wrap(
       id,
-      `<section class="panel success center celebrate"><div class="resulticon">${points ? '🏆' : '✦'}</div><h2>${title}</h2>${detail ? `<div class="resultnum">${esc(detail)}</div>` : ''}<p class="muted" style="margin-top:12px">${text}</p><div class="chips" style="justify-content:center"><span class="chip">+${Math.round(points)} نقطة</span>${dailyRun ? '<span class="chip">انحفظت نتيجة اليوم ✓</span>' : ''}</div><div class="actions">${tourney?.active ? '<button class="primary" onclick="nextTournament()">الدور اللي بعده ←</button>' : `<button class="primary" onclick="setup('${id}')">جولة جديدة</button>${dailyRun ? '<button onclick="openDaily()">تحدّيات اليوم</button>' : ''}`}<button onclick="home()">العالم</button></div></section>`,
+      `<section class="panel success center celebrate"><div class="resulticon">${points ? '🏆' : '✦'}</div><h2>${title}</h2>${detail ? `<div class="resultnum"><bdi dir="${/^[0-9\s.,:/%+\-−]+$/.test(latin(detail)) ? 'ltr' : 'auto'}">${esc(detail)}</bdi></div>` : ''}<p class="muted" style="margin-top:12px">${text}</p><div class="chips" style="justify-content:center"><span class="chip">+${Math.round(points)} نقطة</span>${dailyRun ? '<span class="chip">انحفظت نتيجة اليوم ✓</span>' : ''}</div><div class="actions">${tourney?.active ? '<button class="primary" onclick="nextTournament()">الدور اللي بعده ←</button>' : `<button class="primary" onclick="setup('${id}')">جولة جديدة</button>${dailyRun ? '<button onclick="openDaily()">تحدّيات اليوم</button>' : ''}`}<button onclick="home()">العالم</button></div></section>`,
     ),
   );
 }

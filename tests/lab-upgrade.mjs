@@ -184,8 +184,8 @@ try {
       await page.locator('#labMode-plan').click();
       await page.locator('#labBoard [data-index="3"]').click();
       await page.locator('#labHint').click();
-      assert.equal(await page.evaluate(() => state.mode), 'play');
-      assert.equal(await page.evaluate(() => state.plan.some(Boolean)), false);
+      assert.equal(await page.evaluate(() => state.mode), 'plan');
+      assert.equal(await page.evaluate(() => state.plan[3]), true);
       await page.locator('#labHint').click();
       assert.equal(await page.evaluate(() => state.hints), 1);
     },

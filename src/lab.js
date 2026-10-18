@@ -30,15 +30,15 @@ for (const id of labIDs) gameWorld[id] = 'brain';
 Object.assign(gameGuides, {
   nonogram: [
     'الأرقام فوق الأعمدة وعلى يسار الصفوف تصف مجموعات الخانات المعبأة بالترتيب. بين كل مجموعتين خانة فارغة على الأقل.',
-    'ابدأ بالصفوف الطويلة. بدّل بين التعبئة والشطب والمسح، أو استخدم F وX وC. دفتر الاحتمالات يعرض ترتيبات الصف أو العمود ويتيح تطبيق ترتيب كفرضية قابلة للتراجع. عدسة الحركة تقارن ترتيبات الصف والعمود قبل التنفيذ. الأخضر يعني اكتمال الأرقام؛ علامة ! تعني تعارضاً مع علاماتك. فرشاة السحب ترسم مجموعة واحدة عند رفع الإصبع؛ أوقفها للتمرير. في مرآة المنطق تنتقل كل علامة إلى نظيرتها ويشترط تناظر التعبئة. التلميح يشرح استنتاج خانة ويخصم 8 نقاط عند تطبيقه.',
+    'ابدأ بالصفوف الطويلة. بدّل بين التعبئة والشطب والمسح، أو استخدم F وX وC. دفتر الاحتمالات يعرض ترتيبات الصف أو العمود ويتيح تطبيق ترتيب كفرضية قابلة للتراجع. عدسة الحركة تقارن ترتيبات الصف والعمود قبل التنفيذ. الأخضر يعني اكتمال الأرقام؛ علامة ! تعني تعارضاً مع علاماتك. فرشاة السحب ترسم مجموعة واحدة عند رفع الإصبع؛ أوقفها للتمرير. خريطة الخطوط تجمع حالة كل الصفوف والأعمدة وتنتقل بك إلى الخط الذي تختاره دون كشف الحل. في مرآة المنطق تنتقل كل علامة إلى نظيرتها ويشترط تناظر التعبئة. التلميح يشرح استنتاج خانة ويخصم 8 نقاط عند تطبيقه.',
   ],
   lights: [
     'اطفئ جميع الأنوار. الضغط يغيّر حالة الخانة والخانات المجاورة لها أعلى وأسفل ويمين ويسار.',
-    'ترتيب الضغطات لا يغيّر النتيجة، والضغط مرتين يلغي نفسه. وضع التخطيط يسمح بتجربة مجموعة ضغطات قبل تنفيذها؛ اعرض نتيجة الخطة لتراها على اللوحة، أو نفّذها ضغطة بضغطة. مطاردة الصفوف تبني خطة من اختيارات الصف الأول ثم تطفئ كل صف بالضغط تحته؛ راجع الصف الأخير قبل التنفيذ. عدسة الحركة تفصل الأنوار التي تنطفئ والتي تضيء. في شبكة المفاتيح لا تضغط المصباح المقفل؛ غيّره بواسطة جاره المتاح. المطاردة قد تحتاج مفاتيح معطلة؛ التلميح يحل الشبكة بالمفاتيح القانونية فقط ويخصم 8 نقاط.',
+    'ترتيب الضغطات لا يغيّر النتيجة، والضغط مرتين يلغي نفسه. وضع التخطيط يسمح بتجربة مجموعة ضغطات قبل تنفيذها؛ اعرض نتيجة الخطة لتراها على اللوحة، أو نفّذها ضغطة بضغطة. للتخطيط تراجع وإعادة مستقلان، والتلميح يشرح تعديل الخطة دون مسحها. مطاردة الصفوف تبني خطة من اختيارات الصف الأول ثم تطفئ كل صف بالضغط تحته؛ راجع الصف الأخير قبل التنفيذ. عدسة الحركة تفصل الأنوار التي تنطفئ والتي تضيء. في شبكة المفاتيح لا تضغط المصباح المقفل؛ غيّره بواسطة جاره المتاح. المطاردة قد تحتاج مفاتيح معطلة؛ التلميح يحل الشبكة بالمفاتيح القانونية فقط ويخصم 8 نقاط.',
   ],
   pipes: [
     'دوّر كل قطعة حتى تصل جميع الخانات بالمصدر دون أي فتحة إلى الحافة أو إلى جانب مغلق.',
-    'ابدأ بالزوايا وقطع النهاية. اللمس يدور حسب الوضع المختار؛ الفأرة اليمنى تدور بالعكس. عدسة الحركة تقارن التسريب والاتصال قبل التدوير. ثبّت القطع التي تأكدت منها بزر التثبيت أو L؛ يمكنك التراجع عن التثبيت. اختبار التدفق يشغّل الماء من المصدر طبقة بطبقة ويكشف التسريبات التي يصلها الماء ومسار أي قطعة. اختر «تحديد فقط» على الهاتف لتختار قطعة قبل تدويرها أو تثبيتها. في وضع الحيّين لكل لون مصدر مستقل وحدوده جدران؛ التلميح يبدأ باستنتاجات الشبكة ويخصم 8 نقاط عند ضبط قطعة.',
+    'ابدأ بالزوايا وقطع النهاية. اللمس يدور حسب الوضع المختار؛ الفأرة اليمنى تدور بالعكس. عدسة الحركة تقارن التسريب والاتصال قبل التدوير. ثبّت القطع التي تأكدت منها بزر التثبيت أو L؛ يمكنك التراجع عن التثبيت. اختبار التدفق يشغّل الماء من المصدر طبقة بطبقة ويكشف التسريبات التي يصلها الماء ومسار أي قطعة. مختبر الاتجاهات يقارن جميع دورات القطعة ويطبّق اختيارك بأقصر عدد دورات؛ عندما يفتح تصبح لمسة اللوحة للتحديد فقط. اختر «تحديد فقط» على الهاتف لتختار قطعة قبل تدويرها أو تثبيتها. في وضع الحيّين لكل لون مصدر مستقل وحدوده جدران؛ التلميح يبدأ باستنتاجات الشبكة ويخصم 8 نقاط عند ضبط قطعة.',
   ],
 });
 const labPreviousSetup = setup;
@@ -164,6 +164,8 @@ function startLab(id) {
     lensOpen: false,
     planPreview: false,
     patternOpen: false,
+    lineMapOpen: false,
+    orientationOpen: false,
     patternAxis: 'row',
     patternPage: 0,
     patternPreview: null,
@@ -216,7 +218,11 @@ function labUndo() {
   state.future ||= [];
   state.future.push(labSnapshot());
   labRestore(state.history.pop());
-  if (state.plan) state.plan.fill(false);
+  if (state.plan) {
+    state.plan.fill(false);
+    state.planHistory = [];
+    state.planFuture = [];
+  }
   state.hintCell = -1;
   state.message = 'تم التراجع. عدد الحركات وخصم التلميحات يبقيان للمقارنة العادلة.';
   renderLab();
@@ -225,7 +231,11 @@ function labRedo() {
   if (!labReady() || !state.future?.length) return;
   state.history.push(labSnapshot());
   labRestore(state.future.pop());
-  if (state.plan) state.plan.fill(false);
+  if (state.plan) {
+    state.plan.fill(false);
+    state.planHistory = [];
+    state.planFuture = [];
+  }
   state.hintCell = -1;
   state.message = 'تمت إعادة الحركة بدون احتسابها مرة ثانية.';
   if (labCheckWin()) return;
@@ -258,7 +268,11 @@ function labReset() {
   }
   labRemember();
   state.board = [...state.initial];
-  if (state.plan) state.plan.fill(false);
+  if (state.plan) {
+    state.plan.fill(false);
+    state.planHistory = [];
+    state.planFuture = [];
+  }
   if (state.pipeLocked) state.pipeLocked.fill(false);
   state.hintCell = -1;
   state.message = 'عادت اللوحة إلى البداية. تستطيع التراجع عن إعادة الضبط.';
@@ -534,6 +548,10 @@ function labSelect(i, focus = false) {
         const line = clue.dataset.labAxis === 'row' ? Math.floor(i / state.size) : i % state.size;
         clue.classList.toggle('lab-clue-selected', Number(clue.dataset.labLine) === line);
       });
+  if (state.id === 'nonogram' && state.lineMapOpen && $('labLineMapContent')) {
+    $('labLineMapContent').innerHTML = labLineMapContentHTML();
+    labBindControls($('labLineMapContent'));
+  }
   if (state.id === 'lights') labLightsPreview(i);
   if (state.id === 'pipes' && $('labLock')) {
     $('labLock').textContent = state.pipeLocked?.[i]
@@ -542,6 +560,10 @@ function labSelect(i, focus = false) {
     $('labLock').setAttribute('aria-pressed', String(!!state.pipeLocked?.[i]));
     for (const id of ['labRotateSelected', 'labCounterSelected'])
       if ($(id)) $(id).disabled = !!state.pipeTest || !!state.pipeLocked?.[i];
+  }
+  if (state.id === 'pipes' && state.orientationOpen && $('labOrientationContent')) {
+    $('labOrientationContent').innerHTML = labPipeOrientationContentHTML();
+    labBindControls($('labOrientationContent'));
   }
   if (state.id === 'pipes') labRefreshPipeTest();
   labRefreshLens();
@@ -850,7 +872,64 @@ function labNonogramHTML() {
     )
     .join(
       '',
-    )}</div></div><p class="note center">${n}×${n} · ◆ خانة معطاة · الشطب اختياري للفوز<br>F تعبئة · X شطب · C مسح · الفأرة اليمنى للشطب${n === 9 ? '<br>على الهاتف، اسحب اللوحة أفقياً لرؤية جميع الأعمدة.' : ''}</p><div class="lab-line-tools lab-paint-actions"><button id="labBrush" onclick="labToggleBrush()" aria-pressed="${!!s.brushOn}">${s.brushOn ? 'أوقف الفرشاة للتمرير' : '✎ فرشاة السحب'}</button><button id="labSelectedPaint" onclick="labNonogramTap(state.selected,null,true)">طبّق الأداة على الخانة المحددة</button></div>${s.brushOn ? '<p class="note center">اسحب على الخانات للرسم بنفس الأداة؛ المجموعة تحسب عند رفع إصبعك وتُلغى إذا توقفت اللعبة. أوقف الفرشاة لتمرير اللوحة.</p>' : ''}${labPatternHTML()}`;
+    )}</div></div><p class="note center">${n}×${n} · ◆ خانة معطاة · الشطب اختياري للفوز<br>F تعبئة · X شطب · C مسح · الفأرة اليمنى للشطب${n === 9 ? '<br>على الهاتف، اسحب اللوحة أفقياً لرؤية جميع الأعمدة.' : ''}</p><div class="lab-line-tools lab-paint-actions"><button id="labBrush" onclick="labToggleBrush()" aria-pressed="${!!s.brushOn}">${s.brushOn ? 'أوقف الفرشاة للتمرير' : '✎ فرشاة السحب'}</button><button id="labSelectedPaint" onclick="labNonogramTap(state.selected,null,true)">طبّق الأداة على الخانة المحددة</button></div>${s.brushOn ? '<p class="note center">اسحب على الخانات للرسم بنفس الأداة؛ المجموعة تحسب عند رفع إصبعك وتُلغى إذا توقفت اللعبة. أوقف الفرشاة لتمرير اللوحة.</p>' : ''}${labLineMapHTML()}${labPatternHTML()}`;
+}
+// The line map summarizes the player's visible marks, without reading the answer.
+function labToggleLineMap() {
+  if (!labReady('nonogram')) return;
+  state.lineMapOpen = !state.lineMapOpen;
+  renderLab();
+}
+function labFocusNonogramLine(axis, line) {
+  if (
+    !labReady('nonogram') ||
+    !['row', 'column'].includes(axis) ||
+    !Number.isInteger(line) ||
+    line < 0 ||
+    line >= state.size
+  )
+    return;
+  const s = state,
+    indices = Array.from({ length: s.size }, (_, k) =>
+      axis === 'row' ? line * s.size + k : k * s.size + line,
+    );
+  s.selected = indices.find((i) => s.board[i] === 0 && !s.fixed[i]) ?? indices[0];
+  s.patternAxis = axis;
+  s.patternPage = 0;
+  s.patternPreview = null;
+  s.message = `انتقلت إلى ${axis === 'row' ? 'الصف' : 'العمود'} ${line + 1}. افتح دفتر الاحتمالات لفحص ترتيبات هذا الخط.`;
+  renderLab();
+  $('labBoard')?.querySelector(`[data-index="${s.selected}"]`)?.focus({ preventScroll: true });
+}
+function labLineMapContentHTML() {
+  if (!state.lineMapOpen) return '';
+  const s = state,
+    analysis = labNonogramAnalysis(s);
+  return `<p class="note center">حالة كل خط من أرقامك وعلاماتك الحالية. اختر خطاً للانتقال إليه؛ وجود احتمالات لا يؤكد صحة الحل.</p><div class="lab-line-map">${[
+    'row',
+    'column',
+  ]
+    .map((axis) => {
+      const lines = axis === 'row' ? analysis.rows : analysis.columns;
+      return `<div><b>${axis === 'row' ? 'الصفوف' : 'الأعمدة'}</b>${lines
+        .map((line, index) => {
+          const selected =
+              axis === 'row'
+                ? Math.floor(s.selected / s.size) === index
+                : s.selected % s.size === index,
+            status = line.conflict
+              ? 'متعارض'
+              : line.complete
+                ? 'مكتمل'
+                : `الاحتمالات: ${line.options.length}`;
+          return `<button id="labLine-${axis}-${index}" class="${line.conflict ? 'lab-line-conflict' : line.complete ? 'lab-line-complete' : ''}" aria-label="${axis === 'row' ? 'الصف' : 'العمود'} ${index + 1}: ${status}" aria-pressed="${selected}" onclick="labFocusNonogramLine('${axis}',${index})"><span>${index + 1}</span><small>${line.conflict ? '! ' : line.complete ? '✓ ' : ''}${status}</small></button>`;
+        })
+        .join('')}</div>`;
+    })
+    .join('')}</div>`;
+}
+function labLineMapHTML() {
+  return `<aside class="lab-notebook"><button id="labLineMapToggle" class="lab-lens-toggle" onclick="labToggleLineMap()" aria-expanded="${!!state.lineMapOpen}" aria-controls="labLineMapContent">◎ خريطة الخطوط <span>حدّد الخط الذي يحتاج مراجعة</span></button><div id="labLineMapContent" class="lab-notebook-content" ${state.lineMapOpen ? '' : 'hidden'}>${labLineMapContentHTML()}</div></aside>`;
 }
 function labNonogramTap(i, override = null, commit = false, event = null) {
   if (
@@ -1229,6 +1308,8 @@ function labNewLights() {
   s.initial = [...s.board];
   s.parMoves = bestLength;
   s.plan = Array(count).fill(false);
+  s.planHistory = [];
+  s.planFuture = [];
   s.hintCell = -1;
   s.message = 'اطفئ جميع الأنوار. الإطار يوضح أثر الضغطة المحددة؛ جرّب وضع التخطيط قبل التنفيذ.';
 }
@@ -1274,6 +1355,7 @@ function labChaseLights() {
       'المطاردة تحتاج ضغط مفاتيح معطلة في هذه الشبكة. خطتك الحالية محفوظة؛ جرّب المفاتيح المتاحة ومعاينة أثرها أو استخدم التلميح.';
     return renderLab();
   }
+  if (chased.plan.some((value, i) => value !== s.plan[i])) labRememberPlan();
   s.plan = chased.plan;
   s.planPreview = true;
   s.message = chased.solved
@@ -1288,6 +1370,8 @@ function labStepPlan() {
   if (i < 0) return;
   if (!labSwitchAvailable(i, s)) return;
   labRemember();
+  s.planHistory = [];
+  s.planFuture = [];
   s.plan[i] = false;
   labToggleLights(s.board, i, s.size);
   s.moves++;
@@ -1315,9 +1399,31 @@ function labLightsPreview(i) {
       ? 'المفتاح المحدد معطل؛ اضغط جاراً متاحاً لتغيير هذا المصباح.'
       : `${s.mode === 'plan' ? (s.plan[i] ? 'إزالة' : 'إضافة') + ' هذا الاختيار من الخطة' : 'بعد الضغط على الخانة المحددة'}: ${board.filter(Boolean).length} أنوار مضاءة. قلة الأنوار لا تعني دائماً قرب الحل.`;
 }
+// Planning has its own reversible draft history; it never spends board moves.
+function labRememberPlan() {
+  state.planHistory ||= [];
+  state.planHistory.push([...state.plan]);
+  if (state.planHistory.length > 100) state.planHistory.shift();
+  state.planFuture = [];
+}
+function labUndoPlan(redo = false) {
+  if (!labReady('lights') || state.mode !== 'plan') return;
+  const from = redo ? state.planFuture : state.planHistory,
+    to = redo ? (state.planHistory ||= []) : (state.planFuture ||= []);
+  if (!from?.length) return;
+  to.push([...state.plan]);
+  state.plan = [...from.pop()];
+  state.hintCell = -1;
+  state.message = redo
+    ? 'أُعيد اختيار الخطة؛ اللوحة والحركات لم تتغير.'
+    : 'تم التراجع عن اختيار الخطة فقط؛ اللوحة والحركات لم تتغير.';
+  renderLab();
+}
 function labClearPlan() {
-  if (!labReady('lights')) return;
+  if (!labReady('lights') || !state.plan.some(Boolean)) return;
+  labRememberPlan();
   state.plan.fill(false);
+  state.hintCell = -1;
   state.message = 'مُسحت الخطة؛ اللوحة الأصلية لم تتغير.';
   renderLab();
 }
@@ -1337,6 +1443,8 @@ function labApplyPlan() {
   s.moves += presses.length;
   s.selected = presses[presses.length - 1];
   s.plan.fill(false);
+  s.planHistory = [];
+  s.planFuture = [];
   s.mode = 'play';
   s.hintCell = -1;
   s.message = `نُفذت ${presses.length} ضغطات من خطتك. التراجع يعيد المجموعة كاملة.`;
@@ -1363,7 +1471,7 @@ function labLightsHTML() {
     )
     .join(
       '',
-    )}</div>${planning ? `<div class="lab-plan-summary"><b>${planned} ضغطات مخططة · بعد الخطة ${preview.filter(Boolean).length} أنوار مضاءة</b><p>اختر الخانات التي تريد ضغطها. تكرار الاختيار يزيلها من الخطة؛ لا تُحسب حركة حتى التنفيذ.</p><div class="actions"><button id="labApplyPlan" class="primary" onclick="labApplyPlan()" ${planned ? '' : 'disabled'}>نفّذ الخطة</button><button id="labStepPlan" onclick="labStepPlan()" ${planned ? '' : 'disabled'}>نفّذ ضغطة واحدة</button><button id="labClearPlan" onclick="labClearPlan()" ${planned ? '' : 'disabled'}>امسح الخطة</button><button id="labPlanPreview" onclick="labTogglePlanPreview()" aria-pressed="${!!s.planPreview}" aria-controls="labBoard">${showingPreview ? 'اعرض اللوحة الحالية' : 'اعرض نتيجة الخطة'}</button></div><div class="lab-chase"><b>↓ مطاردة الصفوف</b><p>اختر ضغطات الصف الأول المعلّم، ثم اضغط المطاردة. الأداة تبني بقية الخطة بإطفاء كل مصباح من الخانة التي تحته. إذا بقي نور في الصف الأخير، جرّب اختيارات أخرى في الصف الأول.</p><button id="labChase" onclick="labChaseLights()">طارد الأنوار للأسفل</button></div></div>` : ''}<div class="lab-lights-caption"><span>☀ مضاء</span><span>· مطفأ</span><span>✦ ضغطة مقترحة</span>${planning ? '<span>↻ ضغطة في الخطة</span>' : ''}${showingPreview ? '<span>↑ يضيء · ↓ ينطفئ بعد الخطة</span>' : ''}</div>${showingPreview ? '<p class="lab-preview-banner" role="status">معاينة نتيجة الخطة — اللوحة الحالية محفوظة حتى تضغط «نفّذ الخطة».</p>' : ''}<div id="labBoard" class="lab-square lab-lights" style="--lab-n:${s.size}" role="group" aria-label="لوحة الأنوار${showingPreview ? '، معاينة نتيجة الخطة' : planning ? '، وضع التخطيط' : ''}">${displayBoard.map((value, i) => `<button class="lab-cell lab-light ${!labSwitchAvailable(i, s) ? 'lab-switch-disabled' : ''} ${value ? 'lab-lit' : ''} ${s.selected === i ? 'lab-selected' : ''} ${affected.includes(i) ? 'lab-affected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''} ${planning && s.plan[i] ? 'lab-planned' : ''} ${planning && i < s.size ? 'lab-top-row' : ''} ${showingPreview && value !== s.board[i] ? 'lab-projected-change' : ''}" ${labCellAttributes(i, (value ? 'مصباح مضاء' : 'مصباح مطفأ') + (!labSwitchAvailable(i, s) ? '، المفتاح معطل ويتغير بواسطة الجيران' : '') + (showingPreview ? ' بعد الخطة، حالياً ' + (s.board[i] ? 'مضاء' : 'مطفأ') : '') + (s.hintCell === i ? '، ضغطة مقترحة' : '') + (planning && s.plan[i] ? '، ضغطة في الخطة' : ''))} aria-pressed="${planning ? s.plan[i] : !!value}" ${!labSwitchAvailable(i, s) ? 'aria-disabled="true"' : ''} onclick="labLightsTap(${i})" onpointerenter="labLightsPreview(${i})"><span aria-hidden="true">${value ? '☀' : '·'}</span>${showingPreview && value !== s.board[i] ? `<b class="lab-projected-mark" aria-hidden="true">${value ? '↑' : '↓'}</b>` : ''}${!labSwitchAvailable(i, s) ? '<b class="lab-switch-lock" aria-hidden="true">🔒</b>' : ''}${planning && s.plan[i] ? '<b class="lab-plan-mark" aria-hidden="true">↻</b>' : s.hintCell === i ? '<small aria-hidden="true">✦</small>' : ''}</button>`).join('')}</div><p id="labPreviewMessage" class="lab-board-status">${!labSwitchAvailable(s.selected, s) ? 'المفتاح المحدد معطل؛ اضغط جاراً متاحاً لتغيير هذا المصباح. الحالة الحالية' : planning ? (s.plan[s.selected] ? 'إزالة' : 'إضافة') + ' هذا الاختيار من الخطة' : 'بعد الضغط على الخانة المحددة'}: ${after.filter(Boolean).length} أنوار مضاءة. قلة الأنوار لا تعني دائماً قرب الحل.</p><p class="note center">${s.size}×${s.size} · الضغط يغيّر الخانة وأعلى وأسفل ويمين ويسار<br>الضغط مرتين يلغي نفسه. اطفئ كل مصباح للفوز.</p>`;
+    )}</div>${planning ? `<div class="lab-plan-summary"><b>${planned} ضغطات مخططة · بعد الخطة ${preview.filter(Boolean).length} أنوار مضاءة</b><p>اختر الخانات التي تريد ضغطها. تكرار الاختيار يزيلها من الخطة؛ لا تُحسب حركة حتى التنفيذ.</p><div class="actions"><button id="labApplyPlan" class="primary" onclick="labApplyPlan()" ${planned ? '' : 'disabled'}>نفّذ الخطة</button><button id="labStepPlan" onclick="labStepPlan()" ${planned ? '' : 'disabled'}>نفّذ ضغطة واحدة</button><button id="labClearPlan" onclick="labClearPlan()" ${planned ? '' : 'disabled'}>امسح الخطة</button><button id="labPlanPreview" onclick="labTogglePlanPreview()" aria-pressed="${!!s.planPreview}" aria-controls="labBoard">${showingPreview ? 'اعرض اللوحة الحالية' : 'اعرض نتيجة الخطة'}</button></div><div class="lab-plan-draft"><button id="labPlanUndo" onclick="labUndoPlan()" ${s.planHistory?.length ? '' : 'disabled'}>↶ آخر اختيار بالخطة</button><button id="labPlanRedo" onclick="labUndoPlan(true)" ${s.planFuture?.length ? '' : 'disabled'}>↷ إعادة اختيار الخطة</button><small>تراجع مستقل عن حركات اللوحة، ويشمل مسح الخطة والمطاردة.</small></div><div class="lab-chase"><b>↓ مطاردة الصفوف</b><p>اختر ضغطات الصف الأول المعلّم، ثم اضغط المطاردة. الأداة تبني بقية الخطة بإطفاء كل مصباح من الخانة التي تحته. إذا بقي نور في الصف الأخير، جرّب اختيارات أخرى في الصف الأول.</p><button id="labChase" onclick="labChaseLights()">طارد الأنوار للأسفل</button></div></div>` : ''}<div class="lab-lights-caption"><span>☀ مضاء</span><span>· مطفأ</span><span>✦ ضغطة مقترحة</span>${planning ? '<span>↻ ضغطة في الخطة</span>' : ''}${showingPreview ? '<span>↑ يضيء · ↓ ينطفئ بعد الخطة</span>' : ''}</div>${showingPreview ? '<p class="lab-preview-banner" role="status">معاينة نتيجة الخطة — اللوحة الحالية محفوظة حتى تضغط «نفّذ الخطة».</p>' : ''}<div id="labBoard" class="lab-square lab-lights" style="--lab-n:${s.size}" role="group" aria-label="لوحة الأنوار${showingPreview ? '، معاينة نتيجة الخطة' : planning ? '، وضع التخطيط' : ''}">${displayBoard.map((value, i) => `<button class="lab-cell lab-light ${!labSwitchAvailable(i, s) ? 'lab-switch-disabled' : ''} ${value ? 'lab-lit' : ''} ${s.selected === i ? 'lab-selected' : ''} ${affected.includes(i) ? 'lab-affected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''} ${planning && s.plan[i] ? 'lab-planned' : ''} ${planning && i < s.size ? 'lab-top-row' : ''} ${showingPreview && value !== s.board[i] ? 'lab-projected-change' : ''}" ${labCellAttributes(i, (value ? 'مصباح مضاء' : 'مصباح مطفأ') + (!labSwitchAvailable(i, s) ? '، المفتاح معطل ويتغير بواسطة الجيران' : '') + (showingPreview ? ' بعد الخطة، حالياً ' + (s.board[i] ? 'مضاء' : 'مطفأ') : '') + (s.hintCell === i ? '، ضغطة مقترحة' : '') + (planning && s.plan[i] ? '، ضغطة في الخطة' : ''))} aria-pressed="${planning ? s.plan[i] : !!value}" ${!labSwitchAvailable(i, s) ? 'aria-disabled="true"' : ''} onclick="labLightsTap(${i})" onpointerenter="labLightsPreview(${i})"><span aria-hidden="true">${value ? '☀' : '·'}</span>${showingPreview && value !== s.board[i] ? `<b class="lab-projected-mark" aria-hidden="true">${value ? '↑' : '↓'}</b>` : ''}${!labSwitchAvailable(i, s) ? '<b class="lab-switch-lock" aria-hidden="true">🔒</b>' : ''}${planning && s.plan[i] ? '<b class="lab-plan-mark" aria-hidden="true">↻</b>' : s.hintCell === i ? '<small aria-hidden="true">✦</small>' : ''}</button>`).join('')}</div><p id="labPreviewMessage" class="lab-board-status">${!labSwitchAvailable(s.selected, s) ? 'المفتاح المحدد معطل؛ اضغط جاراً متاحاً لتغيير هذا المصباح. الحالة الحالية' : planning ? (s.plan[s.selected] ? 'إزالة' : 'إضافة') + ' هذا الاختيار من الخطة' : 'بعد الضغط على الخانة المحددة'}: ${after.filter(Boolean).length} أنوار مضاءة. قلة الأنوار لا تعني دائماً قرب الحل.</p><p class="note center">${s.size}×${s.size} · الضغط يغيّر الخانة وأعلى وأسفل ويمين ويسار<br>الضغط مرتين يلغي نفسه. اطفئ كل مصباح للفوز.</p>`;
 }
 function labLightsTap(i, commit = false) {
   if (!labReady('lights') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
@@ -1375,13 +1483,17 @@ function labLightsTap(i, commit = false) {
     return renderLab();
   }
   if (s.mode === 'plan') {
+    labRememberPlan();
     s.plan[i] = !s.plan[i];
+    s.hintCell = -1;
     s.selected = i;
     s.message = 'هذه خطة تجريبية؛ نفّذها عندما تكون جاهزاً أو عدّل اختياراتك.';
     return renderLab();
   }
   labRemember();
   s.plan.fill(false);
+  s.planHistory = [];
+  s.planFuture = [];
   labToggleLights(s.board, i, s.size);
   s.moves++;
   s.selected = i;
@@ -1545,7 +1657,14 @@ function labPipeDomains(board, n, locked = [], districts = null) {
   return domains;
 }
 function labTogglePipeLock(i = state?.selected) {
-  if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
+  if (
+    !labReady('pipes') ||
+    state.pipeTest ||
+    !Number.isInteger(i) ||
+    i < 0 ||
+    i >= state.board.length
+  )
+    return;
   labRemember();
   state.pipeLocked[i] = !state.pipeLocked[i];
   state.selected = i;
@@ -1770,7 +1889,7 @@ function labPipesHTML(analysis) {
     )
     .join(
       '',
-    )}</div><div class="lab-line-tools"><button id="labLock" onclick="labTogglePipeLock()" aria-pressed="${s.pipeLocked[s.selected]}">${s.pipeLocked[s.selected] ? '🔓 فك تثبيت القطعة' : '🔒 ثبّت القطعة المحددة'}</button><button id="labRotateSelected" onclick="labRotateSelected(1)" ${s.pipeTest || s.pipeLocked[s.selected] ? 'disabled' : ''}>↻ دوّر المحددة</button><button id="labCounterSelected" onclick="labRotateSelected(-1)" ${s.pipeTest || s.pipeLocked[s.selected] ? 'disabled' : ''}>↺ دوّر بالعكس</button></div><div class="lab-pipe-status"><span>💧 المصدر</span><span>! ${analysis.leaks} فتحة غير موصولة</span><span>● متصل بالمصدر</span><span>🔒 ${s.pipeLocked.filter(Boolean).length} قطع مثبتة</span></div><div id="labBoard" class="lab-square lab-pipes" style="--lab-n:${s.size}" role="group" aria-label="شبكة الأنابيب">${s.board
+    )}</div><div class="lab-line-tools"><button id="labLock" onclick="labTogglePipeLock()" aria-pressed="${s.pipeLocked[s.selected]}" ${s.pipeTest ? 'disabled' : ''}>${s.pipeLocked[s.selected] ? '🔓 فك تثبيت القطعة' : '🔒 ثبّت القطعة المحددة'}</button><button id="labRotateSelected" onclick="labRotateSelected(1)" ${s.pipeTest || s.pipeLocked[s.selected] ? 'disabled' : ''}>↻ دوّر المحددة</button><button id="labCounterSelected" onclick="labRotateSelected(-1)" ${s.pipeTest || s.pipeLocked[s.selected] ? 'disabled' : ''}>↺ دوّر بالعكس</button></div><div class="lab-pipe-status"><span>💧 المصدر</span><span>! ${analysis.leaks} فتحة غير موصولة</span><span>● متصل بالمصدر</span><span>🔒 ${s.pipeLocked.filter(Boolean).length} قطع مثبتة</span></div><div id="labBoard" class="lab-square lab-pipes" style="--lab-n:${s.size}" role="group" aria-label="شبكة الأنابيب">${s.board
     .map(
       (mask, i) =>
         `<button class="lab-cell lab-pipe ${(flow ? flow.reached.has(i) : analysis.connected.has(i)) ? 'lab-connected' : ''} ${flow?.path.includes(i) ? 'lab-flow-path' : ''} ${flow && s.pipeTest.flow.distance[i] === s.pipeTest.step ? 'lab-flow-front' : ''} ${labPipeIsSource(i, s) ? 'lab-source' : ''} ${s.districts ? 'lab-district-' + (s.districts[i] ? 'b' : 'a') : ''} ${s.selected === i ? 'lab-selected' : ''} ${s.hintCell === i ? 'lab-hinted' : ''} ${s.pipeLocked[i] ? 'lab-locked' : ''}" ${labCellAttributes(
@@ -1789,7 +1908,78 @@ function labPipesHTML(analysis) {
     )
     .join(
       '',
-    )}</div><div id="labFlow">${labPipeFlowHTML()}</div><p class="note center">${s.districts ? 'اربط كل حيّ بمصدره دون عبور حدود اللون' : 'أي ترتيب يربط جميع القطع بلا فتحات يعتبر حلاً'}<br>«تحديد فقط» يختار قطعة دون تدويرها؛ استخدم زر التدوير أو التثبيت.<br>R للتدوير · Shift+R للعكس · L للتثبيت · الفأرة اليمنى للعكس</p>`;
+    )}</div><div id="labFlow">${labPipeFlowHTML()}</div>${labPipeOrientationHTML()}<p class="note center">${s.districts ? 'اربط كل حيّ بمصدره دون عبور حدود اللون' : 'أي ترتيب يربط جميع القطع بلا فتحات يعتبر حلاً'}<br>«تحديد فقط» يختار قطعة دون تدويرها؛ استخدم زر التدوير أو التثبيت.<br>R للتدوير · Shift+R للعكس · L للتثبيت · الفأرة اليمنى للعكس</p>`;
+}
+// Compare every distinct orientation against the live board, never the stored solution.
+function labPipeOrientations(s = state) {
+  const options = [],
+    i = s.selected;
+  let mask = s.board[i];
+  for (let turn = 0; turn < 4; turn++) {
+    if (!options.some((option) => option.mask === mask)) {
+      const board = [...s.board];
+      board[i] = mask;
+      const analysis = labAnalysePipes(s, board);
+      options.push({
+        mask,
+        turns: Math.min(turn, 4 - turn),
+        leaks: analysis.leaks,
+        connected: analysis.connected.size,
+        leaking: analysis.leaking[i],
+        live: analysis.connected.has(i),
+      });
+    }
+    mask = labRotatePipe(mask);
+  }
+  return options;
+}
+function labTogglePipeOrientations() {
+  if (!labReady('pipes')) return;
+  state.orientationOpen = !state.orientationOpen;
+  renderLab();
+}
+function labApplyPipeOrientation(mask, signature) {
+  if (
+    !labReady('pipes') ||
+    !state.orientationOpen ||
+    state.pipeTest ||
+    state.pipeLocked[state.selected] ||
+    signature !== state.board.join(',')
+  )
+    return;
+  const option = labPipeOrientations().find((item) => item.mask === mask);
+  if (!option || !option.turns) return;
+  const s = state;
+  labRemember();
+  s.board[s.selected] = mask;
+  s.moves += option.turns;
+  s.hintCell = -1;
+  s.message = `طُبق الاتجاه المختار في ${option.turns === 1 ? 'حركة واحدة' : 'حركتين'}. التراجع يعيد اتجاه القطعة كاملاً؛ المقارنة لا تكشف الحل.`;
+  if (labCheckWin()) return;
+  renderLab();
+}
+function labPipeOrientationContentHTML() {
+  const s = state;
+  if (!s.orientationOpen) return '';
+  const blocked = !!s.pipeTest || s.pipeLocked[s.selected];
+  return `<p class="note center">الصف ${Math.floor(s.selected / s.size) + 1} · العمود ${(s.selected % s.size) + 1}. اختر قطعة على اللوحة لمقارنة اتجاهاتها دون تدويرها. الأعداد تخص الشبكة كلها؛ قلة التسريب لا تثبت صحة الاتجاه.</p><div class="lab-orientations">${labPipeOrientations(
+    s,
+  )
+    .map(
+      (option) =>
+        `<button id="labOrientation-${option.mask}" class="lab-orientation ${option.live ? 'lab-connected' : ''}" onclick="labApplyPipeOrientation(${option.mask},'${s.board.join(',')}')" ${blocked || !option.turns ? 'disabled' : ''} aria-label="اتجاه الفتحات ${labPipeDirections
+          .filter(([, , bit]) => option.mask & bit)
+          .map(([, , , , name]) => name)
+          .join(
+            '، ',
+          )}: ${option.leaks} فتحات غير موصولة، ${option.connected} قطع متصلة، ${option.turns ? option.turns + ' حركة للتطبيق' : 'الاتجاه الحالي'}"><span class="lab-orientation-diagram" aria-hidden="true">${labPipeSVG(option.mask, option.live, labPipeIsSource(s.selected, s), option.leaking)}</span><b>${option.turns ? (option.turns === 1 ? 'طبّق · حركة واحدة' : 'طبّق · حركتان') : 'الاتجاه الحالي'}</b><small>! ${option.leaks} فتحات · ● ${option.connected} متصلة</small></button>`,
+    )
+    .join(
+      '',
+    )}</div><p class="note center">${s.pipeTest ? 'أغلق اختبار التدفق لتطبيق اتجاه؛ الاختبار محفوظ.' : s.pipeLocked[s.selected] ? 'فك تثبيت هذه القطعة لتطبيق اتجاه جديد.' : 'يُحتسب أقصر عدد دورات للوصول إلى اختيارك، ويمكن التراجع عنه بخطوة واحدة.'}</p>`;
+}
+function labPipeOrientationHTML() {
+  return `<aside class="lab-notebook"><button id="labOrientationsToggle" class="lab-lens-toggle" onclick="labTogglePipeOrientations()" aria-expanded="${!!state.orientationOpen}" aria-controls="labOrientationContent">⟳ مختبر الاتجاهات <span>قارن كل اتجاهات القطعة</span></button><div id="labOrientationContent" class="lab-notebook-content" ${state.orientationOpen ? '' : 'hidden'}>${labPipeOrientationContentHTML()}</div></aside>`;
 }
 function labPipesTap(i, override = null, commit = false) {
   if (!labReady('pipes') || !Number.isInteger(i) || i < 0 || i >= state.board.length) return;
@@ -1799,7 +1989,7 @@ function labPipesTap(i, override = null, commit = false) {
     labSelect(i);
     return;
   }
-  if (!commit && !override && state.mode === 'select') {
+  if (!commit && !override && (state.mode === 'select' || state.orientationOpen)) {
     labSelect(i);
     return;
   }
@@ -1881,18 +2071,26 @@ function labHint() {
     s.message = `${reason}: الصف ${Math.floor(i / s.size) + 1}، العمود ${(i % s.size) + 1} ${value ? 'معبأ' : 'فارغ'}. طُبق الاستنتاج وخصمت 8 نقاط.`;
     if (labNonogramWon(s)) return labFinish('اكتملت لوحة المنطق!', 'تطابقت جميع الصفوف والأعمدة.');
   } else if (s.id === 'lights') {
-    const solution = labLightsSolve(s.board, s.size, s.switches);
-    if (!solution?.length) return;
-    const signature = s.board.join('');
+    const planning = s.mode === 'plan',
+      board = planning ? labLightsProjected(s) : s.board,
+      solution = labLightsSolve(board, s.size, s.switches);
+    if (!solution?.length) {
+      if (planning && !board.some(Boolean)) {
+        s.message = 'خطتك الحالية تطفئ جميع الأنوار. نفّذ الخطة لإكمال اللغز؛ لم يُخصم تلميح.';
+        renderLab();
+      }
+      return;
+    }
+    const signature = s.board.join('') + (planning ? ':plan:' + s.plan.map(Number).join('') : '');
     if (s.hintSignature !== signature) {
       s.hints++;
       s.hintSignature = signature;
     }
     s.hintCell = solution[0];
     s.selected = solution[0];
-    s.plan.fill(false);
-    s.mode = 'play';
-    s.message = `اضغط الخانة المعلّمة ✦: الصف ${Math.floor(solution[0] / s.size) + 1}، العمود ${(solution[0] % s.size) + 1}. أقصر حل الآن ${solution.length} ضغطات. إعادة هذا التلميح قبل تغيير اللوحة لا تخصم مجدداً.`;
+    s.message = planning
+      ? `${s.plan[solution[0]] ? 'أزل' : 'أضف'} الخانة المعلّمة ✦ ${s.plan[solution[0]] ? 'من' : 'إلى'} خطتك: الصف ${Math.floor(solution[0] / s.size) + 1}، العمود ${(solution[0] % s.size) + 1}. بقي ${solution.length} تعديلات لإطفاء نتيجة الخطة؛ خطتك محفوظة. تكرار التلميح قبل تعديلها لا يخصم مجدداً.`
+      : `اضغط الخانة المعلّمة ✦: الصف ${Math.floor(solution[0] / s.size) + 1}، العمود ${(solution[0] % s.size) + 1}. أقصر حل الآن ${solution.length} ضغطات. إعادة هذا التلميح قبل تغيير اللوحة لا تخصم مجدداً.`;
   } else {
     const domains = labPipeDomains(s.board, s.size, s.pipeLocked, s.districts);
     if (domains.some((options) => !options.length)) {

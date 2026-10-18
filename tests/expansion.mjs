@@ -394,7 +394,7 @@ try {
         await clickAction(page, `undercoverChoose(${choice})`);
         if (voter === 0) {
           await page.evaluate(() => openSettings());
-          assert.equal(await page.evaluate(() => state.voteChoice), null);
+          assert.equal(await page.evaluate(() => state.voteChoice), choice);
           assert.equal(await page.locator('.party-ballots').count(), 0);
           await page.evaluate(() => closeModal());
           await clickAction(page, 'undercoverOpenVote()');

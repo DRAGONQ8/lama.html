@@ -36,17 +36,17 @@ Object.assign(gameGuides, {
   ],
   truefalse: [
     'اقرأ العبارة وحدد هل هي صحيحة أم خاطئة. اختر الموضوع والمستوى وطول الجولة.',
-    'اقرأ الشرح بعد كل جواب؛ لا يوجد مؤقت. كل الإجابات الصحيحة تعطي نتيجة 100، ولا تتكرر العبارة خلال الجولة. على لوحة المفاتيح: 1 للصح و2 للخطأ وEnter للمتابعة. نتيجة الجولة العادية تتيح تدريباً على العبارات التي أخطأت فيها، وتبقى نقاطك الأصلية كما هي.',
+    'اقرأ الشرح بعد كل جواب؛ لا يوجد مؤقت. احفظ أي عبارة للمراجعة حتى لو أجبت عنها صح. كل الإجابات الصحيحة تعطي نتيجة 100، ولا تتكرر العبارة خلال الجولة. على لوحة المفاتيح: 1 للصح و2 للخطأ وEnter للمتابعة. نتيجة الجولة العادية تتيح تدريباً على العبارات التي أخطأت فيها، وتبقى نقاطك الأصلية كما هي.',
   ],
   order: [
     'اقرأ الاتجاه المطلوب، ثم استخدم زري أعلى وأسفل لترتيب البطاقات. البطاقات تبدأ مبعثرة دائماً.',
-    'لديك محاولة تأكيد واحدة لكل ترتيب، ويمكن التراجع عن التحريك قبل التأكيد. بعد التأكيد يظهر الترتيب الصحيح وسببه؛ كل بطاقة في مكانها الصحيح تكسب جزءاً من نقاط السؤال. استخدم Tab وEnter للأزرار، أو أرقام البطاقات لاختيارها ثم الأسهم لتحريكها. بعد الجولة العادية يمكنك التدرب على الترتيبات الناقصة دون إضافة نقاط جديدة.',
+    'اضغط اسم بطاقة ثم اسم المكان المطلوب لنقلها مباشرة، أو استخدم الأسهم. لديك محاولة تأكيد واحدة لكل ترتيب، ويمكن التراجع عن كل حركة قبل التأكيد. بعد التأكيد يظهر الترتيب الصحيح وسببه؛ كل بطاقة في مكانها الصحيح تكسب جزءاً من نقاط السؤال. استخدم Tab وEnter للأزرار، أو أرقام البطاقات لاختيارها ثم الأسهم لتحريكها. بعد الجولة العادية يمكنك التدرب على الترتيبات الناقصة دون إضافة نقاط جديدة.',
   ],
 });
 function collectionShuffle(items) {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
-    const j = randInt(i + 1);
+    const j = typeof gameRand === 'function' ? gameRand(i + 1) : randInt(i + 1);
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
@@ -155,6 +155,8 @@ function startCollection(id) {
     correct: 0,
     credit: 0,
     answers: [],
+    reviewMarked: [],
+    orderPicked: null,
     started: Date.now(),
     flagMode,
     choicesCount,
@@ -184,7 +186,9 @@ function startCollection(id) {
           };
         }
         if (id === 'order') {
-          const reverse = direction === 'mixed' && randInt(2) === 1,
+          const reverse =
+              direction === 'mixed' &&
+              (typeof gameRand === 'function' ? gameRand(2) : randInt(2)) === 1,
             solution = reverse ? [...q.items].reverse() : [...q.items];
           let items = collectionShuffle(solution);
           if (items.every((v, i) => v === solution[i])) items = [...items.slice(1), items[0]];
@@ -203,10 +207,32 @@ function collectionFocusQuestion() {
   question?.focus({ preventScroll: true });
   question?.scrollIntoView({ block: 'nearest' });
 }
+function collectionFlagComparison(q, answer) {
+  const selected = q.choices[answer.choice],
+    items = answer.correct
+      ? [[q, 'العلم الصحيح']]
+      : [
+          [selected, 'اختيارك'],
+          [q, 'الإجابة الصحيحة'],
+        ];
+  return `<div class="collection-flag-comparison">${items.map(([item, title]) => `<figure><figcaption>${title}: <b>${esc(item.name)}</b></figcaption>${collectionFlagSVG(item.code, `علم ${item.name}`)}<small>${esc(collectionRegions.find(([id]) => id === item.region)?.[1] || '')}</small></figure>`).join('')}</div>`;
+}
+function toggleCollectionReview(run = state?.run, index = state?.index) {
+  if (!collectionCurrent(run, index, 'truefalse')) return;
+  const marked = state.reviewMarked,
+    position = marked.indexOf(index);
+  if (position >= 0) marked.splice(position, 1);
+  else marked.push(index);
+  const button = $('collectionMarkReview');
+  if (button) {
+    button.setAttribute('aria-pressed', String(position < 0));
+    button.textContent = position < 0 ? '★ محفوظة للمراجعة' : '☆ احفظ العبارة للمراجعة';
+  }
+}
 function collectionFeedback(q, answer) {
   if (!state.locked) return '';
   const right = answer.correct;
-  return `<div class="collection-feedback ${right ? 'is-correct' : 'is-wrong'}" role="status"><b>${right ? '✓ إجابة صحيحة' : state.id === 'order' ? `في مكانها الصحيح: ${answer.matches} من ${q.solution.length}` : 'راجع الإجابة الصحيحة'}</b><p>${esc(state.id === 'flags' ? `هذا علم ${q.name}.` : q.reason)}</p>${state.id === 'order' ? `<ol class="collection-solution">${q.solution.map((item) => `<li>${esc(item)}</li>`).join('')}</ol>` : ''}</div>`;
+  return `<div class="collection-feedback ${right ? 'is-correct' : 'is-wrong'}" role="status"><b>${right ? '✓ إجابة صحيحة' : state.id === 'order' ? `في مكانها الصحيح: ${answer.matches} من ${q.solution.length}` : 'راجع الإجابة الصحيحة'}</b><p>${esc(state.id === 'flags' ? `هذا علم ${q.name}.` : q.reason)}</p>${state.id === 'flags' ? collectionFlagComparison(q, answer) : ''}${state.id === 'order' ? `<ol class="collection-solution">${q.solution.map((item) => `<li>${esc(item)}</li>`).join('')}</ol>` : ''}</div>`;
 }
 function renderCollection() {
   if (!collectionGameIds.has(state?.id) || screen !== state.id || state.done) return;
@@ -220,11 +246,11 @@ function renderCollection() {
   if (s.id === 'truefalse')
     body = `<span class="collection-category">${esc(collectionFactCategories.find(([id]) => id === q.cat)?.[1] || '')} · ${q.level === 'easy' ? 'سهل' : 'متوسط'}</span><h3 class="collection-question fact-statement" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${esc(q.text)}</h3><div class="collection-choices truth-options">${[true, false].map((value, i) => `<button class="collection-choice ${s.locked && value === q.truth ? 'is-correct' : s.locked && answer.choice === i ? 'is-wrong' : ''}" onclick="answerCollection(${i},${token})" ${s.locked ? 'disabled' : ''}><span class="collection-choice-num">${i + 1}</span><b>${value ? '✓ صح' : '✕ خطأ'}</b>${s.locked && value === q.truth ? '<span class="collection-verdict">الجواب الصحيح</span>' : ''}</button>`).join('')}</div>`;
   if (s.id === 'order')
-    body = `<h3 class="collection-question" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${esc(q.prompt)}</h3><p class="note">الترتيب من أعلى إلى أسفل. ${s.locked ? 'انتهت المحاولة؛ راجع الحل أسفل البطاقات.' : 'حرّك البطاقات ثم أكّد ترتيبك.'}</p><ol class="collection-order" aria-label="بطاقات الترتيب">${q.arranged.map((item, i) => `<li data-order-index="${i}" class="${s.locked ? (item === q.solution[i] ? 'is-correct' : 'is-wrong') : s.selected === i ? 'is-selected' : ''}" ${!s.locked && s.selected === i ? 'aria-current="true"' : ''}><span class="collection-order-number">${i + 1}</span><span class="collection-order-label">${esc(item)}</span><div class="collection-order-controls"><button data-order-move="${i}-up" onclick="moveCollectionOrder(${i},-1,${token})" aria-label="نقل ${esc(item)} إلى أعلى" ${s.locked || i === 0 ? 'disabled' : ''}>↑</button><button data-order-move="${i}-down" onclick="moveCollectionOrder(${i},1,${token})" aria-label="نقل ${esc(item)} إلى أسفل" ${s.locked || i === q.arranged.length - 1 ? 'disabled' : ''}>↓</button></div></li>`).join('')}</ol><p class="note collection-move-status" role="status">${esc(s.orderStatus)}</p>${s.locked ? '' : `<div class="actions"><button onclick="collectionUndoOrder(${token})" ${s.orderMoves.length ? '' : 'disabled'}>↶ تراجع عن آخر حركة</button></div><button class="primary collection-confirm" onclick="submitCollectionOrder(${token})">تأكيد الترتيب ✓</button>`}`;
+    body = `<h3 class="collection-question" id="collectionQuestion" tabindex="-1" aria-describedby="collectionQuestionProgress">${esc(q.prompt)}</h3><p class="note">الترتيب من أعلى إلى أسفل. ${s.locked ? 'انتهت المحاولة؛ راجع الحل أسفل البطاقات.' : 'اضغط اسم بطاقة ثم اسم المكان الذي تريد نقلها إليه، أو استخدم الأسهم.'}</p><ol class="collection-order" aria-label="بطاقات الترتيب">${q.arranged.map((item, i) => `<li data-order-index="${i}" class="${s.locked ? (item === q.solution[i] ? 'is-correct' : 'is-wrong') : `${s.selected === i ? 'is-selected' : ''} ${s.orderPicked === i ? 'is-picked' : ''}`}" ${!s.locked && s.selected === i ? 'aria-current="true"' : ''}><span class="collection-order-number">${i + 1}</span><button class="collection-order-label" data-order-pick="${i}" type="button" onclick="collectionPlaceOrder(${i},${token})" aria-pressed="${s.orderPicked === i}" aria-label="${s.orderPicked === null ? 'اختر بطاقة' : s.orderPicked === i ? 'إلغاء اختيار' : 'انقل البطاقة المختارة إلى مكان'} ${esc(item)}" ${s.locked ? 'disabled' : ''}>${esc(item)}</button><div class="collection-order-controls"><button data-order-move="${i}-up" onclick="moveCollectionOrder(${i},-1,${token})" aria-label="نقل ${esc(item)} إلى أعلى" ${s.locked || i === 0 ? 'disabled' : ''}>↑</button><button data-order-move="${i}-down" onclick="moveCollectionOrder(${i},1,${token})" aria-label="نقل ${esc(item)} إلى أسفل" ${s.locked || i === q.arranged.length - 1 ? 'disabled' : ''}>↓</button></div></li>`).join('')}</ol><p class="note collection-move-status" role="status">${esc(s.orderStatus)}</p>${s.locked ? '' : `<div class="actions"><button onclick="collectionUndoOrder(${token})" ${s.orderMoves.length ? '' : 'disabled'}>↶ تراجع عن آخر حركة</button></div><button class="primary collection-confirm" onclick="submitCollectionOrder(${token})">تأكيد الترتيب ✓</button>`}`;
   setHTML(
     wrap(
       s.id,
-      `<section class="panel collection-play">${s.practice ? '<p class="collection-practice-badge">📚 مراجعة أخطائك · تدريب بلا نقاط إضافية</p>' : ''}<div class="collection-top"><span>${esc(s.name)}</span><b id="collectionQuestionProgress">السؤال ${s.index + 1} / ${s.questions.length}</b><span>${Math.round((s.credit * 100) / s.questions.length)} / 100 ${s.practice ? 'تقييم التدريب' : 'نقطة'}</span></div><progress class="collection-progress" value="${s.index + (s.locked ? 1 : 0)}" max="${s.questions.length}" aria-label="تقدم الجولة"></progress>${body}${collectionFeedback(q, answer)}${s.locked ? `<div class="actions"><button class="primary" id="collectionNext" onclick="nextCollection(${token})">${s.index + 1 === s.questions.length ? 'شوف النتيجة' : 'السؤال التالي'} ←</button></div>` : ''}<p class="tiny collection-keyboard">${s.id === 'order' ? 'لوحة المفاتيح: Tab ثم Enter للتحريك والتأكيد. الأرقام تختار بطاقة والأسهم تحركها.' : 'الأرقام لاختيار الإجابة · Enter بعد ظهور الشرح للمتابعة'}</p></section>`,
+      `<section class="panel collection-play">${s.practice ? '<p class="collection-practice-badge">📚 مراجعة جولتك · تدريب بلا نقاط إضافية</p>' : ''}<div class="collection-top"><span>${esc(s.name)}</span><b id="collectionQuestionProgress">السؤال <bdi dir="ltr">${s.index + 1} / ${s.questions.length}</bdi></b><span><bdi dir="ltr">${Math.round((s.credit * 100) / s.questions.length)} / 100</bdi> ${s.practice ? 'تقييم التدريب' : 'نقطة'}</span></div><progress class="collection-progress" value="${s.index + (s.locked ? 1 : 0)}" max="${s.questions.length}" aria-label="تقدم الجولة"></progress>${body}${s.id === 'truefalse' ? `<div class="actions collection-review-mark"><button id="collectionMarkReview" aria-pressed="${s.reviewMarked.includes(s.index)}" onclick="toggleCollectionReview(${token})">${s.reviewMarked.includes(s.index) ? '★ محفوظة للمراجعة' : '☆ احفظ العبارة للمراجعة'}</button></div>` : ''}${collectionFeedback(q, answer)}${s.locked ? `<div class="actions"><button class="primary" id="collectionNext" onclick="nextCollection(${token})">${s.index + 1 === s.questions.length ? 'شوف النتيجة' : 'السؤال التالي'} ←</button></div>` : ''}<p class="tiny collection-keyboard">${s.id === 'order' ? 'لوحة المفاتيح: Tab ثم Enter للتحريك والتأكيد. الأرقام تختار بطاقة والأسهم تحركها.' : 'الأرقام لاختيار الإجابة · Enter بعد ظهور الشرح للمتابعة'}</p></section>`,
     ),
   );
 }
@@ -261,7 +287,8 @@ function moveCollectionOrder(index, delta, run = state?.run, phase = state?.inde
   const q = state.questions[phase],
     other = index + delta;
   if (index < 0 || index >= q.arranged.length || other < 0 || other >= q.arranged.length) return;
-  state.orderMoves.push([index, other]);
+  state.orderMoves.push({ arranged: [...q.arranged], selected: index });
+  state.orderPicked = null;
   [q.arranged[index], q.arranged[other]] = [q.arranged[other], q.arranged[index]];
   state.selected = other;
   state.orderStatus = `انتقلت بطاقة «${q.arranged[other]}» إلى المكان ${other + 1}.`;
@@ -274,14 +301,40 @@ function moveCollectionOrder(index, delta, run = state?.run, phase = state?.inde
 function collectionUndoOrder(run = state?.run, phase = state?.index) {
   if (!collectionCurrent(run, phase, 'order') || state.locked || !state.orderMoves.length) return;
   const q = state.questions[phase],
-    [index, other] = state.orderMoves.pop();
-  [q.arranged[index], q.arranged[other]] = [q.arranged[other], q.arranged[index]];
+    move = state.orderMoves.pop(),
+    index = Array.isArray(move) ? move[0] : move.selected;
+  if (Array.isArray(move))
+    [q.arranged[move[0]], q.arranged[move[1]]] = [q.arranged[move[1]], q.arranged[move[0]]];
+  else q.arranged = [...move.arranged];
+  state.orderPicked = null;
   state.selected = index;
   state.orderStatus = `تراجعنا عن آخر حركة؛ بطاقة «${q.arranged[index]}» في المكان ${index + 1}.`;
   renderCollection();
   document
     .querySelector(`[data-order-move="${index}-${index ? 'up' : 'down'}"]`)
     ?.focus({ preventScroll: true });
+}
+function collectionPlaceOrder(index, run = state?.run, phase = state?.index) {
+  if (!collectionCurrent(run, phase, 'order') || state.locked || !Number.isInteger(index)) return;
+  const q = state.questions[phase];
+  if (index < 0 || index >= q.arranged.length) return;
+  const picked = state.orderPicked;
+  if (picked === null || picked === index) {
+    state.orderPicked = picked === index ? null : index;
+    state.orderStatus =
+      picked === index
+        ? 'ألغينا الاختيار؛ اختر بطاقة أخرى أو استخدم الأسهم.'
+        : `اختر المكان الجديد لبطاقة «${q.arranged[index]}» بالضغط على اسم البطاقة في ذلك المكان.`;
+  } else {
+    state.orderMoves.push({ arranged: [...q.arranged], selected: picked });
+    const [item] = q.arranged.splice(picked, 1);
+    q.arranged.splice(index, 0, item);
+    state.orderPicked = null;
+    state.orderStatus = `انتقلت بطاقة «${item}» إلى المكان ${index + 1}. يمكنك التراجع قبل التأكيد.`;
+  }
+  state.selected = index;
+  renderCollection();
+  document.querySelector(`[data-order-pick="${index}"]`)?.focus({ preventScroll: true });
 }
 function collectionSelectOrder(index) {
   if (
@@ -305,6 +358,7 @@ function submitCollectionOrder(run = state?.run, index = state?.index) {
     matches = q.arranged.filter((item, i) => item === q.solution[i]).length,
     correct = matches === q.solution.length;
   state.answers.push({ correct, matches, arranged: [...q.arranged] });
+  state.orderPicked = null;
   state.credit += matches / q.solution.length;
   if (correct) state.correct++;
   state.locked = true;
@@ -318,6 +372,7 @@ function nextCollection(run = state?.run, index = state?.index) {
   state.locked = false;
   state.selected = 0;
   state.orderMoves = [];
+  state.orderPicked = null;
   state.orderStatus = '';
   renderCollection();
   collectionFocusQuestion();
@@ -337,7 +392,7 @@ function finishCollection(run = state?.run) {
     setHTML(
       wrap(
         s.id,
-        `<section class="panel success center"><div class="resulticon">${points === 100 ? '🌟' : '📚'}</div><h2>${points === 100 ? 'أتقنت كل أسئلة المراجعة!' : 'انتهت مراجعة الأخطاء'}</h2><div class="resultnum">${points} / 100</div><p class="muted">${s.correct} من ${s.questions.length} إجابات كاملة. هذا تدريب؛ نقاط جولتك الأصلية محفوظة كما هي.</p><div class="actions"></div></section>`,
+        `<section class="panel success center"><div class="resulticon">${points === 100 ? '🌟' : '📚'}</div><h2>${points === 100 ? 'أتقنت كل أسئلة المراجعة!' : 'انتهت مراجعة الجولة'}</h2><div class="resultnum"><bdi dir="ltr">${points} / 100</bdi></div><p class="muted">${s.correct} من ${s.questions.length} إجابات كاملة. هذا تدريب؛ نقاط جولتك الأصلية محفوظة كما هي.</p><div class="actions"></div></section>`,
       ),
     );
     tone(points === 100);
@@ -351,10 +406,12 @@ function finishCollection(run = state?.run) {
       `${points} / 100`,
     );
   }
-  const missed = s.answers.filter((answer) => !answer.correct).length;
+  const missed = s.answers.filter(
+    (answer, index) => !answer.correct || s.reviewMarked.includes(index),
+  ).length;
   if (!dailyRun && !tourney?.active && !activeRoute && !s.soloSessionToken) {
     $('app').querySelector('.success .actions').innerHTML =
-      `<button class="primary" onclick="collectionReplay(${s.run})">🔁 جولة جديدة بنفس الخيارات</button>${missed ? `<button onclick="collectionPractice(${s.run})">📚 تدرب على ${missed} ${s.id === 'order' ? 'ترتيبات' : 'أسئلة'} تحتاج مراجعة</button>` : ''}<button onclick="setup('${s.id}')">غيّر الخيارات</button><button onclick="home()">العالم</button>`;
+      `<button class="primary" onclick="collectionReplay(${s.run})">🔁 جولة جديدة بنفس الخيارات</button>${missed ? `<button onclick="collectionPractice(${s.run})">📚 تدرب على ${missed} ${s.id === 'order' ? 'ترتيبات' : 'أسئلة'} للمراجعة</button>` : ''}<button onclick="setup('${s.id}')">غيّر الخيارات</button><button onclick="home()">العالم</button>`;
   }
   $('app')
     .querySelector('.success')
@@ -401,7 +458,7 @@ function collectionBreakdownHTML(s) {
 }
 function collectionAnswerReview(s, q, answer) {
   if (s.id === 'order')
-    return `<p class="collection-your-answer">${answer.matches} / ${q.solution.length} بطاقات في مكانها. ترتيبك: ${answer.arranged.map(esc).join('، ')}</p>`;
+    return `<p class="collection-your-answer"><bdi dir="ltr">${answer.matches} / ${q.solution.length}</bdi> بطاقات في مكانها. ترتيبك: ${answer.arranged.map(esc).join('، ')}</p>`;
   return `<p class="collection-your-answer">إجابتك: ${esc(s.id === 'flags' ? q.choices[answer.choice].name : answer.choice === 0 ? 'صح' : 'خطأ')}</p>`;
 }
 function collectionFinished(run) {
@@ -436,7 +493,9 @@ function collectionReplay(run) {
 function collectionPractice(run) {
   if (!collectionFinished(run)) return;
   const previous = state,
-    missed = previous.questions.filter((_, index) => !previous.answers[index].correct);
+    missed = previous.questions.filter(
+      (_, index) => !previous.answers[index].correct || previous.reviewMarked.includes(index),
+    );
   if (!missed.length) return;
   clearTimers();
   state = {
@@ -453,6 +512,8 @@ function collectionPractice(run) {
     correct: 0,
     credit: 0,
     answers: [],
+    reviewMarked: [],
+    orderPicked: null,
     selected: 0,
     orderMoves: [],
     orderStatus: '',
@@ -502,6 +563,8 @@ document.addEventListener('keydown', (event) => {
         .querySelector(`[data-order-move="${state.selected}-${state.selected ? 'up' : 'down'}"]`)
         ?.focus();
     } else if (['ArrowUp', 'ArrowDown'].includes(key)) {
+      if (event.target.closest?.('button,a,summary') && !event.target.closest('[data-order-index]'))
+        return;
       event.preventDefault();
       const row = event.target.closest?.('[data-order-index]');
       if (row) collectionSelectOrder(Number(row.dataset.orderIndex));

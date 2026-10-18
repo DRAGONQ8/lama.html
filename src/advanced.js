@@ -60,7 +60,12 @@ function startExtra(id) {
   goTop();
 }
 function smallStats(a) {
-  return `<div class="stats">${a.map((v) => `<div class="stat"><small>${v[0]}</small><b${v[2] ? ` id="${v[2]}"` : ''}${/^\d+\s*\/\s*\d+$/.test(String(v[1])) ? ' dir="ltr"' : ''}>${v[1]}</b></div>`).join('')}</div>`;
+  return `<div class="stats">${a
+    .map((v) => {
+      const ratio = /^\d+\s*\/\s*\d+$/.test(String(v[1]));
+      return `<div class="stat"><small>${v[0]}</small><b${v[2] ? ` id="${v[2]}"` : ''}${ratio ? ' dir="ltr"' : ''}>${ratio ? `<bdi dir="ltr">${v[1]}</bdi>` : v[1]}</b></div>`;
+    })
+    .join('')}</div>`;
 }
 function startBoard(id) {
   const s = state;
@@ -287,14 +292,18 @@ function renderBoard() {
       : s.preview?.board || s.board;
   const focused = document.activeElement?.closest?.('[data-board-pos]');
   if (focused) s.boardFocus = Number(focused.dataset.boardPos);
+  const last = Number.isInteger(s.lastMove) ? s.board[s.lastMove] : 0,
+    lastMoveText = last
+      ? `${s.names[last - 1]}: صف ${Math.floor(s.lastMove / (s.id === 'ttt' ? 3 : 7)) + 1}، عمود ${(s.lastMove % (s.id === 'ttt' ? 3 : 7)) + 1}.`
+      : '';
   const body =
     s.id === 'ttt'
-      ? `<div class="ttt ${s.rule === 'misere' ? 'avoid-line' : ''}" dir="ltr" role="group" aria-label="لوحة إكس أو؛ الأرقام من اليسار إلى اليمين">${display.map((v, i) => `<button data-board-pos="${i}" class="${v ? 'p' + v : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" ${s.suggested === i ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${i})" ${v || s.waiting || s.done || s.preview ? 'disabled' : ''} aria-label="خانة ${i + 1}${v ? ' ' + (v === 1 ? 'X' : 'O') : ''}${s.suggested === i ? ' حركة مقترحة' : ''}">${v ? (v === 1 ? '×' : '○') : `<small class="board-shortcut">${i + 1}</small>`}</button>`).join('')}</div>`
-      : `<div class="connect" dir="ltr" role="group" aria-label="لوحة وصل أربعة؛ الأعمدة من اليسار إلى اليمين">${Array.from({ length: 7 }, (_, c) => `<button data-board-pos="${c}" class="drop" ${s.suggested === c ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${c})" ${s.waiting || s.done || s.preview || landing(s.board, c) < 0 ? 'disabled' : ''} aria-label="إنزال قطعة في العمود ${c + 1}${s.suggested === c ? ' حركة مقترحة' : ''}">↓ <small>${c + 1}</small></button>`).join('')}${display.map((v, i) => `<div class="disc ${v === 1 ? 'red' : v === 2 ? 'yellow' : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" role="img" aria-label="صف ${Math.floor(i / 7) + 1} عمود ${(i % 7) + 1}: ${v === 1 ? 'أحمر' : v === 2 ? 'أصفر' : 'فاضي'}">${v === 1 ? '●' : v === 2 ? '◆' : ''}</div>`).join('')}</div>`;
+      ? `<div class="ttt ${s.rule === 'misere' ? 'avoid-line' : ''}" dir="ltr" role="group" aria-label="لوحة إكس أو؛ الأرقام من اليسار إلى اليمين">${display.map((v, i) => `<button data-board-pos="${i}" class="${v ? 'p' + v : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" ${s.suggested === i ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${i})" ${v || s.waiting || s.done || s.preview ? 'disabled' : ''} aria-label="خانة ${i + 1}، صف ${Math.floor(i / 3) + 1} عمود ${(i % 3) + 1}${v ? ' ' + (v === 1 ? 'X' : 'O') : ' فارغة'}${s.suggested === i ? ' حركة مقترحة' : ''}">${v ? (v === 1 ? '×' : '○') : `<small class="board-shortcut">${i + 1}</small>`}</button>`).join('')}</div>`
+      : `<div class="connect" dir="ltr" role="group" aria-label="لوحة وصل أربعة؛ الأعمدة من اليسار إلى اليمين">${Array.from({ length: 7 }, (_, c) => `<button data-board-pos="${c}" class="drop" ${s.suggested === c ? 'style="outline:3px solid var(--mint)"' : ''} onclick="boardMove(${c})" ${s.waiting || s.done || s.preview || landing(s.board, c) < 0 ? 'disabled' : ''} aria-label="إنزال قطعة في العمود ${c + 1}، ${landing(s.board, c) < 0 ? 'ممتلئ' : `تهبط في الصف ${Math.floor(landing(s.board, c) / 7) + 1}`}${s.suggested === c ? ' حركة مقترحة' : ''}">↓ <small>${c + 1}</small></button>`).join('')}${display.map((v, i) => `<div class="disc ${v === 1 ? 'red' : v === 2 ? 'yellow' : ''} ${s.replayIndex === undefined && s.winline.includes(i) ? 'win' : ''} ${s.replayIndex === undefined && s.lastMove === i ? 'last-move' : ''}" role="img" aria-label="صف ${Math.floor(i / 7) + 1} عمود ${(i % 7) + 1}: ${v === 1 ? 'أحمر' : v === 2 ? 'أصفر' : 'فاضي'}">${v === 1 ? '●' : v === 2 ? '◆' : ''}</div>`).join('')}</div>`;
   setHTML(
     wrap(
       s.id,
-      `<section class="panel"><div class="legend"><span>${s.id === 'ttt' ? '×' : '🔴 ●'} ${esc(s.names[0])}</span><span>${s.id === 'ttt' ? '○' : '🟡 ◆'} ${esc(s.names[1])}</span></div>${s.rule === 'misere' ? '<p class="variant-rules">تجنب الخط: من يكوّن 3 علامات من رمزه يخسر؛ اكتمال اللوحة دون خط تعادل.</p>' : ''}<div class="turnmark" role="status">${s.done ? (w === 0 ? 'تعادل!' : esc(s.names[w - 1]) + ' فاز 🏆') : s.waiting ? 'الخصم يفكّر…' : 'الدور على ' + esc(s.names[s.turn])}</div>${body}<p class="note center">${s.moves} حركة${s.bot ? ' · ' + { easy: 'خصم خفيف', normal: 'خصم متوسط', hard: 'خصم قوي' }[s.level] : ''} · الأرقام 1–${s.id === 'ttt' ? 9 : 7} أو انقر اللوحة.</p>${boardMatchHTML(s)}${boardPreviewHTML(s)}${s.coachMessage ? `<p class="hintpanel" role="status">${esc(s.coachMessage)}</p>` : ''}<div class="actions">${s.done ? `${boardSeriesOver(s) ? '<button class="primary" onclick="showBoardResult()">شوف النتيجة</button>' : '<button class="primary" onclick="nextBoardRound()">الجولة التالية ←</button>'}` : `<button onclick="undoBoard()" ${!boardUndoAvailable(s) || s.waiting ? 'disabled' : ''}>↶ تراجع${s.bot ? ' عن دورك' : ''}</button><button onclick="toggleBoardPreview()" ${s.waiting || s.fixed ? 'disabled' : ''} aria-pressed="${!!s.previewMode}">🔎 عاين حركة قبل تنفيذها</button><button onclick="hintBoard()" ${s.waiting || s.suggested !== undefined || s.fixed ? 'disabled' : ''}>💡 اقترح حركة −10</button>`}<button class="quiet" onclick="setup('${s.id}')">تحدّي جديد</button></div></section>`,
+      `<section class="panel"><div class="legend"><span>${s.id === 'ttt' ? '×' : '🔴 ●'} ${esc(s.names[0])}</span><span>${s.id === 'ttt' ? '○' : '🟡 ◆'} ${esc(s.names[1])}</span></div>${s.rule === 'misere' ? '<p class="variant-rules">تجنب الخط: من يكوّن 3 علامات من رمزه يخسر؛ اكتمال اللوحة دون خط تعادل.</p>' : ''}<div class="turnmark" role="status">${s.done ? (w === 0 ? 'تعادل!' : esc(s.names[w - 1]) + ' فاز 🏆') : s.waiting ? 'الخصم يفكّر…' : 'الدور على ' + esc(s.names[s.turn])}</div>${body}${lastMoveText && s.replayIndex === undefined ? `<p class="board-last-action" role="status">آخر حركة: ${esc(lastMoveText)}</p>` : ''}<p class="note center">${s.moves} حركة${s.bot ? ' · ' + { easy: 'خصم خفيف', normal: 'خصم متوسط', hard: 'خصم قوي' }[s.level] : ''} · الأرقام 1–${s.id === 'ttt' ? 9 : 7} أو انقر اللوحة. الأسهم للتنقل، وHome وEnd لأول وآخر مكان متاح.</p>${boardMatchHTML(s)}${boardPreviewHTML(s)}${s.coachMessage ? `<p class="hintpanel" role="status">${esc(s.coachMessage)}</p>` : ''}<div class="actions">${s.done ? `${boardSeriesOver(s) ? '<button class="primary" onclick="showBoardResult()">شوف النتيجة</button>' : '<button class="primary" onclick="nextBoardRound()">الجولة التالية ←</button>'}` : `<button onclick="undoBoard()" ${!boardUndoAvailable(s) || s.waiting ? 'disabled' : ''}>↶ تراجع${s.bot ? ' عن دورك' : ''}</button><button onclick="toggleBoardPreview()" ${s.waiting || s.fixed ? 'disabled' : ''} aria-pressed="${!!s.previewMode}">🔎 عاين حركة قبل تنفيذها</button><button onclick="hintBoard()" ${s.waiting || s.suggested !== undefined || s.fixed ? 'disabled' : ''}>💡 اقترح حركة −10</button>`}<button class="quiet" onclick="setup('${s.id}')">تحدّي جديد</button></div></section>`,
     ),
   );
   if (Number.isInteger(s.boardFocus) && !s.waiting) {
@@ -673,7 +682,7 @@ function boardSeriesOver(s = state) {
 }
 function boardMatchHTML(s) {
   const match = s.series;
-  return `${match?.limit > 1 ? `<div class="match-score" role="status"><b>الجولة ${match.round} / ${match.limit}</b><span>${esc(s.names[0])} ${match.wins[0]} : ${match.wins[1]} ${esc(s.names[1])}</span><small>البداية تتناوب؛ الفوز بأغلبية الجولات يحسم المباراة.</small></div>` : ''}${s.done ? `<details class="history"><summary>راجع الحركات والتكتيك</summary><p class="note">اختر حركة لترى اللوحة قبلها. لا يمكن تغيير النتيجة المسجلة.</p><div class="review-moves">${s.history.map((h, i) => `<button onclick="reviewBoardMove(${i})" aria-pressed="${s.replayIndex === i}">${i + 1}. ${esc(s.names[h.turn])} · ${s.id === 'ttt' ? 'خانة' : 'عمود'} ${h.pos + 1}${h.note ? ' ✓' : ''}</button>`).join('')}<button onclick="reviewBoardMove(-1)">اللوحة النهائية</button></div>${Number.isInteger(s.replayIndex) ? `<p class="hintpanel">قبل الحركة ${s.replayIndex + 1}: ${esc(s.history[s.replayIndex]?.note || 'حركة بناء؛ راقب خطوط الخصم قبل اختيار خطك.')}</p>` : ''}</details>` : ''}`;
+  return `${match?.limit > 1 ? `<div class="match-score" role="status"><b>الجولة <bdi dir="ltr">${match.round} / ${match.limit}</bdi></b><span>${esc(s.names[0])} <bdi dir="ltr">${match.wins[0]} : ${match.wins[1]}</bdi> ${esc(s.names[1])}</span><small>البداية تتناوب؛ الفوز بأغلبية الجولات يحسم المباراة.</small></div>` : ''}${s.done ? `<details class="history"><summary>راجع الحركات والتكتيك</summary><p class="note">اختر حركة لترى اللوحة قبلها. لا يمكن تغيير النتيجة المسجلة.</p><div class="review-moves">${s.history.map((h, i) => `<button onclick="reviewBoardMove(${i})" aria-pressed="${s.replayIndex === i}">${i + 1}. ${esc(s.names[h.turn])} · ${s.id === 'ttt' ? 'خانة' : 'عمود'} ${h.pos + 1}${h.note ? ' ✓' : ''}</button>`).join('')}<button onclick="reviewBoardMove(-1)">اللوحة النهائية</button></div>${Number.isInteger(s.replayIndex) ? `<p class="hintpanel">قبل الحركة ${s.replayIndex + 1}: ${esc(s.history[s.replayIndex]?.note || 'حركة بناء؛ راقب خطوط الخصم قبل اختيار خطك.')}</p>` : ''}</details>` : ''}`;
 }
 function reviewBoardMove(index) {
   const s = state;
@@ -819,7 +828,8 @@ function enterCodeText(value, explain = false) {
   return true;
 }
 function renderCode(msg = '') {
-  const s = state;
+  const s = state,
+    quickFocused = document.activeElement?.id === 'codequick';
   s.digitNotes ??= Array(10).fill(0);
   s.slotExclusions ??= Array.from({ length: s.length }, () => []);
   s.codeSlot ??= 0;
@@ -835,6 +845,10 @@ function renderCode(msg = '') {
         `<section class="panel advanced-code"><div class="spot"><small>افتح الخزنة · ${s.duplicates ? 'الأرقام قد تتكرر' : 'كل رقم مختلف'}</small><div class="huge" dir="ltr">${s.secret.map((v, i) => (i in s.revealed ? v : '●')).join(' ')}</div></div><p class="hintpanel code-response" role="status">${esc(msg || (last ? `المحاولة ${s.attempts.length}: ${last.exact} رقم في مكانه الصحيح، و${last.misplaced} رقم في مكان آخر. بقيت ${s.max - s.attempts.length} محاولات.` : 'الصفر مسموح في أول خانة. اختر الأرقام أو اكتب الشفرة كاملة.'))}</p><form onsubmit="event.preventDefault();submitCode()"><label for="codequick">كتابة الشفرة مباشرة</label><input id="codequick" class="codequick" dir="ltr" inputmode="numeric" enterkeyhint="go" autocomplete="off" maxlength="${s.length}" value="${s.draft.join('')}" oninput="enterCodeText(this.value)" aria-label="الشفرة من ${s.length} أرقام"><div class="codeentry" dir="ltr">${Array.from({ length: s.length }, (_, i) => `<select id="digit${i}" aria-label="الرقم في الخانة ${i + 1}" onchange="readCodeDraft()" ${i in s.revealed ? 'disabled' : ''}>${Array.from({ length: 10 }, (_, n) => `<option value="${n}" ${s.draft[i] === n ? 'selected' : ''}>${n}</option>`).join('')}</select>`).join('')}</div><div class="actions"><button class="primary" type="submit">جرّب الشفرة</button><button type="button" onclick="codeHint()" ${Object.keys(s.revealed).length >= s.length - 1 ? 'disabled' : ''}>💡 اكشف خانة −15</button><button type="button" onclick="analyzeCode()">🔎 حلّل المحاولات</button><button type="button" onclick="suggestCode()">🧠 اقترح احتمالًا</button><button type="button" onclick="inspectCodeDraft()">✓ اختبر منطق التخمين</button></div></form>${s.analysis !== null ? `<div class="hintpanel">${s.analysis} شفرة تطابق جميع التلميحات المتاحة.${s.analysisData ? `<details><summary>الأرقام الممكنة في كل خانة</summary>${s.analysisData.possible.map((a, i) => `<p>الخانة ${i + 1}: <bdi>${a.join('، ') || 'لا يوجد'}</bdi></p>`).join('')}</details>` : ''}<p class="tiny">التحليل والاقتراح مجانيان ويستنتجان من المحاولات والخانات المكشوفة فقط.</p></div>` : ''}${codeNotebookHTML(s)}${codePositionHTML(s)}<div class="legend"><span>✓ الرقم والمكان صحيحان</span><span>↔ الرقم صحيح في مكان آخر</span></div><div class="codehistory">${s.attempts.map((v, i) => `<div class="codeline"><small>${i + 1}</small><span class="digits" dir="ltr">${v.guess.join('')}</span><span class="feedback" aria-label="${v.exact} في المكان الصحيح و${v.misplaced} في مكان آخر"><span class="code-exact">✓ ${v.exact}</span> &nbsp; <span class="code-misplaced">↔ ${v.misplaced}</span></span></div>`).join('')}</div><p class="tiny">كل رقم يحسب مرة واحدة؛ مجموع العلامتين هو عدد الأرقام المشتركة.</p><div class="actions"><button class="quiet" onclick="giveUpCode()">أنهي الجولة واكشف الشفرة</button></div></section>`,
     ),
   );
+  if (quickFocused) {
+    $('codequick')?.focus({ preventScroll: true });
+    $('codequick')?.select();
+  }
 }
 function submitCode() {
   if (screen !== 'code' || state.done || advancedBlocked()) return;
@@ -1185,22 +1199,24 @@ function renderSimon() {
       smallStats([
         ['المرحلة', s.sequence.length + ' / 15'],
         ['النجاحات', s.completed],
-        ['خطوتك', s.input + ' / ' + s.sequence.length],
+        ['خطوتك', (s.phase === 'between' ? 0 : s.input) + ' / ' + s.sequence.length],
       ]) +
         `<section class="panel"><div class="turnmark" id="seqstatus" role="status">${
           s.phase === 'input'
             ? s.mode === 'reverse'
               ? 'دورك: كرر الترتيب من الأخير إلى الأول'
               : 'دورك: كرر نفس الترتيب'
-            : s.phase === 'recall'
-              ? 'استرجع التسلسل في ذهنك…'
-              : s.phase === 'show'
-                ? s.cue === 'audio'
-                  ? 'استمع للنغمات…'
-                  : 'راقب الأضواء…'
-                : 'جاهز للتسلسل؟'
+            : s.phase === 'between'
+              ? 'صحيح! نجهز المرحلة التالية…'
+              : s.phase === 'recall'
+                ? 'استرجع التسلسل في ذهنك…'
+                : s.phase === 'show'
+                  ? s.cue === 'audio'
+                    ? 'استمع للنغمات…'
+                    : 'راقب الأضواء…'
+                  : 'جاهز للتسلسل؟'
         }</div><div class="sequencepad">${padColors.map((c, i) => `<button id="pad${i}" style="--pad:${c}" onclick="simonTap(${i})" ${s.phase !== 'input' ? 'disabled' : ''} aria-label="${['أخضر', 'أصفر', 'أزرق', 'وردي'][i]} رقم ${i + 1}">${['●', '▲', '■', '◆'][i]}<small>${i + 1}</small></button>`).join('')}</div><div id="seqtrace" class="sequence-trace" dir="ltr" role="group" aria-label="خطواتك الصحيحة">${
-          s.input > 0
+          s.input > 0 && s.phase !== 'between'
             ? `${simonExpected(s)
                 .slice(0, Math.min(s.input, s.sequence.length))
                 .map(
@@ -1349,7 +1365,8 @@ function simonTap(i) {
       );
     s.phase = 'between';
     s.sequence.push(s.sequenceBank[s.completed]);
-    $('seqstatus').textContent = 'صحيح! نجهز المرحلة التالية…';
+    // Refresh immediately: input is closed and counters belong to the next stage.
+    renderSimon();
     advancedLater(
       s,
       () => {
@@ -1868,7 +1885,7 @@ function renderSudoku(msg = '') {
             const count = s.board.filter((v) => v === n).length,
               complete =
                 count === 9 && !s.board.some((v, i) => v === n && sudokuConflicts(s.board, i));
-            return `<button onclick="putSudoku(${n})" class="${complete ? 'digit-complete' : count >= 9 ? 'quiet' : ''}" aria-label="${s.noteMode ? 'ملاحظة' : 'إدخال'} ${n}، موجود ${count} من 9${complete ? '، مكتمل دون تكرار' : ''}">${n}<small aria-hidden="true">${complete ? '✓' : count + '/9'}</small></button>`;
+            return `<button onclick="putSudoku(${n})" class="${complete ? 'digit-complete' : count >= 9 ? 'quiet' : ''}" aria-label="${s.noteMode ? 'ملاحظة' : 'إدخال'} ${n}، موجود ${count} من 9${complete ? '، مكتمل دون تكرار' : ''}">${n}<small aria-hidden="true">${complete ? '✓' : `<bdi dir="ltr">${count} / 9</bdi>`}</small></button>`;
           })
           .join(
             '',
@@ -2068,6 +2085,8 @@ function undoSudoku() {
 function checkSudoku() {
   if (screen !== 'sudoku' || state.done || advancedBlocked()) return;
   const s = state;
+  if (!s.board.some((value, index) => value && !s.given[index]))
+    return renderSudoku('أدخل رقماً أولاً حتى نفحصه. لم تُخصم نقاط.');
   const signature = s.board.join('');
   if (signature !== s.lastCheckedBoard) s.checks++;
   s.lastCheckedBoard = signature;
@@ -2346,6 +2365,36 @@ function makePattern(level, variant = 0) {
   }
   return { seq, answer, choices: generateChoices(answer), explain };
 }
+function quizQuestionKey(question, id) {
+  return id === 'color'
+    ? `${question.ink}:${question.word}`
+    : id === 'pattern'
+      ? question.seq.join(',')
+      : question.text;
+}
+function buildQuizQuestions(id, level, count, variants) {
+  const seen = new Set(),
+    questions = [];
+  for (let index = 0; index < count; index++) {
+    let question, key;
+    // Bounded retries keep small colour pools fast and avoid repeating a fixed
+    // pattern (such as cubes) when a longer round cycles through its variants.
+    for (let attempt = 0; attempt < 16; attempt++) {
+      const variant = variants[(index + attempt) % variants.length];
+      question =
+        id === 'math'
+          ? makeMath(level, variant)
+          : id === 'color'
+            ? makeColor(level, index)
+            : makePattern(level, variant);
+      key = quizQuestionKey(question, id);
+      if (!seen.has(key)) break;
+    }
+    seen.add(key);
+    questions.push(question);
+  }
+  return questions;
+}
 function startQuiz(id) {
   const s = state,
     defaults = { math: [10, 60], color: [15, 45], pattern: [8, 180] },
@@ -2358,13 +2407,7 @@ function startQuiz(id) {
       (_, i) => i,
     ),
   );
-  s.questions = Array.from({ length: count }, (_, i) =>
-    id === 'math'
-      ? makeMath(s.level, variants[i % variants.length])
-      : id === 'color'
-        ? makeColor(s.level, i)
-        : makePattern(s.level, variants[i % variants.length]),
-  );
+  s.questions = buildQuizQuestions(id, s.level, count, variants);
   s.mathMode = !s.fixed && $('mathmode')?.value === 'missing' ? 'missing' : 'result';
   if (id === 'math' && s.mathMode === 'missing')
     s.questions.forEach((q) => {
@@ -2459,7 +2502,7 @@ function quizSolutionText(q, id = state.id) {
 function renderQuiz() {
   const s = state,
     q = s.questions[s.index],
-    keyboardFocus = !!document.activeElement?.closest?.('.quizanswers');
+    keyboardFocus = !!document.activeElement?.closest?.('.quizanswers,.math-direct');
   if (!q) return;
   const question =
     s.id === 'color'
@@ -2709,6 +2752,15 @@ function startQuizPractice() {
 function wordLetters(name) {
   return Array.from(name.replace(/[\u064B-\u065F\u0670ـ\s\-]/g, ''));
 }
+function wordPrefixMatches(value, prefix) {
+  // Normalize individual letters so the general answer matcher cannot strip
+  // an initial Arabic article ("ال") out of the disclosed, locked prefix.
+  const key = (text) =>
+    wordLetters(text)
+      .map((letter) => norm(letter))
+      .join('');
+  return key(value).startsWith(key(prefix));
+}
 function startWord() {
   const s = state;
   let pool = (
@@ -2923,7 +2975,7 @@ function usedWordLetters(draft, scrambled) {
 function updateWordDraft(value) {
   if (screen !== 'word' || state.done || state.roundOver || advancedBlocked()) return;
   if (secondsLeft() === 0) return wordEnd();
-  if (state.wordPrefix && !norm(value).startsWith(norm(state.wordPrefix))) {
+  if (state.wordPrefix && !wordPrefixMatches(value, state.wordPrefix)) {
     $('wordanswer').value = state.wordDraft;
     return toast('احتفظ بالبداية المثبتة ثم أكمل بقية الحروف.');
   }
@@ -2983,7 +3035,7 @@ function guessWord() {
   s.wordDraft = $('wordanswer').value;
   const a = norm(s.wordDraft).replace(/\s/g, '');
   if (!a) return toast('اكتب الكلمة.');
-  if (s.wordPrefix && !a.startsWith(norm(s.wordPrefix)))
+  if (s.wordPrefix && !wordPrefixMatches(s.wordDraft, s.wordPrefix))
     return toast('احتفظ بالبداية المثبتة؛ التخمين لم يُحسب.');
   if (s.attempted.includes(a)) return toast('جرّبت هذه الإجابة.');
   s.attempted.push(a);
@@ -3494,7 +3546,8 @@ function spyTerms(s = state) {
   return { noun: 'الكلمة', possible: 'الكلمات المحتملة', reveal: 'الكلمة كانت', icon: '💬' };
 }
 function spySetupHTML() {
-  return `<p class="muted">كل لاعب يشوف دوره بروحه. اسألوا اللي تختارونه، ثم صوّتوا سراً. نكشف الجاسوس وصحة تصويتكم أولاً، وبعدها يخمّن الكلمة قبل كشفها.</p>${spyProgress('setup')}<div class="fields"><div class="field full"><label for="spytheme">فئة الجولة</label><select id="spytheme" onchange="spySetupChanged()">${spyThemes.map(([id, label]) => `<option value="${id}">${label}</option>`).join('')}</select></div><div class="field full" id="spyregionfield" hidden><label for="spyregion">دول أي منطقة أو قارة؟</label><select id="spyregion" onchange="spySetupChanged()">${spyRegions.map(([id, label]) => `<option value="${id}">${label}</option>`).join('')}</select><p class="tiny">دول الخليج الست ضمن آسيا أيضاً. اخترنا أسماء معروفة؛ أوقيانوسيا فيها أستراليا ونيوزيلندا.</p></div><div class="field"><label for="spycount">عدد الجواسيس</label><select id="spycount" onchange="spySetupChanged()"><option value="1">جاسوس واحد · من 3 لاعبين</option><option value="2" ${store.players.length < 5 ? 'disabled' : ''}>جاسوسان · من 5 لاعبين</option></select></div><div class="field"><label for="duration">وقت النقاش</label><select id="duration"><option value="120">دقيقتان</option><option value="180">3 دقائق</option><option value="300" selected>5 دقائق</option><option value="480">8 دقائق</option><option value="600">10 دقائق</option></select></div><div class="field full"><label for="spystart">من يبدأ الأسئلة؟</label><select id="spystart"><option value="random">اختيار عشوائي من الموقع</option><option value="manual">نختار بيننا بدون الموقع</option></select><p class="tiny">البداية تخص الأسئلة فقط. توزيع الأدوار سري، وكل لاعب حر يختار من يسأل.</p></div><div class="field"><label for="spycandidates">قائمة الاحتمالات</label><select id="spycandidates" onchange="spySetupChanged()"><option value="show">تظهر للجميع · مع بحث سريع</option><option value="hide">مخفية · تخمين بالكتابة</option></select></div><div class="field"><label for="spystyle">أسلوب الأسئلة المقترحة</label><select id="spystyle"><option value="balanced">حسب الفئة · أسئلة متنوعة</option><option value="subtle">تلميحات خفيفة · تحدّي أصعب</option></select></div></div><div class="hintpanel spy-setup-preview" id="spypreview" role="status">عام · ${spyPool().length} كلمة محتملة. جاسوس واحد؛ صاحب أعلى الأصوات منفرداً يُتهم، والتعادل ينقذه.</div><p class="note">${store.players.length} لاعبين: ${store.players.map(esc).join('، ')}. الجاسوسان ما يعرفون بعض أثناء النقاش؛ بعد كشفهما يتفقان على تخمين واحد مشترك.</p><p class="hintpanel">النقاط: 20 نقطة لفريق التصويت الفائز، ثم 20 نقطة لفريق التخمين الفائز. كشف الجاسوس ما يمنعه من التخمين؛ ممكن تنتهي الجولة بتعادل.</p><div class="actions"><button onclick="openPeople()">عدّل اللاعبين</button></div>`;
+  const roster = gameParticipants('spy');
+  return `<p class="muted">كل لاعب يشوف دوره بروحه. اسألوا اللي تختارونه، ثم صوّتوا سراً. نكشف الجاسوس وصحة تصويتكم أولاً، وبعدها يخمّن الكلمة قبل كشفها.</p>${spyProgress('setup')}<div class="fields"><div class="field full"><label for="spytheme">فئة الجولة</label><select id="spytheme" onchange="spySetupChanged()">${spyThemes.map(([id, label]) => `<option value="${id}">${label}</option>`).join('')}</select></div><div class="field full" id="spyregionfield" hidden><label for="spyregion">دول أي منطقة أو قارة؟</label><select id="spyregion" onchange="spySetupChanged()">${spyRegions.map(([id, label]) => `<option value="${id}">${label}</option>`).join('')}</select><p class="tiny">دول الخليج الست ضمن آسيا أيضاً. اخترنا أسماء معروفة؛ أوقيانوسيا فيها أستراليا ونيوزيلندا.</p></div><div class="field"><label for="spycount">عدد الجواسيس</label><select id="spycount" onchange="spySetupChanged()"><option value="1">جاسوس واحد · من 3 لاعبين</option><option value="2" ${roster.length < 5 ? 'disabled' : ''}>جاسوسان · من 5 لاعبين</option></select></div><div class="field"><label for="duration">وقت النقاش</label><select id="duration"><option value="120">دقيقتان</option><option value="180">3 دقائق</option><option value="300" selected>5 دقائق</option><option value="480">8 دقائق</option><option value="600">10 دقائق</option></select></div><div class="field full"><label for="spystart">من يبدأ الأسئلة؟</label><select id="spystart"><option value="random">اختيار عشوائي من الموقع</option><option value="manual">نختار بيننا بدون الموقع</option></select><p class="tiny">البداية تخص الأسئلة فقط. توزيع الأدوار سري، وكل لاعب حر يختار من يسأل.</p></div><div class="field"><label for="spycandidates">قائمة الاحتمالات</label><select id="spycandidates" onchange="spySetupChanged()"><option value="show">تظهر للجميع · مع بحث سريع</option><option value="hide">مخفية · تخمين بالكتابة</option></select></div><div class="field"><label for="spystyle">أسلوب الأسئلة المقترحة</label><select id="spystyle"><option value="balanced">حسب الفئة · أسئلة متنوعة</option><option value="subtle">تلميحات خفيفة · تحدّي أصعب</option></select></div></div><div class="hintpanel spy-setup-preview" id="spypreview" role="status">عام · ${spyPool().length} كلمة محتملة. جاسوس واحد؛ صاحب أعلى الأصوات منفرداً يُتهم، والتعادل ينقذه.</div><p class="note">${roster.length} لاعبين: ${roster.map(esc).join('، ')}. الجاسوسان ما يعرفون بعض أثناء النقاش؛ بعد كشفهما يتفقان على تخمين واحد مشترك.</p><p class="hintpanel">النقاط: 20 نقطة لفريق التصويت الفائز، ثم 20 نقطة لفريق التخمين الفائز. كشف الجاسوس ما يمنعه من التخمين؛ ممكن تنتهي الجولة بتعادل.</p><div class="actions"><button onclick="openPeople()">عدّل اللاعبين</button></div>`;
 }
 function spyProgress(stage = state.stage) {
   const phases = ['الأدوار', 'النقاش', 'التصويت', 'كشف الجاسوس', 'تخمين الكلمة'],
@@ -3511,13 +3564,14 @@ function spyProgress(stage = state.stage) {
 }
 function spySetupChanged() {
   if (screen !== 'setup' || state?.id !== 'spy') return;
-  const theme = $('spytheme')?.value || 'all',
+  const roster = gameParticipants('spy'),
+    theme = $('spytheme')?.value || 'all',
     region = $('spyregion')?.value || 'all',
     count = $('spycount');
   if ($('spyregionfield')) $('spyregionfield').hidden = theme !== 'countries';
   if (count) {
-    count.querySelector('[value="2"]').disabled = store.players.length < 5;
-    if (count.value === '2' && store.players.length < 5) count.value = '1';
+    count.querySelector('[value="2"]').disabled = roster.length < 5;
+    if (count.value === '2' && roster.length < 5) count.value = '1';
   }
   if ($('spypreview')) {
     const label = spyThemes.find(([id]) => id === theme)?.[1] || spyThemes[0][1],
@@ -3633,18 +3687,17 @@ function isSpy(index, s = state) {
 }
 function startSpy() {
   const s = state,
+    roster = gameParticipants('spy'),
     requested = $('spytheme')?.value || 'all',
     theme = spyThemes.some(([id]) => id === requested) ? requested : 'all',
     region = spyRegions.some(([id]) => id === $('spyregion')?.value) ? $('spyregion').value : 'all',
     pool = spyPool(theme, region),
-    count = $('spycount')?.value === '2' && store.players.length >= 5 ? 2 : 1,
-    firstSpy = gameRand(store.players.length),
+    count = $('spycount')?.value === '2' && roster.length >= 5 ? 2 : 1,
+    firstSpy = gameRand(roster.length),
     otherSpies =
-      count === 2
-        ? [gShuffle(store.players.map((_, i) => i).filter((i) => i !== firstSpy))[0]]
-        : [];
+      count === 2 ? [gShuffle(roster.map((_, i) => i).filter((i) => i !== firstSpy))[0]] : [];
   Object.assign(s, {
-    players: [...store.players],
+    players: [...roster],
     theme,
     region,
     showCandidates: $('spycandidates')?.value !== 'hide',
@@ -3662,7 +3715,7 @@ function startSpy() {
     startMode: $('spystart')?.value === 'manual' ? 'manual' : 'random',
     questionIndex: 0,
     questionOrder: gShuffle(spyQuestions(theme, $('spystyle')?.value)),
-    asker: $('spystart')?.value === 'manual' ? null : gameRand(store.players.length),
+    asker: $('spystart')?.value === 'manual' ? null : gameRand(roster.length),
     roles: gShuffle([
       'زائر لأول مرة',
       'زائر دائم',
@@ -3709,7 +3762,7 @@ function spyHandoff() {
   setHTML(
     wrap(
       'spy',
-      `<section class="panel center"><div class="secretcover"><div class="symbol">🔒</div><h3>الجهاز مع ${esc(s.players[s.turn])}</h3><p class="note">اللاعب ${s.turn + 1} / ${s.players.length}. البقية لا ينظرون إلى الشاشة.</p></div><div class="actions"><button class="primary" onclick="spyReveal(${s.turn},${s.run})">أنا ${esc(s.players[s.turn])}، اعرض دوري</button></div></section>`,
+      `<section class="panel center"><div class="secretcover"><div class="symbol">🔒</div><h3>الجهاز مع ${esc(s.players[s.turn])}</h3><p class="note">اللاعب <bdi dir="ltr">${s.turn + 1} / ${s.players.length}</bdi>. البقية لا ينظرون إلى الشاشة.</p></div><div class="actions"><button class="primary" onclick="spyReveal(${s.turn},${s.run})">أنا ${esc(s.players[s.turn])}، اعرض دوري</button></div></section>`,
     ),
   );
 }
@@ -3933,7 +3986,7 @@ function spyGuess() {
     wrap(
       'spy',
       spyProgress() +
-        `<section class="panel center spy-guess-panel"><div class="resulticon">💬</div><h2>${s.spyCount === 2 ? 'تخمين الجاسوسين' : 'تخمين الجاسوس'}</h2><p class="note">${spyNames(s)}، شنو ${terms.noun}؟ لكم محاولة واحدة. التخمين الصحيح يعطي كل جاسوس 20 نقطة، والخطأ يعطي كل لاعب من البقية 20 نقطة.</p><form onsubmit="event.preventDefault();submitSpyGuess(${s.run})"><label for="spyguess">${s.showCandidates ? 'اكتب الكلمة أو ابحث واضغط على نتيجتها' : 'اكتب تخمينك بدون تلميحات'}</label><input id="spyguess" type="${s.showCandidates ? 'search' : 'text'}" maxlength="80" autocomplete="off" value="${esc(s.guessDraft)}" placeholder="اكتب ${terms.noun} هنا…" oninput="updateSpyGuess(this.value)" aria-describedby="spyguesshelp${s.showCandidates ? ' spyguesscount' : ''}"><p id="spyguesshelp" class="tiny">الاختيار ما يعتمد إلا لما تضغط «اعتمد التخمين».</p>${s.showCandidates ? '<p id="spyguesscount" class="tiny" role="status"></p><div class="spy-word-results" id="spyguessresults" role="group" aria-label="نتائج البحث عن الكلمة"></div>' : ''}<div class="actions"><button type="button" onclick="cancelSpyGuess()">إخفاء وتمرير الجهاز</button><button class="primary" type="submit">اعتمد التخمين</button></div></form></section>`,
+        `<section class="panel center spy-guess-panel"><div class="resulticon">💬</div><h2>${s.spyCount === 2 ? 'تخمين الجاسوسين' : 'تخمين الجاسوس'}</h2><p class="note">${spyNames(s)}، شنو ${terms.noun}؟ لكم محاولة واحدة. التخمين الصحيح يعطي كل جاسوس 20 نقطة، والخطأ يعطي كل لاعب من البقية 20 نقطة.</p><form onsubmit="event.preventDefault();submitSpyGuess(${s.run})"><label for="spyguess">${s.showCandidates ? 'اكتب الكلمة أو ابحث واضغط على نتيجتها' : 'اكتب تخمينك بدون تلميحات'}</label><input id="spyguess" type="${s.showCandidates ? 'search' : 'text'}" maxlength="80" autocomplete="off" value="${esc(s.guessDraft)}" placeholder="اكتب ${terms.noun} هنا…" oninput="updateSpyGuess(this.value)" aria-describedby="spyguesshelp${s.showCandidates ? ' spyguesscount' : ''}"><p id="spyguesshelp" class="tiny">الاختيار ما يعتمد إلا لما تضغط «اعتمد التخمين».</p>${s.showCandidates ? '<p id="spyguesscount" class="tiny" role="status"></p><div class="spy-word-results" id="spyguessresults" role="group" aria-label="نتائج البحث عن الكلمة"></div>' : ''}<div class="actions"><button type="button" onclick="cancelSpyGuess()">إخفاء وتمرير الجهاز</button><button id="spyguesssubmit" class="primary" type="submit">اعتمد التخمين</button></div></form></section>`,
     ),
   );
   if (s.showCandidates) updateSpyGuess(s.guessDraft);
@@ -3976,6 +4029,7 @@ function chooseSpyWord(index, run) {
   $('spyguess').value = s.locationPool[index];
   updateSpyGuess(s.locationPool[index]);
   // Keep the submit control in view without reopening the mobile keyboard.
+  $('spyguesssubmit')?.focus({ preventScroll: true });
   $('spyguesshelp')?.scrollIntoView({ block: 'nearest' });
 }
 function cancelSpyGuess() {
@@ -4029,7 +4083,7 @@ function spyVoteHandoff() {
   setHTML(
     wrap(
       'spy',
-      `<section class="panel center"><div class="resulticon">🗳️</div><h2>${esc(s.players[s.voteTurn])} يصوّت سراً</h2><p class="note">التصويت ${s.voteTurn + 1} / ${s.players.length}. مرّر الجهاز إليه.</p><div class="actions"><button class="primary" onclick="spyVoteReveal(${s.voteTurn},${s.run})">أنا جاهز للتصويت</button></div></section>`,
+      `<section class="panel center"><div class="resulticon">🗳️</div><h2>${esc(s.players[s.voteTurn])} يصوّت سراً</h2><p class="note">التصويت <bdi dir="ltr">${s.voteTurn + 1} / ${s.players.length}</bdi>. مرّر الجهاز إليه.</p><div class="actions"><button class="primary" onclick="spyVoteReveal(${s.voteTurn},${s.run})">أنا جاهز للتصويت</button></div></section>`,
     ),
   );
 }
@@ -4356,7 +4410,7 @@ function tabooHandoff() {
   setHTML(
     wrap(
       'taboo',
-      `<section class="panel center" data-taboo-run="${s.run}" data-taboo-turn="${s.turn}" data-taboo-card="${s.cardSerial}"><div class="resulticon">🚫</div><h2>الدور على ${esc(s.players[s.turn % s.players.length])}</h2><p class="note">الجولة ${Math.floor(s.turn / s.players.length) + 1} / ${s.rounds}. الشاشة مع الشخص الذي يشرح؛ البقية يسمعون.</p><p class="note">المراقب: ${esc(s.players[(s.turn + 1) % s.players.length])}؛ يتابع الكلمات الممنوعة ويسجل المخالفات. يتبدل مع كل دور.</p><p class="tiny">${s.queue.length} بطاقة في المجموعة · 4 كلمات ممنوعة لكل بطاقة.${Number.isFinite(s.skipLimit) ? ` لديك ${s.skipLimit} تجاوزات في الدور؛ التراجع يعيد التجاوز المسجل.` : ''}</p><div class="actions"><button class="primary" onclick="tabooReady()">أنا جاهز للشرح</button></div></section>`,
+      `<section class="panel center" data-taboo-run="${s.run}" data-taboo-turn="${s.turn}" data-taboo-card="${s.cardSerial}"><div class="resulticon">🚫</div><h2>الدور على ${esc(s.players[s.turn % s.players.length])}</h2><p class="note">الجولة <bdi dir="ltr">${Math.floor(s.turn / s.players.length) + 1} / ${s.rounds}</bdi>. الشاشة مع الشخص الذي يشرح؛ البقية يسمعون.</p><p class="note">المراقب: ${esc(s.players[(s.turn + 1) % s.players.length])}؛ يتابع الكلمات الممنوعة ويسجل المخالفات. يتبدل مع كل دور.</p><p class="tiny">${s.queue.length} بطاقة في المجموعة · 4 كلمات ممنوعة لكل بطاقة.${Number.isFinite(s.skipLimit) ? ` لديك ${s.skipLimit} تجاوزات في الدور؛ التراجع يعيد التجاوز المسجل.` : ''}</p><div class="actions"><button class="primary" onclick="tabooReady()">أنا جاهز للشرح</button></div></section>`,
     ),
   );
 }
@@ -4392,6 +4446,7 @@ function tabooReady(run, turn) {
     violations: 0,
     streak: 0,
     bestStreak: 0,
+    feedback: 'بدأ الدور. اشرح الكلمة دون الكلمات الممنوعة.',
     endAt: Date.now() + state.duration * 1000,
     turnHistory: [],
   });
@@ -4412,7 +4467,8 @@ function nextTabooCard() {
   s.card = s.queue[s.index++];
 }
 function renderTaboo() {
-  const s = state;
+  const s = state,
+    focusedAction = document.activeElement?.closest?.('[data-taboo-action]')?.dataset.tabooAction;
   setHTML(
     wrap(
       'taboo',
@@ -4421,7 +4477,7 @@ function renderTaboo() {
         ['الوقت', secondsLeft(s), 'gametime'],
         ['النقاط', s.score],
       ]) +
-        `<section class="panel center" data-taboo-run="${s.run}" data-taboo-turn="${s.turn}" data-taboo-card="${s.cardSerial}"><div class="spot"><small>اشرح هذه الكلمة</small><div class="secret">${s.cardHidden ? '🔒 البطاقة مخفية' : esc(s.card[0])}</div></div><div class="actions"><button onclick="toggleTabooCard()" aria-pressed="${!s.cardHidden}">${s.cardHidden ? 'اعرض البطاقة للشارح' : 'اخفِ البطاقة'}</button></div><p class="tiny">${s.cardHidden ? 'اعرض البطاقة عندما تكون الشاشة مع الشارح.' : 'ممنوع ذكر الكلمة أو جزء منها، وكذلك:'}</p><div class="forbidden">${(s.cardHidden
+        `<section class="panel center" data-taboo-run="${s.run}" data-taboo-turn="${s.turn}" data-taboo-card="${s.cardSerial}"><div class="spot"><small>اشرح هذه الكلمة</small><div class="secret">${s.cardHidden ? '🔒 البطاقة مخفية' : esc(s.card[0])}</div></div><div class="actions"><button data-taboo-action="toggle" onclick="toggleTabooCard()" aria-pressed="${!s.cardHidden}">${s.cardHidden ? 'اعرض البطاقة للشارح' : 'اخفِ البطاقة'}</button></div><p class="tiny">${s.cardHidden ? 'اعرض البطاقة عندما تكون الشاشة مع الشارح.' : 'ممنوع ذكر الكلمة أو جزء منها، وكذلك:'}</p><div class="forbidden">${(s.cardHidden
           ? []
           : s.card
         )
@@ -4429,9 +4485,15 @@ function renderTaboo() {
           .map((w) => `<span>${esc(w)}</span>`)
           .join(
             '',
-          )}</div><div class="actions"><button class="primary" onclick="tabooAnswer('correct')" ${s.cardHidden ? 'disabled' : ''}>عرفوها! +10</button><button onclick="tabooAnswer('skip')" ${s.cardHidden || s.skips >= s.skipLimit ? 'disabled' : ''}>تجاوز −2${Number.isFinite(s.skipLimit) ? ` · ${Math.max(0, s.skipLimit - s.skips)} متبقية` : ''}</button><button class="softred" onclick="tabooAnswer('violation')" ${s.cardHidden ? 'disabled' : ''}>مخالفة −5</button><button onclick="undoTaboo()" ${s.turnHistory.length ? '' : 'disabled'}>↶ تراجع عن التسجيل</button></div><p class="note">الصحيح ${s.correct} · التجاوز ${s.skips} · المخالفات ${s.violations} · سلسلة ${s.streak}. كل 3 كلمات صحيحة متتالية تمنح +5؛ التجاوز والمخالفة يقطعان السلسلة.</p><p class="tiny">البقية يحكمون؛ الشرح بالكلام دون تمثيل أو تهجئة. النقاط لا تنزل تحت الصفر.</p><div class="actions"><button class="quiet" onclick="endTaboo()">أنهي الدور</button></div></section>`,
+          )}</div><div class="actions"><button class="primary" data-taboo-action="correct" onclick="tabooAnswer('correct')" ${s.cardHidden ? 'disabled' : ''}>عرفوها! +10</button><button data-taboo-action="skip" onclick="tabooAnswer('skip')" ${s.cardHidden || s.skips >= s.skipLimit ? 'disabled' : ''}>تجاوز −2${Number.isFinite(s.skipLimit) ? ` · ${Math.max(0, s.skipLimit - s.skips)} متبقية` : ''}</button><button class="softred" data-taboo-action="violation" onclick="tabooAnswer('violation')" ${s.cardHidden ? 'disabled' : ''}>مخالفة −5</button><button data-taboo-action="undo" onclick="undoTaboo()" ${s.turnHistory.length ? '' : 'disabled'}>↶ تراجع عن التسجيل</button></div><p class="taboo-feedback hintpanel" role="status">${esc(s.feedback || '')}</p><p class="note">الصحيح ${s.correct} · التجاوز ${s.skips} · المخالفات ${s.violations} · سلسلة ${s.streak}. كل 3 كلمات صحيحة متتالية تمنح +5؛ التجاوز والمخالفة يقطعان السلسلة.</p><p class="tiny">البقية يحكمون؛ الشرح بالكلام دون تمثيل أو تهجئة. النقاط لا تنزل تحت الصفر.</p><div class="actions"><button class="quiet" onclick="endTaboo()">أنهي الدور</button></div></section>`,
     ),
   );
+  if (focusedAction) {
+    const target =
+      $('app').querySelector(`[data-taboo-action="${focusedAction}"]:not(:disabled)`) ||
+      $('app').querySelector('[data-taboo-action]:not(:disabled)');
+    target?.focus({ preventScroll: true });
+  }
 }
 function toggleTabooCard(run, turn, card) {
   const s = state;
@@ -4492,6 +4554,13 @@ function tabooAnswer(answer, run, turn, card) {
     s.score = Math.max(0, s.score - 5);
     s.violations++;
   }
+  const delta = s.score - s.turnHistory.at(-1).score;
+  s.feedback =
+    answer === 'correct'
+      ? `✓ إجابة صحيحة، +${delta} نقطة.${s.streak % 3 === 0 ? ' مكافأة السلسلة: +5 نقاط.' : ''}`
+      : answer === 'skip'
+        ? `↷ تجاوز، خُصمت ${Math.abs(delta)} نقطة.`
+        : `✕ مخالفة، خُصمت ${Math.abs(delta)} نقطة.`;
   nextTabooCard();
   s.cardAt = Date.now();
   renderTaboo();
@@ -4520,6 +4589,7 @@ function undoTaboo(run, turn, card) {
     violations: h.violations,
     streak: h.streak,
     bestStreak: h.bestStreak,
+    feedback: '↶ ألغينا آخر تسجيل وأعدنا البطاقة والنقاط والتجاوزات.',
   });
   renderTaboo();
 }
@@ -4614,7 +4684,16 @@ document.addEventListener('keydown', (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (['Enter', ' '].includes(e.key) && e.target?.closest?.('button,a,summary,[role="button"]'))
     return;
-  if (
+  if (['ttt', 'connect'].includes(screen) && ['Home', 'End'].includes(e.key)) {
+    if (!e.target?.closest?.('[data-board-pos]')) return;
+    e.preventDefault();
+    const legal = [...$('app').querySelectorAll('[data-board-pos]:not(:disabled)')],
+      target = e.key === 'Home' ? legal[0] : legal.at(-1);
+    if (target) {
+      state.boardFocus = Number(target.dataset.boardPos);
+      target.focus({ preventScroll: true });
+    }
+  } else if (
     ['ttt', 'connect'].includes(screen) &&
     ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)
   ) {
@@ -4715,16 +4794,19 @@ document.addEventListener('pointerdown', (event) => {
     state.done ||
     advancedBlocked() ||
     !event.target.closest?.('.puzzle') ||
-    event.button > 0
+    event.button > 0 ||
+    (event.pointerType === 'touch' && !event.isPrimary) ||
+    slideGesture?.s === state
   )
     return;
   slideGesture = { s: state, pointerId: event.pointerId, x: event.clientX, y: event.clientY };
 });
-document.addEventListener('pointercancel', () => {
-  slideGesture = null;
+document.addEventListener('pointercancel', (event) => {
+  if (slideGesture?.pointerId === event.pointerId) slideGesture = null;
 });
 document.addEventListener('pointerup', (event) => {
   const gesture = slideGesture;
+  if (gesture && event.pointerId !== gesture.pointerId) return;
   slideGesture = null;
   if (
     !gesture ||

@@ -390,6 +390,33 @@ function selectedItems() {
 function coreBlocked() {
   return !!state?.pausedAt || !$('modalback').hidden || !!$('pausecover');
 }
+// A removed control can still dispatch its inline handler (for example after
+// a rapid second tap). Bind controls to the state and DOM view that created them.
+const guardedCoreControls = new WeakSet();
+function guardCoreView() {
+  const owner = state,
+    view = screen,
+    root = $('app');
+  for (const control of root.querySelectorAll(
+    '[onclick],[onpointerdown],[oninput],[onchange],[onsubmit]',
+  )) {
+    if (guardedCoreControls.has(control)) continue;
+    guardedCoreControls.add(control);
+    for (const type of ['click', 'pointerdown', 'input', 'change', 'submit']) {
+      if (!control.hasAttribute('on' + type)) continue;
+      control.addEventListener(
+        type,
+        (event) => {
+          if (state === owner && screen === view && control.isConnected && root.contains(control))
+            return;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        },
+        true,
+      );
+    }
+  }
+}
 function legacySetup(id) {
   clearTimers();
   screen = 'setup';
@@ -570,6 +597,7 @@ function renderFinderLock() {
       `<section class="panel private-vault center"><div class="resulticon">🔐</div><h2>صاحب الرقم يسجّل السر وحده</h2><p class="note">${s.free ? 'اختر عددًا صحيحًا حتى 60 خانة.' : `اختر رقمًا من ${fmt(s.l)} إلى ${fmt(s.h)}.`} بعد الإخفاء لن يظهر الرقم في شاشة الأسئلة؛ الإجابات المتناقضة مع الرقم تُرفض.</p><form onsubmit="event.preventDefault();sealFinder('${s.privateToken}')"><label for="finderPrivateInput">الرقم السري</label><input id="finderPrivateInput" dir="ltr" inputmode="numeric" type="password" maxlength="90" autocomplete="off"><div class="actions"><button class="primary" type="submit">اقفل الرقم ومرّر الجهاز</button></div></form></section>`,
     ),
   );
+  guardCoreView();
 }
 function sealFinder(token = state?.privateToken) {
   if (
@@ -613,9 +641,11 @@ function renderFinder(msg = '') {
     ),
   );
   if (count !== null) {
-    const progress = s.initialCount ? Number(100n - (count * 100n) / s.initialCount) : null,
+    const split = splitNumberRange(s.l, s.h, s.guess),
+      guaranteed = split.worst ? 1 + limit(0n, split.worst - 1n) : 1,
+      progress = s.initialCount ? Number(100n - (count * 100n) / s.initialCount) : null,
       panel = $('app').querySelector('.panel'),
-      coaching = `<p class="note center" role="status">${count === 1n ? 'بقي رقم واحد مؤكد داخل النطاق.' : `من هذا النطاق نحتاج إلى ${limit(s.l, s.h)} تخمينات إضافية كحد أقصى، منها التخمين المعروض.`}${progress !== null ? ` استبعدنا ${progress}% من الاحتمالات.` : ''}</p>`;
+      coaching = `<p class="note center" role="status">${count === 1n ? 'بقي رقم واحد مؤكد داخل النطاق.' : `بهذا السؤال ثم العودة للمنتصف نحتاج إلى ${guaranteed} تخمينات إضافية كحد أقصى، منها التخمين المعروض.`}${progress !== null ? ` استبعدنا ${progress}% من الاحتمالات.` : ''}</p>`;
     panel?.insertAdjacentHTML(
       'afterbegin',
       `${progress !== null ? `<div class="progressline" role="progressbar" aria-label="استبعاد الاحتمالات" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>` : ''}${coaching}`,
@@ -624,12 +654,12 @@ function renderFinder(msg = '') {
       $('app').querySelector('button[onclick="finderAnswer(\'higher\')"]').disabled = true;
     if (s.guess === s.l)
       $('app').querySelector('button[onclick="finderAnswer(\'lower\')"]').disabled = true;
-    const split = splitNumberRange(s.l, s.h, s.guess);
     panel?.insertAdjacentHTML(
       'beforeend',
       `<details class="strategy-lens"><summary>⚖ سؤال جاهز، أو اختر تخمينك</summary><div class="split-legend"><span>↓ أصغر: <bdi>${fmt(split.lower)}</bdi></span><span>✓ نفس الرقم: 1</span><span>↑ أكبر: <bdi>${fmt(split.higher)}</bdi></span></div><p class="tiny">الأعداد حسب النطاق الذي اتفقتوا عليه وإجابات صاحب الرقم. المنتصف يعطي تقسيمًا متوازنًا؛ تقدر تجرب سؤالًا من اختيارك.</p>${count > 1n ? `<form onsubmit="event.preventDefault();planFinderGuess(${s.finderVersion})"><label for="finderGuessInput">بدّل التخمين المعروض دون احتساب جواب</label><div class="guess-entry"><input id="finderGuessInput" inputmode="numeric" dir="ltr" maxlength="90" value="${s.guess}"><button type="submit">اعرض السؤال</button></div>${!split.balanced ? `<div class="actions"><button type="button" onclick="balanceFinderGuess(${s.finderVersion})">ارجع لأفضل تقسيم · ${fmt(s.l + (s.h - s.l) / 2n)}</button></div>` : '<p class="tiny">✓ السؤال الحالي يعطي أفضل تقسيم للنطاق.</p>'}</form>` : ''}</details>`,
     );
   }
+  guardCoreView();
 }
 function balanceFinderGuess(version = state?.finderVersion) {
   if (
@@ -745,6 +775,7 @@ function undoFinder() {
 }
 function renderSolo(msg = '') {
   const s = state,
+    draft = $('guessInput')?.value ?? s.soloDraft ?? '',
     count = s.h - s.l + 1n,
     initial = s.initialH - s.initialL + 1n,
     progress = Number(100n - (count * 100n) / initial),
@@ -778,6 +809,8 @@ function renderSolo(msg = '') {
     $('guessInput').placeholder = (s.l + (s.h - s.l) / 2n).toString();
     $('guessInput').setAttribute('aria-label', 'اكتب تخمينك؛ التلميح المعروض هو منتصف النطاق');
   }
+  if (count > 1n) $('guessInput').value = draft;
+  s.soloDraft = $('guessInput').value;
   $('app')
     .querySelector('.solo-assists')
     ?.insertAdjacentHTML(
@@ -787,9 +820,20 @@ function renderSolo(msg = '') {
   updateSoloSplit();
   if (s.quest)
     $('app').querySelector('.solo-stats')?.insertAdjacentHTML('beforebegin', soloQuestBanner(s));
+  guardCoreView();
 }
 function soloQuestBanner(s) {
   return `<div class="mission-ribbon"><b>🔐 مهمة الأقفال</b><span>${[0, 1, 2].map((i) => `<i class="${i < s.lockResults.length ? 'complete' : i === s.lockResults.length ? 'current' : ''}">${i < s.lockResults.length ? '✓' : i + 1}</i>`).join('')}</span><small>القفل ${s.lockResults.length + 1} من 3 · نتيجة نهائية واحدة، حتى 100 نقطة</small></div>`;
+}
+function soloSearchReviewHTML(s) {
+  const entries = [
+    ...s.history.map((entry) => ({
+      n: entry.n,
+      text: entry.a === 'higher' ? 'الرقم أكبر ↑' : 'الرقم أصغر ↓',
+    })),
+    ...(s.finalGuess === s.secret ? [{ n: s.finalGuess, text: 'الجواب الصحيح ✓' }] : []),
+  ];
+  return `<details class="round-review"><summary>كيف ضيّقت النطاق؟</summary><p class="note">بدأت بـ ${fmt(s.initialH - s.initialL + 1n)} احتمال، واستخدمت ${s.attempt} محاولة و${s.hints} تلميحات. اختيار المنتصف يستبعد أكبر عدد مضمون من الاحتمالات.</p>${entries.length ? `<ol>${entries.map((entry, i) => `<li><span>المحاولة ${i + 1}</span><bdi>${fmt(entry.n)}</bdi><b>${entry.text}</b></li>`).join('')}</ol>` : '<p class="note">لم تسجّل أي تخمين.</p>'}<p class="note">الرقم الصحيح: <bdi>${fmt(s.secret)}</bdi></p></details>`;
 }
 function finishSoloStage(won, title, text, points = 0, detail = '') {
   const s = state;
@@ -858,6 +902,7 @@ function nextSoloLock(version = state?.lockVersion) {
     history: [],
     hints: 0,
     soloMessage: '',
+    soloDraft: '',
     lockStage: 'active',
     lastDistance: undefined,
     finalGuess: undefined,
@@ -880,6 +925,7 @@ function splitNumberRange(low, high, guess) {
 function updateSoloSplit() {
   if (screen !== 'solo' || state?.done || !$('soloSplit')) return;
   const s = state;
+  s.soloDraft = $('guessInput').value;
   let guess;
   try {
     guess = integer($('guessInput').value);
@@ -967,6 +1013,8 @@ function guessSolo() {
   }
   if (n < s.l || n > s.h) return soloInputError('هذا الرقم خارج النطاق الممكن. لم تُخصم محاولة.');
   $('guessInput').blur();
+  $('guessInput').value = '';
+  s.soloDraft = '';
   s.attempt++;
   s.finalGuess = n;
   if (n === s.secret) {
@@ -1664,14 +1712,16 @@ function chooseQuestion(candidates, asked) {
 }
 function startMind() {
   if (screen !== 'setup' || state?.id !== 'mind' || coreBlocked()) return;
+  const pool = selectedItems();
+  if (!pool.length) return toast('لا توجد كلمات في هذه الفئة. اختر فئة أخرى أو أضف كلمة.');
   state = {
     id: 'mind',
-    candidates: selectedItems(),
+    candidates: [...pool],
     asked: [],
     history: [],
     evidence: [],
-    initialCount: selectedItems().length,
-    initialPool: selectedItems(),
+    initialCount: pool.length,
+    initialPool: pool,
     answers: 0,
     name: player(),
     done: false,
@@ -1775,6 +1825,7 @@ function renderMindEvidence() {
           '',
         )}<label for="mindCandidateSearch">ابحث بين الاحتمالات الباقية</label><input id="mindCandidateSearch" maxlength="50" value="${esc(s.mindCandidateQuery || '')}" autocomplete="off" oninput="searchMindCandidates(this.value)"><div id="mindCandidateMatches">${mindCandidateMatchesHTML(s)}</div></details>`,
     );
+  guardCoreView();
 }
 function mindCandidateMatchesHTML(s) {
   const query = norm(s.mindCandidateQuery || ''),
@@ -1927,6 +1978,7 @@ function renderWho(msg = '') {
   );
   $('whoInput').value = s.whoDraft || '';
   renderWhoInquiries();
+  guardCoreView();
 }
 function whoEvidenceCandidates(s = state) {
   return s.pool.filter(
@@ -2008,6 +2060,7 @@ function searchWhoSuspects(value) {
     return;
   state.suspectQuery = String(value).slice(0, 40);
   $('whoSuspects').innerHTML = whoSuspectsHTML(state);
+  guardCoreView();
 }
 function toggleWhoSuspect(i) {
   if (
@@ -2024,6 +2077,7 @@ function toggleWhoSuspect(i) {
     ? state.whoRejected.filter((index) => index !== i)
     : [...state.whoRejected, i];
   $('whoSuspects').innerHTML = whoSuspectsHTML(state);
+  guardCoreView();
 }
 function useWhoSuspect(i) {
   if (
@@ -2055,17 +2109,21 @@ function guessWho() {
     const p = whoPoints();
     addScore(s.name, p);
     result('who', 'صح! هذا أنا ✨', `${s.attempt} تخمينات و${s.hints} تلميحات.`, p, s.item.name);
-  } else if (s.attempt >= s.max) {
-    s.done = true;
-    result(
-      'who',
-      'الجواب كان…',
-      'خلصت التخمينات. التلميحات الثلاثة كانت: ' + s.item.hints.map(esc).join(' · '),
-      0,
-      s.item.name,
-    );
+    renderWhoReview();
   } else {
     s.wrong.push(raw);
+    if (s.attempt >= s.max) {
+      s.done = true;
+      result(
+        'who',
+        'الجواب كان…',
+        'خلصت التخمينات. التلميحات الثلاثة كانت: ' + s.item.hints.map(esc).join(' · '),
+        0,
+        s.item.name,
+      );
+      renderWhoReview();
+      return;
+    }
     const known = s.pool.find((i) => items[i].aliases.some((a) => norm(a) === n)),
       feedback =
         known !== undefined && items[known].cat !== s.item.cat
@@ -2087,6 +2145,16 @@ function revealWho() {
   if (screen !== 'who' || state.done || coreBlocked()) return;
   state.done = true;
   result('who', 'انكشف الجواب', state.item.hints.map(esc).join(' · '), 0, state.item.name);
+  renderWhoReview();
+}
+function renderWhoReview() {
+  const s = state;
+  $('app')
+    .querySelector('.success')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      `<details class="history"><summary>راجع أدلة القضية</summary>${s.item.hints.map((hint, i) => `<p class="note"><b>التلميح ${i + 1}:</b> ${esc(hint)}</p>`).join('')}${s.inquiries.map((entry) => `<p class="note">${esc(questions[entry.q][1])} — ${entry.yes ? 'نعم ✓' : 'لا ✕'}</p>`).join('')}${s.wrong.length ? `<p class="tiny">كل التخمينات غير الصحيحة (${s.wrong.length}):</p><div class="listchips">${s.wrong.map((guess) => `<span>✕ ${esc(guess)}</span>`).join('')}</div>` : '<p class="note">لم تسجّل أي تخمين خاطئ.</p>'}</details>`,
+    );
 }
 const symbols = [
   '🍉',
@@ -2414,7 +2482,7 @@ function renderMemory() {
   setHTML(
     wrap(
       'memory',
-      `<div class="stats"><div class="stat"><small>الحركات</small><b>${s.moves}</b></div><div class="stat"><small>الأزواج</small><b dir="ltr">${s.matched.length / 2} / ${s.pairs}</b></div><div class="stat"><small>الوقت</small><b id="memtime">${memoryElapsed(s)} ث</b></div></div><div class="progressline"><span style="width:${(s.matched.length / s.deck.length) * 100}%"></span></div><div class="memory" style="grid-template-columns:repeat(${columns},minmax(0,1fr))">${s.deck
+      `<div class="stats"><div class="stat"><small>الحركات</small><b>${s.moves}</b></div><div class="stat"><small>الأزواج</small><b dir="ltr">${s.matched.length / 2} / ${s.pairs}</b></div><div class="stat"><small>الوقت</small><b id="memtime">${memoryElapsed(s)} ث</b></div></div><div class="progressline" role="progressbar" aria-label="الأزواج المكتملة" aria-valuemin="0" aria-valuemax="${s.pairs}" aria-valuenow="${s.matched.length / 2}"><span style="width:${(s.matched.length / s.deck.length) * 100}%"></span></div><div class="memory" role="group" aria-label="لوحة الذاكرة، ${s.deck.length} بطاقة، ${s.matched.length / 2} أزواج مكتملة من ${s.pairs}" style="grid-template-columns:repeat(${columns},minmax(0,1fr))">${s.deck
         .map((v, i) => {
           const m = s.matched.includes(i),
             up = m || s.up.includes(i) || s.peek,
@@ -2448,6 +2516,7 @@ function renderMemory() {
       ?.focus({ preventScroll: true });
     s.memoryRestoreFocus = false;
   }
+  guardCoreView();
 }
 function hideMemoryCards(s) {
   if (screen !== 'memory' || state !== s || s.done) return;
@@ -2633,6 +2702,7 @@ function mimeHandoff() {
       `<section class="panel center"><div class="resulticon">🎭</div><h2>الدور على ${esc(name)}</h2><p class="muted">الجولة ${Math.floor(s.turn / s.players.length) + 1} من ${s.rounds}</p><div class="spot"><p>خل الجهاز مع الممثّل.<br>الباقي لا يشوفون الكلمة!</p><p class="note">${s.duration} ثانية · بدون كلام</p></div><div class="actions"><button class="primary" onclick="mimeReady()">الجهاز عندي، جاهز!</button></div></section>`,
     ),
   );
+  guardCoreView();
 }
 function nextMimeWord(keepHidden = false) {
   const s = state,
@@ -2693,6 +2763,11 @@ function renderMime() {
       'beforeend',
       `${s.sceneRule && !s.hiddenWord ? `<div class="scene-rule">🎬 ${esc(s.sceneRule)}</div>` : ''}<p class="tiny">المراقب لهذا الدور: ${esc(s.players[(s.turn + 1) % s.players.length])} · يراجع صحة التخمين والالتزام بعدم الكلام.</p>`,
     );
+  if (s.ruleMode === 'story' && s.skips >= 3)
+    $('app').querySelector(
+      `button[onclick="mimeAnswer(false,${s.turn},${s.cardSerial})"]`,
+    ).disabled = true;
+  guardCoreView();
 }
 function toggleMimeWord(turn = state?.turn, serial = state?.cardSerial) {
   if (screen !== 'mime' || coreBlocked() || state.stage !== 'active') return;
@@ -2790,6 +2865,14 @@ function endMime(turn = state?.turn, serial = state?.cardSerial) {
       `<section class="panel center"><div class="resulticon">⏱</div><h2>خلص دور ${esc(name)}</h2><div class="resultnum">${s.score} نقطة</div><p class="note">${s.correct} كلمات صحيحة · ${s.skips} تجاوزات · أفضل سلسلة ${s.bestStreak}</p>${s.log.length ? `<details class="history"><summary>الكلمات في هذا الدور (${s.log.length})</summary><div class="listchips">${s.log.map((v) => `<span>${v.ok ? '✓' : '↷'} ${esc(v.word)}</span>`).join('')}</div></details>` : ''}<div class="actions"><button class="primary" onclick="advanceMime(${s.turn})">الدور التالي ←</button></div></section>`,
     ),
   );
+  if (s.ruleMode !== 'story' || s.correct < 3)
+    $('app')
+      .querySelector('.panel')
+      ?.insertAdjacentHTML(
+        'beforeend',
+        `<p class="note center">الكلمة الأخيرة غير المحتسبة: <b>${esc(s.word)}</b>. لم نضف نقاطاً لها.</p>`,
+      );
+  guardCoreView();
 }
 function advanceMime(turn = state?.turn) {
   if (screen !== 'mime' || coreBlocked() || state.stage !== 'result') return;
@@ -2870,6 +2953,7 @@ function secretHandoff() {
       `<section class="panel center"><div class="resulticon">🤫</div><h2>${esc(name)} يختار الكلمة</h2><p class="note">الجولة ${Math.floor(s.turn / s.players.length) + 1} من ${s.rounds} · الدور ${secretTurnIndex() + 1} من ${s.players.length}. خل الجهاز مع صاحب الدور وحده.</p><div class="actions"><button class="primary" onclick="revealSecret()">أنا ${esc(name)}، أرني الكلمة</button></div></section>`,
     ),
   );
+  guardCoreView();
 }
 function revealSecret() {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'handoff') return;
@@ -2878,6 +2962,8 @@ function revealSecret() {
   if (s.index >= s.pool.length) {
     s.pool = shuffle(s.pool);
     s.index = 0;
+    if (s.pool.length > 1 && items[s.pool[0]].name === s.previousSecretWord)
+      [s.pool[0], s.pool[1]] = [s.pool[1], s.pool[0]];
   }
   s.word = items[s.pool[s.index++]].name;
   s.wordAliases = [...items[s.pool[s.index - 1]].aliases];
@@ -2888,6 +2974,7 @@ function revealSecret() {
     ),
   );
   searchSecretWords('');
+  guardCoreView();
 }
 function searchSecretWords(value) {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'revealed') return;
@@ -2903,6 +2990,7 @@ function searchSecretWords(value) {
           `<button class="smallbtn" onclick="selectSecretWord(${i},${state.turn})">${esc(items[i].name)}</button>`,
       )
       .join('')}</div>`;
+  guardCoreView();
 }
 function selectSecretWord(i, turn = state?.turn) {
   if (
@@ -2926,6 +3014,7 @@ function hideSecret() {
     const known = items.find((item) => item.aliases.some((name) => norm(name) === norm(custom)));
     state.wordAliases = [...new Set([custom, ...(known?.aliases || [])])];
   }
+  state.previousSecretWord = state.word;
   state.stage = 'hidden';
   setHTML(
     wrap(
@@ -2933,6 +3022,7 @@ function hideSecret() {
       `<section class="panel center"><div class="resulticon">🔒</div><h2>اختفت كلمة السر</h2><p class="note">مرّر الجهاز للباقين. اسألوا ${esc(state.players[secretTurnIndex()])} أسئلة جوابها نعم أو لا، وخمنوا بالكلام.</p><div class="actions"><button class="primary" onclick="secretReady()">كلنا جاهزون، شغّل الوقت</button></div></section>`,
     ),
   );
+  guardCoreView();
 }
 function secretReady() {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'hidden') return;
@@ -2951,7 +3041,7 @@ function renderSecret() {
   setHTML(
     wrap(
       'secret',
-      `<section class="panel"><div class="timerline"><span class="pill">${esc(s.players[secretTurnIndex()])} يعرف السر</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b></div><div class="spot"><div style="font-size:40px">🔐</div><h2>${remaining ? 'اسألوا… وخمنوا' : 'آخر تخمين!'}</h2><p class="note">الأسئلة ${s.questions} / ${s.questionLimit} · باقي ${remaining}</p><div class="progressline"><span style="width:${(s.questions / s.questionLimit) * 100}%"></span></div></div><label for="secretQuestionText">${s.secretRule === 'relay' ? 'اكتب سؤال صاحب الدور (مطلوب، 3 أحرف على الأقل)' : 'دوّن السؤال حتى تراجعوا الأدلة (اختياري)'}</label><input id="secretQuestionText" maxlength="100" autocomplete="off" value="${esc(s.questionDraft || '')}" ${!remaining ? 'disabled' : ''} oninput="secretDraft(this.value,${s.turn},${s.questionSerial})" placeholder="مثلاً: هل نستخدمه داخل البيت؟"><p class="note">بعد كل سؤال سجّلوا إجابة صاحب الكلمة:</p><div class="actions"><button onclick="secretQuestion('yes',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>نعم ✓</button><button onclick="secretQuestion('no',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>لا ✕</button><button onclick="secretQuestion('unknown',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>مو متأكد / غير ذلك</button></div>${s.questionLog.length ? `<ol class="history" aria-label="سجل الأسئلة والأدلة">${s.questionLog.map((v, i) => `<li>${esc(s.players[s.questionAuthors?.[i]] || '')}${s.questionAuthors?.[i] !== undefined ? ': ' : ''}${esc(s.questionTexts?.[i] || 'سؤال ' + (i + 1))} — <b>${v === 'yes' ? 'نعم ✓' : v === 'no' ? 'لا ✕' : v === 'wrong' ? 'تخمين خاطئ ✕' : 'غير محدد'}</b></li>`).join('')}</ol>` : ''}<div class="actions"><button onclick="undoSecretQuestion(${s.turn},${s.questionSerial})" ${!s.questions ? 'disabled' : ''}>↶ تراجع عن سؤال</button><button class="primary" onclick="secretEnd(true,${s.turn},${s.questionSerial})">عرفناها! ✓</button></div><p class="note">بعد السؤال الأخير يبقى تخمين أخير بالكلام قبل كشف الكلمة. الأسئلة والتخمينات تحصل بينكم، والجهاز يسجل العدد والأدلة.</p><div class="actions"><button class="quiet" onclick="secretEnd(false,${s.turn},${s.questionSerial})">ما عرفناها، اكشف السر</button></div></section>`,
+      `<section class="panel"><div class="timerline"><span class="pill">${esc(s.players[secretTurnIndex()])} يعرف السر</span><b class="countdown" id="partytime">${Math.max(0, Math.ceil((s.endAt - (s.pausedAt || Date.now())) / 1000))}</b></div><div class="spot"><div style="font-size:40px">🔐</div><h2>${remaining ? 'اسألوا… وخمنوا' : 'آخر تخمين!'}</h2><p class="note">الأسئلة <bdi dir="ltr">${s.questions} / ${s.questionLimit}</bdi> · باقي ${remaining}</p><div class="progressline"><span style="width:${(s.questions / s.questionLimit) * 100}%"></span></div></div><label for="secretQuestionText">${s.secretRule === 'relay' ? 'اكتب سؤال صاحب الدور (مطلوب، 3 أحرف على الأقل)' : 'دوّن السؤال حتى تراجعوا الأدلة (اختياري)'}</label><input id="secretQuestionText" maxlength="100" autocomplete="off" value="${esc(s.questionDraft || '')}" ${!remaining ? 'disabled' : ''} oninput="secretDraft(this.value,${s.turn},${s.questionSerial})" placeholder="مثلاً: هل نستخدمه داخل البيت؟"><p class="note">بعد كل سؤال سجّلوا إجابة صاحب الكلمة:</p><div class="actions"><button onclick="secretQuestion('yes',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>نعم ✓</button><button onclick="secretQuestion('no',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>لا ✕</button><button onclick="secretQuestion('unknown',${s.turn},${s.questionSerial})" ${!remaining ? 'disabled' : ''}>مو متأكد / غير ذلك</button></div>${s.questionLog.length ? `<ol class="history" aria-label="سجل الأسئلة والأدلة">${s.questionLog.map((v, i) => `<li>${esc(s.players[s.questionAuthors?.[i]] || '')}${s.questionAuthors?.[i] !== undefined ? ': ' : ''}${esc(s.questionTexts?.[i] || 'سؤال ' + (i + 1))} — <b>${v === 'yes' ? 'نعم ✓' : v === 'no' ? 'لا ✕' : v === 'wrong' ? 'تخمين خاطئ ✕' : 'غير محدد'}</b></li>`).join('')}</ol>` : ''}<div class="actions"><button onclick="undoSecretQuestion(${s.turn},${s.questionSerial})" ${!s.questions ? 'disabled' : ''}>↶ تراجع عن سؤال</button><button class="primary" onclick="secretEnd(true,${s.turn},${s.questionSerial})">عرفناها! ✓</button></div><p class="note">بعد السؤال الأخير يبقى تخمين أخير بالكلام قبل كشف الكلمة. الأسئلة والتخمينات تحصل بينكم، والجهاز يسجل العدد والأدلة.</p><div class="actions"><button class="quiet" onclick="secretEnd(false,${s.turn},${s.questionSerial})">ما عرفناها، اكشف السر</button></div></section>`,
     ),
   );
   const panel = $('app').querySelector('.panel'),
@@ -2987,6 +3077,13 @@ function renderSecret() {
       'afterbegin',
       `<div class="mission-ribbon"><b>📒 تحقيق بالتناوب</b><small>صاحب الدور يكتب السؤال ويسجّل الجواب أو يخمن. يتحول الدور بعد كل سؤال؛ التراجع يعيد السؤال والسائل.</small></div><div class="question-starters" role="group" aria-label="اقتراحات سؤال">${['هل نستخدمه يوميًا؟', 'هل يوجد عادة داخل البيت؟', 'هل يمكن حمله باليد؟', 'هل يرتبط بالطبيعة؟'].map((question, index) => `<button class="smallbtn" onclick="secretStarter(${index},${s.turn},${s.questionSerial})">${question}</button>`).join('')}</div>`,
     );
+  const progress = $('app').querySelector('.progressline');
+  progress?.setAttribute('role', 'progressbar');
+  progress?.setAttribute('aria-label', 'الأسئلة المستعملة');
+  progress?.setAttribute('aria-valuemin', '0');
+  progress?.setAttribute('aria-valuemax', String(s.questionLimit));
+  progress?.setAttribute('aria-valuenow', String(s.questions));
+  guardCoreView();
 }
 function secretStarter(index, turn, serial) {
   if (
@@ -3139,6 +3236,14 @@ function secretEnd(won, turn = state?.turn, serial = state?.questionSerial) {
       `<section class="panel center"><div class="resulticon">${won ? '🎉' : '⏱'}</div><h2>${won ? 'عرفتوا السر!' : 'انكشف السر'}</h2><div class="secret">${esc(s.word)}</div><p class="note">${s.questions} أسئلة من ${s.questionLimit}</p>${won ? `<div class="fields"><div class="field full"><label for="winner">من قال الجواب الصحيح أولاً؟</label><select id="winner">${s.players.map((n, i) => (i === secretTurnIndex() ? '' : `<option value="${i}" ${s.textWinner === i ? 'selected' : ''}>${esc(n)}</option>`)).join('')}</select></div></div><div class="actions"><button class="primary" onclick="awardSecret(${s.turn})">احسب النقاط ونكمل</button></div>` : `<div class="actions"><button class="primary" onclick="advanceSecret(${s.turn})">الدور التالي ←</button></div>`}</section>`,
     ),
   );
+  if (s.questionLog.length)
+    $('app')
+      .querySelector('.panel')
+      ?.insertAdjacentHTML(
+        'beforeend',
+        `<details class="history"><summary>راجع سجل التحقيق (${s.questions})</summary><ol>${s.questionLog.map((answer, i) => `<li>${esc(s.players[s.questionAuthors[i]] || '')}: ${esc(s.questionTexts[i] || 'سؤال ' + (i + 1))} — <b>${answer === 'yes' ? 'نعم ✓' : answer === 'no' ? 'لا ✕' : answer === 'wrong' ? 'تخمين خاطئ ✕' : 'غير محدد'}</b></li>`).join('')}</ol></details>`,
+      );
+  guardCoreView();
 }
 function awardSecret(turn = state?.turn) {
   if (screen !== 'secret' || coreBlocked() || state.stage !== 'award') return;
@@ -3213,9 +3318,11 @@ function renderReaction() {
           ? 'اتجاه خاطئ! احتُسبت 1500 ملّي ثانية'
           : s.anticipated
             ? 'ضغطة متوقعة أسرع من 70 ms! احتُسبت 1500 ms'
-            : s.falseStart
-              ? 'ضغط مبكر! احتُسبت 1500 ملّي ثانية'
-              : 'وقت استجابتك في هذه المحاولة',
+            : s.noGoError
+              ? 'ضغطت إشارة التوقف البرتقالية! احتُسبت 1500 ms'
+              : s.falseStart
+                ? 'ضغط مبكر! احتُسبت 1500 ملّي ثانية'
+                : 'وقت استجابتك في هذه المحاولة',
       ],
     },
     t = texts[s.stage];
@@ -3230,13 +3337,14 @@ function renderReaction() {
       'beforeend',
       `<details class="strategy-lens reaction-analysis"><summary>📊 تفاصيل محاولات ${esc(name)}</summary>${reactionTrialHistoryHTML(s.records[name])}</details>`,
     );
+  guardCoreView();
 }
 function reactionTrialHistoryHTML(records) {
   const maximum = Math.max(1500, ...records.map((record) => record.time));
   return `<div class="reaction-trial-history">${records
     .map(
       (record, i) =>
-        `<div class="${record.falseStart ? 'penalty' : ''}"><span>${i + 1}</span><meter min="0" max="${maximum}" value="${record.time}" aria-label="المحاولة ${i + 1}: ${record.time} ملّي ثانية"></meter><bdi>${record.time} ms</bdi><small>${record.wrongDirection ? 'اتجاه خاطئ' : record.anticipated ? 'ضغط متوقع' : record.falseStart ? 'قبل الإشارة' : record.time < 300 ? 'استجابة سريعة ✓' : 'استجابة صحيحة ✓'}</small></div>`,
+        `<div class="${record.falseStart ? 'penalty' : ''}"><span>${i + 1}</span><meter min="0" max="${maximum}" value="${record.time}" aria-label="المحاولة ${i + 1}: ${record.time} ملّي ثانية"></meter><bdi>${record.time} ms</bdi><small>${record.wrongDirection ? 'اتجاه خاطئ' : record.anticipated ? 'ضغط متوقع' : record.noGoError ? 'ضغط إشارة التوقف' : record.falseStart ? 'قبل الإشارة' : record.time < 300 ? 'استجابة سريعة ✓' : 'استجابة صحيحة ✓'}</small></div>`,
     )
     .join('')}</div>`;
 }
@@ -3248,10 +3356,13 @@ function reactionTap(side = null) {
     s.falseStart = false;
     s.anticipated = false;
     s.wrongDirection = false;
+    s.noGoError = false;
+    s.readyAt = null;
     renderReaction();
     scheduleReactionSignal(s);
   } else if (s.stage === 'waiting' || s.stage === 'decoy') {
     clearTimeout(s.waitTimer);
+    s.noGoError = s.stage === 'decoy';
     s.falseStart = true;
     s.last = 1500;
     recordReaction();
@@ -3328,6 +3439,7 @@ function recordReaction() {
     falseStart: state.falseStart,
     anticipated: !!state.anticipated,
     wrongDirection: !!state.wrongDirection,
+    noGoError: !!state.noGoError,
   });
   state.stage = 'result';
   renderReaction();

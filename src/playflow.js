@@ -135,12 +135,7 @@ result = function (id, title, text, points = 0, detail = '') {
   flowResult(id, title, text, points, detail);
   if (alreadyShown || !s || !s.resultShown || state !== s) return;
   if (id === 'solo') {
-    $('app')
-      .querySelector('.success')
-      ?.insertAdjacentHTML(
-        'beforeend',
-        `<details class="round-review"><summary>كيف ضيّقت النطاق؟</summary><p class="note">بدأت بـ ${fmt(s.initialH - s.initialL + 1n)} احتمال، واستخدمت ${s.attempt} محاولة و${s.hints} تلميحات. اختيار المنتصف يستبعد أكبر عدد مضمون من الاحتمالات.</p>${s.history.length ? `<ol>${s.history.map((v, i) => `<li><span>المحاولة ${i + 1}</span><bdi>${fmt(v.n)}</bdi><b>${v.a === 'higher' ? '↑ أكبر' : '↓ أصغر'}</b></li>`).join('')}</ol>` : ''}<p class="note">الرقم الصحيح: <bdi>${fmt(s.secret)}</bdi></p></details>`,
-      );
+    $('app').querySelector('.success')?.insertAdjacentHTML('beforeend', soloSearchReviewHTML(s));
   }
   const best = store.extra.best[id] || 0;
   $('app')

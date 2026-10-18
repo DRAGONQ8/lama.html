@@ -336,6 +336,7 @@
   gap: 8px;
 }
 .wordguess-cell {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1097,4 +1098,21 @@ body[data-theme='light'] .target-cell.decoy {
   .trivia-explanation {
     padding: 14px;
   }
+}
+
+/* Shape cues keep submitted word feedback usable without color perception. */
+.wordguess-cell:is(.correct, .present, .absent)::after {
+  position: absolute;
+  inset-inline-end: 3px;
+  bottom: 1px;
+  font: 700 11px/1 sans-serif;
+}
+.wordguess-cell.correct::after {
+  content: '✓';
+}
+.wordguess-cell.present::after {
+  content: '↔';
+}
+.wordguess-cell.absent::after {
+  content: '×';
 }

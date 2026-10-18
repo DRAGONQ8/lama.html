@@ -334,9 +334,6 @@ function soloProfile(name = soloHubName || store.players[0], create = true) {
   }
   return profile;
 }
-function soloSkillFor(id) {
-  return soloSkills.find((skill) => skill.games.includes(id));
-}
 function soloLevelLabel(level) {
   return { easy: 'خفيف', normal: 'متوسط', hard: 'تحدّي' }[level];
 }
@@ -779,7 +776,7 @@ wrap = function (id, body) {
       round.started = Date.now();
       round.level = ['easy', 'normal', 'hard'].includes(state.level) ? state.level : round.level;
     }
-    body = `<div class="solo-session-banner"><div><b>◎ ${round.mode === 'practice' ? 'تدريب شخصي' : 'جلسة نقاط'} · ${esc(round.name)}</b><small id="soloRoundConfig">${screen === 'setup' ? 'جهّز محطتك قبل البداية' : soloLevelLabel(round.level) + ' · ' + (round.mode === 'practice' ? 'النتيجة في سجل النادي فقط' : 'النقاط تضاف للوحة اللمّة')}</small></div><span>${round.at + 1} / ${session.queue.length}</span><button class="quiet" onclick="openSoloHub()">نكمل لاحقاً</button></div>${body}`;
+    body = `<div class="solo-session-banner"><div><b>◎ ${round.mode === 'practice' ? 'تدريب شخصي' : 'جلسة نقاط'} · ${esc(round.name)}</b><small id="soloRoundConfig">${screen === 'setup' ? 'جهّز محطتك قبل البداية' : soloLevelLabel(round.level) + ' · ' + (round.mode === 'practice' ? 'النتيجة في سجل النادي فقط' : 'النقاط تضاف للوحة اللمّة')}</small></div><span dir="ltr">${round.at + 1} / ${session.queue.length}</span><button class="quiet" onclick="openSoloHub()">نكمل لاحقاً</button></div>${body}`;
   }
   return soloWrapPrevious(id, body);
 };

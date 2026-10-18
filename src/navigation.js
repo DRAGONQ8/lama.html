@@ -225,6 +225,35 @@ for (const type of ['wheel', 'touchstart', 'pointerdown'])
     { passive: true, capture: true },
   );
 
+// Keep catalogue choices usable after their HTML is refreshed, including RTL.
+document.addEventListener('keydown', (event) => {
+  if (
+    screen !== 'home' ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.altKey ||
+    event.isComposing ||
+    coreBlocked()
+  )
+    return;
+  const group = event.target.closest?.('.worldtabs,.filter');
+  if (!group || !event.target.matches('button')) return;
+  const buttons = [...group.querySelectorAll('button:not(:disabled)')];
+  const index = buttons.indexOf(event.target);
+  const rtl = getComputedStyle(group).direction === 'rtl';
+  let next;
+  if (event.key === 'Home') next = 0;
+  else if (event.key === 'End') next = buttons.length - 1;
+  else if (event.key === 'ArrowLeft')
+    next = (index + (rtl ? 1 : -1) + buttons.length) % buttons.length;
+  else if (event.key === 'ArrowRight')
+    next = (index + (rtl ? -1 : 1) + buttons.length) % buttons.length;
+  else return;
+  event.preventDefault();
+  buttons[next]?.focus({ preventScroll: true });
+  buttons[next]?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+});
+
 function randomGameChoices(mode) {
   const count = store.players.length;
   if (

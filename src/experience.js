@@ -117,18 +117,22 @@ function gameLength(id) {
 function gameMinimum(id) {
   return ['undercover', 'improv', 'spy'].includes(id) ? 3 : id === 'teamcup' ? 4 : 2;
 }
-const previousFilteredGames = filteredGames;
-filteredGames = function () {
-  const selectedFilter = filter;
-  // The old predicate treats every non-solo value as group.
-  if (selectedFilter === 'new') filter = 'all';
-  let list;
-  try {
-    list = previousFilteredGames();
-  } finally {
-    filter = selectedFilter;
-  }
-  if (selectedFilter === 'new') list = list.filter((g) => freshGameIds.has(g[0]));
+function filteredGames() {
+  const query = norm(searchQuery);
+  const list = games.filter(
+    (g) =>
+      (world === 'all' || gameWorld[g[0]] === world) &&
+      (filter === 'all' ||
+        (filter === 'solo'
+          ? isSolo(g)
+          : filter === 'duo'
+            ? duoGameIds.has(g[0])
+            : filter === 'new'
+              ? freshGameIds.has(g[0])
+              : filter === 'group' && isGroup(g))) &&
+      (!onlyFavorites || store.extra.favorites.includes(g[0])) &&
+      (!query || norm(g[2] + ' ' + g[3] + ' ' + g[4]).includes(query)),
+  );
   const sorting = experience().sort;
   if (sorting === 'name') list.sort((a, b) => a[2].localeCompare(b[2], 'ar'));
   if (sorting === 'popular')
@@ -142,7 +146,7 @@ filteredGames = function () {
   if (sorting === 'recommended')
     list.sort((a, b) => Number(freshGameIds.has(b[0])) - Number(freshGameIds.has(a[0])));
   return list;
-};
+}
 function setCatalogSort(value) {
   if (!['recommended', 'name', 'recent', 'popular'].includes(value)) return;
   experience().sort = value;
@@ -193,9 +197,13 @@ function chooseSoloLobby() {
   setFilter('solo');
   scrollCatalog();
 }
-function scrollCatalog() {
+function scrollCatalog(focus = false) {
+  if (focus && $('gamesheading')) {
+    $('gamesheading').tabIndex = -1;
+    $('gamesheading').focus({ preventScroll: true });
+  }
   $('gamesheading')?.scrollIntoView({
-    behavior: store.extra.motion ? 'smooth' : 'instant',
+    behavior: document.body.classList.contains('reduced-motion') ? 'instant' : 'smooth',
     block: 'start',
   });
 }
@@ -290,7 +298,7 @@ const experienceWrap = wrap;
 wrap = function (id, body) {
   if (activeRoute?.id === id && !activeRoute.finished) {
     const { config, at } = activeRoute;
-    body = `<div class="journey-banner"><span>${config.icon} ${config.name}</span><div>${config.games.map((gid, i) => `<span class="${i < at ? 'complete' : i === at ? 'current' : ''}">${i < at ? '✓' : i + 1}</span>`).join('<i>—</i>')}</div><small>المحطة ${at + 1} / 3</small></div>${body}`;
+    body = `<div class="journey-banner"><span>${config.icon} ${config.name}</span><div>${config.games.map((gid, i) => `<span class="${i < at ? 'complete' : i === at ? 'current' : ''}">${i < at ? '✓' : i + 1}</span>`).join('<i>—</i>')}</div><small>المحطة <bdi dir="ltr">${at + 1} / 3</bdi></small></div>${body}`;
   }
   return experienceWrap(id, body);
 };

@@ -1,4 +1,16 @@
 /* Interaction cues for the board and deduction games. */
+.board-last-action {
+  margin-block: 14px 8px;
+  color: var(--mint);
+  text-align: center;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+.taboo-feedback {
+  min-height: 3.4em;
+  margin-block: 16px;
+  overflow-wrap: anywhere;
+}
 .spy-setup-preview {
   margin-top: 18px;
   line-height: 1.9;

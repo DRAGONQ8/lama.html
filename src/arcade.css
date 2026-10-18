@@ -693,6 +693,21 @@ body.reduced-motion .tile-merged {
   min-height: 24px;
   unicode-bidi: plaintext;
 }
+.arcade-board-description {
+  max-width: 560px;
+  margin: 10px auto;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  line-height: 1.9;
+}
+.mine-cell.mine-selected-neighbour {
+  box-shadow: inset 0 0 0 2px var(--lavender, #c4b2ff);
+}
+body[data-theme='light'] .mine-cell.mine-selected-neighbour {
+  box-shadow: inset 0 0 0 2px #6941a5;
+}
 .maze-navigation {
   max-width: 560px;
   margin: 10px auto;
